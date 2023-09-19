@@ -14,7 +14,7 @@ function(prefix_clangformat_setup prefix)
       set(CLANGFORMAT_EXECUTABLE ${clangformat_executable_tmp})
       unset(clangformat_executable_tmp)
     else()
-      message(FATAL_ERROR "ClangFormat: ${CLANGFORMAT_EXECUTABLE} not found! Aborting")
+      #message(FATAL_ERROR "ClangFormat: ${CLANGFORMAT_EXECUTABLE} not found! Aborting")
     endif()
   endif()
 
