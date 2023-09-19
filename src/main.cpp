@@ -1,24 +1,12 @@
-#include "iostream"
+#include <iostream>
+#include <raylib.h>
 #include <flecs.h>
-#include "raylib.h"
+#include "systems/render_systems.h"
 
 int main() {
-    std::cout << "surviving sarntal" << std::endl;
+    flecs::world world;
 
-    flecs::world w;
+    world.import <RenderSystems>();
 
-    InitWindow(100, 100, "raylib [core] example - basic window");
-
-    SetTargetFPS(60);
-
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawText("Congrats! You created your first window!", 190, 200, 20,
-                 LIGHTGRAY);
-        EndDrawing();
-    }
-    CloseWindow();
-
-    return 0;
+    main_loop(world);
 }
