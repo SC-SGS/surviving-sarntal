@@ -24,7 +24,7 @@ RenderSystems::RenderSystems(flecs::world &world) {
 
     world.system().kind(flecs::PreUpdate).iter(window_prepare_drawing_system);
     world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
-    world.system() .kind(flecs::OnUpdate).iter(update_window);
+    world.system().kind(flecs::OnUpdate).iter(update_window);
 }
 
 void main_loop(flecs::world &world) {
