@@ -17,7 +17,14 @@
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
 stages:          # List of stages for jobs, and their order of execution
+  - validate
   - build
+
+
+clang-format-validate:
+  stage: validate
+  script:
+    - for f in $(find src -name '*.cpp' -or -name '*.h'); do clang-format --dry-run --Werror --style=file $f; done;
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
