@@ -37,6 +37,8 @@ test-job:
   stage: test
   script:
     - ctest --test-dir cmake-build-debug
+  dependencies:
+    - build-job
   artifacts:
     paths:
       - cmake-build-debug/surviving-sarntal
