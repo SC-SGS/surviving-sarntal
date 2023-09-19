@@ -19,6 +19,7 @@
 stages:          # List of stages for jobs, and their order of execution
   - validate
   - build
+  - test
 
 
 clang-format-validate:
@@ -31,9 +32,15 @@ build-job:       # This job runs in the build stage, which runs first.
   script:
     - cmake -S . -B cmake-build-debug
     - cmake --build cmake-build-debug
+
+test-job:
+  stage: test
+  script:
+    - ctest --test-dir cmake-build-debug
   artifacts:
     paths:
       - cmake-build-debug/surviving-sarntal
+
 
 #unit-test-job:   # This job runs in the test stage.
 #  stage: test    # It only starts when the job in the build stage completes successfully.
