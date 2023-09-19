@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
+
 include(FetchContent)
+include(ClangFormat)
+
 
 project(surviving-sarntal)
 
@@ -12,6 +16,8 @@ file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
 add_executable(surviving-sarntal ${SRC})
 
 target_compile_features(surviving-sarntal PUBLIC cxx_std_17)
+
+target_clangformat_setup(surviving-sarntal)
 
 target_link_libraries(surviving-sarntal PRIVATE flecs::flecs_static)
 target_link_libraries(surviving-sarntal PRIVATE raylib)
