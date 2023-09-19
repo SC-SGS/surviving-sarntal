@@ -13,5 +13,5 @@ add_executable(surviving-sarntal ${SRC})
 
 target_compile_features(surviving-sarntal PUBLIC cxx_std_17)
 
-target_link_libraries(surviving-sarntal PRIVATE flecs::flecs flecs::flecs_static)
+target_link_libraries(surviving-sarntal PRIVATE flecs::flecs_static)
 target_link_libraries(surviving-sarntal PRIVATE raylib)
