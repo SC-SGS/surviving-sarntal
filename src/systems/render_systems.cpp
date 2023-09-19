@@ -5,8 +5,22 @@
 
 void window_prepare_drawing_system(flecs::iter) { ClearBackground(WHITE); }
 
+const int screenWidth = 800;
+const int screenHeight = 450;
+
 void toggle_fullscreen_system(flecs::iter) {
     if (IsKeyPressed(KEY_F11)) {
+        int display = GetCurrentMonitor();
+        if (IsWindowFullscreen()) {
+            // if we are full screen, then go back to the windowed size
+            SetWindowSize(screenWidth, screenHeight);
+        } else {
+            // if we are not full screen, set the window size to match the
+            // monitor we are on
+            SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+        }
+
+        // toggle the state
         ToggleFullscreen();
     }
 }
@@ -14,6 +28,9 @@ void toggle_fullscreen_system(flecs::iter) {
 void update_window(flecs::iter) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
+
+    DrawLine(-100, -100, 100, 100, GREEN);
+
     DrawText("Congrats! You created your first window!", 190, 200, 20,
              LIGHTGRAY);
     EndDrawing();
@@ -28,8 +45,9 @@ RenderSystems::RenderSystems(flecs::world &world) {
 }
 
 void main_loop(flecs::world &world) {
-    InitWindow(100, 100, WINDOW_NAME);
+    InitWindow(screenWidth, screenHeight, WINDOW_NAME);
     SetTargetFPS(60);
+
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         world.progress(dt);
