@@ -3,10 +3,21 @@
 #include "flecs.h"
 #include "string"
 
-constexpr char WINDOW_NAME[] = "Surviving Sarntal";
+namespace graphics {
+    constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 
-struct RenderSystems {
-    explicit RenderSystems(flecs::world &world);
-};
+    struct RenderSystems {
+        explicit RenderSystems(flecs::world &world);
 
-void main_loop(flecs::world &world);
+        ~RenderSystems();
+
+        void init();
+
+        void destroy();
+
+    };
+
+    
+
+}
+
