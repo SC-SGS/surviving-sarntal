@@ -26,15 +26,12 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-
 Vector2 points[] = {
     {50, 190},  {100, 110}, {150, 200}, {200, 100},
     {250, 130}, {300, 210}, {350, 90},  {400, 150},
 };
 
-
-
-void render_system(flecs::iter& iter) {
+void render_system(flecs::iter &iter) {
     auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -86,8 +83,8 @@ void render_system(flecs::iter& iter) {
                 debugCamera.rotation++;
         }
 
-        auto interval = world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
-
+        auto interval =
+            world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
         BeginDrawing();
         {
@@ -111,50 +108,58 @@ void render_system(flecs::iter& iter) {
                 for (int i = interval.start_index; i < interval.end_index;
                      i++) {
 
-                    Vector2 control_point_0{mountain->getVertex(i).x, mountain->getVertex(i).y};
-                    Vector2 control_point_1{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
-                    Vector2 control_point_2{mountain->getVertex(i).x, mountain->getVertex(i).y};
-                    Vector2 control_point_3{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
+                    Vector2 control_point_0{mountain->getVertex(i).x,
+                                            mountain->getVertex(i).y};
+                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
+                                            mountain->getVertex(i + 1).y};
+                    Vector2 control_point_2{mountain->getVertex(i).x,
+                                            mountain->getVertex(i).y};
+                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
+                                            mountain->getVertex(i + 1).y};
 
-                    DrawLineBezierCubic(control_point_0, control_point_1, control_point_2,
-                                        control_point_3, 5, RED);
+                    DrawLineBezierCubic(control_point_0, control_point_1,
+                                        control_point_2, control_point_3, 5,
+                                        RED);
                 }
 
                 // Draw the control points and lines
                 if (DEBUG) {
                     for (int i = interval.start_index; i < interval.end_index;
-                        i++) {
-                        Vector2 point = {mountain->getVertex(i).x, mountain->getVertex(i).y};
+                         i++) {
+                        Vector2 point = {mountain->getVertex(i).x,
+                                         mountain->getVertex(i).y};
 
                         DrawCircleV(point, 5,
-                            BLUE); // Draw control points as circles
+                                    BLUE); // Draw control points as circles
                     }
                 }
 
-            flecs::filter<Position, SpriteComponent> q =
-                world.filter<Position, SpriteComponent>();
+                flecs::filter<Position, SpriteComponent> q =
+                    world.filter<Position, SpriteComponent>();
 
-            q.each([&](Position &p, SpriteComponent &s) {
-                if (s.resourceHandle != NULL_HANDLE) {
-                    auto texture = world.get_mut<Resources>()->textures.Get(
-                        s.resourceHandle);
+                q.each([&](Position &p, SpriteComponent &s) {
+                    if (s.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.Get(
+                            s.resourceHandle);
 
-                    Rectangle sourceRec = {
-                        0.0f, 0.0f, (float)texture.width,
-                        (float)texture.height}; // part of the texture used
+                        Rectangle sourceRec = {
+                            0.0f, 0.0f, (float)texture.width,
+                            (float)texture.height}; // part of the texture used
 
-                    Rectangle destRec = {p.x, p.y, static_cast<float>(s.width),
-                                         static_cast<float>(s.height)}; // where to draw texture
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(s.width),
+                            static_cast<float>(
+                                s.height)}; // where to draw texture
 
-                    DrawTexturePro(
-                        texture, sourceRec, destRec,
-                        {(float)texture.width, (float)texture.height}, 0,
-                        WHITE);
-                }
-            });
+                        DrawTexturePro(
+                            texture, sourceRec, destRec,
+                            {(float)texture.width, (float)texture.height}, 0,
+                            WHITE);
+                    }
+                });
 
-            rotation++;
-        }
+                rotation++;
+            }
 
             EndMode2D();
         }
@@ -193,14 +198,15 @@ void init_render_system(flecs::world &world) {
     Image verticalGradient =
         GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
-    //world.get_mut<Resources>()->textures.Load;
+    // world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
     auto test_e = world.entity("TestEntity")
                       .set([&](SpriteComponent &c) {
                           c = {0};
-                          c.resourceHandle = world.get_mut<Resources>()->textures.Load(
-                              LoadTextureFromImage(verticalGradient));
+                          c.resourceHandle =
+                              world.get_mut<Resources>()->textures.Load(
+                                  LoadTextureFromImage(verticalGradient));
                           c.width = 100;
                           c.height = 100;
                       })

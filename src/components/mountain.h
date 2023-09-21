@@ -71,10 +71,11 @@ class Mountain {
     Position getVertex(size_t index);
 
     /**
-     * You can access all the points currently being held in the mountain datastructure
-     * via mountain.getVertice(a) with a in [indexInterval.start_index, indexInterval.end_index)
-     * example: the indexInterval goes from 2 to 23. Now you need to access all the
-     * points with the indices from 2 to 22
+     * You can access all the points currently being held in the mountain
+     * datastructure via mountain.getVertice(a) with a in
+     * [indexInterval.start_index, indexInterval.end_index) example: the
+     * indexInterval goes from 2 to 23. Now you need to access all the points
+     * with the indices from 2 to 22
      * @return
      */
     IndexInterval getIndexIntervalOfEntireMountain();

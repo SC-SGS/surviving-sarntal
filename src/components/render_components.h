@@ -10,7 +10,6 @@ struct SpriteComponent {
     HANDLE resourceHandle;
 };
 
-
 struct AnimatedSpriteComponent {
     HANDLE resourceHandle;
     HANDLE currentFrame;
