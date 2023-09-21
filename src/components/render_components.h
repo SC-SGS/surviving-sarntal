@@ -16,6 +16,6 @@ namespace graphics {
         int resourceHandle;
     };
 
-    typedef Camera2DComponent Camera2D;
+    typedef Camera2D Camera2DComponent;
 
 }

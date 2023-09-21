@@ -11,7 +11,7 @@ namespace graphics {
 
         ~RenderSystems();
 
-        void init();
+        void init(flecs::world &world);
 
         void destroy();
 
