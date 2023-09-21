@@ -30,8 +30,7 @@ Vector2 points[] = {
 
 Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; };
 
-
-void render_system(flecs::iter& iter) {
+void render_system(flecs::iter &iter) {
     auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -78,14 +77,15 @@ void render_system(flecs::iter& iter) {
             // loor for all
 
             for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1; i++) {
-                DrawLineBezierCubic(points[i], points[i + 1], points[i], points[i + 1],
-                                    5, RED);
+                DrawLineBezierCubic(points[i], points[i + 1], points[i],
+                                    points[i + 1], 5, RED);
             }
 
             // Draw the control points and lines
             if (DEBUG) {
                 for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++) {
-                    DrawCircleV(points[i], 5, BLUE); // Draw control points as circles
+                    DrawCircleV(points[i], 5,
+                                BLUE); // Draw control points as circles
                 }
             }
 
