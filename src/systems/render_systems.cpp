@@ -41,7 +41,11 @@ void render_sytem(flecs::iter iter) {
         ToggleFullscreen();
     }
     if (WindowShouldClose()) {
-        // world.set<AppInfo>();
+        // switch Appinfo isRunning to false;
+        auto info = world.get<AppInfo>();
+        AppInfo info_ = *info;
+        info_.isRunning = false;
+        world.set<AppInfo>(info_);
     }
 
     BeginDrawing();
