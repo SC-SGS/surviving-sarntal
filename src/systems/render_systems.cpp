@@ -11,9 +11,8 @@ const int screenWidth = 800;
 const int screenHeight = 450;
 
 Texture2D gradientTex;
-Texture2D spriteTex;
-Rectangle sourceRec;
-Rectangle destRec;
+HANDLE spriteTex;
+
 int rotation = 0;
 
 void regenerateGradientTexture(int screenW, int screenH) {
@@ -23,7 +22,7 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-void render_system(flecs::iter& iter) {
+void render_system(flecs::iter &iter) {
     auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -67,11 +66,27 @@ void render_system(flecs::iter& iter) {
 
             // loop for all sprites (sprite component + transform compoenent)
 
-            // loor for all
+            flecs::filter<Position, SpriteComponent> q =
+                world.filter<Position, SpriteComponent>();
 
-            DrawTexturePro(spriteTex, sourceRec, destRec,
-                           {(float)spriteTex.width, (float)spriteTex.height},
-                           rotation, WHITE);
+            q.each([](Position &p, SpriteComponent &s) {
+                if (s.resourceHandle != NULL_HANDLE) {
+                    auto texture = graphics::res.textures.Get(s.resourceHandle);
+
+                    Rectangle sourceRec = {
+                        0.0f, 0.0f, (float)texture.width,
+                        (float)texture.height}; // part of the texture used
+
+                    Rectangle destRec = {p.x, p.y, s.width,
+                                         s.height}; // where to draw texture
+
+                    DrawTexturePro(
+                        texture, sourceRec, destRec,
+                        {(float)texture.width, (float)texture.height}, 0,
+                        WHITE);
+                }
+            });
+
             rotation++;
         }
 
@@ -97,17 +112,27 @@ void init_render_system(flecs::world &world) {
     world.system().kind(flecs::PostUpdate).iter(render_system);
 
     // add the resource manager
-    // world.set<Resources>({});
+    world.set<Resources>({});
 
     // misc
     regenerateGradientTexture(screenWidth, screenHeight);
     Image verticalGradient =
         GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
-    spriteTex = LoadTextureFromImage(verticalGradient);
-    sourceRec = {0.0f, 0.0f, (float)spriteTex.width,
-                 (float)spriteTex.height}; // part of the texture used
-    destRec = {screenWidth / 2.0f, screenHeight / 2.0f, spriteTex.width * 2.0f,
-               spriteTex.height * 2.0f}; // where to draw texture
+    // spriteTex = LoadTextureFromImage(verticalGradient);
+
+    // add the camera entity here for now
+    auto test_e = world.entity("TestEntity")
+                      .set([&](SpriteComponent &c) {
+                          c = {0};
+                          c.resourceHandle = graphics::res.textures.Load(
+                              LoadTextureFromImage(verticalGradient));
+                          c.width = 100;
+                          c.height = 100;
+                      })
+                      .set(([&](Position &c) {
+                          c.x = 0;
+                          c.y = 0;
+                      }));
 }
 
 void destroy() {

@@ -9,28 +9,40 @@ namespace graphics {
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
+// TODO, do not use yet
 template <typename T> class ResourceManager {
 
   public:
     HANDLE Load(std::string_view path) {
         bool found = false;
-        if (found) {
-            HANDLE handle = hash(path);
+        HANDLE hash = std::hash(path);
+        auto it = res.find(hash);
 
-            Texture2D texture = LoadTexture(path);
-            res.insert(handle, texture);
-            return handle;
+        if (it != res.end()) {
+            // found
+            return hash;
         } else {
-            return NULL_HANDLE;
+            // not found, create new
+            return Load(LoadTexture(path));
         }
     }
 
-    T Get(HANDLE handle) {
+    HANDLE Load(Texture2D texture) {
+
+        HANDLE handle = rand();
+        // todo check for collisions
+
+        res.insert({handle, texture});
+        return handle;
+    }
+
+    T Get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
-            return *it;
+            return it->second;
         } else {
-            return NULL_HANDLE;
+            return T(); // TODO handle invalid handle, return placeholder / null
+                        // resource
         }
     }
 
@@ -45,8 +57,10 @@ template <typename T> class ResourceManager {
     std::unordered_map<HANDLE, T> res;
 };
 
-class Resources {
+struct Resources {
     ResourceManager<Texture2D> textures;
 };
+
+Resources res;
 
 } // namespace graphics
