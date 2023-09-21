@@ -3,30 +3,40 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include "particle_state.h"
 
-const float MOUNTAIN_WIDTH{
-    100.}; // width covered by mountain generated at one point in time
-const float SECTION_WIDTH{0.5};
-const std::size_t NUMBER_OF_FIXPOINTS{
-    200}; // number_of_fixpoints = (size_t) std::ceil(mountain_width /
-          // section_width), manually adjust that if needed
-const float CHUNK_WIDTH{5.};
+/**
+ * Number of Vertices explicitely stored by the mountain data structure
+ */
+constexpr std::size_t NUMBER_OF_VERTICES{200};
 
-const float SLOPE{0.5}; // steepness of ramp generated in prototype
+/**
+ * width covered by mountain generated at one point in time
+ */
+constexpr float MOUNTAIN_WIDTH{100.};
 
-struct Position {
-    float x;
-    float y;
-};
+/**
+ * distance between two points of mountain
+ */
+constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH/NUMBER_OF_VERTICES};
+
+constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
+
+constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK*SECTION_WIDTH};
+
+/**
+ * steepness of ramp generated in prototype
+ */
+constexpr float SLOPE{0.5};
 
 struct IndexInterval {
-    std::size_t start_indice;
-    std::size_t end_indice;
+    std::size_t start_index;
+    std::size_t end_index;
 };
 
 class Mountain {
   private:
-    std::array<Position, NUMBER_OF_FIXPOINTS>
+    std::array<Position, NUMBER_OF_VERTICES>
         landscape_fixpoints_circular_array{};
     std::size_t start_of_circular_array{0};
 
@@ -40,6 +50,9 @@ class Mountain {
      */
     void generateNewChunk();
 
+    /**
+    * Temporary helper function, do not touch
+    */
     void printTempDebugInfo();
 
     /**
@@ -48,8 +61,8 @@ class Mountain {
      * 21, 22 and 23 (You DON'T need 24.)
      * @param min_x The leftmost x-coord relevant to you
      * @param max_x The rightmost x-coord relevant to you
-     * @return Returns start_indice and end_indice of the section from min_x to
-     * max_x INCLUDING start_indice and EXCLUDING end_indice;
+     * @return Returns start_index and end_index of the section from min_x to
+     * max_x INCLUDING start_index and EXCLUDING end_index;
      */
     IndexInterval getRelevantMountainSection(float min_x, float max_x);
 
@@ -58,12 +71,12 @@ class Mountain {
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getFixpoint(size_t index);
+    Position getVertice(size_t index);
 
     /**
-     * @return Returns start_indice and end_indice of the latest generated
+     * @return Returns start_index and end_index of the latest generated
      * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
-     * can access the points via the getFixpoint-function.
+     * can access the points via the getVertice-function.
      */
     IndexInterval getLatestChunk();
 };

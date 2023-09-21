@@ -1,4 +1,4 @@
-#include "entities/mountain.h"
+#include "components/mountain.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
