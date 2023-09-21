@@ -7,6 +7,10 @@ include(ClangFormat)
 
 project(surviving-sarntal)
 
+add_library(raygui INTERFACE)
+target_include_directories(raygui INTERFACE libs/raygui)
+
+
 FetchContent_Declare(flecs URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/flecs-3.2.7.tar.gz)
 FetchContent_MakeAvailable(flecs)
 FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.tar.gz)
@@ -15,14 +19,22 @@ FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-
 FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
-add_executable(surviving-sarntal ${SRC})
+list(FILTER SRC EXCLUDE REGEX "main.cpp")
+#now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
+add_library(surviving-sarntal-library ${SRC})
+#now all those files get made into one library callled surviving-sarntal-library
+#message(WARNING ${SRC})    #for CMAKE debugging purposes
+add_executable(surviving-sarntal "src/main.cpp")
+#add main.cpp to surviving-sarntal executable
 
-target_compile_features(surviving-sarntal PUBLIC cxx_std_17)
+target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
 
-target_clangformat_setup(surviving-sarntal)
+target_clangformat_setup(surviving-sarntal-library)
 
-target_link_libraries(surviving-sarntal PRIVATE flecs::flecs_static)
-target_link_libraries(surviving-sarntal PRIVATE raylib)
+target_link_libraries(surviving-sarntal-library PUBLIC flecs::flecs_static raylib raygui)
+#link some libraries to the surviving-sarntal-library that we are defining atm
+target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
+#link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
 
 enable_testing()
 
@@ -31,10 +43,13 @@ add_executable(
         main_test
         ${TEST_SRC}
 )
+target_include_directories(main_test PUBLIC ".")
 target_link_libraries(
         main_test
         GTest::gtest_main
+        surviving-sarntal-library
 )
+#use surviving-sarntal-library for tests aswell. this way all the src-files only have to be compiled once instead of compiling it for the main executable and the tests
 
 include(GoogleTest)
 gtest_discover_tests(main_test)
