@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.20)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
+#set(CMAKE_CXX_CLANG_TIDY
+#        clang-tidy-18;
+#        -format-style='file';
+#        -header-filter=${CMAKE_SOURCE_DIR}/src;
+#        -extra-arg=-std=c++17;
+#)
+
 include(FetchContent)
 include(ClangFormat)
 
