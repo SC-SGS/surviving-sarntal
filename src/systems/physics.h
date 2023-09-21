@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../components/particle_state.h"
-#include "../entities/mountain.h"
+#include "../components/mountain.h"
 #include "flecs.h"
 
 struct PhysicSystems {
@@ -86,7 +86,7 @@ class RockTools {
      * TODO: add noise for later
      * @return normal_vector_x, normal_vector_y
      */
-    Position getNormal();
+    Position getNormal(std::size_t idx, Position rock_pos, Mountain &m);
 
     /**
      * Reset the rock to be outside of the terrain and reflect the velocity
