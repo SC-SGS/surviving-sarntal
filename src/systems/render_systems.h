@@ -11,7 +11,7 @@ struct RenderSystems {
 
     ~RenderSystems();
 
-    void init();
+    void init(flecs::world &world);
 
     void destroy();
 };

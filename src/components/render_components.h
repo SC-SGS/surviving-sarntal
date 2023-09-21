@@ -16,6 +16,6 @@ struct ChunkRenderComponent {
     int resourceHandle;
 };
 
-typedef Camera2DComponent Camera2D;
+typedef Camera2D Camera2DComponent;
 
 } // namespace graphics

@@ -1,9 +1,8 @@
 #include "render_systems.h"
+#include "../components/render_components.h"
 #include "flecs.h"
-#include "raygui.h"
 #include "raylib.h"
 #include <iostream>
-#define RAYGUI_IMPLEMENTATION
 
 namespace graphics {
 
@@ -11,7 +10,6 @@ namespace graphics {
 
 const int screenWidth = 800;
 const int screenHeight = 450;
-
 // void toggle_fullscreen_system(flecs::iter) {
 //
 // }
@@ -24,7 +22,7 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-void render_sytem(flecs::iter) {
+void render_sytem(flecs::iter iter) {
     if (IsKeyPressed(KEY_F11)) {
         int display = GetCurrentMonitor();
         if (!IsWindowFullscreen()) {
@@ -49,10 +47,23 @@ void render_sytem(flecs::iter) {
     ClearBackground(BLUE);
 
     DrawTexture(gradientTex, 0, 0, WHITE);
-    DrawLine(-100, -100, 100, 100, GREEN);
+    // DrawLine(-100, -100, 100, 100, GREEN);
 
     DrawText("Congrats! You created your first window!", 190, 200, 20,
              LIGHTGRAY);
+
+    auto world = iter.world();
+    /* auto cameras = world.filter_builder<Camera2DComponent>().build();
+    auto camera = cameras.first();*/
+
+    auto camera = iter.world().lookup("Camera");
+
+    // BeginMode2D(camera);
+    //// DrawLine(-100, -100, 100, 100, GREEN);
+    // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
+    //          -screenHeight * 10, GREEN);
+    ////DrawRectangleRec(player, RED);
+    // EndMode2D();
 
     // loop for all sprites (sprite component + transform compoenent)
 
@@ -68,11 +79,29 @@ RenderSystems::RenderSystems(flecs::world &world) {
     // world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
     world.system().kind(flecs::PostUpdate).iter(render_sytem);
 
-    init();
+    init(world);
 }
 
-void RenderSystems::init() {
+void RenderSystems::init(flecs::world &world) {
     InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+    /*
+    auto camera = world.entity().set([](Camera2DComponent &c) {
+        c = {0};
+        c.target = {0.0f, 0.0f};
+        c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+        c.rotation = 0.0f;
+        c.zoom = 1.0f;
+        });*/
+    auto camera = world.entity("Camera");
+    auto c = world.lookup("Camera");
+
+    /*Camera2DComponent c = {0};
+    c.target = {0.0, 0.0,};
+    c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+    c.rotation = 0.0f;
+    c.zoom = 1.0f;
+
+    camera.set(c);*/
 
     regenerateGradientTexture(screenWidth, screenHeight);
 }
