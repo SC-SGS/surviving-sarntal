@@ -41,22 +41,22 @@ void Mountain::printTempDebugInfo() {
 
 Position Mountain::getFixpoint(size_t index) {
     return landscape_fixpoints_circular_array
-    [(index + start_of_circular_array) %
-     landscape_fixpoints_circular_array.size()];
+        [(index + start_of_circular_array) %
+         landscape_fixpoints_circular_array.size()];
 }
 
 IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
     float leftmost_x = getFixpoint(0).x;
     IndexInterval returnvalue;
     returnvalue.start_indice =
-            (std::size_t) std::floor((min_x - leftmost_x) / SECTION_WIDTH);
+        (std::size_t)std::floor((min_x - leftmost_x) / SECTION_WIDTH);
     returnvalue.end_indice =
-            (std::size_t) (std::ceil((max_x - leftmost_x) / SECTION_WIDTH) + 1);
+        (std::size_t)(std::ceil((max_x - leftmost_x) / SECTION_WIDTH) + 1);
     return returnvalue;
 }
 
 void Mountain::generateNewChunk() {
-    int num_points_to_generate = (int) (std::round(CHUNK_WIDTH / SECTION_WIDTH));
+    int num_points_to_generate = (int)(std::round(CHUNK_WIDTH / SECTION_WIDTH));
 
     float current_x{getFixpoint(NUMBER_OF_FIXPOINTS - 1).x};
     float current_y{getFixpoint(NUMBER_OF_FIXPOINTS - 1).y};
@@ -65,11 +65,11 @@ void Mountain::generateNewChunk() {
         current_y += SECTION_WIDTH * SLOPE;
         landscape_fixpoints_circular_array[(start_of_circular_array + i) %
                                            landscape_fixpoints_circular_array
-                                                   .size()] =
-                Position{current_x, current_y};
+                                               .size()] =
+            Position{current_x, current_y};
     }
 
     start_of_circular_array =
-            (start_of_circular_array + num_points_to_generate) %
-            landscape_fixpoints_circular_array.size();
+        (start_of_circular_array + num_points_to_generate) %
+        landscape_fixpoints_circular_array.size();
 }
