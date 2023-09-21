@@ -7,6 +7,10 @@ include(ClangFormat)
 
 project(surviving-sarntal)
 
+add_library(raygui INTERFACE)
+target_include_directories(raygui INTERFACE libs/raygui)
+
+
 FetchContent_Declare(flecs URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/flecs-3.2.7.tar.gz)
 FetchContent_MakeAvailable(flecs)
 FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.tar.gz)
@@ -23,6 +27,7 @@ target_clangformat_setup(surviving-sarntal)
 
 target_link_libraries(surviving-sarntal PRIVATE flecs::flecs_static)
 target_link_libraries(surviving-sarntal PRIVATE raylib)
+target_link_libraries(surviving-sarntal PRIVATE raygui)
 
 enable_testing()
 
