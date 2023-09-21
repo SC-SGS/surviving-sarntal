@@ -23,8 +23,8 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-void render_system(flecs::iter iter) {
-    auto &world = iter.world();
+void render_system(flecs::iter& iter) {
+    auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
         int display = GetCurrentMonitor();
