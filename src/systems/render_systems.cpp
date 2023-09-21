@@ -15,6 +15,9 @@ HANDLE spriteTex;
 
 int rotation = 0;
 
+bool useDebugCamera;
+Camera2D debugCamera;
+
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -22,7 +25,12 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-void render_system(flecs::iter &iter) {
+Vector2 points[] = {
+    {50, 190},  {100, 110}, {150, 200}, {200, 100},
+    {250, 130}, {300, 210}, {350, 90},  {400, 150},
+};
+
+void render_system(flecs::iter& iter) {
     auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -50,21 +58,63 @@ void render_system(flecs::iter &iter) {
         info->isRunning = false;
     }
 
+    if (IsKeyPressed(KEY_P)) {
+        useDebugCamera = !useDebugCamera;
+    }
+
     auto camera_entity = world.lookup("Camera");
     if (camera_entity.is_valid()) {
-        auto camera = camera_entity.get<Camera2DComponent>();
+        auto camera = camera_entity.get_mut<Camera2DComponent>();
+
+        if (useDebugCamera) {
+            if (IsKeyDown(KEY_D))
+                debugCamera.target.x += 2;
+            else if (IsKeyDown(KEY_A))
+                debugCamera.target.x -= 2;
+            else if (IsKeyDown(KEY_S))
+                debugCamera.target.y += 2;
+            else if (IsKeyDown(KEY_W))
+                debugCamera.target.y -= 2;
+
+            if (IsKeyDown(KEY_LEFT))
+                debugCamera.rotation--;
+            else if (IsKeyDown(KEY_RIGHT))
+                debugCamera.rotation++;
+        }
 
         BeginDrawing();
-        ClearBackground(BLUE);
-
-        BeginMode2D(*camera);
         {
+            ClearBackground(BLUE);
             DrawTexture(gradientTex, 0, 0, WHITE);
+            
+            if (useDebugCamera) {
+                BeginMode2D(debugCamera);
+            } else {
+                BeginMode2D(*camera);
+            }
+            {
+                // DrawText("Congrats! You created your first window!", 190,
+                // 200, 20, LIGHTGRAY);
 
-            // DrawText("Congrats! You created your first window!", 190, 200,
-            // 20, LIGHTGRAY);
+                // loop for all sprites (sprite component + transform
+                // compoenent)
 
-            // loop for all sprites (sprite component + transform compoenent)
+                // loor for all
+
+                for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1;
+                     i++) {
+                    DrawLineBezierCubic(points[i], points[i + 1], points[i],
+                                        points[i + 1], 5, RED);
+                }
+
+                // Draw the control points and lines
+                if (DEBUG) {
+                    for (int i = 0; i < sizeof(points) / sizeof(points[0]);
+                        i++) {
+                        DrawCircleV(points[i], 5,
+                            BLUE); // Draw control points as circles
+                    }
+                }
 
             flecs::filter<Position, SpriteComponent> q =
                 world.filter<Position, SpriteComponent>();
@@ -90,8 +140,8 @@ void render_system(flecs::iter &iter) {
             rotation++;
         }
 
-        EndMode2D();
-
+            EndMode2D();
+        }
         EndDrawing();
     }
 }
@@ -107,6 +157,14 @@ void init_render_system(flecs::world &world) {
         c.rotation = 0.0f;
         c.zoom = 1.0f;
     });
+
+    useDebugCamera = false;
+
+    debugCamera = {0};
+    debugCamera.target = {0.0f, 0.0f};
+    debugCamera.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+    debugCamera.rotation = 0.0f;
+    debugCamera.zoom = 1.0f;
 
     // add the render system
     world.system().kind(flecs::PostUpdate).iter(render_system);
