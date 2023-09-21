@@ -86,7 +86,7 @@ void render_system(flecs::iter& iter) {
         {
             ClearBackground(BLUE);
             DrawTexture(gradientTex, 0, 0, WHITE);
-            
+
             if (useDebugCamera) {
                 BeginMode2D(debugCamera);
             } else {
@@ -127,8 +127,8 @@ void render_system(flecs::iter& iter) {
                         0.0f, 0.0f, (float)texture.width,
                         (float)texture.height}; // part of the texture used
 
-                    Rectangle destRec = {p.x, p.y, s.width,
-                                         s.height}; // where to draw texture
+                    Rectangle destRec = {p.x, p.y, static_cast<float>(s.width),
+                                         static_cast<float>(s.height)}; // where to draw texture
 
                     DrawTexturePro(
                         texture, sourceRec, destRec,

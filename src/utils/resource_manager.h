@@ -61,6 +61,6 @@ struct Resources {
     ResourceManager<Texture2D> textures;
 };
 
-Resources res;
+static Resources res;
 
 } // namespace graphics
