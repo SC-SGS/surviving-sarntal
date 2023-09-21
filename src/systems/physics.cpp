@@ -58,7 +58,7 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
         }
     }
 
-    return ClosestVertex({(int)closest_index, closest_distance});
+    return ClosestVertex({closest_index, closest_distance});
 }
 
 Position RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {

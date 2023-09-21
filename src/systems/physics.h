@@ -9,7 +9,7 @@ struct PhysicSystems {
 };
 
 struct ClosestVertex {
-    int index;
+    std::size_t index;
     float distance;
 };
 
