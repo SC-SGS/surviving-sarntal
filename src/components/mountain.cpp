@@ -63,7 +63,7 @@ void Mountain::generateNewChunk() {
     for (int i = 0; i < num_points_to_generate; i++) {
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
-        landscape_fixpoints_circular_array[(index_rightest_vertice + i) %
+        landscape_fixpoints_circular_array[(start_of_circular_array + i) %
                                            array_size] =
             Position{current_x, current_y};
     }
