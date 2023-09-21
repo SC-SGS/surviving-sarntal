@@ -5,29 +5,7 @@
 #include <vector>
 #include "particle_state.h"
 
-/**
- * Number of Vertices explicitely stored by the mountain data structure
- */
-constexpr std::size_t NUMBER_OF_VERTICES{200};
 
-/**
- * width covered by mountain generated at one point in time
- */
-constexpr float MOUNTAIN_WIDTH{100.};
-
-/**
- * distance between two points of mountain
- */
-constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH/NUMBER_OF_VERTICES};
-
-constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
-
-constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK*SECTION_WIDTH};
-
-/**
- * steepness of ramp generated in prototype
- */
-constexpr float SLOPE{0.5};
 
 struct IndexInterval {
     std::size_t start_index;
@@ -35,12 +13,31 @@ struct IndexInterval {
 };
 
 class Mountain {
-  private:
-    std::array<Position, NUMBER_OF_VERTICES>
-        landscape_fixpoints_circular_array{};
-    std::size_t start_of_circular_array{0};
-
   public:
+    /**
+ * Number of Vertices explicitely stored by the mountain data structure
+     */
+    static constexpr std::size_t NUMBER_OF_VERTICES{200};
+
+    /**
+ * width covered by mountain generated at one point in time
+     */
+    static constexpr float MOUNTAIN_WIDTH{100.};
+
+    /**
+    * distance between two points of mountain
+     */
+    static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH/NUMBER_OF_VERTICES};
+
+    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
+
+    static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK*SECTION_WIDTH};
+
+    /**
+    * steepness of ramp generated in prototype
+     */
+    static constexpr float SLOPE{0.5};
+
     Mountain();
 
     /**
@@ -79,4 +76,9 @@ class Mountain {
      * can access the points via the getVertice-function.
      */
     IndexInterval getLatestChunk();
+
+  private:
+    std::array<Position, NUMBER_OF_VERTICES>
+        landscape_fixpoints_circular_array{};
+    std::size_t start_of_circular_array{0};
 };
