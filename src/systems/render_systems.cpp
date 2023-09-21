@@ -1,4 +1,5 @@
 #include "render_systems.h"
+#include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "../components/render_components.h"
 // #include "../utils/resource_manager.h"
@@ -25,10 +26,13 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
+
 Vector2 points[] = {
     {50, 190},  {100, 110}, {150, 200}, {200, 100},
     {250, 130}, {300, 210}, {350, 90},  {400, 150},
 };
+
+
 
 void render_system(flecs::iter& iter) {
     auto world = iter.world();
@@ -82,6 +86,9 @@ void render_system(flecs::iter& iter) {
                 debugCamera.rotation++;
         }
 
+        auto interval = world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
+
+
         BeginDrawing();
         {
             ClearBackground(BLUE);
@@ -100,18 +107,26 @@ void render_system(flecs::iter& iter) {
                 // compoenent)
 
                 // loor for all
-
-                for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1;
+                auto mountain = world.get_mut<Mountain>();
+                for (int i = interval.start_index; i < interval.end_index;
                      i++) {
-                    DrawLineBezierCubic(points[i], points[i + 1], points[i],
-                                        points[i + 1], 5, RED);
+
+                    Vector2 control_point_0{mountain->getVertex(i).x, mountain->getVertex(i).y};
+                    Vector2 control_point_1{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
+                    Vector2 control_point_2{mountain->getVertex(i).x, mountain->getVertex(i).y};
+                    Vector2 control_point_3{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
+
+                    DrawLineBezierCubic(control_point_0, control_point_1, control_point_2,
+                                        control_point_3, 5, RED);
                 }
 
                 // Draw the control points and lines
                 if (DEBUG) {
-                    for (int i = 0; i < sizeof(points) / sizeof(points[0]);
+                    for (int i = interval.start_index; i < interval.end_index;
                         i++) {
-                        DrawCircleV(points[i], 5,
+                        Vector2 point = {mountain->getVertex(i).x, mountain->getVertex(i).y};
+
+                        DrawCircleV(point, 5,
                             BLUE); // Draw control points as circles
                     }
                 }
