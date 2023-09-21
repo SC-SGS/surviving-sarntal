@@ -20,13 +20,13 @@ void Mountain::printTempDebugInfo() {
     IndexInterval testInterval{getRelevantMountainSection(10.2, 13.6)};
     std::cout << "Mountain test indices: " << testInterval.start_index << ", "
               << testInterval.end_index << std::endl;
-    std::cout << "left point coords: " << getVertice(testInterval.start_index).x
-              << ", " << getVertice(testInterval.start_index).y << std::endl;
-    std::cout << "right point coords: " << getVertice(testInterval.end_index).x
-              << ", " << getVertice(testInterval.end_index).y << std::endl;
+    std::cout << "left point coords: " << getVertex(testInterval.start_index).x
+              << ", " << getVertex(testInterval.start_index).y << std::endl;
+    std::cout << "right point coords: " << getVertex(testInterval.end_index).x
+              << ", " << getVertex(testInterval.end_index).y << std::endl;
 }
 
-Position Mountain::getVertice(size_t index) {
+Position Mountain::getVertex(size_t index) {
     return landscape_fixpoints_circular_array[index % NUMBER_OF_VERTICES];
     /*[(index + start_of_circular_array) %
      landscape_fixpoints_circular_array.size()];*/
@@ -58,8 +58,8 @@ void Mountain::generateNewChunk() {
     const std::size_t index_rightest_vertice =
         (start_of_circular_array + array_size - 1) % array_size;
 
-    float current_x{getVertice(index_rightest_vertice).x};
-    float current_y{getVertice(index_rightest_vertice).y};
+    float current_x{getVertex(index_rightest_vertice).x};
+    float current_y{getVertex(index_rightest_vertice).y};
     for (int i = 0; i < num_points_to_generate; i++) {
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
@@ -76,4 +76,5 @@ IndexInterval Mountain::getIndexIntervalOfEntireMountain(){
     IndexInterval returnvalue;
     returnvalue.start_index = start_of_circular_array;
     returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
+    return returnvalue;
 }
