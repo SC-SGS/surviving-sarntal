@@ -5,8 +5,6 @@
 #include <vector>
 #include "particle_state.h"
 
-
-
 struct IndexInterval {
     std::size_t start_index;
     std::size_t end_index;

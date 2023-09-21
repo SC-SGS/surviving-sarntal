@@ -19,15 +19,17 @@ FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-
 FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
-add_executable(surviving-sarntal ${SRC})
+list(FILTER SRC EXCLUDE REGEX "main.cpp")
+add_library(surviving-sarntal-library ${SRC})
+#message(WARNING ${SRC})
+add_executable(surviving-sarntal "src/main.cpp")
 
-target_compile_features(surviving-sarntal PUBLIC cxx_std_17)
+target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
 
-target_clangformat_setup(surviving-sarntal)
+target_clangformat_setup(surviving-sarntal-library)
 
-target_link_libraries(surviving-sarntal PRIVATE flecs::flecs_static)
-target_link_libraries(surviving-sarntal PRIVATE raylib)
-target_link_libraries(surviving-sarntal PRIVATE raygui)
+target_link_libraries(surviving-sarntal-library PUBLIC flecs::flecs_static raylib raygui)
+target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 
 enable_testing()
 
@@ -36,9 +38,11 @@ add_executable(
         main_test
         ${TEST_SRC}
 )
+target_include_directories(main_test PUBLIC ".")
 target_link_libraries(
         main_test
         GTest::gtest_main
+        surviving-sarntal-library
 )
 
 include(GoogleTest)
