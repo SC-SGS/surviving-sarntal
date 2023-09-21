@@ -1,6 +1,7 @@
 #include "components/mountain.h"
 #include "raylib.h"
 #include "systems/game_logic.h"
+#include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
@@ -16,6 +17,7 @@ int main() {
     graphics::init_render_system(world);
 
     world.import <PhysicSystems>();
+    world.import <InputSystems>();
 
     initGameLogic(world);
 
