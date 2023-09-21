@@ -5,6 +5,7 @@
 
 namespace graphics {
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
+constexpr bool DEBUG = true;
 
 struct RenderSystems {
     explicit RenderSystems(flecs::world &world);

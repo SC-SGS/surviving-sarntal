@@ -1,18 +1,18 @@
 #include "render_systems.h"
+#include "../components/render_components.h"
 #include "flecs.h"
 #include "raylib.h"
 #include <iostream>
-#include "../components/render_components.h"
 
 namespace graphics {
 
 // void window_prepare_drawing_system(flecs::iter) { ClearBackground(WHITE); }
 
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-    //void toggle_fullscreen_system(flecs::iter) {
-    //    
-    //}
+const int screenWidth = 800;
+const int screenHeight = 450;
+// void toggle_fullscreen_system(flecs::iter) {
+//
+// }
 
 Texture2D gradientTex;
 void regenerateGradientTexture(int screenW, int screenH) {
@@ -22,13 +22,20 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-    void render_sytem(flecs::iter iter) {
-        if (IsKeyPressed(KEY_F11)) {
-            int display = GetCurrentMonitor();
-            if (!IsWindowFullscreen()) {
-                // if we are not full screen, set the window size to match the
-                // monitor we are on
-                SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+Vector2 points[] = {
+    {50, 190},  {100, 110}, {150, 200}, {200, 100},
+    {250, 130}, {300, 210}, {350, 90},  {400, 150},
+};
+
+Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; };
+
+void render_sytem(flecs::iter iter) {
+    if (IsKeyPressed(KEY_F11)) {
+        int display = GetCurrentMonitor();
+        if (!IsWindowFullscreen()) {
+            // if we are not full screen, set the window size to match the
+            // monitor we are on
+            SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
 
             regenerateGradientTexture(GetMonitorWidth(display),
                                       GetMonitorHeight(display));
@@ -46,27 +53,43 @@ void regenerateGradientTexture(int screenW, int screenH) {
     BeginDrawing();
     ClearBackground(BLUE);
 
-        DrawTexture(gradientTex, 0, 0, WHITE);
-        //DrawLine(-100, -100, 100, 100, GREEN);
+    DrawTexture(gradientTex, 0, 0, WHITE);
+    // DrawLine(-100, -100, 100, 100, GREEN);
 
-        DrawText("Congrats! You created your first window!", 190, 200, 20,
-                 LIGHTGRAY);
-        
+    // DrawLineStrip(points, sizeof(points)/sizeof(points[0]), RED);
+    //  There is no way to set the thickness for DrawLineStrip
 
-        auto world = iter.world();
-        /* auto cameras = world.filter_builder<Camera2DComponent>().build();
-        auto camera = cameras.first();*/
-        
-        auto camera = iter.world().lookup("Camera");
+    // DrawLineBezierCubic(points[0], points[1], points[2], points[3], 2, RED);
 
-        //BeginMode2D(camera);
-        //// DrawLine(-100, -100, 100, 100, GREEN);
-        //DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
-        //         -screenHeight * 10, GREEN);
-        ////DrawRectangleRec(player, RED);
-        //EndMode2D();
+    for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1; i++) {
+        DrawLineBezierCubic(points[i], points[i + 1], points[i], points[i + 1],
+                            5, RED);
+    }
 
-        // loop for all sprites (sprite component + transform compoenent)
+    // Draw the control points and lines
+    if (DEBUG) {
+        for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++) {
+            DrawCircleV(points[i], 5, BLUE); // Draw control points as circles
+        }
+    }
+
+    DrawText("Congrats! You created your first window!", 190, 200, 20,
+             LIGHTGRAY);
+
+    auto world = iter.world();
+    /* auto cameras = world.filter_builder<Camera2DComponent>().build();
+    auto camera = cameras.first();*/
+
+    auto camera = iter.world().lookup("Camera");
+
+    // BeginMode2D(camera);
+    //// DrawLine(-100, -100, 100, 100, GREEN);
+    // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
+    //          -screenHeight * 10, GREEN);
+    ////DrawRectangleRec(player, RED);
+    // EndMode2D();
+
+    // loop for all sprites (sprite component + transform compoenent)
 
     // loor for all
 
@@ -80,30 +103,29 @@ RenderSystems::RenderSystems(flecs::world &world) {
     // world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
     world.system().kind(flecs::PostUpdate).iter(render_sytem);
 
-        init(world);
+    init(world);
+}
 
-    }
-
-    void RenderSystems::init(flecs::world &world) {
-        InitWindow(screenWidth, screenHeight, WINDOW_NAME);
-        /*
-        auto camera = world.entity().set([](Camera2DComponent &c) { 
-            c = {0};
-            c.target = {0.0f, 0.0f};
-            c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
-            c.rotation = 0.0f;
-            c.zoom = 1.0f;
-            });*/
-        auto camera = world.entity("Camera");
-        auto c = world.lookup("Camera");
-
-        /*Camera2DComponent c = {0};
-        c.target = {0.0, 0.0,};
+void RenderSystems::init(flecs::world &world) {
+    InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+    /*
+    auto camera = world.entity().set([](Camera2DComponent &c) {
+        c = {0};
+        c.target = {0.0f, 0.0f};
         c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
         c.rotation = 0.0f;
         c.zoom = 1.0f;
+        });*/
+    auto camera = world.entity("Camera");
+    auto c = world.lookup("Camera");
 
-        camera.set(c);*/
+    /*Camera2DComponent c = {0};
+    c.target = {0.0, 0.0,};
+    c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+    c.rotation = 0.0f;
+    c.zoom = 1.0f;
+
+    camera.set(c);*/
 
     regenerateGradientTexture(screenWidth, screenHeight);
 }
