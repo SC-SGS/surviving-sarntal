@@ -5,15 +5,9 @@
 
 namespace graphics {
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
+constexpr bool DEBUG = true;
 
-struct RenderSystems {
-    explicit RenderSystems(flecs::world &world);
-
-    ~RenderSystems();
-
-        void init(flecs::world &world);
-
-    void destroy();
-};
-
+void init_render_system(flecs::world &world);
+void render_system(flecs::iter& iter);
+void destroy();
 } // namespace graphics

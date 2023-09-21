@@ -1,20 +1,21 @@
 #include "render_systems.h"
-#include "flecs.h"
-#include "raylib.h"
-#include <iostream>
+#include "../components/particle_state.h"
 #include "../components/render_components.h"
+// #include "../utils/resource_manager.h"
+#include "flecs.h"
+#include <iostream>
 
 namespace graphics {
 
-// void window_prepare_drawing_system(flecs::iter) { ClearBackground(WHITE); }
-
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-    //void toggle_fullscreen_system(flecs::iter) {
-    //
-    //}
+const int screenWidth = 800;
+const int screenHeight = 450;
 
 Texture2D gradientTex;
+Texture2D spriteTex;
+Rectangle sourceRec;
+Rectangle destRec;
+int rotation = 0;
+
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -22,13 +23,23 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-    void render_sytem(flecs::iter iter) {
-        if (IsKeyPressed(KEY_F11)) {
-            int display = GetCurrentMonitor();
-            if (!IsWindowFullscreen()) {
-                // if we are not full screen, set the window size to match the
-                // monitor we are on
-                SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+Vector2 points[] = {
+    {50, 190},  {100, 110}, {150, 200}, {200, 100},
+    {250, 130}, {300, 210}, {350, 90},  {400, 150},
+};
+
+Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; };
+
+
+void render_system(flecs::iter& iter) {
+    auto world = iter.world();
+
+    if (IsKeyPressed(KEY_F11)) {
+        int display = GetCurrentMonitor();
+        if (!IsWindowFullscreen()) {
+            // if we are not full screen, set the window size to match the
+            // monitor we are on
+            SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
 
             regenerateGradientTexture(GetMonitorWidth(display),
                                       GetMonitorHeight(display));
@@ -42,77 +53,86 @@ void regenerateGradientTexture(int screenW, int screenH) {
         // toggle the state
         ToggleFullscreen();
     }
-
-    BeginDrawing();
-    ClearBackground(BLUE);
-
-        DrawTexture(gradientTex, 0, 0, WHITE);
-        //DrawLine(-100, -100, 100, 100, GREEN);
-
-        DrawText("Congrats! You created your first window!", 190, 200, 20,
-                 LIGHTGRAY);
-
-
-        auto world = iter.world();
-        /* auto cameras = world.filter_builder<Camera2DComponent>().build();
-        auto camera = cameras.first();*/
-
-        auto camera = iter.world().lookup("Camera");
-
-        //BeginMode2D(camera);
-        //// DrawLine(-100, -100, 100, 100, GREEN);
-        //DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
-        //         -screenHeight * 10, GREEN);
-        ////DrawRectangleRec(player, RED);
-        //EndMode2D();
-
-        // loop for all sprites (sprite component + transform compoenent)
-
-    // loor for all
-
-    EndDrawing();
-}
-
-RenderSystems::RenderSystems(flecs::world &world) {
-    world.module<RenderSystems>();
-
-    // world.system().kind(flecs::PreUpdate).iter(window_prepare_drawing_system);
-    // world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
-    world.system().kind(flecs::PostUpdate).iter(render_sytem);
-
-        init(world);
-
+    if (WindowShouldClose()) {
+        // switch Appinfo isRunning to false;
+        auto info = world.get_mut<AppInfo>();
+        info->isRunning = false;
     }
 
-    void RenderSystems::init(flecs::world &world) {
-        InitWindow(screenWidth, screenHeight, WINDOW_NAME);
-        /*
-        auto camera = world.entity().set([](Camera2DComponent &c) {
-            c = {0};
-            c.target = {0.0f, 0.0f};
-            c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
-            c.rotation = 0.0f;
-            c.zoom = 1.0f;
-            });*/
-        auto camera = world.entity("Camera");
-        auto c = world.lookup("Camera");
+    auto camera_entity = world.lookup("Camera");
+    if (camera_entity.is_valid()) {
+        auto camera = camera_entity.get<Camera2DComponent>();
 
-        /*Camera2DComponent c = {0};
-        c.target = {0.0, 0.0,};
+        BeginDrawing();
+        ClearBackground(BLUE);
+
+        BeginMode2D(*camera);
+        {
+            DrawTexture(gradientTex, 0, 0, WHITE);
+
+            // DrawText("Congrats! You created your first window!", 190, 200,
+            // 20, LIGHTGRAY);
+
+            // loop for all sprites (sprite component + transform compoenent)
+
+            // loor for all
+
+            for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1; i++) {
+                DrawLineBezierCubic(points[i], points[i + 1], points[i], points[i + 1],
+                                    5, RED);
+            }
+
+            // Draw the control points and lines
+            if (DEBUG) {
+                for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++) {
+                    DrawCircleV(points[i], 5, BLUE); // Draw control points as circles
+                }
+            }
+
+            DrawTexturePro(spriteTex, sourceRec, destRec,
+                           {(float)spriteTex.width, (float)spriteTex.height},
+                           rotation, WHITE);
+            rotation++;
+        }
+
+        EndMode2D();
+
+        EndDrawing();
+    }
+}
+
+void init_render_system(flecs::world &world) {
+    InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+
+    // add the camera entity here for now
+    auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
+        c = {0};
+        c.target = {0.0f, 0.0f};
         c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
         c.rotation = 0.0f;
         c.zoom = 1.0f;
+    });
 
-        camera.set(c);*/
+    // add the render system
+    world.system().kind(flecs::PostUpdate).iter(render_system);
 
+    // add the resource manager
+    // world.set<Resources>({});
+
+    // misc
     regenerateGradientTexture(screenWidth, screenHeight);
+    Image verticalGradient =
+        GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
+    spriteTex = LoadTextureFromImage(verticalGradient);
+    sourceRec = {0.0f, 0.0f, (float)spriteTex.width,
+                 (float)spriteTex.height}; // part of the texture used
+    destRec = {screenWidth / 2.0f, screenHeight / 2.0f, spriteTex.width * 2.0f,
+               spriteTex.height * 2.0f}; // where to draw texture
 }
 
-void RenderSystems::destroy() {
+void destroy() {
     CloseWindow();
     UnloadTexture(gradientTex);
 }
-
-RenderSystems::~RenderSystems() { destroy(); }
 
 } // namespace graphics
