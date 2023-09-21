@@ -1,17 +1,18 @@
+#include "entities/mountain.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
-#include "raylib.h"
-#include "entities/mountain.h"
+#include <iostream>
 
 int main() {
     std::cout << "surviving sarntal" << std::endl;
 
-    flecs::world w;
+    flecs::world world;
 
     world.import <RenderSystems>();
     world.import <PhysicSystems>();
-    auto mountain_entity = world.entity().add<Mountain>();
+
+    world.set<Mountain>({});
 
     main_loop(world);
 }
