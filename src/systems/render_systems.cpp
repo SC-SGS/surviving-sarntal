@@ -11,7 +11,7 @@ namespace graphics {
     const int screenWidth = 800;
     const int screenHeight = 450;
     //void toggle_fullscreen_system(flecs::iter) {
-    //    
+    //
     //}
 
 Texture2D gradientTex;
@@ -51,12 +51,12 @@ void regenerateGradientTexture(int screenW, int screenH) {
 
         DrawText("Congrats! You created your first window!", 190, 200, 20,
                  LIGHTGRAY);
-        
+
 
         auto world = iter.world();
         /* auto cameras = world.filter_builder<Camera2DComponent>().build();
         auto camera = cameras.first();*/
-        
+
         auto camera = iter.world().lookup("Camera");
 
         //BeginMode2D(camera);
@@ -87,7 +87,7 @@ RenderSystems::RenderSystems(flecs::world &world) {
     void RenderSystems::init(flecs::world &world) {
         InitWindow(screenWidth, screenHeight, WINDOW_NAME);
         /*
-        auto camera = world.entity().set([](Camera2DComponent &c) { 
+        auto camera = world.entity().set([](Camera2DComponent &c) {
             c = {0};
             c.target = {0.0f, 0.0f};
             c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
