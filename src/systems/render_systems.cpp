@@ -3,91 +3,83 @@
 #include "raylib.h"
 #include <iostream>
 
-
 namespace graphics {
 
-    //void window_prepare_drawing_system(flecs::iter) { ClearBackground(WHITE); }
+// void window_prepare_drawing_system(flecs::iter) { ClearBackground(WHITE); }
 
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+const int screenWidth = 800;
+const int screenHeight = 450;
 
-    //void toggle_fullscreen_system(flecs::iter) {
-    //    
-    //}
+// void toggle_fullscreen_system(flecs::iter) {
+//
+// }
 
-    Texture2D gradientTex;
-    void regenerateGradientTexture(int screenW, int screenH) {
-        UnloadTexture(gradientTex); // TODO necessary?
-        Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
-        gradientTex = LoadTextureFromImage(verticalGradient);
-        UnloadImage(verticalGradient);
-    }
+Texture2D gradientTex;
+void regenerateGradientTexture(int screenW, int screenH) {
+    UnloadTexture(gradientTex); // TODO necessary?
+    Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
+    gradientTex = LoadTextureFromImage(verticalGradient);
+    UnloadImage(verticalGradient);
+}
 
-    void render_sytem(flecs::iter) {
-        if (IsKeyPressed(KEY_F11)) {
-            int display = GetCurrentMonitor();
-            if (!IsWindowFullscreen()) {
-                // if we are not full screen, set the window size to match the
-                // monitor we are on
-                SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+void render_sytem(flecs::iter) {
+    if (IsKeyPressed(KEY_F11)) {
+        int display = GetCurrentMonitor();
+        if (!IsWindowFullscreen()) {
+            // if we are not full screen, set the window size to match the
+            // monitor we are on
+            SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
 
-                regenerateGradientTexture(GetMonitorWidth(display),
-                                          GetMonitorHeight(display));
+            regenerateGradientTexture(GetMonitorWidth(display),
+                                      GetMonitorHeight(display));
 
-            } else {
-                // if we are full screen, then go back to the windowed size
-                SetWindowSize(screenWidth, screenHeight);
-                regenerateGradientTexture(screenWidth, screenHeight);
-            }
-
-            // toggle the state
-            ToggleFullscreen();
+        } else {
+            // if we are full screen, then go back to the windowed size
+            SetWindowSize(screenWidth, screenHeight);
+            regenerateGradientTexture(screenWidth, screenHeight);
         }
 
-        BeginDrawing();
-        ClearBackground(BLUE);
-
-        DrawTexture(gradientTex, 0, 0, WHITE);
-        DrawLine(-100, -100, 100, 100, GREEN);
-
-        DrawText("Congrats! You created your first window!", 190, 200, 20,
-                 LIGHTGRAY);
-
-        // loop for all sprites (sprite component + transform compoenent)
-
-        // loor for all 
-
-
-
-        EndDrawing();
+        // toggle the state
+        ToggleFullscreen();
     }
 
-    RenderSystems::RenderSystems(flecs::world &world) {
-        world.module<RenderSystems>();
+    BeginDrawing();
+    ClearBackground(BLUE);
 
-        //world.system().kind(flecs::PreUpdate).iter(window_prepare_drawing_system);
-        //world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
-        world.system().kind(flecs::PostUpdate).iter(render_sytem);
+    DrawTexture(gradientTex, 0, 0, WHITE);
+    DrawLine(-100, -100, 100, 100, GREEN);
 
-        init();
+    DrawText("Congrats! You created your first window!", 190, 200, 20,
+             LIGHTGRAY);
 
-    }
+    // loop for all sprites (sprite component + transform compoenent)
 
-    void RenderSystems::init() {
-        InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+    // loor for all
 
-        regenerateGradientTexture(screenWidth, screenHeight);
-    
-    }
-
-    void RenderSystems::destroy() {
-        CloseWindow();
-        UnloadTexture(gradientTex);
-    
-    }
-
-    RenderSystems::~RenderSystems() { 
-        destroy();
-    }
-
+    EndDrawing();
 }
+
+RenderSystems::RenderSystems(flecs::world &world) {
+    world.module<RenderSystems>();
+
+    // world.system().kind(flecs::PreUpdate).iter(window_prepare_drawing_system);
+    // world.system().kind(flecs::PreUpdate).iter(toggle_fullscreen_system);
+    world.system().kind(flecs::PostUpdate).iter(render_sytem);
+
+    init();
+}
+
+void RenderSystems::init() {
+    InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+
+    regenerateGradientTexture(screenWidth, screenHeight);
+}
+
+void RenderSystems::destroy() {
+    CloseWindow();
+    UnloadTexture(gradientTex);
+}
+
+RenderSystems::~RenderSystems() { destroy(); }
+
+} // namespace graphics

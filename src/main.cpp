@@ -17,12 +17,10 @@ int main() {
 
 void main_loop(flecs::world &world) {
 
-
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         world.progress(dt);
     }
-
 }

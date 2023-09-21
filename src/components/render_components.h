@@ -3,19 +3,19 @@
 
 namespace graphics {
 
-    struct SpriteComponent {
-        int resourceHandle;
-    };
+struct SpriteComponent {
+    int resourceHandle;
+};
 
-    struct AnimatedSpriteComponent {
-        int resourceHandle;
-        int currentFrame;
-    };
+struct AnimatedSpriteComponent {
+    int resourceHandle;
+    int currentFrame;
+};
 
-    struct ChunkRenderComponent {
-        int resourceHandle;
-    };
+struct ChunkRenderComponent {
+    int resourceHandle;
+};
 
-    typedef Camera2DComponent Camera2D;
+typedef Camera2DComponent Camera2D;
 
-}
+} // namespace graphics
