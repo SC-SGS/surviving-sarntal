@@ -108,7 +108,7 @@ void init_render_system(flecs::world &world) {
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
         c.target = {0.0f, 0.0f};
-        c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+        c.offset = {0.0f, screenHeight / 2.0f};
         c.rotation = 0.0f;
         c.zoom = 1.0f;
     });

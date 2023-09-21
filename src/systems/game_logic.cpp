@@ -1,6 +1,7 @@
 #include "game_logic.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
+#include "../components/render_components.h"
 #include "iostream"
 #include "raylib.h"
 
@@ -16,14 +17,26 @@ void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
     }
 }
 
-void debugRenderPlayer(flecs::iter, Position *position, KillBar *killBar) {
+void debugRenderPlayer(flecs::iter it, Position *position, KillBar *killBar) {
     Vector2 pos{position[0].x, position[0].y};
 
     BeginDrawing();
-    DrawLine(killBar->x, 0, killBar->x, 1000.0, RED);
+    auto camera = it.world().lookup("Camera").get<graphics::Camera2DComponent>();
+    BeginMode2D(*camera);
+    Vector2 start{killBar->x, 0.};
+    Vector2 stop{killBar->x, 1000.};
+
+    DrawLineV(start, stop, RED);
 
     DrawCircleV(pos, 20., RED);
+    EndMode2D();
     EndDrawing();
+}
+
+void moveCamera(flecs::iter it, Position *position, KillBar *killBar) {
+    auto camera = it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
+    camera->target.x = killBar->x;
+    camera->target.y = position[0].y;
 }
 
 void initGameLogic(flecs::world &world) {
@@ -39,4 +52,6 @@ void initGameLogic(flecs::world &world) {
         .iter(checkPlayerAlive);
 
     world.system<Position, KillBar>().with<Player>().term_at(2).singleton().iter(debugRenderPlayer);
+
+    world.system<Position, KillBar>().with<Player>().term_at(2).singleton().iter(moveCamera);
 }
