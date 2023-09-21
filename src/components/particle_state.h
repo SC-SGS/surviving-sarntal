@@ -29,3 +29,7 @@ struct Radius {
 };
 
 struct Rock {};
+
+struct AppInfo {
+    bool isRunning = true;
+};

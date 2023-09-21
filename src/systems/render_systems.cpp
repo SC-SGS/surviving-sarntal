@@ -28,7 +28,7 @@ Vector2 points[] = {
     {250, 130}, {300, 210}, {350, 90},  {400, 150},
 };
 
-Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; };
+Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; }
 
 void render_system(flecs::iter &iter) {
     auto world = iter.world();
@@ -121,7 +121,7 @@ void init_render_system(flecs::world &world) {
     });
 
     // add the render system
-    world.system().kind(flecs::PostUpdate).iter(render_system);
+   // world.system().kind(flecs::PostUpdate).iter(render_system);
 
     // add the resource manager
     // world.set<Resources>({});

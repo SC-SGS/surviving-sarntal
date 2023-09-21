@@ -115,6 +115,54 @@ void RockTools::terrainCollision(flecs::iter it, Position *positions,
     }
 }
 
+void RockTools::rockCollision(Position& p1, Position& p2, Velocity& v1,
+                              Velocity& v2, Radius r1, Radius r2) {
+    float m1 = r1.value * r1.value;
+    float m2 = r2.value * r2.value;
+    float radius_sum = r1.value + r2.value;
+
+    Vector vel_diff_vector = v1 - v2;
+    Vector pos_diff_vector = p1 - p2;
+    Vector normal_vector =
+        pos_diff_vector * (1 / (pos_diff_vector * pos_diff_vector));
+
+    // Wikipedia:
+    Vector exit_vel1 = v1 - pos_diff_vector * (2 * m2 / (m1 + m2)) *
+                                ((vel_diff_vector * pos_diff_vector) /
+                                 (pos_diff_vector * pos_diff_vector));
+    Vector exit_vel2 = v2 + pos_diff_vector * (2 * m1 / (m1 + m2)) *
+                                ((vel_diff_vector * pos_diff_vector) /
+                                 (pos_diff_vector * pos_diff_vector));
+
+    float normal_v1 = exit_vel1 * normal_vector;
+    float normal_v2 = exit_vel2 * normal_vector;
+    float normal_p1 = p1 * normal_vector;
+    float normal_p2 = p2 * normal_vector;
+
+    float overlap = std::abs(normal_p1 - normal_p2 + radius_sum);
+    float overlap1 = overlap * m1 / (m1 + m2);
+    float overlap2 = overlap * m2 / (m1 + m2);
+
+    float exit_time1 = overlap1 / normal_v1;
+    float exit_time2 = overlap2 / normal_v2;
+
+    float epsilon = 0.1;
+
+    // Update
+    v1 = {exit_vel1.x, exit_vel1.y};
+    v2 = {exit_vel2.x, exit_vel2.y};
+
+    p1 = {p1.x + v1.x * exit_time1 + epsilon, p1.y + v1.y * exit_time1 + epsilon};
+    p1 = {p2.x + v2.x * exit_time2 + epsilon, p2.y + v2.y * exit_time2 + epsilon};
+}
+
+void RockTools::quickAndDirtyTest(Position& p1, Position& p2, Velocity& v1,
+                       Velocity& v2, Radius r1, Radius r2) {
+    if ( std::sqrt( (p1-p2)*(p1-p2) ) <= (r1.value+r2.value) ){
+        RockTools::rockCollision(p1, p2, v1,v2, r1, r2);
+    }
+}
+
 void RockTools::makeRock(const flecs::world &world, Position p, Velocity v,
                          Radius r) {
 

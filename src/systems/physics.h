@@ -103,7 +103,20 @@ class RockTools {
     static Velocity reflectVelocity(Velocity velocity, Vector normal_vector);
 
     /**
-     * TODO
+     * TODO: collision detection is already handled?
+     * TODO: should this be public?
+     * takes two rocks and updates their velocities and positions
+     * after colliding
+     * @param p1
+     * @param p2
+     * @param v1
+     * @param v2
+     * @param r1
+     * @param r2
      */
-    void rockCollision();
+    static void rockCollision(Position& p1, Position& p2, Velocity& v1, Velocity& v2,
+                       Radius r1, Radius r2);
+
+    static void quickAndDirtyTest(Position& p1, Position& p2, Velocity& v1,
+                           Velocity& v2, Radius r1, Radius r2);
 };
