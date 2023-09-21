@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../components/particle_state.h"
 #include <array>
 #include <cmath>
 #include <vector>
-#include "../components/particle_state.h"
 
 const float MOUNTAIN_WIDTH{
     100.}; // width covered by mountain generated at one point in time
@@ -14,7 +14,6 @@ const std::size_t NUMBER_OF_FIXPOINTS{
 const float CHUNK_WIDTH{5.};
 
 const float SLOPE{0.5}; // steepness of ramp generated in prototype
-
 
 struct IndexInterval {
     std::size_t start_indice;
