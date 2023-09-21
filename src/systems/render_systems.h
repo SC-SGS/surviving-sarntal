@@ -1,5 +1,4 @@
-#ifndef SURVIVING_SARNTAL_RENDER_SYSTEMS_H
-#define SURVIVING_SARNTAL_RENDER_SYSTEMS_H
+#pragma once
 
 #include "flecs.h"
 #include "string"
@@ -11,5 +10,3 @@ struct RenderSystems {
 };
 
 void main_loop(flecs::world &world);
-
-#endif // SURVIVING_SARNTAL_RENDER_SYSTEMS_H
