@@ -13,7 +13,7 @@ constexpr HANDLE NULL_HANDLE = -1;
 template <typename T> class ResourceManager {
 
   public:
-    HANDLE Load(std::string_view path) {
+    HANDLE Load(const std::string &path) {
         bool found = false;
         HANDLE hash = std::hash(path);
         auto it = res.find(hash);
@@ -23,7 +23,7 @@ template <typename T> class ResourceManager {
             return hash;
         } else {
             // not found, create new
-            return Load(LoadTexture(path));
+            return Load(LoadTexture(path.c_str()));
         }
     }
 
