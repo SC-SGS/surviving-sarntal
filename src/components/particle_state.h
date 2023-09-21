@@ -7,3 +7,9 @@ struct Position {
 struct Velocity {
     float x, y;
 };
+
+struct Radius {
+    float value;
+};
+
+struct Rock {};

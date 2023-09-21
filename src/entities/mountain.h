@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include "../components/particle_state.h"
 
 const float MOUNTAIN_WIDTH{
     100.}; // width covered by mountain generated at one point in time
@@ -14,10 +15,6 @@ const float CHUNK_WIDTH{5.};
 
 const float SLOPE{0.5}; // steepness of ramp generated in prototype
 
-struct Position {
-    float x;
-    float y;
-};
 
 struct IndexInterval {
     std::size_t start_indice;
