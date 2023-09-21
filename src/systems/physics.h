@@ -75,7 +75,7 @@ class RockTools {
      * @param mountain
      * @return int index, float distance
      */
-    ClosestVertex getClosestVertex(flecs::iter it, Position position,
+    ClosestVertex getClosestVertex(Position position,
                                    Radius radius, Mountain &mountain);
 
     /**
@@ -86,12 +86,21 @@ class RockTools {
      * TODO: add noise for later
      * @return normal_vector_x, normal_vector_y
      */
-    Position getNormal(std::size_t idx, Position rock_pos, Mountain &m);
+    Vector getNormal(std::size_t idx, Position rock_pos, Mountain &m);
+
+    /**
+     * reflect the incident velocity when bouncing off the terrain
+     * @param velocity
+     * @param normal_vector
+     * @return exit_velocity
+     */
+    Velocity reflectVelocity(Velocity velocity, Vector normal_vector);
 
     /**
      * Reset the rock to be outside of the terrain and reflect the velocity
      */
-    void terrainCollision();
+    void terrainCollision(flecs::iter it, Position *positions,
+                          Velocity *velocities, Radius *r, Mountain &m);
 
     /**
      * TODO
