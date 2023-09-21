@@ -1,5 +1,5 @@
-#include "raylib.h"
 #include "components/mountain.h"
+#include "raylib.h"
 #include "systems/game_logic.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
