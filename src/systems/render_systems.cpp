@@ -119,9 +119,10 @@ void render_system(flecs::iter& iter) {
             flecs::filter<Position, SpriteComponent> q =
                 world.filter<Position, SpriteComponent>();
 
-            q.each([](Position &p, SpriteComponent &s) {
+            q.each([&](Position &p, SpriteComponent &s) {
                 if (s.resourceHandle != NULL_HANDLE) {
-                    auto texture = graphics::res.textures.Get(s.resourceHandle);
+                    auto texture = world.get_mut<Resources>()->textures.Get(
+                        s.resourceHandle);
 
                     Rectangle sourceRec = {
                         0.0f, 0.0f, (float)texture.width,
@@ -177,12 +178,13 @@ void init_render_system(flecs::world &world) {
     Image verticalGradient =
         GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
+    //world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
     auto test_e = world.entity("TestEntity")
                       .set([&](SpriteComponent &c) {
                           c = {0};
-                          c.resourceHandle = graphics::res.textures.Load(
+                          c.resourceHandle = world.get_mut<Resources>()->textures.Load(
                               LoadTextureFromImage(verticalGradient));
                           c.width = 100;
                           c.height = 100;

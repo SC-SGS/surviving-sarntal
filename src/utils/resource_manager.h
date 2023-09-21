@@ -14,8 +14,10 @@ template <typename T> class ResourceManager {
 
   public:
     HANDLE Load(const std::string &path) {
-        bool found = false;
+        // Create a unique hash for this resource
         HANDLE hash = std::hash(path);
+
+        //check if resource was already loaded before
         auto it = res.find(hash);
 
         if (it != res.end()) {
@@ -28,9 +30,11 @@ template <typename T> class ResourceManager {
     }
 
     HANDLE Load(Texture2D texture) {
-
-        HANDLE handle = rand();
-        // todo check for collisions
+        HANDLE handle = 0;
+        // generate unused handle
+        do {
+            handle = rand();
+        } while (res.find(handle) == res.end());
 
         res.insert({handle, texture});
         return handle;
@@ -41,8 +45,7 @@ template <typename T> class ResourceManager {
         if (it != res.end()) {
             return it->second;
         } else {
-            return T(); // TODO handle invalid handle, return placeholder / null
-                        // resource
+            throw std::runtime_error("invalid handle!");
         }
     }
 
@@ -60,7 +63,5 @@ template <typename T> class ResourceManager {
 struct Resources {
     ResourceManager<Texture2D> textures;
 };
-
-static Resources res;
 
 } // namespace graphics
