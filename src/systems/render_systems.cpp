@@ -1,7 +1,9 @@
 #include "render_systems.h"
 #include "flecs.h"
+#include "raygui.h"
 #include "raylib.h"
 #include <iostream>
+#define RAYGUI_IMPLEMENTATION
 
 namespace graphics {
 
