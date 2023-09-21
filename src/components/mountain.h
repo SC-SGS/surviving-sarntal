@@ -1,9 +1,9 @@
 #pragma once
 
+#include "particle_state.h"
 #include <array>
 #include <cmath>
 #include <vector>
-#include "particle_state.h"
 
 struct IndexInterval {
     std::size_t start_index;
@@ -13,26 +13,26 @@ struct IndexInterval {
 class Mountain {
   public:
     /**
- * Number of Vertices explicitely stored by the mountain data structure
+     * Number of Vertices explicitely stored by the mountain data structure
      */
     static constexpr std::size_t NUMBER_OF_VERTICES{200};
 
     /**
- * width covered by mountain generated at one point in time
+     * width covered by mountain generated at one point in time
      */
     static constexpr float MOUNTAIN_WIDTH{100.};
 
     /**
-    * distance between two points of mountain
+     * distance between two points of mountain
      */
-    static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH/NUMBER_OF_VERTICES};
+    static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
 
     static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
 
-    static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK*SECTION_WIDTH};
+    static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
 
     /**
-    * steepness of ramp generated in prototype
+     * steepness of ramp generated in prototype
      */
     static constexpr float SLOPE{0.5};
 
@@ -46,8 +46,8 @@ class Mountain {
     void generateNewChunk();
 
     /**
-    * Temporary helper function, do not touch
-    */
+     * Temporary helper function, do not touch
+     */
     void printTempDebugInfo();
 
     /**

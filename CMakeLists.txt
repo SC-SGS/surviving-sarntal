@@ -20,16 +20,21 @@ FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
 list(FILTER SRC EXCLUDE REGEX "main.cpp")
+#now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
-#message(WARNING ${SRC})
+#now all those files get made into one library callled surviving-sarntal-library
+#message(WARNING ${SRC})    #for CMAKE debugging purposes
 add_executable(surviving-sarntal "src/main.cpp")
+#add main.cpp to surviving-sarntal executable
 
 target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
 
 target_clangformat_setup(surviving-sarntal-library)
 
 target_link_libraries(surviving-sarntal-library PUBLIC flecs::flecs_static raylib raygui)
+#link some libraries to the surviving-sarntal-library that we are defining atm
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
+#link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
 
 enable_testing()
 
@@ -44,6 +49,7 @@ target_link_libraries(
         GTest::gtest_main
         surviving-sarntal-library
 )
+#use surviving-sarntal-library for tests aswell. this way all the src-files only have to be compiled once instead of compiling it for the main executable and the tests
 
 include(GoogleTest)
 gtest_discover_tests(main_test)
