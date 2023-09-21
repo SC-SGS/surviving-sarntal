@@ -47,39 +47,42 @@ void render_sytem(flecs::iter iter) {
     }
     if (WindowShouldClose()) {
         // switch Appinfo isRunning to false;
-        auto info = world.get<AppInfo>();
-        AppInfo info_ = *info;
-        info_.isRunning = false;
-        world.set<AppInfo>(info_);
+        auto info = world.get_mut<AppInfo>();
+        info->isRunning = false;
     }
 
-    BeginDrawing();
-    ClearBackground(BLUE);
+    auto camera_entity = world.lookup("Camera");
+    if (camera_entity.is_valid()) {
+        auto camera = camera_entity.get<Camera2DComponent>();
 
-    DrawTexture(gradientTex, 0, 0, WHITE);
+        BeginDrawing();
+        ClearBackground(BLUE);
 
-    DrawText("Congrats! You created your first window!", 190, 200, 20,
-             LIGHTGRAY);
+        BeginMode2D(*camera);
 
-    auto camera = world.lookup("Camera");
+        DrawTexture(gradientTex, 0, 0, WHITE);
 
-    DrawTexturePro(spriteTex, sourceRec, destRec,
-                   {(float)spriteTex.width, (float)spriteTex.height}, rotation,
-                   WHITE);
-    rotation++;
+        // DrawText("Congrats! You created your first window!", 190, 200, 20,
+        // LIGHTGRAY);
 
-    // BeginMode2D(camera);
-    //// DrawLine(-100, -100, 100, 100, GREEN);
-    // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
-    //          -screenHeight * 10, GREEN);
-    ////DrawRectangleRec(player, RED);
-    // EndMode2D();
+        DrawTexturePro(spriteTex, sourceRec, destRec,
+                       {(float)spriteTex.width, (float)spriteTex.height},
+                       rotation, WHITE);
+        rotation++;
 
-    // loop for all sprites (sprite component + transform compoenent)
+        // BeginMode2D(camera);
+        //// DrawLine(-100, -100, 100, 100, GREEN);
+        // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
+        //          -screenHeight * 10, GREEN);
+        ////DrawRectangleRec(player, RED);
+        // EndMode2D();
 
-    // loor for all
+        // loop for all sprites (sprite component + transform compoenent)
 
-    EndDrawing();
+        // loor for all
+
+        EndDrawing();
+    }
 }
 
 void init_render_sytem(flecs::world &world) {
