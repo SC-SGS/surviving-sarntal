@@ -11,6 +11,11 @@ const int screenWidth = 800;
 const int screenHeight = 450;
 
 Texture2D gradientTex;
+Texture2D spriteTex;
+Rectangle sourceRec;
+Rectangle destRec;
+int rotation = 0;
+
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -58,6 +63,11 @@ void render_sytem(flecs::iter iter) {
 
     auto camera = world.lookup("Camera");
 
+    DrawTexturePro(spriteTex, sourceRec, destRec,
+                   {(float)spriteTex.width, (float)spriteTex.height}, rotation,
+                   WHITE);
+    rotation++;
+
     // BeginMode2D(camera);
     //// DrawLine(-100, -100, 100, 100, GREEN);
     // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
@@ -84,8 +94,15 @@ void init_render_sytem(flecs::world &world) {
         c.zoom = 1.0f;
     });
 
-    auto cara = world.lookup("Camera");
     regenerateGradientTexture(screenWidth, screenHeight);
+    Image verticalGradient =
+        GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
+    spriteTex = LoadTextureFromImage(verticalGradient);
+    sourceRec = {0.0f, 0.0f, (float)spriteTex.width,
+                 (float)spriteTex.height}; // part of the texture used
+    destRec = {screenWidth / 2.0f, screenHeight / 2.0f, spriteTex.width * 2.0f,
+               spriteTex.height * 2.0f}; // where to draw texture
+
     world.system().kind(flecs::PostUpdate).iter(render_sytem);
 }
 
