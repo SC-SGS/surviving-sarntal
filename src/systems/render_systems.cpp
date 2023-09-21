@@ -1,8 +1,8 @@
 #include "render_systems.h"
 #include "../components/particle_state.h"
 #include "../components/render_components.h"
+// #include "../utils/resource_manager.h"
 #include "flecs.h"
-#include "raylib.h"
 #include <iostream>
 
 namespace graphics {
@@ -23,7 +23,7 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-void render_sytem(flecs::iter iter) {
+void render_system(flecs::iter iter) {
     auto &world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -59,36 +59,32 @@ void render_sytem(flecs::iter iter) {
         ClearBackground(BLUE);
 
         BeginMode2D(*camera);
+        {
+            DrawTexture(gradientTex, 0, 0, WHITE);
 
-        DrawTexture(gradientTex, 0, 0, WHITE);
+            // DrawText("Congrats! You created your first window!", 190, 200,
+            // 20, LIGHTGRAY);
 
-        // DrawText("Congrats! You created your first window!", 190, 200, 20,
-        // LIGHTGRAY);
+            // loop for all sprites (sprite component + transform compoenent)
 
-        DrawTexturePro(spriteTex, sourceRec, destRec,
-                       {(float)spriteTex.width, (float)spriteTex.height},
-                       rotation, WHITE);
-        rotation++;
+            // loor for all
 
-        // BeginMode2D(camera);
-        //// DrawLine(-100, -100, 100, 100, GREEN);
-        // DrawLine(-screenWidth * 10, screenHeight * 10, screenWidth * 10,
-        //          -screenHeight * 10, GREEN);
-        ////DrawRectangleRec(player, RED);
-        // EndMode2D();
+            DrawTexturePro(spriteTex, sourceRec, destRec,
+                           {(float)spriteTex.width, (float)spriteTex.height},
+                           rotation, WHITE);
+            rotation++;
+        }
 
-        // loop for all sprites (sprite component + transform compoenent)
-
-        // loor for all
+        EndMode2D();
 
         EndDrawing();
     }
 }
 
-void init_render_sytem(flecs::world &world) {
-    // std::cout << "-------init render" << std::endl;
+void init_render_system(flecs::world &world) {
     InitWindow(screenWidth, screenHeight, WINDOW_NAME);
 
+    // add the camera entity here for now
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
         c.target = {0.0f, 0.0f};
@@ -97,6 +93,13 @@ void init_render_sytem(flecs::world &world) {
         c.zoom = 1.0f;
     });
 
+    // add the render system
+    world.system().kind(flecs::PostUpdate).iter(render_system);
+
+    // add the resource manager
+    // world.set<Resources>({});
+
+    // misc
     regenerateGradientTexture(screenWidth, screenHeight);
     Image verticalGradient =
         GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
@@ -105,8 +108,6 @@ void init_render_sytem(flecs::world &world) {
                  (float)spriteTex.height}; // part of the texture used
     destRec = {screenWidth / 2.0f, screenHeight / 2.0f, spriteTex.width * 2.0f,
                spriteTex.height * 2.0f}; // where to draw texture
-
-    world.system().kind(flecs::PostUpdate).iter(render_sytem);
 }
 
 void destroy() {

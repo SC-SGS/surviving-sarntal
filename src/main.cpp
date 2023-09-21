@@ -1,10 +1,10 @@
+#include "components/particle_state.h"
 #include "entities/mountain.h"
 #include "raylib.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
 #include <iostream>
-#include "components/particle_state.h"
 
 void main_loop(flecs::world &world);
 
@@ -13,14 +13,13 @@ int main() {
 
     flecs::world world;
 
-    graphics::init_render_sytem(world);
+    graphics::init_render_system(world);
 
     world.import <PhysicSystems>();
 
     world.set<Mountain>({});
 
     world.set<AppInfo>({});
-
 
     main_loop(world);
 
