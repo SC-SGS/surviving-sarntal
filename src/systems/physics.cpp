@@ -1,6 +1,7 @@
 #include "physics.h"
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
+#include "../components/player.h"
 #include "flecs.h"
 #include "raylib.h"
 #include <algorithm>
@@ -23,6 +24,9 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity>().with<Rock>().iter(
         RockTools::updateState);
 
+    world.system<Position, Velocity>().with<Player>().iter(
+        PlayerTools::updateState);
+
     world.system<Position, Radius>().with<Rock>().iter(debugRenderRocks);
 
     Position p{500., 500.};
@@ -31,7 +35,7 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     RockTools::makeRock(world, p, v, r);
 }
 
-ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
+Vertex RockTools::TerrainCollisions::getClosestVertex(flecs::iter it, Position p, Radius r,
                                           Mountain &m) {
     float x_min = p.x - r.value;
     float x_max = p.x + r.value;
@@ -57,10 +61,10 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
         }
     }
 
-    return ClosestVertex({closest_index, closest_distance});
+    return Vertex({closest_index, closest_distance});
 }
 
-Position RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
+Position RockTools::TerrainCollisions::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
     // determine closer vertex
     Position vertex_other = m.getVertex((idx - 1) % m.NUMBER_OF_VERTICES);
     Position vertex_right = m.getVertex((idx + 1) % m.NUMBER_OF_VERTICES);
@@ -115,4 +119,37 @@ void RockTools::updatePosition(flecs::iter it, Position *positions,
         positions[i].x += v.x * it.delta_time();
         positions[i].y += v.y * it.delta_time();
     }
+}
+
+void RockTools::RockCollisions::rockCollisions(flecs::world &world) {
+    // TODO detect colliding rocks and iterate over colliding pair and update state.
+}
+
+void RockTools::RockCollisions::rockCollision(flecs::world &world) {
+    // TODO updates state of a pair of colliding rocks.
+}
+
+void RockTools::RockCollisions::pairCollidingRocks(flecs::world &world) {
+    world.system<Position, Radius>().with<Rock>().iter(RockTools::RockCollisions::pairPossiblyCollidingRocks);
+    // forall possibly colliding rocks, check for collision and add tag collides
+}
+
+void RockTools::RockCollisions::pairPossiblyCollidingRocks(flecs::iter it, Position *positions, Radius *radii) {
+    /*float[] aabbs = new float[it.]
+    for(auto i : it) {
+
+    }*/
+}
+
+void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *velocities) {
+    /*velocities[0].x += horizControllerInput * it.delta_time();
+     * if(jump_pressed) {
+     *   velocities[0].y = -JUMP_VELOCITY_CONSTANT;
+     *   in_air = true;
+     * else if (in_air) {
+     *   velocities[0].y += GRAVITATIONAL_CONSTANT * it.delte_time();
+     * }
+     */
+    positions[0].x += velocities[0].x * it.delta_time();
+    //positions[0].y = TODO getYPosFromX(positions[0].x, Mountain m);
 }

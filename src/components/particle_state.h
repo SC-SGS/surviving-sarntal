@@ -17,3 +17,7 @@ struct Radius {
 };
 
 struct Rock {};
+
+struct CollidesWith {};
+
+struct PossiblyCollidesWith {};
