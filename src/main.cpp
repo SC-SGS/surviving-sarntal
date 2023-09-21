@@ -1,22 +1,26 @@
+#include "entities/mountain.h"
+#include "raylib.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
 #include <iostream>
-#include <raylib.h>
 
 void main_loop(flecs::world &world);
 
 int main() {
+    std::cout << "surviving sarntal" << std::endl;
+
     flecs::world world;
 
     world.import <graphics::RenderSystems>();
     world.import <PhysicSystems>();
 
+    world.set<Mountain>({});
+
     main_loop(world);
 }
 
 void main_loop(flecs::world &world) {
-
 
     SetTargetFPS(60);
 
@@ -24,5 +28,4 @@ void main_loop(flecs::world &world) {
         float dt = GetFrameTime();
         world.progress(dt);
     }
-
 }
