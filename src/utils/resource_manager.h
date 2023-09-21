@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "string"
 #include <unordered_map>
+#include <stdexcept>
 
 namespace graphics {
 typedef int HANDLE;
@@ -34,7 +35,7 @@ template <typename T> class ResourceManager {
         // generate unused handle
         do {
             handle = rand();
-        } while (res.find(handle) == res.end());
+        } while (res.find(handle) != res.end());
 
         res.insert({handle, texture});
         return handle;
