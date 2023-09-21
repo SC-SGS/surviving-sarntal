@@ -5,14 +5,6 @@
 #include <cmath>
 #include <vector>
 
-const float MOUNTAIN_WIDTH{
-    100.}; // width covered by mountain generated at one point in time
-const float SECTION_WIDTH{0.5};
-const std::size_t NUMBER_OF_FIXPOINTS{
-    200}; // number_of_fixpoints = (size_t) std::ceil(mountain_width /
-          // section_width), manually adjust that if needed
-const float CHUNK_WIDTH{5.};
-
 const float SLOPE{0.5}; // steepness of ramp generated in prototype
 
 struct IndexInterval {
@@ -25,12 +17,12 @@ class Mountain {
     /**
      * Number of Vertices explicitely stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{200};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
 
     /**
      * width covered by mountain generated at one point in time
      */
-    static constexpr float MOUNTAIN_WIDTH{100.};
+    static constexpr float MOUNTAIN_WIDTH{1000.};
 
     /**
      * distance between two points of mountain
@@ -76,7 +68,7 @@ class Mountain {
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertice(size_t index);
+    Position getVertex(size_t index);
 
     /**
      * You can access all the points currently being held in the mountain datastructure
