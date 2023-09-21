@@ -23,6 +23,14 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
+Vector2 points[] = {
+    {50, 190},  {100, 110}, {150, 200}, {200, 100},
+    {250, 130}, {300, 210}, {350, 90},  {400, 150},
+};
+
+Vector2 generateControlPoints(Vector2 points) { Vector2 control_points; };
+
+
 void render_system(flecs::iter& iter) {
     auto world = iter.world();
 
@@ -68,6 +76,18 @@ void render_system(flecs::iter& iter) {
             // loop for all sprites (sprite component + transform compoenent)
 
             // loor for all
+
+            for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1; i++) {
+                DrawLineBezierCubic(points[i], points[i + 1], points[i], points[i + 1],
+                                    5, RED);
+            }
+
+            // Draw the control points and lines
+            if (DEBUG) {
+                for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++) {
+                    DrawCircleV(points[i], 5, BLUE); // Draw control points as circles
+                }
+            }
 
             DrawTexturePro(spriteTex, sourceRec, destRec,
                            {(float)spriteTex.width, (float)spriteTex.height},
