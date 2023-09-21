@@ -1,6 +1,6 @@
 #include "physics.h"
-#include "../components/particle_state.h"
 #include "../components/mountain.h"
+#include "../components/particle_state.h"
 #include "flecs.h"
 #include "raylib.h"
 #include <algorithm>
@@ -38,8 +38,7 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
     auto interval = m.getRelevantMountainSection(x_min, x_max);
 
     auto closest_index = interval.start_index;
-    float closest_distance =
-        getDistance(m.getVertex(interval.start_index), p);
+    float closest_distance = getDistance(m.getVertex(interval.start_index), p);
 
     /*std::vector<float> output_array; // TODO: array for performance?
 
@@ -77,12 +76,12 @@ Position RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
     // compute normal from distances via rotation
     // signbit  is used to let normal vector always point in positive y
     // direction
-    float sgn_n_x = (std::signbit(-d_y) - 0.5) * 2; // Hacky sign, that cpp missing
-    float n_x = sgn_n_x * -d_y;                // R =  (  0   -1  )
-    float n_y = sgn_n_x * d_x;                 //      (  1    0  )
+    float sgn_n_x =
+        (std::signbit(-d_y) - 0.5) * 2; // Hacky sign, that cpp missing
+    float n_x = sgn_n_x * -d_y;         // R =  (  0   -1  )
+    float n_y = sgn_n_x * d_x;          //      (  1    0  )
     return Position{n_x, n_y};
 }
-
 
 void RockTools::makeRock(const flecs::world &world, Position p, Velocity v,
                          Radius r) {
