@@ -10,7 +10,7 @@ struct PhysicSystems {
 
 struct ClosestVertex {
     int index;
-    bool has_collided;
+    float distance;
 };
 
 constexpr float GRAVITATIONAL_CONSTANT = 1000.8;
@@ -73,7 +73,7 @@ class RockTools {
      * @param position
      * @param radius
      * @param mountain
-     * @return int index, bool has_collided
+     * @return int index, float distance
      */
     ClosestVertex getClosestVertex(flecs::iter it, Position position,
                                    Radius radius, Mountain &mountain);

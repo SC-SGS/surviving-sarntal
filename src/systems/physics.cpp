@@ -58,9 +58,10 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
         }
     }
 
-    bool collision_occurred = (closest_distance <= r.value);
-    return ClosestVertex({(int)closest_index, collision_occurred});
+    return ClosestVertex({(int)closest_index, closest_distance});
 }
+
+Position RockTools::getNormal() {}
 
 void RockTools::makeRock(const flecs::world &world, Position p, Velocity v,
                          Radius r) {
