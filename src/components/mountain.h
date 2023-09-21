@@ -66,12 +66,12 @@ class Mountain {
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertice(size_t index);
+    Position getVertex(size_t index);
 
     /**
      * @return Returns start_index and end_index of the latest generated
      * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
-     * can access the points via the getVertice-function.
+     * can access the points via the getVertex-function.
      */
     IndexInterval getLatestChunk();
 

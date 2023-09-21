@@ -1,6 +1,6 @@
 #include "physics.h"
 #include "../components/particle_state.h"
-#include "../entities/mountain.h"
+#include "../components/mountain.h"
 #include "flecs.h"
 #include "raylib.h"
 #include <algorithm>
@@ -37,19 +37,19 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
     float x_max = p.x + r.value;
     auto interval = m.getRelevantMountainSection(x_min, x_max);
 
-    auto closest_index = interval.start_indice;
+    auto closest_index = interval.start_index;
     float closest_distance =
-        getDistance(m.getFixpoint(interval.start_indice), p);
+        getDistance(m.getVertex(interval.start_index), p);
 
     /*std::vector<float> output_array; // TODO: array for performance?
 
-    std::transform(&interval.start_indice, &interval.end_indice,
+    std::transform(&interval.start_index, &interval.end_index,
               output_array.begin(),
                    [&](Position x){return getDistance(x, p); })
     */
 
-    for (auto j = interval.start_indice; j == interval.end_indice; j++) {
-        auto mountain_vertex = m.getFixpoint(j);
+    for (auto j = interval.start_index; j == interval.end_index; j++) {
+        auto mountain_vertex = m.getVertex(j);
         auto current_dist = getDistance(mountain_vertex, p);
 
         if (current_dist < closest_distance) {
@@ -61,6 +61,28 @@ ClosestVertex RockTools::getClosestVertex(flecs::iter it, Position p, Radius r,
     bool collision_occurred = (closest_distance <= r.value);
     return ClosestVertex({(int)closest_index, collision_occurred});
 }
+
+Position RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
+    // determine closer vertex
+    Position vertex_other = m.getVertex((idx - 1) % m.NUMBER_OF_VERTICES);
+    Position vertex_right = m.getVertex((idx + 1) % m.NUMBER_OF_VERTICES);
+    if (getDistance(rock_pos, vertex_other) >
+        getDistance(rock_pos, vertex_right)) {
+        vertex_other = vertex_right; // else already correct
+    }
+    // calc distances
+    Position vertex = m.getVertex(idx);
+    float d_x = vertex.x - vertex_other.x;
+    float d_y = vertex.y - vertex_other.y;
+    // compute normal from distances via rotation
+    // signbit  is used to let normal vector always point in positive y
+    // direction
+    float sgn_n_x = (std::signbit(-d_y) - 0.5) * 2; // Hacky sign, that cpp missing
+    float n_x = sgn_n_x * -d_y;                // R =  (  0   -1  )
+    float n_y = sgn_n_x * d_x;                 //      (  1    0  )
+    return Position{n_x, n_y};
+}
+
 
 void RockTools::makeRock(const flecs::world &world, Position p, Velocity v,
                          Radius r) {
