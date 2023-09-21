@@ -160,13 +160,33 @@ void render_system(flecs::iter& iter) {
 
             EndMode2D();
 
+            if (useDebugCamera) {
+                if (IsKeyDown(KEY_D))
+                    debugCamera3D.position.x += 2;
+                else if (IsKeyDown(KEY_A))
+                    debugCamera3D.position.x -= 2;
+                else if (IsKeyDown(KEY_S))
+                    debugCamera3D.position.z -= 2;
+                else if (IsKeyDown(KEY_W))
+                    debugCamera3D.position.z += 2;
 
-            debugCamera3D.position = { debugCamera.target.x, -1.0, debugCamera.target.y};
+                if (IsKeyDown(KEY_LEFT))
+                        debugCamera.rotation--;
+                else if (IsKeyDown(KEY_RIGHT))
+                        debugCamera.rotation++;
+
+                debugCamera3D.target.x = debugCamera3D.position.x;
+                debugCamera3D.target.z = debugCamera3D.position.z;
+                debugCamera3D.target.y = 1;
+            }
+            //debugCamera3D.position = { debugCamera.target.x, -1.0, debugCamera.target.y};
             //debugCamera3D.target = {debugCamera.target.x,1.0,debugCamera.target.y};
+
+
             BeginMode3D(debugCamera3D);
             { 
-                DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);
-                DrawCube({0,0}, 10, 10, 10, RED);
+                DrawModel(model, {0.0, 0.0}, 1.0f, RED);
+                DrawCube({-20,0}, 10, 10, 10, RED);
             }
             EndMode3D();
         }
@@ -225,7 +245,7 @@ void init_render_system(flecs::world &world) {
      model = LoadModelFromMesh(generate_chunk_mesh());
 
     debugCamera3D = {0};
-    debugCamera3D.position = {0.0f, 10.0f, 10.0f}; // Camera position
+    debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
     debugCamera3D.target = {0.0f, 0.0f, 0.0f}; // Camera looking at point
     debugCamera3D.up = {0.0f, 0.0f, 1.0f}; // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
@@ -258,9 +278,9 @@ Mesh generate_chunk_mesh() {
     mesh.texcoords[1] = 0;
 
     // Vertex at (1, 0, 2)
-    mesh.vertices[3] = 1;
+    mesh.vertices[3] = 10;
     mesh.vertices[4] = 0;
-    mesh.vertices[5] = 2;
+    mesh.vertices[5] = 20;
     mesh.normals[3] = 0;
     mesh.normals[4] = 1;
     mesh.normals[5] = 0;
@@ -268,7 +288,7 @@ Mesh generate_chunk_mesh() {
     mesh.texcoords[3] = 1.0f;
 
     // Vertex at (2, 0, 0)
-    mesh.vertices[6] = 2;
+    mesh.vertices[6] = 20;
     mesh.vertices[7] = 0;
     mesh.vertices[8] = 0;
     mesh.normals[6] = 0;
