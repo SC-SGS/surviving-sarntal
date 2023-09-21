@@ -2,13 +2,24 @@
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "flecs.h"
+#include "iostream"
 #include "raylib.h"
 #include <algorithm>
 #include <cmath>
 
-void debugRenderRocks(flecs::iter it, Position *positions, Radius *r) {
+void clear(flecs::iter) { ClearBackground(WHITE); }
+
+void debugRenderRocks(flecs::iter it, Position *positions, Radius *r,
+                      Mountain *m) {
+    std::cout << "clear" << std::endl;
     for (auto i : it) {
+        std::cout << "draw cirle" << std::endl;
         DrawCircle(positions[i].x, positions[i].y, r[i].value, RED);
+    }
+
+    for (int i = 0; i < 1000; i++) {
+        Position p = m->getVertex(i);
+        DrawCircle(p.x, p.y, 5, RED);
     }
 }
 
@@ -24,27 +35,13 @@ Velocity RockTools::reflectVelocity(Velocity velocity, Vector normal_vector) {
     return {v.x, v.y};
 }
 
-PhysicSystems::PhysicSystems(flecs::world &world) {
-    world.module<PhysicSystems>();
-
-    world.system<Position, Velocity>().with<Rock>().iter(
-        RockTools::updateState);
-
-    world.system<Position, Radius>().with<Rock>().iter(debugRenderRocks);
-
-    Position p{500., 500.};
-    Velocity v{0., 0.};
-    Radius r{20.0};
-    RockTools::makeRock(world, p, v, r);
-}
-
-ClosestVertex RockTools::getClosestVertex(Position p, Radius r, Mountain &m) {
+ClosestVertex RockTools::getClosestVertex(Position p, Radius r, Mountain *m) {
     float x_min = p.x - r.value;
     float x_max = p.x + r.value;
-    auto interval = m.getRelevantMountainSection(x_min, x_max);
+    auto interval = m->getRelevantMountainSection(x_min, x_max);
 
     auto closest_index = interval.start_index;
-    float closest_distance = getDistance(m.getVertex(interval.start_index), p);
+    float closest_distance = getDistance(m->getVertex(interval.start_index), p);
 
     /*std::vector<float> output_array; // TODO: array for performance?
 
@@ -53,8 +50,8 @@ ClosestVertex RockTools::getClosestVertex(Position p, Radius r, Mountain &m) {
                    [&](Position x){return getDistance(x, p); })
     */
 
-    for (auto j = interval.start_index; j == interval.end_index; j++) {
-        auto mountain_vertex = m.getVertex(j);
+    for (auto j = interval.start_index; j < interval.end_index; j++) {
+        auto mountain_vertex = m->getVertex(j);
         auto current_dist = getDistance(mountain_vertex, p);
 
         if (current_dist < closest_distance) {
@@ -66,16 +63,16 @@ ClosestVertex RockTools::getClosestVertex(Position p, Radius r, Mountain &m) {
     return ClosestVertex({closest_index, closest_distance});
 }
 
-Vector RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
+Vector RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     // determine closer vertex
-    Position vertex_other = m.getVertex((idx - 1) % m.NUMBER_OF_VERTICES);
-    Position vertex_right = m.getVertex((idx + 1) % m.NUMBER_OF_VERTICES);
+    Position vertex_other = m->getVertex((idx - 1) % m->NUMBER_OF_VERTICES);
+    Position vertex_right = m->getVertex((idx + 1) % m->NUMBER_OF_VERTICES);
     if (getDistance(rock_pos, vertex_other) >
         getDistance(rock_pos, vertex_right)) {
         vertex_other = vertex_right; // else already correct
     }
     // calc distances
-    Position vertex = m.getVertex(idx);
+    Position vertex = m->getVertex(idx);
     float d_x = vertex.x - vertex_other.x;
     float d_y = vertex.y - vertex_other.y;
     // compute normal from distances via rotation
@@ -92,13 +89,13 @@ Vector RockTools::getNormal(std::size_t idx, Position rock_pos, Mountain &m) {
 }
 
 void RockTools::terrainCollision(flecs::iter it, Position *positions,
-                                 Velocity *velocities, Radius *r, Mountain &m) {
+                                 Velocity *velocities, Radius *r, Mountain *m) {
     for (auto i : it) {
         auto closest_vertex =
             RockTools::getClosestVertex(positions[i], r[i], m);
-        auto vertex_position = m.getVertex(closest_vertex.index);
+        auto vertex_position = m->getVertex(closest_vertex.index);
         if (closest_vertex.distance > r[i].value) {
-            break;
+            continue;
         }
         auto normal_vector =
             RockTools::getNormal(closest_vertex.index, positions[i], m);
@@ -151,4 +148,31 @@ void RockTools::updatePosition(flecs::iter it, Position *positions,
         positions[i].x += v.x * it.delta_time();
         positions[i].y += v.y * it.delta_time();
     }
+}
+
+PhysicSystems::PhysicSystems(flecs::world &world) {
+    world.module<PhysicSystems>();
+
+    world.system<Position, Velocity>().with<Rock>().iter(
+        RockTools::updateState);
+
+    world.system().iter(clear);
+    world.system<Position, Radius, Mountain>()
+        .with<Rock>()
+        .term_at(3)
+        .singleton()
+        .iter(debugRenderRocks);
+
+    world.system<Position, Velocity, Radius, Mountain>()
+        .term_at(4)
+        .singleton()
+        .iter(RockTools::terrainCollision);
+
+    Position p{700., 500.};
+    Velocity v{0., 0.};
+    Radius r{20.0};
+    RockTools::makeRock(world, p, v, r);
+    Position p2{600., 500.};
+    Velocity v2{0., 0.};
+    RockTools::makeRock(world, p2, v2, r);
 }

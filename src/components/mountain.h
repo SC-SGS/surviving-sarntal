@@ -15,12 +15,12 @@ class Mountain {
     /**
      * Number of Vertices explicitely stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{200};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
 
     /**
      * width covered by mountain generated at one point in time
      */
-    static constexpr float MOUNTAIN_WIDTH{100.};
+    static constexpr float MOUNTAIN_WIDTH{1000.};
 
     /**
      * distance between two points of mountain

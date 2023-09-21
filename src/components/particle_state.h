@@ -20,11 +20,9 @@ struct Vector {
     }
 };
 
-struct Position : Vector {
-};
+struct Position : Vector {};
 
-struct Velocity : Vector {
-};
+struct Velocity : Vector {};
 
 struct Radius {
     float value;

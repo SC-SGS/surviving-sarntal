@@ -44,13 +44,13 @@ void render_sytem(flecs::iter iter) {
     }
 
     BeginDrawing();
-    ClearBackground(BLUE);
+    // ClearBackground(BLUE);
 
-    DrawTexture(gradientTex, 0, 0, WHITE);
+    // DrawTexture(gradientTex, 0, 0, WHITE);
     // DrawLine(-100, -100, 100, 100, GREEN);
 
-    DrawText("Congrats! You created your first window!", 190, 200, 20,
-             LIGHTGRAY);
+    // DrawText("Congrats! You created your first window!", 190, 200, 20,
+    //         LIGHTGRAY);
 
     auto world = iter.world();
     /* auto cameras = world.filter_builder<Camera2DComponent>().build();

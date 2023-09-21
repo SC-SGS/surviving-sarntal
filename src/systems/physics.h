@@ -13,7 +13,7 @@ struct ClosestVertex {
     float distance;
 };
 
-constexpr float GRAVITATIONAL_CONSTANT = 1000.8;
+constexpr float GRAVITATIONAL_CONSTANT = -1000.8;
 
 class Collisions {};
 
@@ -42,6 +42,12 @@ class RockTools {
      */
     static void updateState(flecs::iter it, Position *positions,
                             Velocity *velocities);
+
+    /**
+     * Reset the rock to be outside of the terrain and reflect the velocity
+     */
+    static void terrainCollision(flecs::iter it, Position *positions,
+                                 Velocity *velocities, Radius *r, Mountain *m);
 
   private:
     /**
@@ -75,8 +81,8 @@ class RockTools {
      * @param mountain
      * @return int index, float distance
      */
-    ClosestVertex getClosestVertex(Position position,
-                                   Radius radius, Mountain &mountain);
+    static ClosestVertex getClosestVertex(Position position, Radius radius,
+                                          Mountain *mountain);
 
     /**
      * Find the normal vector of a given vertex
@@ -86,7 +92,7 @@ class RockTools {
      * TODO: add noise for later
      * @return normal_vector_x, normal_vector_y
      */
-    Vector getNormal(std::size_t idx, Position rock_pos, Mountain &m);
+    static Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
 
     /**
      * reflect the incident velocity when bouncing off the terrain
@@ -94,13 +100,7 @@ class RockTools {
      * @param normal_vector
      * @return exit_velocity
      */
-    Velocity reflectVelocity(Velocity velocity, Vector normal_vector);
-
-    /**
-     * Reset the rock to be outside of the terrain and reflect the velocity
-     */
-    void terrainCollision(flecs::iter it, Position *positions,
-                          Velocity *velocities, Radius *r, Mountain &m);
+    static Velocity reflectVelocity(Velocity velocity, Vector normal_vector);
 
     /**
      * TODO
