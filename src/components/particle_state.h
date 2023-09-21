@@ -8,6 +8,10 @@ struct Velocity {
     float x, y;
 };
 
+struct AppInfo {
+    bool isRunning = true;
+};
+
 struct Radius {
     float value;
 };
