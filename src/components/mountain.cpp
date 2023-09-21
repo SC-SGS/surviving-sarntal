@@ -76,4 +76,5 @@ IndexInterval Mountain::getIndexIntervalOfEntireMountain(){
     IndexInterval returnvalue;
     returnvalue.start_index = start_of_circular_array;
     returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
+    return returnvalue;
 }

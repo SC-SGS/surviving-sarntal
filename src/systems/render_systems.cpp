@@ -17,6 +17,8 @@ int rotation = 0;
 
 bool useDebugCamera;
 Camera2D debugCamera;
+Camera3D debugCamera3D;
+Model model;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -138,9 +140,19 @@ void render_system(flecs::iter& iter) {
             });
 
             rotation++;
-        }
+            }
 
             EndMode2D();
+
+
+            debugCamera3D.position = { debugCamera.target.x, -1.0, debugCamera.target.y};
+            //debugCamera3D.target = {debugCamera.target.x,1.0,debugCamera.target.y};
+            BeginMode3D(debugCamera3D);
+            { 
+                DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);
+                DrawCube({0,0}, 10, 10, 10, RED);
+            }
+            EndMode3D();
         }
         EndDrawing();
     }
@@ -191,6 +203,67 @@ void init_render_system(flecs::world &world) {
                           c.x = 0;
                           c.y = 0;
                       }));
+
+    
+     model = LoadModelFromMesh(generate_chunk_mesh());
+
+    debugCamera3D = {0};
+    debugCamera3D.position = {0.0f, 10.0f, 10.0f}; // Camera position
+    debugCamera3D.target = {0.0f, 0.0f, 0.0f}; // Camera looking at point
+    debugCamera3D.up = {0.0f, 0.0f, 1.0f}; // Camera up vector (rotation towards target)
+    debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
+    debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
+}
+
+// Generate a simple triangle mesh from code
+Mesh generate_chunk_mesh() {
+    Mesh mesh = {0};
+    mesh.triangleCount = 1;
+    mesh.vertexCount = mesh.triangleCount * 3;
+    mesh.vertices = (float *)MemAlloc(
+        mesh.vertexCount * 3 *
+        sizeof(float)); // 3 vertices, 3 coordinates each (x, y, z)
+    mesh.texcoords = (float *)MemAlloc(
+        mesh.vertexCount * 2 *
+        sizeof(float)); // 3 vertices, 2 coordinates each (x, y)
+    mesh.normals = (float *)MemAlloc(
+        mesh.vertexCount * 3 *
+        sizeof(float)); // 3 vertices, 3 coordinates each (x, y, z)
+
+    // Vertex at (0, 0, 0)
+    mesh.vertices[0] = 0;
+    mesh.vertices[1] = 0;
+    mesh.vertices[2] = 0;
+    mesh.normals[0] = 0;
+    mesh.normals[1] = 1;
+    mesh.normals[2] = 0;
+    mesh.texcoords[0] = 0;
+    mesh.texcoords[1] = 0;
+
+    // Vertex at (1, 0, 2)
+    mesh.vertices[3] = 1;
+    mesh.vertices[4] = 0;
+    mesh.vertices[5] = 2;
+    mesh.normals[3] = 0;
+    mesh.normals[4] = 1;
+    mesh.normals[5] = 0;
+    mesh.texcoords[2] = 0.5f;
+    mesh.texcoords[3] = 1.0f;
+
+    // Vertex at (2, 0, 0)
+    mesh.vertices[6] = 2;
+    mesh.vertices[7] = 0;
+    mesh.vertices[8] = 0;
+    mesh.normals[6] = 0;
+    mesh.normals[7] = 1;
+    mesh.normals[8] = 0;
+    mesh.texcoords[4] = 1;
+    mesh.texcoords[5] = 0;
+
+    // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
+    UploadMesh(&mesh, false);
+
+    return mesh;
 }
 
 void destroy() {
