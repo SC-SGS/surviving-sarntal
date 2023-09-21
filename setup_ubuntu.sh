@@ -1,0 +1,1 @@
+sudo apt install libxi-dev libxcursor-dev libxinerama-dev
