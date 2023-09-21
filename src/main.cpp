@@ -4,6 +4,7 @@
 #include "systems/render_systems.h"
 #include <flecs.h>
 #include <iostream>
+#include "components/particle_state.h"
 
 void main_loop(flecs::world &world);
 
@@ -12,19 +13,28 @@ int main() {
 
     flecs::world world;
 
-    world.import <graphics::RenderSystems>();
+    graphics::init_render_sytem(world);
+
     world.import <PhysicSystems>();
 
     world.set<Mountain>({});
 
+    world.set<AppInfo>({});
+
+
     main_loop(world);
+
+    graphics::destroy();
 }
 
 void main_loop(flecs::world &world) {
+    world.progress(0);
 
     SetTargetFPS(60);
 
-    while (!WindowShouldClose()) {
+    auto appInfo = world.get<AppInfo>();
+
+    while (appInfo->isRunning) {
         float dt = GetFrameTime();
         world.progress(dt);
     }
