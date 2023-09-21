@@ -59,42 +59,61 @@ void render_system(flecs::iter& iter) {
 
     auto camera_entity = world.lookup("Camera");
     if (camera_entity.is_valid()) {
-        auto camera = camera_entity.get<Camera2DComponent>();
+        auto camera = camera_entity.get_mut<Camera2DComponent>();
+
+        if (IsKeyDown(KEY_D))
+            camera->target.x += 2;
+        else if (IsKeyDown(KEY_A))
+            camera->target.x -= 2;
+        else if (IsKeyDown(KEY_S))
+            camera->target.y += 2;
+        else if (IsKeyDown(KEY_W))
+            camera->target.y -= 2;
+
+        if (IsKeyDown(KEY_LEFT))
+            camera->rotation--;
+        else if (IsKeyDown(KEY_RIGHT))
+            camera->rotation++;
 
         BeginDrawing();
-        ClearBackground(BLUE);
-
-        BeginMode2D(*camera);
         {
+            ClearBackground(BLUE);
             DrawTexture(gradientTex, 0, 0, WHITE);
 
-            // DrawText("Congrats! You created your first window!", 190, 200,
-            // 20, LIGHTGRAY);
+            BeginMode2D(*camera);
+            {
+                // DrawText("Congrats! You created your first window!", 190,
+                // 200, 20, LIGHTGRAY);
 
-            // loop for all sprites (sprite component + transform compoenent)
+                // loop for all sprites (sprite component + transform
+                // compoenent)
 
-            // loor for all
+                // loor for all
 
-            for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1; i++) {
-                DrawLineBezierCubic(points[i], points[i + 1], points[i], points[i + 1],
-                                    5, RED);
-            }
-
-            // Draw the control points and lines
-            if (DEBUG) {
-                for (int i = 0; i < sizeof(points) / sizeof(points[0]); i++) {
-                    DrawCircleV(points[i], 5, BLUE); // Draw control points as circles
+                for (int i = 0; i < sizeof(points) / sizeof(points[0]) - 1;
+                     i++) {
+                    DrawLineBezierCubic(points[i], points[i + 1], points[i],
+                                        points[i + 1], 5, RED);
                 }
+
+                // Draw the control points and lines
+                if (DEBUG) {
+                    for (int i = 0; i < sizeof(points) / sizeof(points[0]);
+                         i++) {
+                        DrawCircleV(points[i], 5,
+                                    BLUE); // Draw control points as circles
+                    }
+                }
+
+                DrawTexturePro(
+                    spriteTex, sourceRec, destRec,
+                    {(float)spriteTex.width, (float)spriteTex.height}, rotation,
+                    WHITE);
+                rotation++;
             }
 
-            DrawTexturePro(spriteTex, sourceRec, destRec,
-                           {(float)spriteTex.width, (float)spriteTex.height},
-                           rotation, WHITE);
-            rotation++;
+            EndMode2D();
         }
-
-        EndMode2D();
-
         EndDrawing();
     }
 }
