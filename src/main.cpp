@@ -1,5 +1,6 @@
 #include "components/mountain.h"
 #include "raylib.h"
+#include "systems/game_logic.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include <flecs.h>
@@ -14,6 +15,8 @@ int main() {
 
     world.import <graphics::RenderSystems>();
     world.import <PhysicSystems>();
+
+    initGameLogic(world);
 
     world.set<Mountain>({});
 
