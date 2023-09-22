@@ -111,7 +111,7 @@ void InputEntity::preUpdate() {
 
     // update gamepads
     gamepad_id = NO_GAMEPAD_ID;
-    if (current_input_type == InputType::USE_GAMEPAD) {
+    if (current_input_type == InputType::GAMEPAD) {
         int found_gamepads = 0;
         for (int i = 0; i < 8; ++i) {
             // TODO: find more elegant way for this
@@ -121,12 +121,16 @@ void InputEntity::preUpdate() {
                     gamepad_name.find("Controller") != std::string::npos ||
                     gamepad_name.find("gamepad") != std::string::npos)
             {
-                if (found_gamepads == player_id)
+                if (found_gamepads == gamepad_num)
                     gamepad_id = i;
                 found_gamepads++;
             }
         }
     }
+
+    // if no gamepads found, switch to keyboard
+    if (gamepad_id == NO_GAMEPAD_ID)
+        current_input_type = MOUSE_KEYBOARD;
 }
 
 const std::string &InputEntity::getEventDisplayName(Event event) const {
@@ -154,9 +158,28 @@ std::string InputEntity::getInputInfo() const {
 }
 
 bool InputEntity::hasGamepad() const {
-    return current_input_type == InputType::USE_GAMEPAD &&
+    return current_input_type == InputType::GAMEPAD &&
            getGamepadId() != NO_GAMEPAD_ID;
 }
-void InputEntity::setInputType(InputEntity::InputType type) {
+void InputEntity::setInputType(InputEntity::InputType type, int _gamepad_num) {
     current_input_type = type;
+    gamepad_num = _gamepad_num;
+}
+InputEntity::InputEntity(InputEntity::InputType input_type, int _gamepad_num) {
+    setInputType(input_type, _gamepad_num);
+}
+
+bool InputEntity::getMouseEvent(ButtonEvent event) const {
+    switch (event.keyPressType) {
+    case PRESSED:
+        return IsMouseButtonPressed(event.key);
+    case RELEASED:
+        return IsMouseButtonReleased(event.key);
+    case DOWN:
+        return IsMouseButtonDown(event.key);
+    case UP:
+        return IsMouseButtonUp(event.key);
+    default:
+        return false;
+    }
 }

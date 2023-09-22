@@ -9,9 +9,5 @@ void inputPreupdate(flecs::iter iter, InputEntity *entities) {
 InputSystems::InputSystems(flecs::world &world) {
     world.module<InputSystems>();
 
-    // add input entity as singleton
-    world.add<InputEntity>();
-    world.get_mut<InputEntity>()->setInputType(InputEntity::InputType::USE_GAMEPAD);
-
     world.system<InputEntity>().kind(flecs::PreUpdate).iter(inputPreupdate);
 }

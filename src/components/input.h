@@ -12,7 +12,7 @@
 
 static constexpr int NO_GAMEPAD_ID = -1;
 
-// Types of input devices
+// different input devices
 enum InputDevice { DEVICE_KEYBOARD, DEVICE_GAMEPAD, DEVICE_MOUSE, DEVICE_KINECT };
 
 // In game events
@@ -82,7 +82,6 @@ const std::unordered_map<Event, ButtonEvent> keyboard_key_map{
     {ITEM_DROP, {DEVICE_KEYBOARD, KEY_Q, PRESSED}},
     {SPECIAL_ABILITY, {DEVICE_KEYBOARD, KEY_G, PRESSED}},
     {PAUSE, {DEVICE_KEYBOARD, KEY_ESCAPE, PRESSED}}
-    // add other entries
 };
 
 const std::unordered_map<Event, ButtonEvent> gamepad_key_map{
@@ -113,17 +112,24 @@ const std::unordered_map<Axis, std::list<VirtualAxis>> virtual_axis_map{
          {{DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_FACE_RIGHT, DOWN},
           {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_FACE_LEFT, DOWN}},
      }},
-
 };
 
 
 class InputEntity {
   public:
-    enum InputType { USE_GAMEPAD, USE_MNK, USE_KINECT };
+    enum InputType { GAMEPAD, MOUSE_KEYBOARD, KINECT };
   private:
+    InputType current_input_type;
+    // number of the gamepad to use (if input type is Gamepad)
+    int gamepad_num;
+    // the gamepad id in raylib (if input type is Gamepad)
+    int gamepad_id = NO_GAMEPAD_ID;
+
     bool getGamepadEvent(ButtonEvent event) const;
 
     bool getKeyboardEvent(ButtonEvent event) const;
+
+    bool getMouseEvent(ButtonEvent event) const;
 
     double getGamepadAxis(GamepadAxis axis) const;
 
@@ -133,12 +139,9 @@ class InputEntity {
 
     double getVirtualAxis(VirtualAxis axis) const;
 
-    int player_id;
-    InputType current_input_type;
-    int gamepad_id = NO_GAMEPAD_ID;
-
   public:
     InputEntity();
+    InputEntity(InputType input_type, int gamepad_num = NO_GAMEPAD_ID);
 
     ~InputEntity();
 
@@ -151,7 +154,7 @@ class InputEntity {
      * One can choose between mouse/keyboard, gamepad and kinect
      * @param type
      */
-    void setInputType(InputType type);
+    void setInputType(InputType type, int gamepad_num = NO_GAMEPAD_ID);
 
     /**
      * gets formatted info about currently provided events and axis inputs

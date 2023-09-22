@@ -1,4 +1,5 @@
 #include "game_logic.h"
+#include "../components/input.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
 #include "../components/vector.h"
@@ -44,7 +45,8 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar) {
 }
 
 void initGameLogic(flecs::world &world) {
-    world.entity().add<Player>().set<Position>({200., 200.});
+    world.entity().add<Player>().set<Position>({200., 200.})
+        .set<InputEntity>({InputEntity::InputType::GAMEPAD, 0});
     world.set<KillBar>({0.});
 
     /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
