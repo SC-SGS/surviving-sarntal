@@ -9,8 +9,8 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -10.8;
-constexpr float_type EPSILON = 1;
+constexpr float_type GRAVITATIONAL_CONSTANT = -100.;
+constexpr float_type EPSILON = 1e-3;
 
 struct ClosestVertex {
     std::size_t index;
@@ -52,10 +52,9 @@ void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
  * //TODO so far, only force considered is gravity
  *
  * @param it
- * @param positions
  * @param velocities
  */
-void updateVelocity(flecs::iter it, Position *positions, Velocity *velocities);
+void updateVelocity(flecs::iter it, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.

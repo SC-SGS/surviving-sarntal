@@ -1,10 +1,6 @@
 #include "physics.h"
-#include "../components/mountain.h"
 #include "../components/render_components.h"
-#include "../components/vector.h"
 #include "flecs.h"
-#include "iostream"
-#include "raylib.h"
 #include <algorithm>
 #include <cmath>
 
@@ -93,41 +89,30 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
-                            Velocity &v2, const Radius r1, const Radius r2) {
-    float_type m1 = r1.value * r1.value;
-    float_type m2 = r2.value * r2.value;
-    float_type radius_sum = r1.value + r2.value;
+                            Velocity &v2, const Radius R1, const Radius R2) {
+    float_type m1 = R1.value * R1.value;
+    float_type m2 = R2.value * R2.value;
+    float_type radius_sum = R1.value + R2.value;
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
     float_type distance_sq = pos_diff_vector * pos_diff_vector;
-    Vector normal_vector =
-        pos_diff_vector / (distance_sq + EPSILON);
+    Vector normal_vector = pos_diff_vector / (distance_sq + EPSILON);
 
     // Velocity Update
     float_type total_mass = m1 + m2;
-    v1 -= pos_diff_vector * 2 * m2 * (vel_diff_vector * pos_diff_vector)
-          / (distance_sq * total_mass + EPSILON);
-    v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector)
-          / (distance_sq * total_mass + EPSILON);
+    v1 -= pos_diff_vector * 2 * m2 * (vel_diff_vector * pos_diff_vector) /
+          (distance_sq * total_mass + EPSILON);
+    v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
+          (distance_sq * total_mass + EPSILON);
 
     // Position update using new velocities
-
-    std::cout << v1.x << " " << v1.y << std::endl;
-    std::cout << normal_vector.x << " " << normal_vector.y << std::endl;
-
-    float_type normal_v1 = std::abs(v1 * normal_vector);
-    float_type normal_v2 = std::abs(v2 * normal_vector);
-
     float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
     float_type overlap1 = overlap * m2 / (m1 + m2);
     float_type overlap2 = overlap * m1 / (m1 + m2);
 
-    float_type exit_time1 = overlap1 / (normal_v1 + EPSILON);
-    float_type exit_time2 = overlap2 / (normal_v2 + EPSILON);
-
-    p1 += v1 * exit_time1;
-    p2 += v2 * exit_time2;
+    p1 += normal_vector * overlap1;
+    p2 -= normal_vector * overlap2;
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
@@ -145,12 +130,11 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
 
 void physics::updateState(flecs::iter it, Position *positions,
                           Velocity *velocities) {
-    updateVelocity(it, positions, velocities);
+    updateVelocity(it, velocities);
     updatePosition(it, positions, velocities);
 }
 
-void physics::updateVelocity(flecs::iter it, Position *positions,
-                             Velocity *velocities) {
+void physics::updateVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
         velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
     }
@@ -158,8 +142,6 @@ void physics::updateVelocity(flecs::iter it, Position *positions,
 
 void physics::updatePosition(flecs::iter it, Position *positions,
                              Velocity *velocities) {
-    std::cout << 1. / it.delta_time() << std::endl;
-
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
     }
@@ -167,8 +149,6 @@ void physics::updatePosition(flecs::iter it, Position *positions,
 
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
-
-
 
     world.system<Position, Velocity>().with<Rock>().iter(updateState);
 
@@ -180,8 +160,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .singleton()
         .iter(terrainCollision);
 
-    for (int i = 0; i < 30; i++) {
-        Position p{300.f - i * 20.f, 200.f + i * 25.f};
+    for (int i = 0; i < 20; i++) {
+        Position p{300.f, 200.f + 25.f * (float)i};
         Velocity v{0., 0.};
         makeRock(world, p, v, 10.f);
     }
