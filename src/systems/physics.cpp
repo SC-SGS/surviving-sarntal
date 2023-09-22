@@ -205,7 +205,7 @@ void physics::checkJumpEvent(Velocity *velocities,
         float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
-            factor = duckSpeedFactor;
+            factor = DUCK_SPEED_FACTOR;
         }
         if (player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
@@ -231,7 +231,7 @@ void physics::checkDuckEvent(Velocity *velocities,
     if (input_entities->getEvent(Event::DUCK) &&
         player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
-        velocities[0].x *= duckSpeedFactor;
+        velocities[0].x *= DUCK_SPEED_FACTOR;
         player_movements[0].current_state =
             PlayerMovement::MovementState::DUCKED;
         // heights[0].h = HIKER_HEIGHT/2;
@@ -252,7 +252,7 @@ void physics::checkXMovement(Velocity *velocities,
                 PlayerMovement::MovementState::MOVING;
         }
     }
-    velocities[0].x = normalSpeed * x_factor;
+    velocities[0].x = NORMAL_SPEED * x_factor;
 }
 
 void physics::checkAerialState(flecs::iter it, Velocity *velocities,
