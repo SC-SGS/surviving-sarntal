@@ -3,8 +3,8 @@
 #include "vector.h"
 #include <array>
 #include <cmath>
-#include <vector>
 #include <random>
+#include <vector>
 
 struct IndexInterval {
     std::size_t start_index;
@@ -16,7 +16,7 @@ class Mountain {
     /**
      * Number of Vertices explicitly stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{512};
+    static constexpr std::size_t NUMBER_OF_VERTICES{1024};
 
     /**
      * width covered by mountain generated at one point in time
@@ -103,13 +103,18 @@ class Mountain {
         landscape_fixpoints_circular_array{};
     std::size_t start_of_circular_array{0};
 
-    /** Generating a mountain using 2D Fractal Terrain Generation as described in this blogpost: http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
+    /** Generating a mountain using 2D Fractal Terrain Generation as described
+     * in this blogpost:
+     * http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
      *
      * @param leftIndex startIndex of the mountain section to be roughened
-     * @param rightIndex endIndex of the mountain section to be roughened. The Interval INCLUDES the right index
-     * @param displacement Constant defining how aggressive it should be roughened
+     * @param rightIndex endIndex of the mountain section to be roughened. The
+     * Interval INCLUDES the right index
+     * @param displacement Constant defining how aggressive it should be
+     * roughened
      */
-    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
+    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex,
+                                  float displacement);
 
     void generateSlope();
 
