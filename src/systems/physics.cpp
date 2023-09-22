@@ -50,6 +50,10 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     //      (  1    0  )
     Vector n = {sgn_n_x * -d.y, sgn_n_x * d.x};
     float_type normalization = std::sqrt(n * n);
+
+    if (n.y < 0) {
+        n = n * (-1);
+    }
     return n / normalization;
 }
 
