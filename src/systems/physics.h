@@ -12,7 +12,7 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -10.;
+constexpr float_type GRAVITATIONAL_CONSTANT = -1000.;
 constexpr float_type EPSILON = 1e-5;
 
 struct Vertex {
