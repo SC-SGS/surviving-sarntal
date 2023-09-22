@@ -107,13 +107,35 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
 
-    // Position update using new velocities
-    float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
-    float_type overlap1 = overlap * m2 / (m1 + m2);
-    float_type overlap2 = overlap * m1 / (m1 + m2);
+    float_type x1 = p1.x - p2.x;
+    float_type x2 = p1.y - p2.y;
+    float_type y1 = v2.x * (m2/m1 + 1);
+    float_type y2 = v2.y * (m2/m1 + 1);
 
-    p1 += normal_vector * overlap1;
-    p2 -= normal_vector * overlap2;
+    float_type b = 2*x1*y1 + 2*x2*y2;
+    b += std::sqrt( b*b - 4* (y1*y1 + y2*y2) * (x1*x1 + x2*x2 - (R1.value + R2.value)*(R1.value + R2.value)) );
+    b = b / (2* (y1*y1 + y2*y2));
+
+    float_type a = -b * m2 * v2.x / (m1 * v1.x);
+
+    a += EPSILON;
+    b += EPSILON;
+
+    p1 += v1 * a;
+    p2 += v2 * b;
+
+
+
+    // Position update using new velocities
+    /**
+     * float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
+float_type overlap1 = overlap * m2 / (m1 + m2);
+float_type overlap2 = overlap * m1 / (m1 + m2);
+
+p1 += normal_vector * overlap1;
+p2 -= normal_vector * overlap2;
+     */
+
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
