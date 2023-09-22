@@ -25,12 +25,12 @@ class Mountain {
     /**
      * Number of Vertices explicitely stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{200};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
 
     /**
      * width covered by mountain generated at one point in time
      */
-    static constexpr float MOUNTAIN_WIDTH{100.};
+    static constexpr float MOUNTAIN_WIDTH{1000.};
 
     /**
      * distance between two points of mountain
@@ -77,6 +77,16 @@ class Mountain {
      * @return Position (consisting of x- and y-coordinate)
      */
     Position getVertex(size_t index);
+
+    /**
+     * You can access all the points currently being held in the mountain
+     * datastructure via mountain.getVertice(a) with a in
+     * [indexInterval.start_index, indexInterval.end_index) example: the
+     * indexInterval goes from 2 to 23. Now you need to access all the points
+     * with the indices from 2 to 22
+     * @return
+     */
+    IndexInterval getIndexIntervalOfEntireMountain();
 
     /**
      * @return Returns start_index and end_index of the latest generated

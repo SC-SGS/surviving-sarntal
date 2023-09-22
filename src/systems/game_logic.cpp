@@ -49,7 +49,7 @@ void initGameLogic(flecs::world &world) {
         .set<Velocity>({0., 0.});
     world.set<KillBar>({0.});
 
-    world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
+    /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
 
     world.system<Position, KillBar>()
         .with<Player>()
@@ -67,5 +67,5 @@ void initGameLogic(flecs::world &world) {
         .with<Player>()
         .term_at(2)
         .singleton()
-        .iter(moveCamera);
+        .iter(moveCamera);*/
 }
