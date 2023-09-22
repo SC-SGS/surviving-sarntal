@@ -1,4 +1,5 @@
 #include "game_logic.h"
+#include "../components/input.h"
 #include "../components/mountain.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
@@ -107,7 +108,16 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
 }
 
 void initGameLogic(flecs::world &world) {
-    world.entity().add<Player>().set<Position>({200., 200.});
+    world.entity()
+        .add<Player>()
+        .set<Position>({200., 200.})
+        .set<Velocity>({0., 0.})
+        .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
+                              PlayerMovement::Direction::NEUTRAL, true, 0})
+        .set<graphics::CircleShapeRenderComponent>({HIKER_HEIGHT})
+        .set<Height>({HIKER_HEIGHT})
+        .set<Width>({HIKER_WIDTH})
+        .set<InputEntity>({});
     world.set<KillBar>({0.});
 
     world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
