@@ -65,7 +65,7 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
 }
 
 void Mountain::generateNewChunk() {
-    std::cout << "Chunk generated" << std::endl;
+    //std::cout << "Chunk generated" << std::endl;
     generateSlope();
     generateTerrainRecursive(
         start_of_circular_array,
@@ -123,7 +123,7 @@ void Mountain::generateTerrainRecursive(std::size_t leftIndex,
     if (leftIndex == rightIndex)
         return;
 
-    if (leftIndex + 64 >= rightIndex)
+    if (leftIndex + 16 >= rightIndex)
         displacement = 0;
 
     std::random_device hardware_random_generator;

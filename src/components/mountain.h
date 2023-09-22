@@ -40,7 +40,7 @@ class Mountain {
     /** value beween 0 and 1 (prefereably between 0.5 and 0.75)
      *
      */
-    static constexpr float ROUGHNESS_TERRAIN{0.35};
+    static constexpr float ROUGHNESS_TERRAIN{0.4};
 
     Mountain();
 
