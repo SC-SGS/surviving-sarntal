@@ -8,11 +8,11 @@ constexpr float HIKER_WIDTH = 10;
 
 struct Player {};
 
-struct Height{
+struct Height {
     float h;
 };
 
-struct Width{
+struct Width {
     float w;
 };
 

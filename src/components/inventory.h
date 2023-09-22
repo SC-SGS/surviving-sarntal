@@ -3,27 +3,23 @@
 
 #include "flecs.h"
 #include "string"
+#include <array>
 #include <list>
 #include <raylib.h>
 #include <unordered_map>
-#include <array>
 #include <vector>
-
 
 struct Item {
     std::string name;
 };
 
-std::array<Item, 1> items {
-    { "TestItem" }
-};
+std::array<Item, 1> items{{"TestItem"}};
 
 constexpr int NO_ITEM = -1;
 
 struct ItemSlot {
     int item_id = NO_ITEM;
 };
-
 
 class Inventory {
   private:
@@ -33,12 +29,8 @@ class Inventory {
     size_t slotCount() { return slots.size(); }
 
   public:
-    void pickup(int item_id) {
-        slots[selected_slot].item_id = item_id;
-    }
-    void drop() {
-        slots[selected_slot].item_id = NO_ITEM;
-    }
+    void pickup(int item_id) { slots[selected_slot].item_id = item_id; }
+    void drop() { slots[selected_slot].item_id = NO_ITEM; }
 
     void use() {
         // TODO
