@@ -280,7 +280,7 @@ Mesh generate_chunk_mesh() {
     // Vertex at (1, 0, 2)
     mesh.vertices[3] = 10;
     mesh.vertices[4] = 0;
-    mesh.vertices[5] = 20;
+    mesh.vertices[5] = 0;
     mesh.normals[3] = 0;
     mesh.normals[4] = 1;
     mesh.normals[5] = 0;
@@ -288,9 +288,9 @@ Mesh generate_chunk_mesh() {
     mesh.texcoords[3] = 1.0f;
 
     // Vertex at (2, 0, 0)
-    mesh.vertices[6] = 20;
+    mesh.vertices[6] = 10;
     mesh.vertices[7] = 0;
-    mesh.vertices[8] = 0;
+    mesh.vertices[8] = 10;
     mesh.normals[6] = 0;
     mesh.normals[7] = 1;
     mesh.normals[8] = 0;
