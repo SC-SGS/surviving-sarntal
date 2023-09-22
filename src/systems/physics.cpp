@@ -43,7 +43,7 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     // calc distances
     Position vertex = m->getVertex(idx);
     Vector d = vertex - vertex_other;
-    // compute normal from distances via rotationd
+    // compute normal from distances via rotation
     // signbit is used to let normal vector always point in positive y direction
     float_type sgn_n_x = ((float_type)std::signbit(-d.y) - 0.5f) * 2.f;
     // R =  (  0   -1  )
@@ -170,21 +170,11 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .with<Player>()
         .iter(updatePlayerState);
 
-    auto mountain = world.get_mut<Mountain>();
-    float x_coord = 500.;
-    float starting_y_coord =
-        mountain
-            ->getVertex(
-                mountain->getRelevantMountainSection(x_coord, x_coord + 0.1)
-                    .start_index)
-            .x +
-        25.;
-
-    for (int i = 0; i < 20; i++) {
-        Position p{x_coord, starting_y_coord + 50.f * (float)i};
-        Velocity v{0., 0.};
-        makeRock(world, p, v, 10.f);
-    }
+    // for (int i = 0; i < 20; i++) {
+    //     Position p{300.f + 200.f, 25.f * (float)i};
+    //     Velocity v{0., 0.};
+    //     makeRock(world, p, v, 10.f);
+    // }
 }
 
 void physics::updatePlayerState(flecs::iter it, Position *positions,
