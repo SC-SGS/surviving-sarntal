@@ -236,9 +236,9 @@ void render_system(flecs::iter &iter) {
 void init_render_system(flecs::world &world) {
     InitWindow(screenWidth, screenHeight, WINDOW_NAME);
 
-    background_tex = LoadTexture("../assets/layers/raylib_512x512.png");
-    midground_tex = LoadTexture("../assets/layers/raylib_512x512.png");
-    foreground_tex = LoadTexture("../assets/layers/raylib_512x512.png");
+    background_tex = LoadTexture("../assets/layers/glacial_mountains.png");
+    midground_tex = LoadTexture("../assets/layers/sky.png");
+    foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
 
 
 
@@ -306,18 +306,46 @@ void init_render_system(flecs::world &world) {
                       }))
                       .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                       });
+
+    auto background = world.entity("Background")
+                         .set([&](SpriteComponent &c) {
+                             c = {0};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     background_tex);
+                             c.width = 100;
+                             c.height = 100;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 0;
+                             c.y = 0;
+                         }))
+                         .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                         });
+
+    auto foreground = world.entity("Foreground")
+                          .set([&](SpriteComponent &c) {
+                              c = {0};
+                              c.resourceHandle =
+                                  world.get_mut<Resources>()->textures.Load(
+                                      foreground_tex);
+                              c.width = 100;
+                              c.height = 100;
+                          })
+                          .set(([&](Position &c) {
+                              c.x = 0;
+                              c.y = 0;
+                          }))
+                          .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                          });
 }
 
 void destroy() {
     CloseWindow();
     UnloadTexture(gradientTex);
-/*
     UnloadTexture(background_tex);
-*/
     UnloadTexture(midground_tex);
-/*
     UnloadTexture(foreground_tex);
-*/
 }
 
 } // namespace graphics
