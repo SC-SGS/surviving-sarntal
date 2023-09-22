@@ -254,48 +254,97 @@ void init_render_system(flecs::world &world) {
 
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh() {
+    
+    
+    int triangleCount = 2;
+    int vertexCount = triangleCount * 3;
+    std::vector<float> vertices;
+    //(vertexCount * 3);
+    std::vector<float> texcoords;
+    //(vertexCount * 2);
+    std::vector<float> normals;
+    //(vertexCount * 3);
+
+
+    // demo terrain
+    int terrainVertexCount = 10;
+    std::vector<Vector3> terrainVertices;
+    for (int i = 0; i < terrainVertexCount; i++) {
+        terrainVertices.push_back({(float)i, 0, (float)(i%2)});
+    }
+
+    for (int i = 1; i < terrainVertexCount; i++) { // skip first tereain vertex
+        // draw 2 triangles
+
+        // first triangle
+        auto v0 = terrainVertices[i - 1]; // terrain vertex i-1
+        auto v1 = terrainVertices[i]; // terrain vertex i
+        
+        vertices.push_back(v1.x);
+        vertices.push_back(v1.y);
+        vertices.push_back(v1.z);
+
+        vertices.push_back(v0.x); 
+        vertices.push_back(v0.y); 
+        vertices.push_back(v0.z);
+
+        vertices.push_back(v1.x);
+        vertices.push_back(v1.y);
+        vertices.push_back(v1.z - 1.0);   // below terrain vertex i-1
+
+
+        // second triangle
+        vertices.push_back(v1.x);
+        vertices.push_back(v1.y);
+        vertices.push_back(v1.z);
+
+        vertices.push_back(v0.x);
+        vertices.push_back(v0.y);
+        vertices.push_back(v0.z);
+
+        vertices.push_back(v0.x);
+        vertices.push_back(v0.y);
+        vertices.push_back(v0.z - 1.0); // below terrain vertex i
+
+    }
+
+    //// Vertex at (0, 0, 0)
+    //vertices[0] = 0;
+    //vertices[1] = 0;
+    //vertices[2] = 0;
+    //normals[0] = 0;
+    //normals[1] = 1;
+    //normals[2] = 0;
+    //texcoords[0] = 0;
+    //texcoords[1] = 0;
+
+    //// Vertex at (1, 0, 2)
+    //vertices[3] = 10;
+    //vertices[4] = 0;
+    //vertices[5] = 0;
+    //normals[3] = 0;
+    //normals[4] = 1;
+    //normals[5] = 0;
+    //texcoords[2] = 0.5f;
+    //texcoords[3] = 1.0f;
+
+    //// Vertex at (2, 0, 0)
+    //vertices[6] = 10;
+    //vertices[7] = 0;
+    //vertices[8] = 10;
+    //normals[6] = 0;
+    //normals[7] = 1;
+    //normals[8] = 0;
+    //texcoords[4] = 1;
+    //texcoords[5] = 0;    
+    
     Mesh mesh = {0};
-    mesh.triangleCount = 1;
-    mesh.vertexCount = mesh.triangleCount * 3;
-    mesh.vertices = (float *)MemAlloc(
-        mesh.vertexCount * 3 *
-        sizeof(float)); // 3 vertices, 3 coordinates each (x, y, z)
-    mesh.texcoords = (float *)MemAlloc(
-        mesh.vertexCount * 2 *
-        sizeof(float)); // 3 vertices, 2 coordinates each (x, y)
-    mesh.normals = (float *)MemAlloc(
-        mesh.vertexCount * 3 *
-        sizeof(float)); // 3 vertices, 3 coordinates each (x, y, z)
+    mesh.triangleCount = triangleCount;
+    mesh.vertexCount = vertexCount;
+    mesh.vertices = vertices.data(); // 3 vertices, 3 coordinates each (x, y, z)
+    mesh.texcoords = texcoords.data(); // 3 vertices, 2 coordinates each (x, y)
+    mesh.normals = normals.data(); // 3 vertices, 3 coordinates each (x, y, z)
 
-    // Vertex at (0, 0, 0)
-    mesh.vertices[0] = 0;
-    mesh.vertices[1] = 0;
-    mesh.vertices[2] = 0;
-    mesh.normals[0] = 0;
-    mesh.normals[1] = 1;
-    mesh.normals[2] = 0;
-    mesh.texcoords[0] = 0;
-    mesh.texcoords[1] = 0;
-
-    // Vertex at (1, 0, 2)
-    mesh.vertices[3] = 10;
-    mesh.vertices[4] = 0;
-    mesh.vertices[5] = 0;
-    mesh.normals[3] = 0;
-    mesh.normals[4] = 1;
-    mesh.normals[5] = 0;
-    mesh.texcoords[2] = 0.5f;
-    mesh.texcoords[3] = 1.0f;
-
-    // Vertex at (2, 0, 0)
-    mesh.vertices[6] = 10;
-    mesh.vertices[7] = 0;
-    mesh.vertices[8] = 10;
-    mesh.normals[6] = 0;
-    mesh.normals[7] = 1;
-    mesh.normals[8] = 0;
-    mesh.texcoords[4] = 1;
-    mesh.texcoords[5] = 0;
 
     // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
     UploadMesh(&mesh, false);
@@ -306,6 +355,7 @@ Mesh generate_chunk_mesh() {
 void destroy() {
     CloseWindow();
     UnloadTexture(gradientTex);
+    //UnloadModel(model);
 }
 
 } // namespace graphics
