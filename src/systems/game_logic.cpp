@@ -2,6 +2,7 @@
 #include "../components/player.h"
 #include "../components/render_components.h"
 #include "../components/vector.h"
+#include "../components/mountain.h"
 #include "iostream"
 #include "raylib.h"
 
@@ -36,18 +37,44 @@ void debugRenderPlayer(flecs::iter it, Position *position, KillBar *killBar) {
     EndDrawing();
 }
 
-void moveCamera(flecs::iter it, Position *position, KillBar *killBar) {
+void moveCamera(flecs::iter it, Position *position, KillBar *killBar, Mountain* mountain) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
-    camera->target.x = killBar->x;
-    camera->target.y = position[0].y;
+    camera->target.x = (killBar->x)+graphics::SCREEN_WIDTH/2;
+    //fix camera to y-coord of player
+    //camera->target.y = position[0].y;
+
+    //this abomination of a term is taking the y coordinate of the leftmost mountain vertex that is just barely on the screen
+    //and offsetting it by a constant factor of the screen height
+    //if there aren't enough points the camera will jerk upwards. with enough points this will do a smooth upwards motion
+    camera->target.y = mountain->getVertex(mountain->getRelevantMountainSection(killBar->x, killBar->x + 0.1).start_index).y + graphics::screenHeight*0.33;
+
+
+    //std::cout << "Camera position: " << camera->target.y << " mountain left height: " << mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).y << std::endl;
+}
+
+
+/**
+ * Checks if a new chunk should be generated and tells the mountain to generate a new chunk if needed
+ * @param it
+ * @param mountain
+ * @param killBar
+ */
+void chunkSystem(flecs::iter it, Mountain* mountain, KillBar* killBar){
+    float current_left_edge_screen{killBar->x};
+    float leftest_point_of_mountain{mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).x};
+    constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{95.0};
+    if(leftest_point_of_mountain < current_left_edge_screen - Mountain::CHUNK_WIDTH - CHUNK_DESTROY_BUFFER_CONSTANT){
+        //std::cout << "chunk generated" << std::endl;
+        mountain->generateNewChunk();
+    }
 }
 
 void initGameLogic(flecs::world &world) {
     world.entity().add<Player>().set<Position>({200., 200.});
     world.set<KillBar>({0.});
 
-    /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
+    world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
 
     world.system<Position, KillBar>()
         .with<Player>()
@@ -61,9 +88,18 @@ void initGameLogic(flecs::world &world) {
         .singleton()
         .iter(debugRenderPlayer);
 
-    world.system<Position, KillBar>()
+    /*world.system<Position, KillBar>()
         .with<Player>()
         .term_at(2)
         .singleton()
         .iter(moveCamera);*/
+
+    world.system<Position, KillBar, Mountain>()
+        .with<Player>()
+        .term_at(2)
+        .singleton()
+        .term_at(3).singleton()
+        .iter(moveCamera);
+
+    world.system<Mountain, KillBar>().term_at(1).singleton().term_at(2).singleton().iter(chunkSystem);
 }

@@ -4,6 +4,9 @@
 #include "string"
 
 namespace graphics {
+constexpr int screenWidth = 800;
+constexpr int screenHeight = 450;
+
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
 

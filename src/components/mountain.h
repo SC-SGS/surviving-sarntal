@@ -5,16 +5,6 @@
 #include <cmath>
 #include <vector>
 
-const float MOUNTAIN_WIDTH{
-    100.}; // width covered by mountain generated at one point in time
-const float SECTION_WIDTH{0.5};
-const std::size_t NUMBER_OF_FIXPOINTS{
-    200}; // number_of_fixpoints = (size_t) std::ceil(mountain_width /
-          // section_width), manually adjust that if needed
-const float CHUNK_WIDTH{5.};
-
-const float SLOPE{0.5}; // steepness of ramp generated in prototype
-
 struct IndexInterval {
     std::size_t start_index;
     std::size_t end_index;
@@ -37,14 +27,14 @@ class Mountain {
      */
     static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
 
-    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
+    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 100;
 
     static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
 
     /**
      * steepness of ramp generated in prototype
      */
-    static constexpr float SLOPE{0.5};
+    static constexpr float SLOPE{0.25};
 
     Mountain();
 

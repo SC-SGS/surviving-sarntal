@@ -20,9 +20,9 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
-    initGameLogic(world);
-
     world.set<Mountain>({});
+
+    initGameLogic(world);
 
     world.set<AppInfo>({});
 
