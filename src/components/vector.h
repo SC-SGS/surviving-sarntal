@@ -25,6 +25,8 @@ struct Vector {
 
     Vector operator-(Vector const &) const;
 
+    void operator-=(Vector const &);
+
     Vector operator*(float_type) const;
 
     float_type operator*(Vector const &) const;
@@ -34,6 +36,8 @@ struct Vector {
     void operator/=(float_type);
 
     [[nodiscard]] float_type distanceTo(Vector const &) const;
+
+    [[nodiscard]] float_type length() const;
 
     [[nodiscard]] Vector reflectOnNormal(Vector const &) const;
 };
