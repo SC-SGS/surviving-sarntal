@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../components/mountain.h"
+#include "../components/vector.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
 #include "flecs.h"
@@ -9,126 +10,111 @@ struct PhysicSystems {
     explicit PhysicSystems(flecs::world &world);
 };
 
+namespace physics {
+constexpr float_type GRAVITATIONAL_CONSTANT = -1000.8;
+constexpr float_type EPSILON = 0.1;
+
 struct Vertex {
     std::size_t index;
     float distance;
 };
 
-constexpr float GRAVITATIONAL_CONSTANT = 1000.8;
+/**
+ * Create new circular rock, register the new entity with the world,
+ * and initialize it with given component values.
+ *
+ * @param world
+ * @param p position
+ * @param v velocity
+ * @param r radius, should be several times larger than section width in
+ * mountain.h
+ */
+void makeRock(const flecs::world &world, Position p, Velocity v,
+              float_type radius);
 
+/**
+ * Updates velocity and position of a rock.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ */
+void updateState(flecs::iter it, Position *positions, Velocity *velocities);
 
+/**
+ * Reset the rock to be outside of the terrain and reflect the velocity
+ */
+void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
+                      Radius *r, Mountain *m);
 
-class Collisions {};
+/**
+ * Updates velocity of a rock.
+ * //TODO so far, only force considered is gravity
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ */
+void updateVelocity(flecs::iter it, Position *positions, Velocity *velocities);
 
-class RockTools {
+/**
+ * Updates position of a rock: pos_new = pos_old + v*dt.
+ * Assumes that velocities have been updated beforehand.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ */
+void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
 
-  public:
-    /**
-     * Create new circular rock, register the new entity with the world,
-     * and initialize it with given component values.
-     *
-     * @param world
-     * @param p position
-     * @param v velocity
-     * @param r radius, should be several times larger than section width in
-     * mountain.h
-     */
-    static void makeRock(const flecs::world &world, Position p, Velocity v,
-                         Radius r);
+/**
+ * Given a rock, find the closest vertex of the ground.
+ *
+ * @param it
+ * @param position
+ * @param radius
+ * @param mountain
+ * @return int index, float distance
+ */
+Vertex getClosestVertex(Position position, Radius radius,
+                               Mountain *mountain);
 
-    /**
-     * Updates velocity and position of a rock.
-     *
-     * @param it
-     * @param positions
-     * @param velocities
-     */
-    static void updateState(flecs::iter it, Position *positions,
-                            Velocity *velocities);
+/**
+ * Find the normal vector of a given vertex
+ * Calculate, which of the neighbouring points is closer and compute the
+ * normal corresponding to the connection line between these two
+ * TODO: circular array -> mod size
+ * TODO: add noise for later
+ * @return normal_vector_x, normal_vector_y
+ */
+Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
 
-  private:
-    /**
-     * Updates velocity of a rock.
-     * //TODO so far, only force considered is gravity
-     *
-     * @param it
-     * @param positions
-     * @param velocities
-     */
-    static void updateVelocity(flecs::iter it, Position *positions,
-                               Velocity *velocities);
+/**
+ * reflect the incident velocity when bouncing off the terrain
+ * @param velocity
+ * @param normal_vector
+ * @return exit_velocity
+ */
 
-    /**
-     * Updates position of a rock: pos_new = pos_old + v*dt.
-     * Assumes that velocities have been updated beforehand.
-     *
-     * @param it
-     * @param positions
-     * @param velocities
-     */
-    static void updatePosition(flecs::iter it, Position *positions,
-                               Velocity *velocities);
+/**
+ * TODO: collision detection is already handled?
+ * TODO: should this be public?
+ * takes two rocks and updates their velocities and positions
+ * after colliding
+ * @param p1
+ * @param p2
+ * @param v1
+ * @param v2
+ * @param r1
+ * @param r2
+ */
+void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
+                   Radius r1, Radius r2);
 
-    class TerrainCollisions {
+void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
+                       Radius r1, Radius r2);
 
-        /**
-         * Given a rock, find the closest vertex of the ground.
-         *
-         * @param it
-         * @param position
-         * @param radius
-         * @param mountain
-         * @return int index, float distance
-         */
-        static Vertex getClosestVertex(flecs::iter it, Position position,
-                                       Radius radius, Mountain &mountain);
-
-        /**
-         * Find the normal vector of a given vertex
-         * Calculate, which of the neighbouring points is closer and compute the
-         * normal corresponding to the connection line between these two
-         * TODO: circular array -> mod size
-         * TODO: add noise for later
-         * @return normal_vector_x, normal_vector_y
-         */
-        static Position getNormal(std::size_t idx, Position rock_pos,
-                                  Mountain &m);
-
-        /**
-         * Reset the rock to be outside of the terrain and reflect the velocity
-         */
-        static void terrainCollision();
-    };
-
-    class RockCollisions {
-      public:
-        /**
-         * Let all colliding Rocks collide and update their positions and
-         * velocities. (TODO necessary?)
-         */
-        static void rockCollisions(flecs::world &world);
-
-      private:
-        /**
-         * Let a pair of rocks collide and update their positions and
-         * velocities.
-         */
-        static void rockCollision(flecs::world &world);
-
-        /**
-         * Adds a "CollidesWith" pair to two rocks if they collide
-         */
-        static void pairCollidingRocks(flecs::world &world);
-
-        /**
-         * Adds pair "PossiblyCollidesWith" to pairs of possibly colliding
-         * rocks.
-         */
-        static void pairPossiblyCollidingRocks(flecs::iter it,
-                                               Position *positions,
-                                               Radius *radii);
-    };
-};
+}
 
 class PlayerTools {
   public:
@@ -138,3 +124,5 @@ class PlayerTools {
   private:
     static float getYPosFromX(const flecs::world &world, float x);
 };
+
+// namespace physics

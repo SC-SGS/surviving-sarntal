@@ -1,7 +1,7 @@
 #include "game_logic.h"
-#include "../components/particle_state.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
+#include "../components/vector.h"
 #include "iostream"
 #include "raylib.h"
 
@@ -14,6 +14,7 @@ void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
 
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
+        exit(0);
     }
 }
 
