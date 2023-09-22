@@ -1,6 +1,9 @@
 #pragma once
 
+#include "../components/input.h"
 #include "../components/mountain.h"
+#include "../components/particle_state.h"
+#include "../components/player.h"
 #include "../components/vector.h"
 #include "flecs.h"
 
@@ -9,15 +12,13 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -100.;
+constexpr float_type GRAVITATIONAL_CONSTANT = -1000.;
 constexpr float_type EPSILON = 1e-3;
 
-struct ClosestVertex {
+struct Vertex {
     std::size_t index;
     float distance;
 };
-
-class Collisions {};
 
 /**
  * Create new circular rock, register the new entity with the world,
@@ -39,7 +40,7 @@ void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-void updateState(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockState(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
@@ -54,7 +55,7 @@ void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
  * @param it
  * @param velocities
  */
-void updateVelocity(flecs::iter it, Velocity *velocities);
+void updateRockVelocity(flecs::iter it, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.
@@ -64,7 +65,8 @@ void updateVelocity(flecs::iter it, Velocity *velocities);
  * @param positions
  * @param velocities
  */
-void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockPosition(flecs::iter it, Position *positions,
+                        Velocity *velocities);
 
 /**
  * Given a rock, find the closest vertex of the ground.
@@ -75,8 +77,7 @@ void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
  * @param mountain
  * @return int index, float distance
  */
-ClosestVertex getClosestVertex(Position position, Radius radius,
-                               Mountain *mountain);
+Vertex getClosestVertex(Position position, Radius radius, Mountain *mountain);
 
 /**
  * Find the normal vector of a given vertex
@@ -117,5 +118,30 @@ bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
 
 void rockRockInteractions(flecs::iter it, Position *positions,
                           Velocity *velocities, Radius *radius);
+
+/**
+ * Updates the state of a player by first updating velocity based on input
+ * and current state and afterwards changing position according to velocity in
+ * one time step.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void updatePlayerState(flecs::iter it, Position *positions,
+                       Velocity *velocities, PlayerMovement *player_movements,
+                       InputEntity *input_entities);
+
+/**
+ * Returns the exact y coordinate of the mountain at a given x position
+ * through linear interpolation.
+ *
+ * @param world
+ * @param x
+ * @return the y coordinate
+ */
+float getYPosFromX(const flecs::world &world, float x);
 
 } // namespace physics
