@@ -255,8 +255,9 @@ void init_render_system(flecs::world &world) {
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh() {
     
-    
-    int triangleCount = 2;
+    int terrainVertexCount = 10;
+
+    int triangleCount = (terrainVertexCount-1)*2;
     int vertexCount = triangleCount * 3;
     std::vector<float> vertices;
     //(vertexCount * 3);
@@ -267,11 +268,11 @@ Mesh generate_chunk_mesh() {
 
 
     // demo terrain
-    int terrainVertexCount = 10;
     std::vector<Vector3> terrainVertices;
     for (int i = 0; i < terrainVertexCount; i++) {
         terrainVertices.push_back({(float)i, 0, (float)(i%2)});
     }
+
 
     for (int i = 1; i < terrainVertexCount; i++) { // skip first tereain vertex
         // draw 2 triangles
@@ -288,9 +289,9 @@ Mesh generate_chunk_mesh() {
         vertices.push_back(v0.y); 
         vertices.push_back(v0.z);
 
-        vertices.push_back(v1.x);
-        vertices.push_back(v1.y);
-        vertices.push_back(v1.z - 1.0);   // below terrain vertex i-1
+        vertices.push_back(v0.x);
+        vertices.push_back(v0.y);
+        vertices.push_back(v0.z - 1.0);   // below terrain vertex i-1
 
 
         // second triangle
@@ -300,11 +301,11 @@ Mesh generate_chunk_mesh() {
 
         vertices.push_back(v0.x);
         vertices.push_back(v0.y);
-        vertices.push_back(v0.z);
+        vertices.push_back(v0.z-1.0);
 
-        vertices.push_back(v0.x);
-        vertices.push_back(v0.y);
-        vertices.push_back(v0.z - 1.0); // below terrain vertex i
+        vertices.push_back(v1.x);
+        vertices.push_back(v1.y);
+        vertices.push_back(v1.z - 1.0); // below terrain vertex i
 
     }
 
