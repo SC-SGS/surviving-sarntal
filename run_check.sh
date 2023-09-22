@@ -15,12 +15,7 @@ if wait $pid
 then
   echo "Executable ran with exit code: ${status_code}"
   #echo "Executable encountered an error or exceeded the timeout."
-  #if $status_code == 124
-  #then
-  #else
-    # Optionally, forcefully terminate the process
-    # kill -9 $pid
-  #fi
+  #$status_code == 124
 else
   echo "Executable ran with exit code: ${status_code}"
   #echo "Executable ran successfully without errors."
