@@ -34,7 +34,7 @@ int main() {
 void mainLoop(flecs::world &world) {
     world.progress(0);
 
-    SetTargetFPS(60);
+    SetTargetFPS(1000);
 
     auto app_info = world.get<AppInfo>();
 
