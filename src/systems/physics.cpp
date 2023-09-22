@@ -5,8 +5,11 @@
 #include "flecs.h"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 using namespace physics;
+
+///////////////////////////////////////////////////////////////////////////////
 
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
@@ -148,53 +151,25 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
     }
 }
 
-PhysicSystems::PhysicSystems(flecs::world &world) {
-    world.module<PhysicSystems>();
-
-    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
-        updateRockState);
-
-    world.system<Position, Velocity, Radius>().with<Rock>().iter(
-        rockRockInteractions);
-
-    world.system<Position, Velocity, Radius, Mountain>()
-        .term_at(4)
-        .singleton()
-        .iter(terrainCollision);
-
-    world.system<Position, Velocity, PlayerMovement, InputEntity>()
-        .with<Player>()
-        .iter(updatePlayerState);
-
-    for (int i = 0; i < 20; i++) {
-        Position p{300.f + 200.f, 25.f * (float)i};
-        Velocity v{0., 0.};
-        makeRock(world, p, v, 10.f);
-    }
-}
-
 void physics::updatePlayerState(flecs::iter it, Position *positions,
                                 Velocity *velocities,
                                 PlayerMovement *player_movements,
-                                InputEntity *input_entities) {
-
-    if (playerIsHit(it, positions, velocities, player_movements,
-                    input_entities)) {
-        printf("Player Unalive!");
-    }
+                                InputEntity *input_entities, Height *heights,
+                                Width *widths) {
 
     updatePlayerVelocity(it, positions, velocities, player_movements,
-                         input_entities);
+                         input_entities, heights);
     updatePlayerPosition(it, positions, velocities, player_movements);
 }
 
 void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
                                    Velocity *velocities,
                                    PlayerMovement *player_movements,
-                                   InputEntity *input_entities) {
+                                   InputEntity *input_entities,
+                                   Height *heights) {
 
     checkJumpEvent(velocities, player_movements, input_entities);
-    checkDuckEvent(velocities, player_movements, input_entities);
+    checkDuckEvent(velocities, player_movements, input_entities, heights);
     checkXMovement(velocities, player_movements, input_entities);
     checkAerialState(it, velocities, player_movements, input_entities);
     checkDirection(velocities, player_movements, input_entities);
@@ -219,7 +194,6 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
     } else {
         positions[0].y = terrain_y;
     }
-    positions[0].y += .5 * HIKER_HEIGHT;
 }
 
 void physics::checkJumpEvent(Velocity *velocities,
@@ -248,15 +222,17 @@ void physics::checkJumpEvent(Velocity *velocities,
     }
 }
 
+// TODO not ducking anymore
 void physics::checkDuckEvent(Velocity *velocities,
                              PlayerMovement *player_movements,
-                             InputEntity *input_entities) {
+                             InputEntity *input_entities, Height *heights) {
     if (input_entities->getEvent(Event::DUCK) &&
         player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
         velocities[0].x *= duckSpeedFactor;
         player_movements[0].current_state =
             PlayerMovement::MovementState::DUCKED;
+        // heights[0].h = HIKER_HEIGHT/2;
     }
 }
 
@@ -330,5 +306,79 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
 
     return ((x - vertex_left.x) * vertex_right.y +
             (vertex_right.x - x) * vertex_left.y) /
-           (vertex_right.x - vertex_left.x);
+               (vertex_right.x - vertex_left.x) +
+           HIKER_HEIGHT;
+}
+
+void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
+                               Radius *radii) {
+    rock_it.world()
+        .filter_builder<Width, Height, Position>()
+        .with<Player>()
+        .build()
+        .iter([&](flecs::iter player_it, Width *widths, Height *heights,
+                  Position *player_positions) {
+            auto w = widths[0].w;
+            auto h = heights[0].h;
+            auto player_position = player_positions[0];
+            bool is_hit = false;
+            for (auto i : rock_it) {
+                auto rock_position = rock_positions[i];
+                auto x_centre_distance =
+                    std::abs(player_position.x - rock_position.x);
+                auto y_centre_distance =
+                    std::abs(player_position.y - rock_position.y);
+                auto r = radii[i].value;
+
+                if (x_centre_distance > w / 2 + r ||
+                    y_centre_distance > h / 2 + r) {
+                } else if (x_centre_distance <= w / 2 ||
+                           y_centre_distance <= h / 2) {
+                    is_hit = true;
+                } else {
+
+                    auto corner_distance_sq =
+                        std::pow(x_centre_distance - w / 2, 2) +
+                        std::pow(y_centre_distance - h / 2, 2);
+
+                    if (corner_distance_sq <= std::pow(r, 2)) {
+                        is_hit = true;
+                    }
+                }
+                if (is_hit) {
+                    // TODO end animation or sth.
+                    std::cout << "Player unalive" << std::endl;
+                    rock_it.world().get_mut<AppInfo>()->isRunning = false;
+                }
+            }
+        });
+}
+
+PhysicSystems::PhysicSystems(flecs::world &world) {
+    world.module<PhysicSystems>();
+
+    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
+        updateRockState);
+
+    world.system<Position, Velocity, Radius>().with<Rock>().iter(
+        rockRockInteractions);
+
+    world.system<Position, Radius>().with<Rock>().iter(checkPlayerIsHit);
+
+    world.system<Position, Velocity, Radius, Mountain>()
+        .term_at(4)
+        .singleton()
+        .iter(terrainCollision);
+
+    world
+        .system<Position, Velocity, PlayerMovement, InputEntity, Height,
+                Width>()
+        .with<Player>()
+        .iter(updatePlayerState);
+
+    for (int i = 0; i < 20; i++) {
+        Position p{300.f + 200.f, 25.f * (float)i};
+        Velocity v{0., 0.};
+        makeRock(world, p, v, 10.f);
+    }
 }

@@ -12,8 +12,8 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -1000.;
-constexpr float_type EPSILON = 1e-3;
+
+constexpr float_type CO = 100.f;
 
 struct Vertex {
     std::size_t index;
@@ -132,7 +132,8 @@ void rockRockInteractions(flecs::iter it, Position *positions,
  */
 void updatePlayerState(flecs::iter it, Position *positions,
                        Velocity *velocities, PlayerMovement *player_movements,
-                       InputEntity *input_entities);
+                       InputEntity *input_entities, Height *heights,
+                       Width *widths);
 
 /**
  * Updates Player's Position based on velocity and current state.
@@ -159,7 +160,7 @@ void updatePlayerPosition(flecs::iter it, Position *positions,
 void updatePlayerVelocity(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements,
-                          InputEntity *input_entities);
+                          InputEntity *input_entities, Height *heights);
 
 /**
  * Checks whether jump has been pressed and whether the player is able to jump
@@ -174,8 +175,8 @@ void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**
- * Checks whether the duck key is pressed and changes speed and state accordingly.
- * Hiker is slower and
+ * Checks whether the duck key is pressed and changes speed and state
+ * accordingly. Hiker is slower and
  * TODO hitbox is smaller.
  *
  * @param velocities
@@ -183,7 +184,7 @@ void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
  * @param input_entities
  */
 void checkDuckEvent(Velocity *velocities, PlayerMovement *player_movements,
-                    InputEntity *input_entities);
+                    InputEntity *input_entities, Height *heights);
 
 /**
  * Changes the horizontal speed of the hiker based on input.
@@ -196,8 +197,8 @@ void checkXMovement(Velocity *velocities, PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**
- * Checks whether the player is in the air and tracks the time he has been there.
- * Applies gravitational force to hiker.
+ * Checks whether the player is in the air and tracks the time he has been
+ * there. Applies gravitational force to hiker.
  *
  * @param it
  * @param velocities
@@ -220,17 +221,15 @@ void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**
- * Checks whether a rock hits the player, making him unalive.
+ * Checks whether a rock hits the player, making him unalive and stopping the
+ * game.
  *
  * @param it
- * @param positions
- * @param velocities
- * @param player_movements
- * @param input_entities
- * @return
+ * @param positions of the player
+ * @param heights of the player
+ * @param widths of the player
  */
-bool playerIsHit(flecs::iter it, Position *positions, Velocity *velocities,
-                 PlayerMovement *player_movements, InputEntity *input_entities);
+void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position

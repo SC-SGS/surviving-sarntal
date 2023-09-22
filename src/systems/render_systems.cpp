@@ -159,6 +159,13 @@ void render_system(flecs::iter &iter) {
                     DrawCircle((int)p.x, (int)-p.y, s.radius, RED);
                 });
 
+                flecs::filter<Position, RectangleShapeRenderComponent> rectangle_q =
+                    world.filter<Position, RectangleShapeRenderComponent>();
+
+                rectangle_q.each([&](Position &p, RectangleShapeRenderComponent &s) {
+                    DrawRectangle((int)p.x, (int)-p.y, (int)s.width, (int)s.height, RED);
+                });
+
                 rotation++;
             }
 
