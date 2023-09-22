@@ -11,9 +11,6 @@
 
 namespace graphics {
 
-const int screenWidth = 1600;
-const int screenHeight = 900;
-#define MAX_INSTANCES 1000
 Music ambient_audio;
 
 Texture2D gradientTex;
@@ -77,8 +74,8 @@ void render_system(flecs::iter &iter) {
 
         } else {
             // if we are full screen, then go back to the windowed size
-            SetWindowSize(screenWidth, screenHeight);
-            regenerateGradientTexture(screenWidth, screenHeight);
+            SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            regenerateGradientTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
         // toggle the state
@@ -330,7 +327,7 @@ void render_system(flecs::iter &iter) {
 }
 
 void init_render_system(flecs::world &world) {
-    InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
 
 
@@ -360,7 +357,7 @@ void init_render_system(flecs::world &world) {
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
         c.target = {0.0f, 0.0f};
-        c.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+        c.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
         c.rotation = 0.0f;
         c.zoom = 1.0f;
     });
@@ -369,7 +366,7 @@ void init_render_system(flecs::world &world) {
 
     debugCamera = {0};
     debugCamera.target = {0.0f, 0.0f};
-    debugCamera.offset = {screenWidth / 2.0f, screenHeight / 2.0f};
+    debugCamera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
     debugCamera.rotation = 0.0f;
     debugCamera.zoom = 1.0f;
 
@@ -380,9 +377,9 @@ void init_render_system(flecs::world &world) {
     world.set<Resources>({});
 
     // misc
-    regenerateGradientTexture(screenWidth, screenHeight);
+    regenerateGradientTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
     Image verticalGradient =
-        GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
+        GenImageGradientV(SCREEN_WIDTH / 5, SCREEN_HEIGHT / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
     // world.get_mut<Resources>()->textures.Load;
 
@@ -409,8 +406,8 @@ void init_render_system(flecs::world &world) {
                              c.resourceHandle =
                                  world.get_mut<Resources>()->textures.Load(
                                      midground_tex);
-                             c.width = screenWidth;
-                             c.height = screenHeight;
+                             c.width = SCREEN_WIDTH;
+                             c.height = SCREEN_HEIGHT;
                          })
                          .set(([&](Position &c) {
                              c.x = 0;
@@ -425,8 +422,8 @@ void init_render_system(flecs::world &world) {
                                        c.resourceHandle =
                                            world.get_mut<Resources>()->textures.Load(
                                                midground_tex);
-                                       c.width = screenWidth;
-                                       c.height = screenHeight;
+                                       c.width = SCREEN_WIDTH;
+                                       c.height = SCREEN_HEIGHT;
                                    })
                                    .set(([&](Position &c) {
                                        c.x = 0;
@@ -441,8 +438,8 @@ void init_render_system(flecs::world &world) {
                               c.resourceHandle =
                                   world.get_mut<Resources>()->textures.Load(
                                       background_tex);
-                              c.width = screenWidth;
-                              c.height = screenHeight;
+                              c.width = SCREEN_WIDTH;
+                              c.height = SCREEN_HEIGHT;
                           })
                           .set(([&](Position &c) {
                               c.x = 0;
@@ -457,8 +454,8 @@ void init_render_system(flecs::world &world) {
                                         c.resourceHandle =
                                             world.get_mut<Resources>()->textures.Load(
                                                 background_tex);
-                                        c.width = screenWidth;
-                                        c.height = screenHeight;
+                                        c.width = SCREEN_WIDTH;
+                                        c.height = SCREEN_HEIGHT;
                                     })
                                     .set(([&](Position &c) {
                                         c.x = 0;
@@ -473,8 +470,8 @@ void init_render_system(flecs::world &world) {
                               c.resourceHandle =
                                   world.get_mut<Resources>()->textures.Load(
                                       foreground_tex);
-                              c.width = screenWidth;
-                              c.height = screenHeight;
+                              c.width = SCREEN_WIDTH;
+                              c.height = SCREEN_HEIGHT;
                           })
                           .set(([&](Position &c) {
                               c.x = 0;
@@ -488,8 +485,8 @@ void init_render_system(flecs::world &world) {
                                         c.resourceHandle =
                                             world.get_mut<Resources>()->textures.Load(
                                                 foreground_tex);
-                                        c.width = screenWidth;
-                                        c.height = screenHeight;
+                                        c.width = SCREEN_WIDTH;
+                                        c.height = SCREEN_HEIGHT;
                                     })
                                     .set(([&](Position &c) {
                                         c.x = 0;
