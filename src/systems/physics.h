@@ -2,6 +2,7 @@
 
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
+#include "../components/player.h"
 #include "flecs.h"
 
 struct PhysicSystems {
@@ -15,7 +16,7 @@ struct Vertex {
 
 constexpr float GRAVITATIONAL_CONSTANT = 1000.8;
 
-constexpr float JUMP_VELOCITY_CONSTANT = 10000;
+
 
 class Collisions {};
 
@@ -132,5 +133,8 @@ class RockTools {
 class PlayerTools {
   public:
     static void updateState(flecs::iter it, Position *positions,
-                     Velocity *velocities);
+                            Velocity *velocities,
+                            PlayerMovement *player_movements);
+  private:
+    static float getYPosFromX(flecs::world world, float x);
 };

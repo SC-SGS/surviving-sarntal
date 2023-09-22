@@ -1,4 +1,5 @@
 #include "physics.h"
+#include "../components/input.h"
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
@@ -24,7 +25,7 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity>().with<Rock>().iter(
         RockTools::updateState);
 
-    world.system<Position, Velocity>().with<Player>().iter(
+    world.system<Position, Velocity, PlayerMovement>().with<Player>().iter(
         PlayerTools::updateState);
 
     world.system<Position, Radius>().with<Rock>().iter(debugRenderRocks);
@@ -141,15 +142,55 @@ void RockTools::RockCollisions::pairPossiblyCollidingRocks(flecs::iter it, Posit
     }*/
 }
 
-void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *velocities) {
-    /*velocities[0].x += horizControllerInput * it.delta_time();
-     * if(jump_pressed) {
-     *   velocities[0].y = -JUMP_VELOCITY_CONSTANT;
-     *   in_air = true;
-     * else if (in_air) {
-     *   velocities[0].y += GRAVITATIONAL_CONSTANT * it.delte_time();
-     * }
-     */
+void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements) {
+     auto input =  it.world().get<InputEntity>();
+
+     //Update Velocities
+
+     if (input->getEvent(Event::JUMP)) {
+        float factor = 1;
+        if(player_movements[0].current_state == PlayerMovement::MovementState::DUCKED) {
+            factor = duckSpeedFactor;
+        }
+        if(player_movements[0].current_state != PlayerMovement::MovementState::IN_AIR) {
+             player_movements[0].last_jump = 0;
+        }
+        if (player_movements[0].last_jump < 1.5) {
+             velocities[0].y = -JUMP_VELOCITY_CONSTANT * factor;
+             player_movements[0].current_state =
+                 PlayerMovement::MovementState::IN_AIR;
+        }
+     }
+
+     if (input->getEvent(Event::DUCK) &&
+         player_movements[0].current_state !=
+             PlayerMovement::MovementState::IN_AIR) {
+        velocities[0].x *= duckSpeedFactor;
+     }
+
+     double x_factor = input->getAxis(Axis::MOVEMENT_X);
+     velocities[0].x = normalSpeed * x_factor;
+
+     if(player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
+        player_movements[0].last_jump += it.delta_time();
+        velocities[0].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+     }
+
+     //Update Positions
+
     positions[0].x += velocities[0].x * it.delta_time();
-    //positions[0].y = TODO getYPosFromX(positions[0].x, Mountain m);
+    if(player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
+        positions[0].y += velocities[0].y * it.delta_time();
+    } else {
+        positions[0].y = getYPosFromX(it.world(), positions[0].x);
+    }
 }
+
+float PlayerTools::getYPosFromX(flecs::world &world, float x) {
+    auto mountain = world.get<Mountain>();
+    return 0;
+}
+
+
+
+
