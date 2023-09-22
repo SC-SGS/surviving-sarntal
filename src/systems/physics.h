@@ -29,8 +29,8 @@ class Collisions {};
  * @param r radius, should be several times larger than section width in
  * mountain.h
  */
-static void makeRock(const flecs::world &world, Position p, Velocity v,
-                     float_type radius);
+void makeRock(const flecs::world &world, Position p, Velocity v,
+              float_type radius);
 
 /**
  * Updates velocity and position of a rock.
@@ -39,14 +39,13 @@ static void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-static void updateState(flecs::iter it, Position *positions,
-                        Velocity *velocities);
+void updateState(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
  */
-static void terrainCollision(flecs::iter it, Position *positions,
-                             Velocity *velocities, Radius *r, Mountain *m);
+void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
+                      Radius *r, Mountain *m);
 
 /**
  * Updates velocity of a rock.
@@ -56,8 +55,7 @@ static void terrainCollision(flecs::iter it, Position *positions,
  * @param positions
  * @param velocities
  */
-static void updateVelocity(flecs::iter it, Position *positions,
-                           Velocity *velocities);
+void updateVelocity(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.
@@ -67,8 +65,7 @@ static void updateVelocity(flecs::iter it, Position *positions,
  * @param positions
  * @param velocities
  */
-static void updatePosition(flecs::iter it, Position *positions,
-                           Velocity *velocities);
+void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Given a rock, find the closest vertex of the ground.
@@ -79,8 +76,8 @@ static void updatePosition(flecs::iter it, Position *positions,
  * @param mountain
  * @return int index, float distance
  */
-static ClosestVertex getClosestVertex(Position position, Radius radius,
-                                      Mountain *mountain);
+ClosestVertex getClosestVertex(Position position, Radius radius,
+                               Mountain *mountain);
 
 /**
  * Find the normal vector of a given vertex
@@ -90,7 +87,7 @@ static ClosestVertex getClosestVertex(Position position, Radius radius,
  * TODO: add noise for later
  * @return normal_vector_x, normal_vector_y
  */
-static Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
+Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
 
 /**
  * reflect the incident velocity when bouncing off the terrain
@@ -99,23 +96,22 @@ static Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
  * @return exit_velocity
  */
 
-    /**
-     * TODO: collision detection is already handled?
-     * TODO: should this be public?
-     * takes two rocks and updates their velocities and positions
-     * after colliding
-     * @param p1
-     * @param p2
-     * @param v1
-     * @param v2
-     * @param r1
-     * @param r2
-     */
-    static void rockCollision(Position& p1, Position& p2, Velocity& v1, Velocity& v2,
-                       Radius r1, Radius r2);
+/**
+ * TODO: collision detection is already handled?
+ * TODO: should this be public?
+ * takes two rocks and updates their velocities and positions
+ * after colliding
+ * @param p1
+ * @param p2
+ * @param v1
+ * @param v2
+ * @param r1
+ * @param r2
+ */
+void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
+                   Radius r1, Radius r2);
 
-    static void quickAndDirtyTest(Position& p1, Position& p2, Velocity& v1,
-                           Velocity& v2, Radius r1, Radius r2);
-};
+void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
+                       Radius r1, Radius r2);
 
 } // namespace physics
