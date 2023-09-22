@@ -82,6 +82,13 @@ class Mountain {
      * @return Returns start_index and end_index of the latest generated
      * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
      * can access the points via the getVertex-function.
+     *
+     * Start_index starts with the first new generated vertex.
+     * If you want to be precise you would have to also connect the last point
+     * of the previously loaded chunk and the chunk you just got by
+     * getLatestChunk. You can access that point via getVertex(start_index-1).
+     * However, the points might be close enough together that this is not
+     * necessary. (If this API sucks it can easily be changed)
      */
     IndexInterval getLatestChunk();
 
