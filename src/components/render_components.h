@@ -14,6 +14,11 @@ struct CircleShapeRenderComponent {
     float radius;
 };
 
+struct RectangleShapeRenderComponent {
+    float width;
+    float height;
+};
+
 struct AnimatedSpriteComponent {
     HANDLE resourceHandle;
     HANDLE currentFrame;

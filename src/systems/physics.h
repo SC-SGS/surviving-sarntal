@@ -1,6 +1,9 @@
 #pragma once
 
+#include "../components/input.h"
 #include "../components/mountain.h"
+#include "../components/particle_state.h"
+#include "../components/player.h"
 #include "../components/vector.h"
 #include "flecs.h"
 
@@ -9,15 +12,13 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -100.;
-constexpr float_type EPSILON = 1e-3;
 
-struct ClosestVertex {
+constexpr float_type CO = 100.f;
+
+struct Vertex {
     std::size_t index;
     float distance;
 };
-
-class Collisions {};
 
 /**
  * Create new circular rock, register the new entity with the world,
@@ -39,7 +40,7 @@ void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-void updateState(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockState(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
@@ -54,7 +55,7 @@ void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
  * @param it
  * @param velocities
  */
-void updateVelocity(flecs::iter it, Velocity *velocities);
+void updateRockVelocity(flecs::iter it, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.
@@ -64,7 +65,8 @@ void updateVelocity(flecs::iter it, Velocity *velocities);
  * @param positions
  * @param velocities
  */
-void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockPosition(flecs::iter it, Position *positions,
+                        Velocity *velocities);
 
 /**
  * Given a rock, find the closest vertex of the ground.
@@ -75,8 +77,7 @@ void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
  * @param mountain
  * @return int index, float distance
  */
-ClosestVertex getClosestVertex(Position position, Radius radius,
-                               Mountain *mountain);
+Vertex getClosestVertex(Position position, Radius radius, Mountain *mountain);
 
 /**
  * Find the normal vector of a given vertex
@@ -117,5 +118,127 @@ bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
 
 void rockRockInteractions(flecs::iter it, Position *positions,
                           Velocity *velocities, Radius *radius);
+
+/**
+ * Updates the state of a player by first updating velocity based on input
+ * and current state and afterwards changing position according to velocity in
+ * one time step.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void updatePlayerState(flecs::iter it, Position *positions,
+                       Velocity *velocities, PlayerMovement *player_movements,
+                       InputEntity *input_entities, Height *heights,
+                       Width *widths);
+
+/**
+ * Updates Player's Position based on velocity and current state.
+ * Assumes that updatePlayerVelocity has been called beforehand.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ * @param player_movements
+ */
+void updatePlayerPosition(flecs::iter it, Position *positions,
+                          Velocity *velocities,
+                          PlayerMovement *player_movements);
+
+/**
+ * Updates player velocity based on current input and state.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void updatePlayerVelocity(flecs::iter it, Position *positions,
+                          Velocity *velocities,
+                          PlayerMovement *player_movements,
+                          InputEntity *input_entities, Height *heights);
+
+/**
+ * Checks whether jump has been pressed and whether the player is able to jump
+ * (double jump within 1.5s is possible).
+ * Changes velocity and state accordingly.
+ *
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
+                    InputEntity *input_entities);
+
+/**
+ * Checks whether the duck key is pressed and changes speed and state
+ * accordingly. Hiker is slower and
+ * TODO hitbox is smaller.
+ *
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void checkDuckEvent(Velocity *velocities, PlayerMovement *player_movements,
+                    InputEntity *input_entities, Height *heights);
+
+/**
+ * Changes the horizontal speed of the hiker based on input.
+ *
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void checkXMovement(Velocity *velocities, PlayerMovement *player_movements,
+                    InputEntity *input_entities);
+
+/**
+ * Checks whether the player is in the air and tracks the time he has been
+ * there. Applies gravitational force to hiker.
+ *
+ * @param it
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void checkAerialState(flecs::iter it, Velocity *velocities,
+                      PlayerMovement *player_movements,
+                      InputEntity *input_entities);
+
+/**
+ * Changes the state of the player according to the direction of his horizontal
+ * movement. Mostly needed for visualization purposes.
+ *
+ * @param velocities
+ * @param player_movements
+ * @param input_entities
+ */
+void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
+                    InputEntity *input_entities);
+
+/**
+ * Checks whether a rock hits the player, making him unalive and stopping the
+ * game.
+ *
+ * @param it
+ * @param positions of the player
+ * @param heights of the player
+ * @param widths of the player
+ */
+void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
+
+/**
+ * Returns the exact y coordinate of the mountain at a given x position
+ * through linear interpolation.
+ *
+ * @param world
+ * @param x
+ * @return the y coordinate
+ */
+float getYPosFromX(const flecs::world &world, float x);
 
 } // namespace physics
