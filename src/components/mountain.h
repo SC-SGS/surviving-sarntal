@@ -1,11 +1,9 @@
 #pragma once
 
-#include "particle_state.h"
+#include "vector.h"
 #include <array>
 #include <cmath>
 #include <vector>
-
-const float SLOPE{0.5}; // steepness of ramp generated in prototype
 
 struct IndexInterval {
     std::size_t start_index;
@@ -15,9 +13,9 @@ struct IndexInterval {
 class Mountain {
   public:
     /**
-     * Number of Vertices explicitely stored by the mountain data structure
+     * Number of Vertices explicitly stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2048};
 
     /**
      * width covered by mountain generated at one point in time
@@ -36,7 +34,7 @@ class Mountain {
     /**
      * steepness of ramp generated in prototype
      */
-    static constexpr float SLOPE{0.5};
+    static constexpr float SLOPE{0.25};
 
     Mountain();
 
@@ -83,7 +81,14 @@ class Mountain {
     /**
      * @return Returns start_index and end_index of the latest generated
      * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
-     * can access the points via the getVertice-function.
+     * can access the points via the getVertex-function.
+     *
+     * Start_index starts with the first new generated vertex.
+     * If you want to be precise you would have to also connect the last point
+     * of the previously loaded chunk and the chunk you just got by
+     * getLatestChunk. You can access that point via getVertex(start_index-1).
+     * However, the points might be close enough together that this is not
+     * necessary. (If this API sucks it can easily be changed)
      */
     IndexInterval getLatestChunk();
 

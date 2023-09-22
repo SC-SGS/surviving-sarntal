@@ -8,7 +8,7 @@
 #include <flecs.h>
 #include <iostream>
 
-void main_loop(flecs::world &world);
+void mainLoop(flecs::world &world);
 
 int main() {
     std::cout << "surviving sarntal" << std::endl;
@@ -20,25 +20,25 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
-    initGameLogic(world);
-
     world.set<Mountain>({});
+
+    initGameLogic(world);
 
     world.set<AppInfo>({});
 
-    main_loop(world);
+    mainLoop(world);
 
     graphics::destroy();
 }
 
-void main_loop(flecs::world &world) {
+void mainLoop(flecs::world &world) {
     world.progress(0);
 
-    SetTargetFPS(60);
+    SetTargetFPS(1000);
 
-    auto appInfo = world.get<AppInfo>();
+    auto app_info = world.get<AppInfo>();
 
-    while (appInfo->isRunning) {
+    while (app_info->isRunning) {
         float dt = GetFrameTime();
         world.progress(dt);
     }
