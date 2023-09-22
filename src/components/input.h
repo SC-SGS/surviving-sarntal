@@ -125,6 +125,8 @@ class InputEntity {
     // the gamepad id in raylib (if input type is Gamepad)
     int gamepad_id = NO_GAMEPAD_ID;
 
+    int getGamepadCount(int gamepad_num) const;
+
     bool getGamepadEvent(ButtonEvent event) const;
 
     bool getKeyboardEvent(ButtonEvent event) const;

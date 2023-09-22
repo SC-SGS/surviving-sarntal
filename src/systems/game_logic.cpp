@@ -46,7 +46,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar) {
 
 void initGameLogic(flecs::world &world) {
     world.entity().add<Player>().set<Position>({200., 200.})
-        .set<InputEntity>({InputEntity::InputType::GAMEPAD, 0});
+        .set<InputEntity>({});
     world.set<KillBar>({0.});
 
     /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
