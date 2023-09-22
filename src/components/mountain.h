@@ -40,7 +40,7 @@ class Mountain {
     /** value beween 0 and 1 (prefereably between 0.5 and 0.75)
      *
      */
-    static constexpr float ROUGHNESS_TERRAIN{0.6};
+    static constexpr float ROUGHNESS_TERRAIN{0.4};
 
     Mountain();
 
@@ -103,9 +103,13 @@ class Mountain {
         landscape_fixpoints_circular_array{};
     std::size_t start_of_circular_array{0};
 
-    std::random_device hardware_random_generator;
-    std::mt19937 random_engine;
-    std::uniform_real_distribution<double> distribution_used;
-
+    /** Generating a mountain using 2D Fractal Terrain Generation as described in this blogpost: http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
+     *
+     * @param leftIndex startIndex of the mountain section to be roughened
+     * @param rightIndex endIndex of the mountain section to be roughened. The Interval INCLUDES the right index
+     * @param displacement Constant defining how aggressive it should be roughened
+     */
     void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
+
+    void generateSlope();
 };

@@ -43,7 +43,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
     camera->target.x = (killBar->x) + graphics::SCREEN_WIDTH / 2;
     // fix camera to y-coord of player
-    // camera->target.y = position[0].y;
+    //camera->target.y = position[0].y;
 
     // this abomination of a term is taking the y coordinate of the leftmost
     // mountain vertex that is just barely on the screen and offsetting it by a

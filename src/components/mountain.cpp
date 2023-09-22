@@ -2,7 +2,8 @@
 #include "iostream"
 #include <random>
 
-Mountain::Mountain() : random_engine(hardware_random_generator()), distribution_used(0.0,1.0) {
+//Mountain::Mountain() : random_engine(hardware_random_generator()), distribution_used(0.0,1.0) {
+Mountain::Mountain(){
     std::cout << "Mountain gets constructed" << std::endl;
 
 
@@ -15,7 +16,7 @@ Mountain::Mountain() : random_engine(hardware_random_generator()), distribution_
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
     }
-    // printTempDebugInfo();
+    //printTempDebugInfo();
 }
 
 void Mountain::printTempDebugInfo() {
@@ -55,6 +56,14 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
 }
 
 void Mountain::generateNewChunk() {
+    std::cout<<"Chunk generated" << std::endl;
+    generateSlope();
+    generateTerrainRecursive(start_of_circular_array, start_of_circular_array+NUM_SECTIONS_PER_CHUNK-1, 70);
+    start_of_circular_array =
+        (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
+}
+
+void Mountain::generateSlope() {
     int num_points_to_generate = NUM_SECTIONS_PER_CHUNK;
     const std::size_t array_size = landscape_fixpoints_circular_array.size();
     const std::size_t index_rightest_vertice =
@@ -69,9 +78,6 @@ void Mountain::generateNewChunk() {
                                            array_size] =
             Position{current_x, current_y};
     }
-
-    start_of_circular_array =
-        (start_of_circular_array + num_points_to_generate) % array_size;
 }
 
 IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
@@ -95,7 +101,11 @@ IndexInterval Mountain::getLatestChunk() {
 
 void Mountain::generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement){
     if(leftIndex+1 == rightIndex) return;
-    if(leftIndex == rightIndex) return;
+    //if(leftIndex == rightIndex) return;
+
+    std::random_device hardware_random_generator;
+    std::mt19937  random_engine(hardware_random_generator());
+    std::uniform_real_distribution<double> distribution_used(0.0,1.0);
 
     std::size_t midIndex = (leftIndex+ rightIndex)/2;   //rounding down is fine
     float change = (distribution_used(random_engine)*2 -1) * displacement;
@@ -107,17 +117,3 @@ void Mountain::generateTerrainRecursive(std::size_t leftIndex, std::size_t right
     generateTerrainRecursive(leftIndex, midIndex, displacement);
     generateTerrainRecursive(midIndex, rightIndex, displacement);
 }
-/*
- * //code from http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
-function generateTerrain(leftIndex, rightIndex, displacement) {
-if((leftIndex + 1) == rightIndex) return;
-var midIndex = Math.floor((leftIndex + rightIndex) / 2);
-var change = (Math.random() * 2 - 1) * displacement;
-terrain_array[midIndex] = (terrain_array[leftIndex] + terrain_array[rightIndex]) / 2 + change;
-
-displacement = displacement * roughness;
-generateTerrain(leftIndex, midIndex, displacement);
-generateTerrain(midIndex, rightIndex, displacement);
-}
-
- */
