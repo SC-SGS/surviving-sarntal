@@ -1,17 +1,27 @@
 #!/bin/bash
 
-# path to executable file
-executable = "cmake-build-debug/surviving-sarntal"
+# Path to your executable file
+executable="cmake-build-debug/surviving-sarntal"
 
-# maximum execution time (in seconds)
-time = 30
+# timeout with seconds, executing the file
+timeout 5s $executable &
 
-$executable &
+# Get the PID (Process ID) of the executable
+pid=$!
+status_code=$?
 
-pid = $!
-
-if wait $pid; then
-  echo "Executable ran successfully without errors."
+# Wait for the executable to finish or timeout
+if wait $pid
+then
+  echo $status_code
+  echo "Executable encountered an error or exceeded the timeout."
+  #if $status_code == 124
+  #then
+  #else
+    # Optionally, forcefully terminate the process
+    # kill -9 $pid
+  #fi
 else
-  echo "Executable encountered an error or exceeded the timeout"
+  echo $status_code
+  echo "Executable ran successfully without errors."
 fi
