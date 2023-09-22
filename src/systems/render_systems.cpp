@@ -321,7 +321,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         float height = 0;
         //
         v0.x = i * x_scale;
-        v0.z = getTerrainHeight(v0.x, currentDepth, 0); // height;
+        v0.z = getTerrainHeight(v0.x, currentDepth, v0.x); // height;
         v0.y = currentDepth;
 
         //std::cout << "vertex: " << vertex.x << ", " << vertex.y << std::endl;
@@ -334,17 +334,17 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         //vertex2.y = vertex2.y * 0.01f;
         // getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v1.x = (i + 1) * x_scale;
-        v1.z = getTerrainHeight(v1.x, currentDepth, 0); // height;
+        v1.z = getTerrainHeight(v1.x, currentDepth, v1.x); // height;
         v1.y = currentDepth;
 
 
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
             v2.y -= 1.1;
-            v2.z = getTerrainHeight(v2.x, v2.y, 0);
+            v2.z = getTerrainHeight(v2.x, v2.y, v2.z);
             auto v3 = v1; // in front of terrain vertex i
             v3.y -= 1.1;
-            v3.z = getTerrainHeight(v3.x, v3.y, 0);
+            v3.z = getTerrainHeight(v3.x, v3.y, v3.z);
 
             // first triangle
             vertices.push_back(v1.x);
