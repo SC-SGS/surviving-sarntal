@@ -7,11 +7,13 @@ Mountain::Mountain() {
     // create points and chunks corresponding to a simple ramp
     double current_x = 0.;
     double current_y = 0.;
+    double slope = 0.0;
     for (int i = 0; i < landscape_fixpoints_circular_array.size(); i++) {
         landscape_fixpoints_circular_array[i].x = current_x;
         landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
-        current_y += SECTION_WIDTH * SLOPE;
+        current_y += SECTION_WIDTH * slope;
+        slope += ((rand() % 1000) - 500) / 1000.;
     }
     // printTempDebugInfo();
 }
@@ -43,7 +45,7 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
         returnvalue.end_index += NUMBER_OF_VERTICES;
 
     return returnvalue;
-    /*float leftmost_x = getVertice(0).x;
+    /*float leftmost_x = getVertex(0).x;
     IndexInterval returnvalue;
     returnvalue.start_index =
         (std::size_t)std::floor((min_x - leftmost_x) / SECTION_WIDTH);
@@ -58,11 +60,13 @@ void Mountain::generateNewChunk() {
     const std::size_t index_rightest_vertice =
         (start_of_circular_array + array_size - 1) % array_size;
 
+    double slope = 0.0;
     float current_x{getVertex(index_rightest_vertice).x};
     float current_y{getVertex(index_rightest_vertice).y};
     for (int i = 0; i < num_points_to_generate; i++) {
         current_x += SECTION_WIDTH;
-        current_y += SECTION_WIDTH * SLOPE;
+        current_y += SECTION_WIDTH * slope;
+        slope +=( (rand() % 1000) - 500) / 1000.;
         landscape_fixpoints_circular_array[(start_of_circular_array + i) %
                                            array_size] =
             Position{current_x, current_y};
@@ -72,9 +76,21 @@ void Mountain::generateNewChunk() {
         (start_of_circular_array + num_points_to_generate) % array_size;
 }
 
-IndexInterval Mountain::getIndexIntervalOfEntireMountain(){
+IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
     IndexInterval returnvalue;
     returnvalue.start_index = start_of_circular_array;
     returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
+    return returnvalue;
+}
+
+IndexInterval Mountain::getLatestChunk() {
+    IndexInterval returnvalue;
+    returnvalue.end_index = start_of_circular_array;
+    returnvalue.start_index = (start_of_circular_array -
+                               NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) %
+                              NUMBER_OF_VERTICES;
+    if (returnvalue.start_index > returnvalue.start_index) {
+        returnvalue.end_index += NUMBER_OF_VERTICES;
+    }
     return returnvalue;
 }
