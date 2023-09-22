@@ -31,11 +31,6 @@ int rotation = 0;
 bool useDebugCamera;
 Camera2D debugCamera;
 
-void regenerateBackground(int screenW, int screenH){
-    UnloadTexture(midground_tex);
-
-}
-
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -115,24 +110,15 @@ void render_system(flecs::iter &iter) {
             if (scrollingMid <= -midground_tex.width*2) scrollingMid = 0;
             if (scrollingFore <= -foreground_tex.width*2) scrollingFore = 0;
 
-            /*DrawTextureEx(background_tex, (Vector2){ scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
-            DrawTextureEx(background_tex, (Vector2){ background_tex.width*2 + scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
+            world.entity("Background").get_mut<Position>()->x = scrollingBack;
+            world.entity("Midground").get_mut<Position>()->x = scrollingMid;
+            world.entity("Foreground").get_mut<Position>()->x = scrollingFore;
 
-            DrawTextureEx(midground_tex, (Vector2){ scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
-            DrawTextureEx(midground_tex, (Vector2){ midground_tex.width*2 + scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
-*/
-/*
-            DrawTextureEx(foreground_tex, (Vector2){ scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
-*/
-            /*DrawTexture(foreground_tex, 0, 0, WHITE);*/
+            world.entity("BackgroundDuplicate").get_mut<Position>()->x = scrollingBack + world.entity("Background").get_mut<SpriteComponent>()->width;
+            world.entity("MidgroundDuplicate").get_mut<Position>()->x = scrollingMid + world.entity("Midground").get_mut<SpriteComponent>()->width;
+            world.entity("ForegroundDuplicate").get_mut<Position>()->x = scrollingFore + world.entity("Foreground").get_mut<SpriteComponent>()->width;
 
-
-
-/*
-            DrawTextureEx(foreground_tex, (Vector2){ foreground_tex.width*2 + scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
-*/
-
-
+            /*world.get_mut<Resources>()*/
 
             if (useDebugCamera) {
                 BeginMode2D(debugCamera);
@@ -284,8 +270,8 @@ void init_render_system(flecs::world &world) {
                           c.resourceHandle =
                               world.get_mut<Resources>()->textures.Load(
                                   midground_tex);
-                          c.width = 100;
-                          c.height = 100;
+                          c.width = screenWidth;
+                          c.height = screenHeight;
                       })
                       .set(([&](Position &c) {
                           c.x = 0;
@@ -294,14 +280,14 @@ void init_render_system(flecs::world &world) {
                       .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                       });
 
-    auto background = world.entity("Background")
+    auto midground_duplicate = world.entity("MidgroundDuplicate")
                          .set([&](SpriteComponent &c) {
                              c = {0};
                              c.resourceHandle =
                                  world.get_mut<Resources>()->textures.Load(
-                                     background_tex);
-                             c.width = 100;
-                             c.height = 100;
+                                     midground_tex);
+                             c.width = screenWidth;
+                             c.height = screenHeight;
                          })
                          .set(([&](Position &c) {
                              c.x = 0;
@@ -310,14 +296,61 @@ void init_render_system(flecs::world &world) {
                          .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                          });
 
+    auto background = world.entity("Background")
+                         .set([&](SpriteComponent &c) {
+                             c = {0};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     background_tex);
+                             c.width = screenWidth;
+                             c.height = screenHeight;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 0;
+                             c.y = 0;
+                         }))
+                         .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                         });
+
+    auto background_duplicate = world.entity("BackgroundDuplicate")
+                          .set([&](SpriteComponent &c) {
+                              c = {0};
+                              c.resourceHandle =
+                                  world.get_mut<Resources>()->textures.Load(
+                                      background_tex);
+                              c.width = screenWidth;
+                              c.height = screenHeight;
+                          })
+                          .set(([&](Position &c) {
+                              c.x = 0;
+                              c.y = 0;
+                          }))
+                          .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                          });
+
     auto foreground = world.entity("Foreground")
                           .set([&](SpriteComponent &c) {
                               c = {0};
                               c.resourceHandle =
                                   world.get_mut<Resources>()->textures.Load(
                                       foreground_tex);
-                              c.width = 100;
-                              c.height = 100;
+                              c.width = screenWidth;
+                              c.height = screenHeight;
+                          })
+                          .set(([&](Position &c) {
+                              c.x = 0;
+                              c.y = 0;
+                          }))
+                          .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                          });
+    auto foreground_duplicate = world.entity("ForegroundDuplicate")
+                          .set([&](SpriteComponent &c) {
+                              c = {0};
+                              c.resourceHandle =
+                                  world.get_mut<Resources>()->textures.Load(
+                                      foreground_tex);
+                              c.width = screenWidth;
+                              c.height = screenHeight;
                           })
                           .set(([&](Position &c) {
                               c.x = 0;
