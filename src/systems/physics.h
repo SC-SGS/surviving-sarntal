@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../components/input.h"
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
 #include "../components/vector.h"
-#include "../components/input.h"
 #include "flecs.h"
 
 struct PhysicSystems {
