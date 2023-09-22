@@ -2,11 +2,11 @@
 #define SURVIVING_SARNTAL_INPUT_H
 
 #include "flecs.h"
+#include "list"
+#include "raylib.h"
 #include "string"
-#include <list>
-#include <raylib.h>
-#include <unordered_map>
-#include <vector>
+#include "unordered_map"
+#include "vector"
 
 static constexpr int NO_GAMEPAD_ID = -1;
 
@@ -173,6 +173,18 @@ class InputEntity {
      */
     bool hasKinect() const;
 
+    /**
+     * checks if a virtual axis should be used with the currently selected input
+     * method.
+     * @param axis
+     * @return
+     */
+    bool useVirtualAxis(VirtualAxis axis) const;
+    /**
+     * reads the value of a virtual axis (i.e. an axis derived from two buttons)
+     * @param axis
+     * @return
+     */
     double getVirtualAxis(VirtualAxis axis) const;
 
   public:
@@ -215,7 +227,7 @@ class InputEntity {
     /**
      * gets the number of gamepads that are attached
      * (filtering out devices that are wrongly recognized by raylib, like
-     * mousepads)
+     * touchpads)
      * @return the number of gamepads
      */
     int getGamepadCount() const;
