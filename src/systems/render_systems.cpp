@@ -2,7 +2,6 @@
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "../components/render_components.h"
-// #include "../utils/resource_manager.h"
 #include "flecs.h"
 #include <iostream>
 #include "../components/mountain.h"
@@ -29,6 +28,7 @@ Mesh grass_mesh;
 Texture2D grass_texture;
 std::vector<Matrix> transforms;
 Material matInstances;
+int loc_time;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -223,6 +223,11 @@ void render_system(flecs::iter &iter) {
                 DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
                 rlDisableBackfaceCulling();
+                matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
+                static float elapsed_time = 0.0f;
+                elapsed_time += iter.delta_time();
+                SetShaderValue(shader, loc_time, &elapsed_time,
+                               SHADER_UNIFORM_FLOAT);
                 DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
                                   MAX_INSTANCES);
                 rlEnableBackfaceCulling();
@@ -282,8 +287,10 @@ void init_render_system(flecs::world &world) {
                           c.y = 0;
                       }));
 
-
-    model = LoadModelFromMesh(generate_chunk_mesh(world));
+    Vector2 min;
+    Vector2 max;
+    auto test = generate_chunk_mesh(world, min, max);
+    model = LoadModelFromMesh(test);
     //model = LoadModel("../../../assets/mesh/grass_patch.obj"); 
     //std::cout << "current paht " << std::filesystem::current_path() << std::endl;
     // Load lighting shader
@@ -311,31 +318,37 @@ void init_render_system(flecs::world &world) {
 
     //DrawModel
 
-    //Texture2D grass_texture = LoadTexture("../../../assets/texture/grass.png");
+    Texture2D grass_texture = LoadTexture("../../../assets/texture/grass.png");
+
+    int loc = GetShaderLocation(shader, "grasstex");
+    loc_time = GetShaderLocation(shader, "time");
+    SetShaderValueTexture(shader, loc, grass_texture);
 
     // Define transforms to be uploaded to GPU for instances
     transforms.reserve(MAX_INSTANCES);
 
     // Translate and rotate cubes randomly
     for (int i = 0; i < MAX_INSTANCES; i++) {
+
         transforms.push_back(MatrixTranslate((float)GetRandomValue(-50, 50),
                                              (float)GetRandomValue(-50, 50),
-                                             (float)GetRandomValue(-50, 50)));
+                                             0));
     }
 
     // NOTE: We are assigning the intancing shader to material.shader
     // to be used on mesh drawing with DrawMeshInstanced()
     matInstances = LoadMaterialDefault();
     matInstances.shader = shader;
-    matInstances.maps[MATERIAL_MAP_DIFFUSE].color = RED;
+    //matInstances.maps[MATERIAL_MAP_DIFFUSE].color = RED;
+    matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
 
     /*Image checked = GenImageChecked(2, 2, 1, 1, RED, GREEN);
     Texture2D texture = LoadTextureFromImage(checked);
     UnloadImage(checked);*/
 
-    Shader shader = LoadShader(0, TextFormat("", 330));
 
-    model.materials[0].shader = shader;
+    Shader shader_hill = LoadShader(0, TextFormat("", 330));
+    model.materials[0].shader = shader_hill;
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
 
     debugCamera3D = {0};
@@ -366,7 +379,7 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh(flecs::world &world) {
+Mesh generate_chunk_mesh(flecs::world &world, Vector2 &min, Vector2 &max) {
 
     world.get_mut<Mountain>()->generateNewChunk();
     auto interval =
@@ -406,7 +419,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
 
-        std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y << std::endl;
+        //std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y << std::endl;
 
 
         Vector3 v1;
@@ -493,6 +506,12 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             // shift to the front
             v0 = v2;
             v1 = v3;
+
+            min.x = std::min(min.x, v0.x);
+            min.y = std::min(min.y, v0.y);
+
+            max.x = std::max(max.x, v0.x);
+            max.y = std::max(max.y, v0.y);
         }
     }    
 
