@@ -48,7 +48,8 @@ void initGameLogic(flecs::world &world) {
         .add<Player>()
         .set<Position>({200., 200.})
         .set<Velocity>({0., 0.})
-        .set<PlayerMovement>({PlayerMovement::MovementState::IDLE});
+        .set<PlayerMovement>({PlayerMovement::MovementState::IDLE, PlayerMovement::Direction::NEUTRAL, 0})
+        .set<graphics::CircleShapeRenderComponent>({20.f});
     world.set<KillBar>({0.});
 
     /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);

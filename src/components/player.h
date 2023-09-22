@@ -2,7 +2,7 @@
 
 constexpr float duckSpeedFactor = .5;
 constexpr float normalSpeed = 500;
-constexpr float JUMP_VELOCITY_CONSTANT = 10000;
+constexpr float JUMP_VELOCITY_CONSTANT = 1000;
 
 struct Player {};
 

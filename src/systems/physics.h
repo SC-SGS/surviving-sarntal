@@ -116,10 +116,28 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 
 }
 
+/**
+ * Updates the state of a player by first updating velocity based on input
+ * and current state and afterwards changing position according to velocity in
+ * one time step.
+ *
+ * @param it
+ * @param positions
+ * @param velocities
+ * @param player_movements
+ */
 void updatePlayerState(flecs::iter it, Position *positions,
                             Velocity *velocities,
                             PlayerMovement *player_movements);
 
+/**
+ * Returns the exact y coordinate of the mountain at a given x position
+ * through linear interpolation.
+ *
+ * @param world
+ * @param x
+ * @return the y coordinate
+ */
 float getYPosFromX(const flecs::world &world, float x);
 
 // namespace physics
