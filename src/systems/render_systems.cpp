@@ -21,6 +21,7 @@ bool useDebugCamera;
 Camera2D debugCamera;
 Camera3D debugCamera3D;
 Model model;
+Shader shader;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -220,8 +221,8 @@ void render_system(flecs::iter &iter) {
 
             BeginMode3D(debugCamera3D);
             { 
-                DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                //DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
+                //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
 
                 flecs::filter<Position, SpriteComponent, BillboardComponent> q =
@@ -335,13 +336,40 @@ void init_render_system(flecs::world &world) {
 
     model = LoadModelFromMesh(generate_chunk_mesh(world));
 
+    /*Image checked = GenImageChecked(2, 2, 1, 1, RED, GREEN);
+    Texture2D texture = LoadTextureFromImage(checked);
+    UnloadImage(checked);*/
+
+    Shader shader = LoadShader(0, TextFormat("", 330));
+
+    model.materials[0].shader = shader;
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
+
     debugCamera3D = {0};
     debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
     debugCamera3D.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
-    debugCamera3D.up = {0.0f, 0.0f,
-                        1.0f};  // Camera up vector (rotation towards target)
+    debugCamera3D.up = {0.0f, 0.0f, 1.0f};  // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
     debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
+}
+
+
+Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) { 
+    Vector3 n;
+    
+    auto Ax = p2.x - p1.x;
+    auto Ay = p2.y - p1.y; 
+    auto Az = p2.z - p1.z; 
+
+    auto Bx = p3.x - p1.x;
+    auto By = p3.y - p1.y;
+    auto Bz = p3.z - p1.z; 
+
+    n.x = Ay * Bz - Az * By;
+    n.y = Az * Bx - Ax * Bz;
+    n.z = Ax * By - Ay * Bx;
+
+    return n;
 }
 
 // Generate a simple triangle mesh from code
@@ -351,9 +379,11 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     auto interval =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
+    interval.end_index = std::min(interval.end_index, interval.start_index + 2000); // TODO remove (last vertices are wrong...)
+
     int terrainVertexCount = interval.end_index - interval.start_index;
 
-    int levels = 20;
+    int levels = 15;
     int levelsAtTheBack = 0; // number terrain layers behind the ridge
 
     int triangleCount = levels * (terrainVertexCount - 1) * 2;
@@ -362,80 +392,116 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     std::vector<float> texcoords;
     std::vector<float> normals;
 
-    for (int i = interval.start_index; i < interval.end_index-1; i++) {
+    //for (int i = interval.start_index; i < interval.end_index-1; i++) {
 
+   
+
+    for (int i = interval.start_index; i < interval.end_index - 1; i++) {
         int currentDepth = -levelsAtTheBack*0.1;
 
         const float x_scale = 0.1f;
+        const float y_scale = 0.5f;
+        
+
+
+        float maxX = (interval.end_index - 1 - interval.start_index) * x_scale;
+        float maxY = levels * y_scale; 
 
         Vector3 v0;
-        //auto vertex = world.get_mut<Mountain>()->getVertex(interval.start_index + i);
-        //vertex.x = vertex.x * 0.01f;
-        //vertex.y = vertex.y * 0.01f;
-        float height = 0;
-        //
-        v0.x = i * x_scale;
-        v0.z = getTerrainHeight(v0.x, currentDepth, 0); // height;
+        auto vertex = world.get_mut<Mountain>()->getVertex(interval.start_index + i);
+        v0.x = vertex.x;
+        v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
 
-        //std::cout << "vertex: " << vertex.x << ", " << vertex.y << std::endl;
+        std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y << std::endl;
 
 
         Vector3 v1;
-        //auto vertex2 =
-        //    world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
+        auto vertex2 =
+           world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
         //vertex2.x = vertex2.x * 0.01f;
         //vertex2.y = vertex2.y * 0.01f;
         // getTerrainHeight(vertex.x, currentDepth, vertex.y);
-        v1.x = (i + 1) * x_scale;
-        v1.z = getTerrainHeight(v1.x, currentDepth, 0); // height;
+        v1.x = vertex2.x;
+        v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
         v1.y = currentDepth;
 
 
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
-            v2.y -= 1.1;
-            v2.z = getTerrainHeight(v2.x, v2.y, 0);
+            v2.y -= y_scale;
+            v2.z = getTerrainHeight(v2.x, v2.y, v2.z);
             auto v3 = v1; // in front of terrain vertex i
-            v3.y -= 1.1;
-            v3.z = getTerrainHeight(v3.x, v3.y, 0);
+            v3.y -= y_scale;
+            v3.z = getTerrainHeight(v3.x, v3.y, v3.z);
 
             // first triangle
+            // v1, v0, v2
+            auto normal = compute_normal(v1, v0, v2);
+
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
+            texcoords.push_back(v1.x / maxX);
+            texcoords.push_back(v1.y / maxY);
+            normals.push_back(normal.x);
+            normals.push_back(normal.y);
+            normals.push_back(normal.z);
 
             vertices.push_back(v0.x);
             vertices.push_back(v0.y);
             vertices.push_back(v0.z);
+            texcoords.push_back(v0.x / maxX);
+            texcoords.push_back(v0.y / maxY);
+            normals.push_back(normal.x);
+            normals.push_back(normal.y);
+            normals.push_back(normal.z);
 
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z); // below terrain vertex i-1
+            texcoords.push_back(v2.x / maxX);
+            texcoords.push_back(v2.y / maxY);
+            normals.push_back(normal.x);
+            normals.push_back(normal.y);
+            normals.push_back(normal.z);
 
             // second triangle
+            // v1, v2, v3
+            auto normal2 = compute_normal(v1, v2, v3);
+
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
+            texcoords.push_back(v1.x / maxX);
+            texcoords.push_back(v1.y / maxY);
+            normals.push_back(normal2.x);
+            normals.push_back(normal2.y);
+            normals.push_back(normal2.z);
 
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z);
+            texcoords.push_back(v2.x / maxX);
+            texcoords.push_back(v2.y / maxY);
+            normals.push_back(normal2.x);
+            normals.push_back(normal2.y);
+            normals.push_back(normal2.z);
 
             vertices.push_back(v3.x);
             vertices.push_back(v3.y);
             vertices.push_back(v3.z); // below terrain vertex i
+            texcoords.push_back(v3.x / maxX);
+            texcoords.push_back(v3.y / maxY);
+            normals.push_back(normal2.x);
+            normals.push_back(normal2.y);
+            normals.push_back(normal2.z);
 
             // shift to the front
             v0 = v2;
             v1 = v3;
         }
     }    
-
-    
-
-
-
     
     Mesh mesh = {0};
     mesh.triangleCount = triangleCount;
@@ -451,9 +517,11 @@ Mesh generate_chunk_mesh(flecs::world &world) {
 }
 
 void destroy() {
-    CloseWindow();
+    UnloadShader(shader);
     UnloadTexture(gradientTex);
     // UnloadModel(model);
+
+    CloseWindow();
 }
 
 } // namespace graphics

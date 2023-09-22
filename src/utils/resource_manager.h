@@ -3,8 +3,8 @@
 #include "flecs.h"
 #include "raylib.h"
 #include "string"
-#include <unordered_map>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace graphics {
 typedef int HANDLE;
@@ -18,7 +18,7 @@ template <typename T> class ResourceManager {
         // Create a unique hash for this resource
         HANDLE hash = std::hash(path);
 
-        //check if resource was already loaded before
+        // check if resource was already loaded before
         auto it = res.find(hash);
 
         if (it != res.end()) {

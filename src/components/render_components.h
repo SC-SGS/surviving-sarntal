@@ -10,6 +10,9 @@ struct SpriteComponent {
     HANDLE resourceHandle;
 };
 
+struct CircleShapeRenderComponent {
+    float radius;
+};
 
 struct AnimatedSpriteComponent {
     HANDLE resourceHandle;
