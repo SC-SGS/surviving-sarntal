@@ -39,7 +39,7 @@ build-job:       # This job runs in the build stage, which runs first.
 clang-tidy-validate:
   stage: validate-tidy
   script:
-    - clang-tidy-17 src/main.cpp -p cmake-debug-build/
+    - clang-tidy-17 src/main.cpp -p cmake-build-debug/
   dependencies:
     - build-job
 
@@ -48,7 +48,7 @@ test-job:
   script:
     - ctest --test-dir cmake-build-debug
   dependencies:
-    - build-job
+    - clang-tidy-validate
   artifacts:
     paths:
       - cmake-build-debug/surviving-sarntal
