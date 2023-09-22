@@ -342,7 +342,7 @@ void init_render_system(flecs::world &world) {
 
     Vector2 min;
     Vector2 max;
-    auto test = generate_chunk_mesh(world, min, max);
+    auto test = generate_chunk_mesh(world);
     model = LoadModelFromMesh(test);
     //model = LoadModel("../../../assets/mesh/grass_patch.obj"); 
     //std::cout << "current paht " << std::filesystem::current_path() << std::endl;
@@ -381,12 +381,12 @@ void init_render_system(flecs::world &world) {
     transforms.reserve(MAX_INSTANCES);
 
     // Translate and rotate cubes randomly
-    for (int i = 0; i < MAX_INSTANCES; i++) {
+    //for (int i = 0; i < MAX_INSTANCES; i++) {
 
-        transforms.push_back(MatrixTranslate((float)GetRandomValue(-50, 50),
-                                             (float)GetRandomValue(-50, 50),
-                                             0));
-    }
+    //    transforms.push_back(MatrixTranslate((float)GetRandomValue(-50, 50),
+    //                                         (float)GetRandomValue(-50, 50),
+    //                                         0));
+    //}
 
     // NOTE: We are assigning the intancing shader to material.shader
     // to be used on mesh drawing with DrawMeshInstanced()
@@ -432,7 +432,7 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh(flecs::world &world, Vector2 &min, Vector2 &max) {
+Mesh generate_chunk_mesh(flecs::world &world) {
 
     world.get_mut<Mountain>()->generateNewChunk();
     auto interval =
@@ -556,15 +556,15 @@ Mesh generate_chunk_mesh(flecs::world &world, Vector2 &min, Vector2 &max) {
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
 
+            // grass pos
+            if (rand() % 3 == 0)
+                transforms.push_back(MatrixTranslate(v1.x, v1.y, v1.z));
+
+
             // shift to the front
             v0 = v2;
             v1 = v3;
 
-            min.x = std::min(min.x, v0.x);
-            min.y = std::min(min.y, v0.y);
-
-            max.x = std::max(max.x, v0.x);
-            max.y = std::max(max.y, v0.y);
         }
     }    
 
