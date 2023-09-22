@@ -9,8 +9,6 @@
 
 using namespace physics;
 
-///////////////////////////////////////////////////////////////////////////////
-
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
     float_type x_max = p.x + r.value;
@@ -53,6 +51,10 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     //      (  1    0  )
     Vector n = {sgn_n_x * -d.y, sgn_n_x * d.x};
     float_type normalization = std::sqrt(n * n);
+
+    if (n.y < 0) {
+        n = n * (-1);
+    }
     return n / normalization;
 }
 
@@ -376,9 +378,9 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .with<Player>()
         .iter(updatePlayerState);
 
-    for (int i = 0; i < 20; i++) {
-        Position p{300.f + 200.f, 25.f * (float)i};
-        Velocity v{0., 0.};
-        makeRock(world, p, v, 10.f);
-    }
+    //for (int i = 0; i < 20; i++) {
+    //    Position p{300.f + 200.f, 25.f * (float)i};
+    //    Velocity v{0., 0.};
+    //    makeRock(world, p, v, 10.f);
+    //}
 }

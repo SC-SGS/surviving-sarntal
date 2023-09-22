@@ -21,6 +21,7 @@ stages:          # List of stages for jobs, and their order of execution
   - build
   - validate-tidy
   - test
+  - run-exe
 
 
 clang-format-validate:
@@ -47,6 +48,16 @@ test-job:
   stage: test
   script:
     - ctest --test-dir cmake-build-debug
+  dependencies:
+    - build-job
+  artifacts:
+    paths:
+      - cmake-build-debug/surviving-sarntal
+
+run-exe:
+  stage: run-exe
+  script:
+    - ./run_check.sh
   dependencies:
     - build-job
   artifacts:
