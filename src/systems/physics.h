@@ -39,7 +39,7 @@ void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-void updateState(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockState(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
@@ -55,7 +55,7 @@ void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
  * @param positions
  * @param velocities
  */
-void updateVelocity(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockVelocity(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.
@@ -65,7 +65,7 @@ void updateVelocity(flecs::iter it, Position *positions, Velocity *velocities);
  * @param positions
  * @param velocities
  */
-void updatePosition(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockPosition(flecs::iter it, Position *positions, Velocity *velocities);
 
 /**
  * Given a rock, find the closest vertex of the ground.
@@ -116,13 +116,10 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 
 }
 
-class PlayerTools {
-  public:
-    static void updateState(flecs::iter it, Position *positions,
+void updatePlayerState(flecs::iter it, Position *positions,
                             Velocity *velocities,
                             PlayerMovement *player_movements);
-  private:
-    static float getYPosFromX(const flecs::world &world, float x);
-};
+
+float getYPosFromX(const flecs::world &world, float x);
 
 // namespace physics

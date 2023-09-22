@@ -134,20 +134,20 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
     }
 }
 
-void physics::updateState(flecs::iter it, Position *positions,
+void physics::updateRockState(flecs::iter it, Position *positions,
                           Velocity *velocities) {
-    updateVelocity(it, positions, velocities);
-    updatePosition(it, positions, velocities);
+    updateRockVelocity(it, positions, velocities);
+    updateRockPosition(it, positions, velocities);
 }
 
-void physics::updateVelocity(flecs::iter it, Position *positions,
+void physics::updateRockVelocity(flecs::iter it, Position *positions,
                              Velocity *velocities) {
     for (auto i : it) {
         velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
     }
 }
 
-void physics::updatePosition(flecs::iter it, Position *positions,
+void physics::updateRockPosition(flecs::iter it, Position *positions,
                              Velocity *velocities) {
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
@@ -158,7 +158,7 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
     world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
-        updateState);
+        updateRockState);
 
     world.system<Position, Velocity, Radius, Mountain>()
         .term_at(4)
@@ -166,7 +166,7 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .iter(terrainCollision);
 
     world.system<Position, Velocity, PlayerMovement>().with<Player>().iter(
-        PlayerTools::updateState);
+        updatePlayerState);
 
     for (int i = 0; i < 10; i++) {
         Position p{200.f + i * 2.f, 500.f};
@@ -175,7 +175,7 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     }
 }
 
-void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements) {
+void updatePlayerState(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements) {
      auto input =  it.world().get<InputEntity>();
 
      //Update Velocities
@@ -199,9 +199,17 @@ void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *vel
          player_movements[0].current_state !=
              PlayerMovement::MovementState::IN_AIR) {
         velocities[0].x *= duckSpeedFactor;
+        player_movements[0].current_state = PlayerMovement::MovementState::DUCKED;
      }
 
      double x_factor = input->getAxis(Axis::MOVEMENT_X);
+     if(player_movements[0].current_state != PlayerMovement::MovementState::IN_AIR) {
+        if(x_factor==0) {
+            player_movements[0].current_state = PlayerMovement::MovementState::IDLE;
+        } else {
+            player_movements[0].current_state = PlayerMovement::MovementState::MOVING;
+        }
+     }
      velocities[0].x = normalSpeed * x_factor;
 
      if(player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
@@ -212,16 +220,44 @@ void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *vel
      //Update Positions
 
     positions[0].x += velocities[0].x * it.delta_time();
+    auto terrain_y = getYPosFromX(it.world(), positions[0].x);
     if(player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
-        positions[0].y += velocities[0].y * it.delta_time();
+        auto air_y= positions[0].y + velocities[0].y * it.delta_time();
+        if(air_y > terrain_y) {
+             positions[0].y = air_y;
+        } else {
+             positions[0].y = terrain_y;
+             player_movements[0].current_state = PlayerMovement::MovementState::MOVING;
+        }
     } else {
-        positions[0].y = getYPosFromX(it.world(), positions[0].x);
+        positions[0].y = terrain_y;
     }
 }
 
-float PlayerTools::getYPosFromX(const flecs::world &world, float x) {
-    auto mountain = world.get<Mountain>();
-    return 0;
+float getYPosFromX(const flecs::world &world, float x) {
+    auto mountain = world.get_mut<Mountain>();
+    auto interval = mountain->getRelevantMountainSection(x, x);
+    std::size_t closest_indices[] = {interval.start_index, interval.end_index};
+    auto closest_left_distance = std::abs(mountain->getVertex(interval.start_index).x - x);
+    auto closest_right_distance = std::abs(mountain->getVertex(interval.end_index).x - x);
+
+    for (auto j = interval.start_index; j < interval.end_index; j++) {
+        auto mountain_vertex = mountain->getVertex(j);
+        auto current_dist = mountain_vertex.x - x;
+
+        if (current_dist < 0 && std::abs(current_dist) < closest_left_distance) {
+             closest_indices[0] = j;
+             closest_left_distance = std::abs(current_dist);
+        } else if (current_dist > 0 && std::abs(current_dist) < closest_right_distance) {
+             closest_indices[1] = j;
+             closest_right_distance = std::abs(current_dist);
+        }
+    }
+
+    auto vertex_left = mountain->getVertex(closest_indices[0]);
+    auto vertex_right = mountain->getVertex(closest_indices[1]);
+
+    return ((x - vertex_left.x)*vertex_right.y + (vertex_right.x - x)*vertex_left.y)/(vertex_right.x - vertex_left.x);
 }
 
 
