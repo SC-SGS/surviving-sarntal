@@ -11,5 +11,7 @@ InputSystems::InputSystems(flecs::world &world) {
 
     // add input entity as singleton
     world.add<InputEntity>();
+    world.get_mut<InputEntity>()->setInputType(InputEntity::InputType::USE_GAMEPAD);
+
     world.system<InputEntity>().kind(flecs::PreUpdate).iter(inputPreupdate);
 }

@@ -5,22 +5,24 @@
 #include <sstream>
 #include <string>
 
-bool InputEntity::getGamepadEvent(ButtonEvent event, int gamepad) {
+
+
+bool InputEntity::getGamepadEvent(ButtonEvent event) const {
     switch (event.keyPressType) {
     case PRESSED:
-        return IsGamepadButtonPressed(gamepad, event.key);
+        return IsGamepadButtonPressed(getGamepadId(), event.key);
     case RELEASED:
-        return IsGamepadButtonReleased(gamepad, event.key);
+        return IsGamepadButtonReleased(getGamepadId(), event.key);
     case DOWN:
-        return IsGamepadButtonDown(gamepad, event.key);
+        return IsGamepadButtonDown(getGamepadId(), event.key);
     case UP:
-        return IsGamepadButtonUp(gamepad, event.key);
+        return IsGamepadButtonUp(getGamepadId(), event.key);
     default:
         return false;
     }
 }
 
-bool InputEntity::getKeyboardEvent(ButtonEvent event) {
+bool InputEntity::getKeyboardEvent(ButtonEvent event) const {
     switch (event.keyPressType) {
     case PRESSED:
         return IsKeyPressed(event.key);
@@ -35,42 +37,39 @@ bool InputEntity::getKeyboardEvent(ButtonEvent event) {
     }
 }
 
-double InputEntity::getGamepadAxis(GamepadAxis axis, int gamepad) {
-    return GetGamepadAxisMovement(gamepad, axis);
+double InputEntity::getGamepadAxis(GamepadAxis axis) const {
+    return GetGamepadAxisMovement(getGamepadId(), axis);
 }
 
-double InputEntity::getVirtualAxis(VirtualAxis axis, int player) const {
+double InputEntity::getVirtualAxis(VirtualAxis axis) const {
     double value = 0;
 
-    if (axis.positive.device == GAMEPAD && hasPlayerGamepad(player))
-        value += getGamepadEvent(axis.positive, getPlayerGamepad(player));
-    else if (axis.positive.device == KEYBOARD)
+    if (axis.positive.device == InputDevice::DEVICE_GAMEPAD && hasGamepad())
+        value += getGamepadEvent(axis.positive);
+    else if (axis.positive.device == InputDevice::DEVICE_KEYBOARD)
         value += getKeyboardEvent(axis.positive);
 
-    if (axis.negative.device == GAMEPAD && hasPlayerGamepad(player))
-        value -= getGamepadEvent(axis.negative, getPlayerGamepad(player));
-    else if (axis.negative.device == KEYBOARD)
+    if (axis.negative.device == InputDevice::DEVICE_GAMEPAD && hasGamepad())
+        value -= getGamepadEvent(axis.negative);
+    else if (axis.negative.device == DEVICE_KEYBOARD)
         value -= getKeyboardEvent(axis.negative);
 
     return value;
 }
 
-int InputEntity::getPlayerGamepad(int player) const {
-    return player_gamepad_ids.at(player);
-}
+int InputEntity::getGamepadId() const { return gamepad_id; }
 
 InputEntity::InputEntity() = default;
 InputEntity::~InputEntity() = default;
 
-bool InputEntity::getEvent(Event event, int player) const {
+bool InputEntity::getEvent(Event event) const {
     bool active = false;
 
-    if (hasPlayerGamepad(player)) {
-        int gamepad = getPlayerGamepad(player);
+    if (hasGamepad()) {
         auto gamepad_action_iter = gamepad_key_map.find(event);
         if (gamepad_action_iter != gamepad_key_map.end()) {
             auto gamepad_action = gamepad_action_iter->second;
-            active = active | getGamepadEvent(gamepad_action, gamepad);
+            active = active | getGamepadEvent(gamepad_action);
         }
     }
     auto keyboard_action_iter = keyboard_key_map.find(event);
@@ -82,15 +81,14 @@ bool InputEntity::getEvent(Event event, int player) const {
     return active;
 }
 
-double InputEntity::getAxis(Axis axis, int player) const {
+double InputEntity::getAxis(Axis axis) const {
     double value = 0;
 
-    if (hasPlayerGamepad(player)) {
-        int gamepad = getPlayerGamepad(player);
+    if (hasGamepad()) {
         auto gamepad_axis_iter = gamepad_axis_map.find(axis);
         if (gamepad_axis_iter != gamepad_axis_map.end()) {
             auto gamepad_axis = gamepad_axis_iter->second;
-            value = getGamepadAxis(gamepad_axis, gamepad);
+            value = getGamepadAxis(gamepad_axis);
         }
     }
     auto virtual_axis_iter = virtual_axis_map.find(axis);
@@ -99,7 +97,7 @@ double InputEntity::getAxis(Axis axis, int player) const {
 
         // use value from virtual axis with maximal value
         for (auto virtual_axis : virtual_axes) {
-            double virtual_value = getVirtualAxis(virtual_axis, player);
+            double virtual_value = getVirtualAxis(virtual_axis);
             if (abs(virtual_value) > abs(value))
                 value = virtual_value;
         }
@@ -112,25 +110,30 @@ void InputEntity::preUpdate() {
     // if something must be updated each frame
 
     // update gamepads
-    player_gamepad_ids.clear();
-    for (int i = 0; i < 8; ++i) {
-        // add to gamepads if its name contains
-        // TODO: find more elegant way for this
-        if (IsGamepadAvailable(i) &&
-            std::string(GetGamepadName(i)).find("Gamepad") != std::string::npos)
-            player_gamepad_ids.push_back(i);
+    gamepad_id = NO_GAMEPAD_ID;
+    if (current_input_type == InputType::USE_GAMEPAD) {
+        int found_gamepads = 0;
+        for (int i = 0; i < 8; ++i) {
+            // TODO: find more elegant way for this
+            std::string gamepad_name = std::string(GetGamepadName(i));
+            if (IsGamepadAvailable(i) &&
+                    gamepad_name.find("Gamepad") != std::string::npos ||
+                    gamepad_name.find("Controller") != std::string::npos ||
+                    gamepad_name.find("gamepad") != std::string::npos)
+            {
+                if (found_gamepads == player_id)
+                    gamepad_id = i;
+                found_gamepads++;
+            }
+        }
     }
 }
 
-int InputEntity::getGamepadCount() const {
-    return (int)player_gamepad_ids.size();
-}
-
-const std::string &InputEntity::getEventDisplayName(Event event) {
+const std::string &InputEntity::getEventDisplayName(Event event) const {
     return event_display_names.at(event);
 }
 
-const std::string &InputEntity::getAxisDisplayName(Axis axis) {
+const std::string &InputEntity::getAxisDisplayName(Axis axis) const {
     return axis_display_names.at(axis);
 }
 
@@ -139,17 +142,21 @@ std::string InputEntity::getInputInfo() const {
 
     for (int i = 0; i < Event::EVENT_COUNT; ++i) {
         input_info << getEventDisplayName((Event)i) << ": "
-                   << getEvent((Event)i, 0) << std::endl;
+                   << getEvent((Event)i) << std::endl;
     }
 
     for (int i = 0; i < Axis::AXIS_COUNT; ++i) {
-        input_info << getAxisDisplayName((Axis)i) << ": " << getAxis((Axis)i, 0)
+        input_info << getAxisDisplayName((Axis)i) << ": " << getAxis((Axis)i)
                    << std::endl;
     }
 
     return input_info.str();
 }
 
-bool InputEntity::hasPlayerGamepad(int player) const {
-    return player < player_gamepad_ids.size();
+bool InputEntity::hasGamepad() const {
+    return current_input_type == InputType::USE_GAMEPAD &&
+           getGamepadId() != NO_GAMEPAD_ID;
+}
+void InputEntity::setInputType(InputEntity::InputType type) {
+    current_input_type = type;
 }
