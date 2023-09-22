@@ -27,7 +27,7 @@ class Mountain {
      */
     static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
 
-    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 100;
+    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
 
     static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
 
