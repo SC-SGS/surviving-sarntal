@@ -89,9 +89,6 @@ void Mountain::generateSlope() {
                                            array_size] =
             Position{current_x, current_y};
     }
-
-    start_of_circular_array =
-        (start_of_circular_array + num_points_to_generate) % array_size;
 }
 
 IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
