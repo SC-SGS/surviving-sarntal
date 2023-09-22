@@ -177,11 +177,55 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
                                 Velocity *velocities,
                                 PlayerMovement *player_movements,
                                 InputEntity *input_entities) {
-    auto input = input_entities;
 
-    // Update Velocities
+    if (playerIsHit(it, positions, velocities, player_movements,
+                    input_entities)) {
+        printf("Player Unalive!");
+    }
 
-    if (input->getEvent(Event::JUMP)) {
+    updatePlayerVelocity(it, positions, velocities, player_movements,
+                         input_entities);
+    updatePlayerPosition(it, positions, velocities, player_movements);
+}
+
+void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
+                                   Velocity *velocities,
+                                   PlayerMovement *player_movements,
+                                   InputEntity *input_entities) {
+
+    checkJumpEvent(velocities, player_movements, input_entities);
+    checkDuckEvent(velocities, player_movements, input_entities);
+    checkXMovement(velocities, player_movements, input_entities);
+    checkAerialState(it, velocities, player_movements, input_entities);
+    checkDirection(velocities, player_movements, input_entities);
+}
+
+void physics::updatePlayerPosition(flecs::iter it, Position *positions,
+                                   Velocity *velocities,
+                                   PlayerMovement *player_movements) {
+    positions[0].x += velocities[0].x * it.delta_time();
+    auto terrain_y = getYPosFromX(it.world(), positions[0].x);
+    if (player_movements[0].current_state ==
+        PlayerMovement::MovementState::IN_AIR) {
+        auto air_y = positions[0].y + velocities[0].y * it.delta_time();
+        if (air_y > terrain_y) {
+            positions[0].y = air_y;
+        } else {
+            positions[0].y = terrain_y;
+            player_movements[0].current_state =
+                PlayerMovement::MovementState::MOVING;
+            player_movements[0].can_jump_again = true;
+        }
+    } else {
+        positions[0].y = terrain_y;
+    }
+    positions[0].y += .5 * HIKER_HEIGHT;
+}
+
+void physics::checkJumpEvent(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    if (input_entities->getEvent(Event::JUMP)) {
         float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
@@ -202,16 +246,24 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
                 PlayerMovement::MovementState::IN_AIR;
         }
     }
+}
 
-    if (input->getEvent(Event::DUCK) &&
+void physics::checkDuckEvent(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    if (input_entities->getEvent(Event::DUCK) &&
         player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
         velocities[0].x *= duckSpeedFactor;
         player_movements[0].current_state =
             PlayerMovement::MovementState::DUCKED;
     }
+}
 
-    double x_factor = input->getAxis(Axis::MOVEMENT_X);
+void physics::checkXMovement(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    double x_factor = input_entities->getAxis(Axis::MOVEMENT_X);
     if (player_movements[0].current_state !=
         PlayerMovement::MovementState::IN_AIR) {
         if (x_factor == 0) {
@@ -223,13 +275,21 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
         }
     }
     velocities[0].x = normalSpeed * x_factor;
+}
 
+void physics::checkAerialState(flecs::iter it, Velocity *velocities,
+                               PlayerMovement *player_movements,
+                               InputEntity *input_entities) {
     if (player_movements[0].current_state ==
         PlayerMovement::MovementState::IN_AIR) {
         player_movements[0].last_jump += it.delta_time();
         velocities[0].y += GRAVITATIONAL_CONSTANT * it.delta_time();
     }
+}
 
+void physics::checkDirection(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
     if (velocities[0].x < 0) {
         player_movements[0].current_direction = PlayerMovement::Direction::LEFT;
     } else if (velocities[0].x > 0) {
@@ -239,26 +299,6 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
         player_movements[0].current_direction =
             PlayerMovement::Direction::NEUTRAL;
     }
-
-    // Update Positions
-
-    positions[0].x += velocities[0].x * it.delta_time();
-    auto terrain_y = getYPosFromX(it.world(), positions[0].x);
-    if (player_movements[0].current_state ==
-        PlayerMovement::MovementState::IN_AIR) {
-        auto air_y = positions[0].y + velocities[0].y * it.delta_time();
-        if (air_y > terrain_y) {
-            positions[0].y = air_y;
-        } else {
-            positions[0].y = terrain_y;
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::MOVING;
-            player_movements[0].can_jump_again = true;
-        }
-    } else {
-        positions[0].y = terrain_y;
-    }
-    positions[0].y += .5 * HIKER_HEIGHT;
 }
 
 float physics::getYPosFromX(const flecs::world &world, float x) {
