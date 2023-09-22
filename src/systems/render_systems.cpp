@@ -6,7 +6,6 @@
 
 namespace graphics {
 
-
 Texture2D gradient_tex;
 
 int rotation = 0;
