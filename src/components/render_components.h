@@ -1,19 +1,22 @@
 #pragma once
+#include "../utils/resource_manager.h"
 #include <raylib.h>
 
 namespace graphics {
 
 struct SpriteComponent {
-    int resourceHandle;
+    int width;
+    int height;
+    HANDLE resourceHandle;
 };
 
 struct AnimatedSpriteComponent {
-    int resourceHandle;
-    int currentFrame;
+    HANDLE resourceHandle;
+    HANDLE currentFrame;
 };
 
 struct ChunkRenderComponent {
-    int resourceHandle;
+    HANDLE resourceHandle;
 };
 
 typedef Camera2D Camera2DComponent;

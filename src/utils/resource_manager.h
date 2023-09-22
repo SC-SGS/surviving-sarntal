@@ -3,34 +3,50 @@
 #include "flecs.h"
 #include "raylib.h"
 #include "string"
+#include <stdexcept>
 #include <unordered_map>
 
 namespace graphics {
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
+// TODO, do not use yet
 template <typename T> class ResourceManager {
 
   public:
-    HANDLE Load(std::string_view path) {
-        bool found = false;
-        if (found) {
-            HANDLE handle = hash(path);
+    HANDLE Load(const std::string &path) {
+        // Create a unique hash for this resource
+        HANDLE hash = std::hash(path);
 
-            Texture2D texture = LoadTexture(path);
-            res.insert(handle, texture);
-            return handle;
+        // check if resource was already loaded before
+        auto it = res.find(hash);
+
+        if (it != res.end()) {
+            // found
+            return hash;
         } else {
-            return NULL_HANDLE;
+            // not found, create new
+            return Load(LoadTexture(path.c_str()));
         }
     }
 
-    T Get(HANDLE handle) {
+    HANDLE Load(Texture2D texture) {
+        HANDLE handle = 0;
+        // generate unused handle
+        do {
+            handle = rand();
+        } while (res.find(handle) != res.end());
+
+        res.insert({handle, texture});
+        return handle;
+    }
+
+    T Get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
-            return *it;
+            return it->second;
         } else {
-            return NULL_HANDLE;
+            throw std::runtime_error("invalid handle!");
         }
     }
 
@@ -45,7 +61,7 @@ template <typename T> class ResourceManager {
     std::unordered_map<HANDLE, T> res;
 };
 
-class Resources {
+struct Resources {
     ResourceManager<Texture2D> textures;
 };
 
