@@ -11,7 +11,7 @@
 
 using namespace physics;
 
-physics::ClosestVertex physics::getClosestVertex(Position p, Radius r,
+physics::Vertex physics::getClosestVertex(Position p, Radius r,
                                                  Mountain *m) {
     float_type x_min = p.x - r.value;
     float_type x_max = p.x + r.value;
@@ -173,26 +173,6 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         Velocity v{0., 0.};
         makeRock(world, p, v, 10.f);
     }
-}
-
-void RockTools::RockCollisions::rockCollisions(flecs::world &world) {
-    // TODO detect colliding rocks and iterate over colliding pair and update state.
-}
-
-void RockTools::RockCollisions::rockCollision(flecs::world &world) {
-    // TODO updates state of a pair of colliding rocks.
-}
-
-void RockTools::RockCollisions::pairCollidingRocks(flecs::world &world) {
-    world.system<Position, Radius>().with<Rock>().iter(RockTools::RockCollisions::pairPossiblyCollidingRocks);
-    // forall possibly colliding rocks, check for collision and add tag collides
-}
-
-void RockTools::RockCollisions::pairPossiblyCollidingRocks(flecs::iter it, Position *positions, Radius *radii) {
-    /*float[] aabbs = new float[it.]
-    for(auto i : it) {
-
-    }*/
 }
 
 void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements) {
