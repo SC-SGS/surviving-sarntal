@@ -77,5 +77,4 @@ struct Resources {
     ResourceManager<Music> music;
 };
 
-
 } // namespace graphics

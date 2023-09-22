@@ -28,14 +28,13 @@ struct ChunkRenderComponent {
     HANDLE resourceHandle;
 };
 
-struct AudioComponent{
+struct AudioComponent {
     HANDLE resourceHandle;
 };
 
 struct BillboardComponent {
     Vector3 billUp;
     Vector3 billPositionStatic;
-
 };
 
 typedef Camera2D Camera2DComponent;
