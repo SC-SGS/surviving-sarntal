@@ -8,12 +8,15 @@
 #include <unordered_map>
 #include <vector>
 
-
-
 static constexpr int NO_GAMEPAD_ID = -1;
 
 // different input devices
-enum InputDevice { DEVICE_KEYBOARD, DEVICE_GAMEPAD, DEVICE_MOUSE, DEVICE_KINECT };
+enum InputDevice {
+    DEVICE_KEYBOARD,
+    DEVICE_GAMEPAD,
+    DEVICE_MOUSE,
+    DEVICE_KINECT
+};
 
 // In game events
 enum Event {
@@ -56,10 +59,9 @@ struct VirtualAxis {
     ButtonEvent negative;
 };
 
-
 // map containing strings with the english display names for the input
 // events
-const std::unordered_map<Event, std::string> event_display_names {
+const std::unordered_map<Event, std::string> event_display_names{
     {JUMP, "Jump"},           {DUCK, "Duck"},
     {ITEM_PICK, "Pick item"}, {ITEM_USE, "Use item"},
     {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},
@@ -81,8 +83,7 @@ const std::unordered_map<Event, ButtonEvent> keyboard_key_map{
     {ITEM_USE, {DEVICE_KEYBOARD, KEY_F, PRESSED}},
     {ITEM_DROP, {DEVICE_KEYBOARD, KEY_Q, PRESSED}},
     {SPECIAL_ABILITY, {DEVICE_KEYBOARD, KEY_G, PRESSED}},
-    {PAUSE, {DEVICE_KEYBOARD, KEY_ESCAPE, PRESSED}}
-};
+    {PAUSE, {DEVICE_KEYBOARD, KEY_ESCAPE, PRESSED}}};
 
 const std::unordered_map<Event, ButtonEvent> gamepad_key_map{
     {JUMP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_DOWN, PRESSED}},
@@ -90,7 +91,8 @@ const std::unordered_map<Event, ButtonEvent> gamepad_key_map{
     {ITEM_PICK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_LEFT, PRESSED}},
     {ITEM_USE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT, PRESSED}},
     {ITEM_DROP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_UP, PRESSED}},
-    {SPECIAL_ABILITY, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, PRESSED}},
+    {SPECIAL_ABILITY,
+     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, PRESSED}},
     {PAUSE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_MIDDLE, PRESSED}},
 };
 
@@ -114,10 +116,10 @@ const std::unordered_map<Axis, std::list<VirtualAxis>> virtual_axis_map{
      }},
 };
 
-
 class InputEntity {
   public:
     enum InputType { GAMEPAD, MOUSE_KEYBOARD, KINECT };
+
   private:
     InputType current_input_type;
     // number of the gamepad to use (if input type is Gamepad)
@@ -171,7 +173,6 @@ class InputEntity {
      */
     bool hasKinect() const;
 
-
     double getVirtualAxis(VirtualAxis axis) const;
 
   public:
@@ -182,7 +183,8 @@ class InputEntity {
     InputEntity();
 
     /**
-     * a constructor that allows to specify the input type and optionally the number of the gamepad
+     * a constructor that allows to specify the input type and optionally the
+     * number of the gamepad
      * @param input_type
      * @param gamepad_num
      */
@@ -203,7 +205,8 @@ class InputEntity {
     /**
      * Sets the input type of this InputEntity to the given one.
      * One can choose between mouse/keyboard, gamepad and kinect.
-     * When selecting the gamepad, the number of the gamepad has to be specified too
+     * When selecting the gamepad, the number of the gamepad has to be specified
+     * too
      * @param type
      * @param gamepad_num
      */
