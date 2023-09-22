@@ -166,11 +166,11 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .with<Player>()
         .iter(updatePlayerState);
 
-    for (int i = 0; i < 20; i++) {
-        Position p{300.f + 200.f, 25.f * (float)i};
-        Velocity v{0., 0.};
-        makeRock(world, p, v, 10.f);
-    }
+    // for (int i = 0; i < 20; i++) {
+    //     Position p{300.f + 200.f, 25.f * (float)i};
+    //     Velocity v{0., 0.};
+    //     makeRock(world, p, v, 10.f);
+    // }
 }
 
 void physics::updatePlayerState(flecs::iter it, Position *positions,
