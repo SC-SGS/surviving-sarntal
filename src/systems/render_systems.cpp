@@ -158,17 +158,15 @@ void render_system(flecs::iter &iter) {
                     }
                 });
 
+                flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                    world.filter<Position, CircleShapeRenderComponent>();
 
-            flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
-                world.filter<Position, CircleShapeRenderComponent>();
+                cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                    DrawCircle(p.x, -p.y, s.radius, RED);
+                });
 
-            cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                DrawCircleLines(p.x, -p.y, s.radius, GREEN);
-            });
-
-
-            rotation++;
-        }
+                rotation++;
+            }
 
             EndMode2D();
         }
@@ -210,21 +208,22 @@ void init_render_system(flecs::world &world) {
     // world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
-    auto test_e = world.entity("TestEntity")
-                      .set([&](SpriteComponent &c) {
-                          c = {0};
-                          c.resourceHandle =
-                              world.get_mut<Resources>()->textures.Load(
-                                  LoadTextureFromImage(verticalGradient));
-                          c.width = 100;
-                          c.height = 100;
-                      })
-                      .set(([&](Position &c) {
-                          c.x = 0;
-                          c.y = 0;
-                      }))
-                      .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
-                      });
+    /*  auto test_e = world.entity("TestEntity")
+                        .set([&](SpriteComponent &c) {
+                            c = {0};
+                            c.resourceHandle =
+                                world.get_mut<Resources>()->textures.Load(
+                                    LoadTextureFromImage(verticalGradient));
+                            c.width = 100;
+                            c.height = 100;
+                        })
+                        .set(([&](Position &c) {
+                            c.x = 0;
+                            c.y = 0;
+                        }))
+                        .set([&](CircleShapeRenderComponent &c) { c.radius
+       = 25.0f;
+                        });*/
 }
 
 void destroy() {

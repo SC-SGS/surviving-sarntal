@@ -1,7 +1,7 @@
 #include "game_logic.h"
-#include "../components/vector.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
+#include "../components/vector.h"
 #include "iostream"
 #include "raylib.h"
 

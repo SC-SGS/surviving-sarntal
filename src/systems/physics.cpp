@@ -1,5 +1,6 @@
 #include "physics.h"
 #include "../components/mountain.h"
+#include "../components/render_components.h"
 #include "../components/vector.h"
 #include "flecs.h"
 #include "iostream"
@@ -83,7 +84,8 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Position>(p)
         .set<Velocity>(v)
         .set<Radius>({radius})
-        .add<Rock>();
+        .add<Rock>()
+        .set<graphics::CircleShapeRenderComponent>({radius});
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
@@ -122,11 +124,7 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
 
     p1 += v1 * exit_time1 + EPSILON;
     p2 += v2 * exit_time2 + EPSILON;
-    /*p1 = {p1.x + v1.x * exit_time1 + epsilon,
-          p1.y + v1.y * exit_time1 + epsilon};
-    p1 = {p2.x + v2.x * exit_time2 + epsilon,
-          p2.y + v2.y * exit_time2 + epsilon};
-*/}
+}
 
 void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
                        Radius r1, Radius r2) {
@@ -137,8 +135,6 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 
 void physics::updateState(flecs::iter it, Position *positions,
                           Velocity *velocities) {
-    std::cout << it.delta_time() << std::endl;
-
     updateVelocity(it, positions, velocities);
     updatePosition(it, positions, velocities);
 }
@@ -168,8 +164,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .singleton()
         .iter(terrainCollision);
 
-    for (int i = 0; i < 5; i++) {
-        Position p{200.f + i * 20.f, 500.f};
+    for (int i = 0; i < 10; i++) {
+        Position p{200.f + i * 2.f, 500.f};
         Velocity v{0., 0.};
         makeRock(world, p, v, 10.f);
     }
