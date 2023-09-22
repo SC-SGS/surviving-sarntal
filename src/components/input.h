@@ -123,26 +123,69 @@ class InputEntity {
     // number of the gamepad to use (if input type is Gamepad)
     int gamepad_num;
     // the gamepad id in raylib (if input type is Gamepad)
-    int gamepad_id = NO_GAMEPAD_ID;
+    int gamepad_id_raylib = NO_GAMEPAD_ID;
 
-    int getGamepadCount(int gamepad_num) const;
-
+    /**
+     * checks for button press events on the currently selected gamepad
+     * @param event
+     * @return
+     */
     bool getGamepadEvent(ButtonEvent event) const;
 
+    /**
+     * checks for keypress events on the keyboard
+     * @param event
+     * @return
+     */
     bool getKeyboardEvent(ButtonEvent event) const;
 
+    /**
+     * checks for mouse button events
+     * @param event
+     * @return
+     */
     bool getMouseEvent(ButtonEvent event) const;
 
+    /**
+     * reads the value of a gamepad axis (stick or trigger buttons)
+     * @param axis
+     * @return
+     */
     double getGamepadAxis(GamepadAxis axis) const;
 
+    /**
+     * gets the raylib id for the selected gamepad
+     * @return
+     */
     int getGamepadId() const;
 
+    /**
+     * checks if the gamepad is selected for input and is available
+     * @return
+     */
     bool hasGamepad() const;
+
+    /**
+     * checks if kinect is selected for input and available
+     * @return
+     */
+    bool hasKinect() const;
+
 
     double getVirtualAxis(VirtualAxis axis) const;
 
   public:
+    /**
+     * default constructor that selects the first gamepad if available
+     * or mouse and keyboard otherwise
+     */
     InputEntity();
+
+    /**
+     * a constructor that allows to specify the input type and optionally the number of the gamepad
+     * @param input_type
+     * @param gamepad_num
+     */
     InputEntity(InputType input_type, int gamepad_num = NO_GAMEPAD_ID);
 
     ~InputEntity();
@@ -152,17 +195,19 @@ class InputEntity {
     const std::string &getEventDisplayName(Event event) const;
 
     /**
-     * Sets the input type of this InputEntity to the given one.
-     * One can choose between mouse/keyboard, gamepad and kinect
-     * @param type
-     */
-    void setInputType(InputType type, int gamepad_num = NO_GAMEPAD_ID);
-
-    /**
      * gets formatted info about currently provided events and axis inputs
      * @return
      */
     std::string getInputInfo() const;
+
+    /**
+     * Sets the input type of this InputEntity to the given one.
+     * One can choose between mouse/keyboard, gamepad and kinect.
+     * When selecting the gamepad, the number of the gamepad has to be specified too
+     * @param type
+     * @param gamepad_num
+     */
+    void setInputType(InputType type, int gamepad_num = NO_GAMEPAD_ID);
 
     /**
      * gets the number of gamepads that are attached
@@ -189,7 +234,10 @@ class InputEntity {
      */
     double getAxis(Axis axis) const;
 
-    void preUpdate();
+    /**
+     * checks that the selected device is still available
+     */
+    void updateDevices();
 };
 
 #endif // SURVIVING_SARNTAL_INPUT_H
