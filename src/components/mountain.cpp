@@ -7,11 +7,13 @@ Mountain::Mountain() {
     // create points and chunks corresponding to a simple ramp
     double current_x = 0.;
     double current_y = 0.;
+    double slope = 0.0;
     for (int i = 0; i < landscape_fixpoints_circular_array.size(); i++) {
         landscape_fixpoints_circular_array[i].x = current_x;
         landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
-        current_y += SECTION_WIDTH * SLOPE;
+        current_y += SECTION_WIDTH * slope;
+        slope += ((rand() % 1000) - 500) / 1000.;
     }
     // printTempDebugInfo();
 }
@@ -58,11 +60,13 @@ void Mountain::generateNewChunk() {
     const std::size_t index_rightest_vertice =
         (start_of_circular_array + array_size - 1) % array_size;
 
+    double slope = 0.0;
     float current_x{getVertex(index_rightest_vertice).x};
     float current_y{getVertex(index_rightest_vertice).y};
     for (int i = 0; i < num_points_to_generate; i++) {
         current_x += SECTION_WIDTH;
-        current_y += SECTION_WIDTH * SLOPE;
+        current_y += SECTION_WIDTH * slope;
+        slope +=( (rand() % 1000) - 500) / 1000.;
         landscape_fixpoints_circular_array[(start_of_circular_array + i) %
                                            array_size] =
             Position{current_x, current_y};
