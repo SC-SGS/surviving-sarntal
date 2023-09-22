@@ -28,15 +28,24 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(verticalGradient);
 }
 
-
 Vector2 points[] = {
     {50, 190},  {100, 110}, {150, 200}, {200, 100},
     {250, 130}, {300, 210}, {350, 90},  {400, 150},
 };
 
 
+float getTerrainHeight(float x, float y, float ridge_height,
+                       float baseline = 0.0f) {
+    const float scale = 0.4f;
 
-void render_system(flecs::iter& iter) {
+    float distance_from_baseline = std::abs(y - baseline);
+
+    float falloff = -(y * y) * scale;
+
+    return ridge_height + falloff;
+}
+
+void render_system(flecs::iter &iter) {
     auto world = iter.world();
 
     if (IsKeyPressed(KEY_F11)) {
@@ -88,8 +97,8 @@ void render_system(flecs::iter& iter) {
                 debugCamera.rotation++;
         }
 
-        auto interval = world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
-
+        auto interval =
+            world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
         BeginDrawing();
         {
@@ -113,49 +122,57 @@ void render_system(flecs::iter& iter) {
                 for (int i = interval.start_index; i < interval.end_index;
                      i++) {
 
-                    Vector2 control_point_0{mountain->getVertex(i).x, mountain->getVertex(i).y};
-                    Vector2 control_point_1{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
-                    Vector2 control_point_2{mountain->getVertex(i).x, mountain->getVertex(i).y};
-                    Vector2 control_point_3{mountain->getVertex(i+1).x, mountain->getVertex(i+1).y};
+                    Vector2 control_point_0{mountain->getVertex(i).x,
+                                            mountain->getVertex(i).y};
+                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
+                                            mountain->getVertex(i + 1).y};
+                    Vector2 control_point_2{mountain->getVertex(i).x,
+                                            mountain->getVertex(i).y};
+                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
+                                            mountain->getVertex(i + 1).y};
 
-                    DrawLineBezierCubic(control_point_0, control_point_1, control_point_2,
-                                        control_point_3, 5, RED);
+                    DrawLineBezierCubic(control_point_0, control_point_1,
+                                        control_point_2, control_point_3, 5,
+                                        RED);
                 }
 
                 // Draw the control points and lines
                 if (DEBUG) {
                     for (int i = interval.start_index; i < interval.end_index;
-                        i++) {
-                        Vector2 point = {mountain->getVertex(i).x, mountain->getVertex(i).y};
+                         i++) {
+                        Vector2 point = {mountain->getVertex(i).x,
+                                         mountain->getVertex(i).y};
 
                         DrawCircleV(point, 5,
-                            BLUE); // Draw control points as circles
+                                    BLUE); // Draw control points as circles
                     }
                 }
 
-            flecs::filter<Position, SpriteComponent> q =
-                world.filter<Position, SpriteComponent>();
+                flecs::filter<Position, SpriteComponent> q =
+                    world.filter<Position, SpriteComponent>();
 
-            q.each([&](Position &p, SpriteComponent &s) {
-                if (s.resourceHandle != NULL_HANDLE) {
-                    auto texture = world.get_mut<Resources>()->textures.Get(
-                        s.resourceHandle);
+                q.each([&](Position &p, SpriteComponent &s) {
+                    if (s.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.Get(
+                            s.resourceHandle);
 
-                    Rectangle sourceRec = {
-                        0.0f, 0.0f, (float)texture.width,
-                        (float)texture.height}; // part of the texture used
+                        Rectangle sourceRec = {
+                            0.0f, 0.0f, (float)texture.width,
+                            (float)texture.height}; // part of the texture used
 
-                    Rectangle destRec = {p.x, p.y, static_cast<float>(s.width),
-                                         static_cast<float>(s.height)}; // where to draw texture
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(s.width),
+                            static_cast<float>(
+                                s.height)}; // where to draw texture
 
-                    DrawTexturePro(
-                        texture, sourceRec, destRec,
-                        {(float)texture.width, (float)texture.height}, 0,
-                        WHITE);
-                }
-            });
+                        DrawTexturePro(
+                            texture, sourceRec, destRec,
+                            {(float)texture.width, (float)texture.height}, 0,
+                            WHITE);
+                    }
+                });
 
-            rotation++;
+                rotation++;
             }
 
             EndMode2D();
@@ -171,22 +188,22 @@ void render_system(flecs::iter& iter) {
                     debugCamera3D.position.z += 2;
 
                 if (IsKeyDown(KEY_LEFT))
-                        debugCamera.rotation--;
+                    debugCamera.rotation--;
                 else if (IsKeyDown(KEY_RIGHT))
-                        debugCamera.rotation++;
+                    debugCamera.rotation++;
 
                 debugCamera3D.target.x = debugCamera3D.position.x;
                 debugCamera3D.target.z = debugCamera3D.position.z;
                 debugCamera3D.target.y = 1;
             }
-            //debugCamera3D.position = { debugCamera.target.x, -1.0, debugCamera.target.y};
-            //debugCamera3D.target = {debugCamera.target.x,1.0,debugCamera.target.y};
-
+            // debugCamera3D.position = { debugCamera.target.x, -1.0,
+            // debugCamera.target.y}; debugCamera3D.target =
+            // {debugCamera.target.x,1.0,debugCamera.target.y};
 
             BeginMode3D(debugCamera3D);
-            { 
+            {
                 DrawModel(model, {0.0, 0.0}, 1.0f, RED);
-                DrawCube({-20,0}, 10, 10, 10, RED);
+                DrawCube({-20, 0}, 10, 10, 10, RED);
             }
             EndMode3D();
         }
@@ -225,14 +242,15 @@ void init_render_system(flecs::world &world) {
     Image verticalGradient =
         GenImageGradientV(screenWidth / 5, screenHeight / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
-    //world.get_mut<Resources>()->textures.Load;
+    // world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
     auto test_e = world.entity("TestEntity")
                       .set([&](SpriteComponent &c) {
                           c = {0};
-                          c.resourceHandle = world.get_mut<Resources>()->textures.Load(
-                              LoadTextureFromImage(verticalGradient));
+                          c.resourceHandle =
+                              world.get_mut<Resources>()->textures.Load(
+                                  LoadTextureFromImage(verticalGradient));
                           c.width = 100;
                           c.height = 100;
                       })
@@ -241,23 +259,23 @@ void init_render_system(flecs::world &world) {
                           c.y = 0;
                       }));
 
-    
-     model = LoadModelFromMesh(generate_chunk_mesh());
+    model = LoadModelFromMesh(generate_chunk_mesh());
 
     debugCamera3D = {0};
     debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
-    debugCamera3D.target = {0.0f, 0.0f, 0.0f}; // Camera looking at point
-    debugCamera3D.up = {0.0f, 0.0f, 1.0f}; // Camera up vector (rotation towards target)
+    debugCamera3D.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
+    debugCamera3D.up = {0.0f, 0.0f,
+                        1.0f};  // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
     debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
 }
 
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh() {
-    
+
     int terrainVertexCount = 10;
 
-    int triangleCount = (terrainVertexCount-1)*2;
+    int triangleCount = (terrainVertexCount - 1) * 2;
     int vertexCount = triangleCount * 3;
     std::vector<float> vertices;
     //(vertexCount * 3);
@@ -266,33 +284,30 @@ Mesh generate_chunk_mesh() {
     std::vector<float> normals;
     //(vertexCount * 3);
 
-
     // demo terrain
     std::vector<Vector3> terrainVertices;
     for (int i = 0; i < terrainVertexCount; i++) {
-        terrainVertices.push_back({(float)i, 0, (float)(i%2)});
+        terrainVertices.push_back({(float)i, 0, (float)(i % 2)});
     }
-
 
     for (int i = 1; i < terrainVertexCount; i++) { // skip first tereain vertex
         // draw 2 triangles
 
         // first triangle
         auto v0 = terrainVertices[i - 1]; // terrain vertex i-1
-        auto v1 = terrainVertices[i]; // terrain vertex i
-        
+        auto v1 = terrainVertices[i];     // terrain vertex i
+
         vertices.push_back(v1.x);
         vertices.push_back(v1.y);
         vertices.push_back(v1.z);
 
-        vertices.push_back(v0.x); 
-        vertices.push_back(v0.y); 
+        vertices.push_back(v0.x);
+        vertices.push_back(v0.y);
         vertices.push_back(v0.z);
 
         vertices.push_back(v0.x);
         vertices.push_back(v0.y);
-        vertices.push_back(v0.z - 1.0);   // below terrain vertex i-1
-
+        vertices.push_back(v0.z - 1.0); // below terrain vertex i-1
 
         // second triangle
         vertices.push_back(v1.x);
@@ -301,51 +316,49 @@ Mesh generate_chunk_mesh() {
 
         vertices.push_back(v0.x);
         vertices.push_back(v0.y);
-        vertices.push_back(v0.z-1.0);
+        vertices.push_back(v0.z - 1.0);
 
         vertices.push_back(v1.x);
         vertices.push_back(v1.y);
         vertices.push_back(v1.z - 1.0); // below terrain vertex i
-
     }
 
     //// Vertex at (0, 0, 0)
-    //vertices[0] = 0;
-    //vertices[1] = 0;
-    //vertices[2] = 0;
-    //normals[0] = 0;
-    //normals[1] = 1;
-    //normals[2] = 0;
-    //texcoords[0] = 0;
-    //texcoords[1] = 0;
+    // vertices[0] = 0;
+    // vertices[1] = 0;
+    // vertices[2] = 0;
+    // normals[0] = 0;
+    // normals[1] = 1;
+    // normals[2] = 0;
+    // texcoords[0] = 0;
+    // texcoords[1] = 0;
 
     //// Vertex at (1, 0, 2)
-    //vertices[3] = 10;
-    //vertices[4] = 0;
-    //vertices[5] = 0;
-    //normals[3] = 0;
-    //normals[4] = 1;
-    //normals[5] = 0;
-    //texcoords[2] = 0.5f;
-    //texcoords[3] = 1.0f;
+    // vertices[3] = 10;
+    // vertices[4] = 0;
+    // vertices[5] = 0;
+    // normals[3] = 0;
+    // normals[4] = 1;
+    // normals[5] = 0;
+    // texcoords[2] = 0.5f;
+    // texcoords[3] = 1.0f;
 
     //// Vertex at (2, 0, 0)
-    //vertices[6] = 10;
-    //vertices[7] = 0;
-    //vertices[8] = 10;
-    //normals[6] = 0;
-    //normals[7] = 1;
-    //normals[8] = 0;
-    //texcoords[4] = 1;
-    //texcoords[5] = 0;    
-    
+    // vertices[6] = 10;
+    // vertices[7] = 0;
+    // vertices[8] = 10;
+    // normals[6] = 0;
+    // normals[7] = 1;
+    // normals[8] = 0;
+    // texcoords[4] = 1;
+    // texcoords[5] = 0;
+
     Mesh mesh = {0};
     mesh.triangleCount = triangleCount;
     mesh.vertexCount = vertexCount;
     mesh.vertices = vertices.data(); // 3 vertices, 3 coordinates each (x, y, z)
     mesh.texcoords = texcoords.data(); // 3 vertices, 2 coordinates each (x, y)
     mesh.normals = normals.data(); // 3 vertices, 3 coordinates each (x, y, z)
-
 
     // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
     UploadMesh(&mesh, false);
@@ -356,7 +369,7 @@ Mesh generate_chunk_mesh() {
 void destroy() {
     CloseWindow();
     UnloadTexture(gradientTex);
-    //UnloadModel(model);
+    // UnloadModel(model);
 }
 
 } // namespace graphics
