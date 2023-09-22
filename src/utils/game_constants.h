@@ -3,8 +3,8 @@
 
 typedef float float_type;
 
-constexpr float_type duckSpeedFactor = .5;
-constexpr float_type normalSpeed = 500;
+constexpr float_type DUCK_SPEED_FACTOR = .5;
+constexpr float_type NORMAL_SPEED = 500;
 constexpr float_type JUMP_VELOCITY_CONSTANT = 500;
 constexpr float_type HIKER_HEIGHT = 50;
 constexpr float_type HIKER_WIDTH = 15;

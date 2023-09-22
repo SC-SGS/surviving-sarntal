@@ -132,7 +132,10 @@ void initGameLogic(flecs::world &world) {
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
-        .set<graphics::RectangleShapeRenderComponent>({HIKER_WIDTH, HIKER_HEIGHT, })
+        .set<graphics::RectangleShapeRenderComponent>({
+            HIKER_WIDTH,
+            HIKER_HEIGHT,
+        })
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({});
