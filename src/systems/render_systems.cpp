@@ -138,13 +138,21 @@ void render_system(flecs::iter &iter) {
             if (scrollingMid <= -midground_tex.width*2) scrollingMid = 0;
             if (scrollingFore <= -foreground_tex.width*2) scrollingFore = 0;
 
-            world.entity("Background").get_mut<Position>()->x = scrollingBack;
-            world.entity("Midground").get_mut<Position>()->x = scrollingMid;
-            world.entity("Foreground").get_mut<Position>()->x = scrollingFore;
+            world.entity("Background").get_mut<Position>()->x = scrollingBack+ camera->target.x ;
+            world.entity("Midground").get_mut<Position>()->x  = scrollingMid+ camera->target.x;
+            world.entity("Foreground").get_mut<Position>()->x = scrollingFore+ camera->target.x;
 
-            world.entity("BackgroundDuplicate").get_mut<Position>()->x = scrollingBack + world.entity("Background").get_mut<SpriteComponent>()->width;
-            world.entity("MidgroundDuplicate").get_mut<Position>()->x = scrollingMid + world.entity("Midground").get_mut<SpriteComponent>()->width;
-            world.entity("ForegroundDuplicate").get_mut<Position>()->x = scrollingFore + world.entity("Foreground").get_mut<SpriteComponent>()->width;
+            world.entity("BackgroundDuplicate").get_mut<Position>()->x = scrollingBack + graphics::SCREEN_WIDTH + camera->target.x;
+            world.entity("MidgroundDuplicate").get_mut<Position>()->x  = scrollingMid + graphics::SCREEN_WIDTH + camera->target.x;
+            world.entity("ForegroundDuplicate").get_mut<Position>()->x = scrollingFore + graphics::SCREEN_WIDTH + camera->target.x;
+
+            world.entity("Background").get_mut<Position>()->y = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
+            world.entity("Midground").get_mut<Position>()->y  = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
+            world.entity("Foreground").get_mut<Position>()->y = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
+
+            world.entity("BackgroundDuplicate").get_mut<Position>()->y = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
+            world.entity("MidgroundDuplicate").get_mut<Position>()->y  = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
+            world.entity("ForegroundDuplicate").get_mut<Position>()->y = -(-graphics::SCREEN_HEIGHT*0.25+ camera->target.y);
 
             /*world.get_mut<Resources>()*/
 
@@ -331,8 +339,8 @@ void init_render_system(flecs::world &world) {
     InitAudioDevice();
 
 
-    background_tex = LoadTexture("../assets/layers/glacial_mountains.png");
-    midground_tex = LoadTexture("../assets/layers/sky.png");
+    background_tex = LoadTexture("../assets/layers/sky.png");
+    midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
 
     ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
@@ -400,38 +408,6 @@ void init_render_system(flecs::world &world) {
                       .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                       });
 
-    auto midground = world.entity("Midground")
-                         .set([&](SpriteComponent &c) {
-                             c = {0};
-                             c.resourceHandle =
-                                 world.get_mut<Resources>()->textures.Load(
-                                     midground_tex);
-                             c.width = SCREEN_WIDTH;
-                             c.height = SCREEN_HEIGHT;
-                         })
-                         .set(([&](Position &c) {
-                             c.x = 0;
-                             c.y = 0;
-                         }))
-                         .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
-                         });
-
-    auto midground_duplicate = world.entity("MidgroundDuplicate")
-                                   .set([&](SpriteComponent &c) {
-                                       c = {0};
-                                       c.resourceHandle =
-                                           world.get_mut<Resources>()->textures.Load(
-                                               midground_tex);
-                                       c.width = SCREEN_WIDTH;
-                                       c.height = SCREEN_HEIGHT;
-                                   })
-                                   .set(([&](Position &c) {
-                                       c.x = 0;
-                                       c.y = 0;
-                                   }))
-                                   .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
-                                   });
-
     auto background = world.entity("Background")
                           .set([&](SpriteComponent &c) {
                               c = {0};
@@ -463,6 +439,39 @@ void init_render_system(flecs::world &world) {
                                     }))
                                     .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                                     });
+
+
+    auto midground = world.entity("Midground")
+                         .set([&](SpriteComponent &c) {
+                             c = {0};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     midground_tex);
+                             c.width = SCREEN_WIDTH;
+                             c.height = SCREEN_HEIGHT;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 0;
+                             c.y = 0;
+                         }))
+                         .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                         });
+
+    auto midground_duplicate = world.entity("MidgroundDuplicate")
+                                   .set([&](SpriteComponent &c) {
+                                       c = {0};
+                                       c.resourceHandle =
+                                           world.get_mut<Resources>()->textures.Load(
+                                               midground_tex);
+                                       c.width = SCREEN_WIDTH;
+                                       c.height = SCREEN_HEIGHT;
+                                   })
+                                   .set(([&](Position &c) {
+                                       c.x = 0;
+                                       c.y = 0;
+                                   }))
+                                   .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                                   });
 
     auto foreground = world.entity("Foreground")
                           .set([&](SpriteComponent &c) {
