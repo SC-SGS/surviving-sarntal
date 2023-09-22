@@ -11,7 +11,19 @@ namespace graphics {
 const int screenWidth = 800;
 const int screenHeight = 450;
 
+
+
 Texture2D gradientTex;
+
+Texture2D background_tex;
+Texture2D midground_tex;
+Texture2D foreground_tex;
+
+//Initialize the scrolling speed
+float scrollingBack = 0.0f;
+float scrollingMid = 0.0f;
+float scrollingFore = 0.0f;
+
 HANDLE spriteTex;
 
 int rotation = 0;
@@ -19,17 +31,17 @@ int rotation = 0;
 bool useDebugCamera;
 Camera2D debugCamera;
 
+void regenerateBackground(int screenW, int screenH){
+    UnloadTexture(midground_tex);
+
+}
+
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
     gradientTex = LoadTextureFromImage(verticalGradient);
     UnloadImage(verticalGradient);
 }
-
-Vector2 points[] = {
-    {50, 190},  {100, 110}, {150, 200}, {200, 100},
-    {250, 130}, {300, 210}, {350, 90},  {400, 150},
-};
 
 void render_system(flecs::iter &iter) {
     auto world = iter.world();
@@ -88,8 +100,39 @@ void render_system(flecs::iter &iter) {
 
         BeginDrawing();
         {
-            ClearBackground(BLUE);
-            DrawTexture(gradientTex, 0, 0, WHITE);
+            //ClearBackground(BLUE);
+
+
+            ClearBackground(WHITE);
+            //DrawTexture(gradientTex, 0, 0, WHITE);
+
+            //Update the scrolling speed
+            scrollingBack -= 0.1f;
+            scrollingMid -= 0.5f;
+            scrollingFore -= 1.0f;
+
+            if (scrollingBack <= -background_tex.width*2) scrollingBack = 0;
+            if (scrollingMid <= -midground_tex.width*2) scrollingMid = 0;
+            if (scrollingFore <= -foreground_tex.width*2) scrollingFore = 0;
+
+            /*DrawTextureEx(background_tex, (Vector2){ scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(background_tex, (Vector2){ background_tex.width*2 + scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
+
+            DrawTextureEx(midground_tex, (Vector2){ scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+            DrawTextureEx(midground_tex, (Vector2){ midground_tex.width*2 + scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+*/
+/*
+            DrawTextureEx(foreground_tex, (Vector2){ scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+*/
+            /*DrawTexture(foreground_tex, 0, 0, WHITE);*/
+
+
+
+/*
+            DrawTextureEx(foreground_tex, (Vector2){ foreground_tex.width*2 + scrollingFore, 70 }, 0.0f, 2.0f, WHITE);
+*/
+
+
 
             if (useDebugCamera) {
                 BeginMode2D(debugCamera);
@@ -170,6 +213,20 @@ void render_system(flecs::iter &iter) {
             rotation++;
         }
 
+        Rectangle sourceRec = {
+            0.0f, 0.0f, (float)foreground_tex.width,
+            (float)foreground_tex.height}; // part of the texture used
+
+        Rectangle destRec = {
+            0.0, 0.0, static_cast<float>(5),
+            static_cast<float>(
+                5)}; // where to draw texture
+
+        DrawTexturePro(
+            foreground_tex, sourceRec, destRec,
+            {(float)foreground_tex.width, (float)foreground_tex.height}, 0,
+            RED);
+
             EndMode2D();
         }
         EndDrawing();
@@ -178,6 +235,14 @@ void render_system(flecs::iter &iter) {
 
 void init_render_system(flecs::world &world) {
     InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+
+    background_tex = LoadTexture("../assets/layers/raylib_512x512.png");
+    midground_tex = LoadTexture("../assets/layers/raylib_512x512.png");
+    foreground_tex = LoadTexture("../assets/layers/raylib_512x512.png");
+
+
+
+
 
     // add the camera entity here for now
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
@@ -225,11 +290,34 @@ void init_render_system(flecs::world &world) {
                       }))
                       .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                       });
+
+    auto midground = world.entity("Midground")
+                      .set([&](SpriteComponent &c) {
+                          c = {0};
+                          c.resourceHandle =
+                              world.get_mut<Resources>()->textures.Load(
+                                  midground_tex);
+                          c.width = 100;
+                          c.height = 100;
+                      })
+                      .set(([&](Position &c) {
+                          c.x = 0;
+                          c.y = 0;
+                      }))
+                      .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                      });
 }
 
 void destroy() {
     CloseWindow();
     UnloadTexture(gradientTex);
+/*
+    UnloadTexture(background_tex);
+*/
+    UnloadTexture(midground_tex);
+/*
+    UnloadTexture(foreground_tex);
+*/
 }
 
 } // namespace graphics
