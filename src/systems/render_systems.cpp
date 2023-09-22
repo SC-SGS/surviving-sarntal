@@ -12,6 +12,7 @@ const int screenWidth = 800;
 const int screenHeight = 450;
 
 
+Music ambient_audio;
 
 Texture2D gradientTex;
 
@@ -40,6 +41,8 @@ void regenerateGradientTexture(int screenW, int screenH) {
 
 void render_system(flecs::iter &iter) {
     auto world = iter.world();
+
+    UpdateMusicStream(ambient_audio);
 
     if (IsKeyPressed(KEY_F11)) {
         int display = GetCurrentMonitor();
@@ -208,10 +211,26 @@ void render_system(flecs::iter &iter) {
 
 void init_render_system(flecs::world &world) {
     InitWindow(screenWidth, screenHeight, WINDOW_NAME);
+    InitAudioDevice();
+
 
     background_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     midground_tex = LoadTexture("../assets/layers/sky.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
+
+    ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
+    PlayMusicStream(ambient_audio);
+
+/*    AudioComponent* audioComponent = world.entity("AmbientSound").get_mut<AudioComponent>();
+    Resources* resources = world.entity("AmbientSound").get_mut<Resources>();
+
+    if (audioComponent && resources) {
+        PlayMusicStream(resources->music.Get(audioComponent->resourceHandle));
+    }*/
+
+
+    //PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.Get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
+
 
 
 
@@ -358,14 +377,22 @@ void init_render_system(flecs::world &world) {
                           }))
                           .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
                           });
+
+    auto ambient_sound = world.entity("AmbientSound")
+                                    .set([&](AudioComponent &c) {
+                                        c = {0};
+                                        c.resourceHandle =
+                                            world.get_mut<Resources>()->music.Load(ambient_audio);
+                                    });
 }
 
 void destroy() {
-    CloseWindow();
     UnloadTexture(gradientTex);
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);
+    CloseAudioDevice();
+    CloseWindow();
 }
 
 } // namespace graphics

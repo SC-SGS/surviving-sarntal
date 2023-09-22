@@ -23,6 +23,10 @@ struct ChunkRenderComponent {
     HANDLE resourceHandle;
 };
 
+struct AudioComponent{
+    HANDLE resourceHandle;
+};
+
 typedef Camera2D Camera2DComponent;
 
 } // namespace graphics
