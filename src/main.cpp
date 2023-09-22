@@ -11,6 +11,7 @@ int main() {
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
+    world.set_threads(4);
 
     world.import <graphics::RenderSystems>();
     world.import <PhysicSystems>();

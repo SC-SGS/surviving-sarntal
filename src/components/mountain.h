@@ -1,6 +1,6 @@
 #pragma once
 
-#include "particle_state.h"
+#include "vector.h"
 #include <array>
 #include <cmath>
 #include <vector>
@@ -13,9 +13,9 @@ struct IndexInterval {
 class Mountain {
   public:
     /**
-     * Number of Vertices explicitely stored by the mountain data structure
+     * Number of Vertices explicitly stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2048};
 
     /**
      * width covered by mountain generated at one point in time
