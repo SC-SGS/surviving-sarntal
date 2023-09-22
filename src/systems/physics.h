@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../components/mountain.h"
-#include "../components/vector.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
+#include "../components/vector.h"
+#include "../components/input.h"
 #include "flecs.h"
 
 struct PhysicSystems {
@@ -11,7 +12,7 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -100.;
+constexpr float_type GRAVITATIONAL_CONSTANT = -1000.;
 constexpr float_type EPSILON = 1e-3;
 
 struct Vertex {
@@ -127,9 +128,11 @@ void rockRockInteractions(flecs::iter it, Position *positions,
  * @param positions
  * @param velocities
  * @param player_movements
+ * @param input_entities
  */
 void updatePlayerState(flecs::iter it, Position *positions,
-                       Velocity *velocities, PlayerMovement *player_movements);
+                       Velocity *velocities, PlayerMovement *player_movements,
+                       InputEntity *input_entities);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position

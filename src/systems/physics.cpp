@@ -151,7 +151,8 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
-    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(updateRockState);
+    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
+        updateRockState);
 
     world.system<Position, Velocity, Radius>().with<Rock>().iter(
         rockRockInteractions);
@@ -161,8 +162,9 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .singleton()
         .iter(terrainCollision);
 
-    world.system<Position, Velocity, PlayerMovement>().with<Player>().iter(
-        updatePlayerState);
+    world.system<Position, Velocity, PlayerMovement, InputEntity>()
+        .with<Player>()
+        .iter(updatePlayerState);
 
     for (int i = 0; i < 20; i++) {
         Position p{300.f + 200.f, 25.f * (float)i};
@@ -171,9 +173,11 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     }
 }
 
-void updatePlayerState(flecs::iter it, Position *positions,
-                       Velocity *velocities, PlayerMovement *player_movements) {
-    auto input = it.world().get<InputEntity>();
+void physics::updatePlayerState(flecs::iter it, Position *positions,
+                                Velocity *velocities,
+                                PlayerMovement *player_movements,
+                                InputEntity *input_entities) {
+    auto input = input_entities;
 
     // Update Velocities
 
@@ -187,11 +191,12 @@ void updatePlayerState(flecs::iter it, Position *positions,
             PlayerMovement::MovementState::IN_AIR) {
             player_movements[0].last_jump = 0;
         }
-        if (player_movements[0].last_jump < 1.5 && player_movements[0].can_jump_again) {
+        if (player_movements[0].last_jump < 1.5 &&
+            player_movements[0].can_jump_again) {
             velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
-                player_movements[0].can_jump_again=false;
+                player_movements[0].can_jump_again = false;
             }
             player_movements[0].current_state =
                 PlayerMovement::MovementState::IN_AIR;
@@ -253,10 +258,10 @@ void updatePlayerState(flecs::iter it, Position *positions,
     } else {
         positions[0].y = terrain_y;
     }
-    positions[0].y += .5*HIKER_HEIGHT;
+    positions[0].y += .5 * HIKER_HEIGHT;
 }
 
-float getYPosFromX(const flecs::world &world, float x) {
+float physics::getYPosFromX(const flecs::world &world, float x) {
     auto mountain = world.get_mut<Mountain>();
     auto interval = mountain->getRelevantMountainSection(x, x);
     std::size_t closest_indices[] = {interval.start_index, interval.end_index};
