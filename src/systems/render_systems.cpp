@@ -5,11 +5,12 @@
 // #include "../utils/resource_manager.h"
 #include "flecs.h"
 #include <iostream>
+#include "../components/mountain.h"
 
 namespace graphics {
 
-const int screenWidth = 800;
-const int screenHeight = 450;
+const int screenWidth = 1600;
+const int screenHeight = 900;
 
 Texture2D gradientTex;
 HANDLE spriteTex;
@@ -36,7 +37,7 @@ Vector2 points[] = {
 
 float getTerrainHeight(float x, float y, float ridge_height,
                        float baseline = 0.0f) {
-    const float scale = 0.4f;
+    const float scale = 0.01f;
 
     float distance_from_baseline = std::abs(y - baseline);
 
@@ -81,21 +82,21 @@ void render_system(flecs::iter &iter) {
     if (camera_entity.is_valid()) {
         auto camera = camera_entity.get_mut<Camera2DComponent>();
 
-        if (useDebugCamera) {
-            if (IsKeyDown(KEY_D))
-                debugCamera.target.x += 2;
-            else if (IsKeyDown(KEY_A))
-                debugCamera.target.x -= 2;
-            else if (IsKeyDown(KEY_S))
-                debugCamera.target.y += 2;
-            else if (IsKeyDown(KEY_W))
-                debugCamera.target.y -= 2;
+        //if (useDebugCamera) {
+        //    if (IsKeyDown(KEY_D))
+        //        debugCamera.target.x += 2;
+        //    else if (IsKeyDown(KEY_A))
+        //        debugCamera.target.x -= 2;
+        //    else if (IsKeyDown(KEY_S))
+        //        debugCamera.target.y += 2;
+        //    else if (IsKeyDown(KEY_W))
+        //        debugCamera.target.y -= 2;
 
-            if (IsKeyDown(KEY_LEFT))
-                debugCamera.rotation--;
-            else if (IsKeyDown(KEY_RIGHT))
-                debugCamera.rotation++;
-        }
+        //    if (IsKeyDown(KEY_LEFT))
+        //        debugCamera.rotation--;
+        //    else if (IsKeyDown(KEY_RIGHT))
+        //        debugCamera.rotation++;
+        //}
 
         auto interval =
             world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
@@ -177,24 +178,41 @@ void render_system(flecs::iter &iter) {
 
             EndMode2D();
 
-            if (useDebugCamera) {
+            if (useDebugCamera || true) {
+
+                static float rotZ = 90;
+
                 if (IsKeyDown(KEY_D))
-                    debugCamera3D.position.x += 2;
+                    debugCamera3D.position.x += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_A))
-                    debugCamera3D.position.x -= 2;
-                else if (IsKeyDown(KEY_S))
-                    debugCamera3D.position.z -= 2;
+                    debugCamera3D.position.x -= 10 * iter.delta_time();
+                else if (IsKeyDown(KEY_E))
+                    debugCamera3D.position.z -= 10 * iter.delta_time();
+                else if (IsKeyDown(KEY_Q))
+                    debugCamera3D.position.z += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_W))
-                    debugCamera3D.position.z += 2;
+                    debugCamera3D.position.y += 10 * iter.delta_time();
+                else if (IsKeyDown(KEY_S))
+                    debugCamera3D.position.y -= 10 * iter.delta_time();
 
                 if (IsKeyDown(KEY_LEFT))
-                    debugCamera.rotation--;
+                    rotZ += 2 * iter.delta_time();
                 else if (IsKeyDown(KEY_RIGHT))
-                    debugCamera.rotation++;
+                    rotZ -= 2 * iter.delta_time();
 
-                debugCamera3D.target.x = debugCamera3D.position.x;
+
+                debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
+                debugCamera3D.target.y = debugCamera3D.position.y + sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
-                debugCamera3D.target.y = 1;
+
+                //debugCamera3D.target.x = debugCamera3D.position.x;
+                //debugCamera3D.target.z = debugCamera3D.position.z;
+                //debugCamera3D.target.y = 1;
+            }
+            // 
+            // 
+            if (useDebugCamera) {
+                //UpdateCamera(&debugCamera3D, CAMERA_FIRST_PERSON);
             }
             // debugCamera3D.position = { debugCamera.target.x, -1.0,
             // debugCamera.target.y}; debugCamera3D.target =
@@ -202,7 +220,8 @@ void render_system(flecs::iter &iter) {
 
             BeginMode3D(debugCamera3D);
             { 
-                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
+                DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                //DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
             }
             EndMode3D();
@@ -259,7 +278,8 @@ void init_render_system(flecs::world &world) {
                           c.y = 0;
                       }));
 
-    model = LoadModelFromMesh(generate_chunk_mesh());
+
+    model = LoadModelFromMesh(generate_chunk_mesh(world));
 
     debugCamera3D = {0};
     debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
@@ -271,41 +291,61 @@ void init_render_system(flecs::world &world) {
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh() {
+Mesh generate_chunk_mesh(flecs::world &world) {
 
-    int terrainVertexCount = 10;
-    // demo terrain
-    std::vector<Vector3> terrainVertices;
-    for (int i = 0; i < terrainVertexCount; i++) {
-        terrainVertices.push_back({(float)i, 0, (float)(i % 2)});
-    }
+    world.get_mut<Mountain>()->generateNewChunk();
+    auto interval =
+        world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
-    int levels = 10;
-    int levelsAtTheBack = 2; // number terrain layers behind the ridge
+    int terrainVertexCount = interval.end_index - interval.start_index;
 
-    int triangleCount = levels*(terrainVertexCount-1)*2;
+    int levels = 20;
+    int levelsAtTheBack = 0; // number terrain layers behind the ridge
+
+    int triangleCount = levels * (terrainVertexCount - 1) * 2;
     int vertexCount = triangleCount * 3;
     std::vector<float> vertices;
     std::vector<float> texcoords;
     std::vector<float> normals;
 
-    for (int i = 1; i < terrainVertexCount; i++) { // skip first terrain vertex
-        // draw triangles in front of current and previous terrain vertecies
+    for (int i = interval.start_index; i < interval.end_index-1; i++) {
 
-        auto v0 = terrainVertices[i - 1]; // terrain vertex i-1
-        auto v1 = terrainVertices[i];     // terrain vertex i
+        int currentDepth = -levelsAtTheBack*0.1;
 
-        // start behind ridge
-        v0.y -= levelsAtTheBack;
-        v1.y -= levelsAtTheBack;
+        const float x_scale = 0.1f;
+
+        Vector3 v0;
+        //auto vertex = world.get_mut<Mountain>()->getVertex(interval.start_index + i);
+        //vertex.x = vertex.x * 0.01f;
+        //vertex.y = vertex.y * 0.01f;
+        float height = 0;
+        //
+        v0.x = i * x_scale;
+        v0.z = getTerrainHeight(v0.x, currentDepth, 0); // height;
+        v0.y = currentDepth;
+
+        //std::cout << "vertex: " << vertex.x << ", " << vertex.y << std::endl;
+
+
+        Vector3 v1;
+        //auto vertex2 =
+        //    world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
+        //vertex2.x = vertex2.x * 0.01f;
+        //vertex2.y = vertex2.y * 0.01f;
+        // getTerrainHeight(vertex.x, currentDepth, vertex.y);
+        v1.x = (i + 1) * x_scale;
+        v1.z = getTerrainHeight(v1.x, currentDepth, 0); // height;
+        v1.y = currentDepth;
+
 
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
-            v2.y -= 1.0;
+            v2.y -= 1.1;
+            v2.z = getTerrainHeight(v2.x, v2.y, 0);
             auto v3 = v1; // in front of terrain vertex i
-            v3.y -= 1.0;
-           
-            
+            v3.y -= 1.1;
+            v3.z = getTerrainHeight(v3.x, v3.y, 0);
+
             // first triangle
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
@@ -337,6 +377,11 @@ Mesh generate_chunk_mesh() {
             v1 = v3;
         }
     }    
+
+    
+
+
+
     
     Mesh mesh = {0};
     mesh.triangleCount = triangleCount;
