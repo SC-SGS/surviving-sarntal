@@ -5,6 +5,7 @@
 #include "../components/mountain.h"
 #include "iostream"
 #include "raylib.h"
+#include "render_systems.h"
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
@@ -15,7 +16,7 @@ void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
 
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        exit(0);
+        //exit(0);
     }
 }
 
@@ -47,10 +48,10 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar, Mountain* 
     //this abomination of a term is taking the y coordinate of the leftmost mountain vertex that is just barely on the screen
     //and offsetting it by a constant factor of the screen height
     //if there aren't enough points the camera will jerk upwards. with enough points this will do a smooth upwards motion
-    camera->target.y = mountain->getVertex(mountain->getRelevantMountainSection(killBar->x, killBar->x + 0.1).start_index).y + graphics::screenHeight*0.33;
+    camera->target.y = mountain->getVertex(mountain->getRelevantMountainSection(killBar->x, killBar->x + 0.1).start_index).y - graphics::SCREEN_HEIGHT*0.33;
 
 
-    //std::cout << "Camera position: " << camera->target.y << " mountain left height: " << mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).y << std::endl;
+    std::cout << "Camera position: " << camera->target.y << " mountain left height: " << mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).y << std::endl;
 }
 
 
@@ -63,9 +64,10 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar, Mountain* 
 void chunkSystem(flecs::iter it, Mountain* mountain, KillBar* killBar){
     float current_left_edge_screen{killBar->x};
     float leftest_point_of_mountain{mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).x};
-    constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{95.0};
-    if(leftest_point_of_mountain < current_left_edge_screen - Mountain::CHUNK_WIDTH - CHUNK_DESTROY_BUFFER_CONSTANT){
-        //std::cout << "chunk generated" << std::endl;
+    constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{3.0};
+    while(leftest_point_of_mountain < current_left_edge_screen - Mountain::CHUNK_WIDTH - CHUNK_DESTROY_BUFFER_CONSTANT){
+        leftest_point_of_mountain = mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).x;
+        std::cout << "chunk generated" << std::endl;
         mountain->generateNewChunk();
     }
 }
