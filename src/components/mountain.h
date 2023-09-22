@@ -1,9 +1,17 @@
 #pragma once
 
-#include "particle_state.h"
+#include "vector.h"
 #include <array>
 #include <cmath>
 #include <vector>
+
+const float MOUNTAIN_WIDTH{
+    100.}; // width covered by mountain generated at one point in time
+const float SECTION_WIDTH{0.5};
+const std::size_t NUMBER_OF_FIXPOINTS{
+    200}; // number_of_fixpoints = (size_t) std::ceil(mountain_width /
+          // section_width), manually adjust that if needed
+const float CHUNK_WIDTH{5.};
 
 const float SLOPE{0.5}; // steepness of ramp generated in prototype
 
@@ -15,9 +23,9 @@ struct IndexInterval {
 class Mountain {
   public:
     /**
-     * Number of Vertices explicitely stored by the mountain data structure
+     * Number of Vertices explicitly stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{2000};
+    static constexpr std::size_t NUMBER_OF_VERTICES{2048};
 
     /**
      * width covered by mountain generated at one point in time
@@ -83,7 +91,7 @@ class Mountain {
     /**
      * @return Returns start_index and end_index of the latest generated
      * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
-     * can access the points via the getVertice-function.
+     * can access the points via the getVertex-function.
      */
     IndexInterval getLatestChunk();
 

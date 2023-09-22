@@ -43,7 +43,7 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
         returnvalue.end_index += NUMBER_OF_VERTICES;
 
     return returnvalue;
-    /*float leftmost_x = getVertice(0).x;
+    /*float leftmost_x = getVertex(0).x;
     IndexInterval returnvalue;
     returnvalue.start_index =
         (std::size_t)std::floor((min_x - leftmost_x) / SECTION_WIDTH);
