@@ -136,5 +136,5 @@ class PlayerTools {
                             Velocity *velocities,
                             PlayerMovement *player_movements);
   private:
-    static float getYPosFromX(flecs::world world, float x);
+    static float getYPosFromX(const flecs::world &world, float x);
 };

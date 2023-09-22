@@ -186,7 +186,7 @@ void PlayerTools::updateState(flecs::iter it, Position *positions, Velocity *vel
     }
 }
 
-float PlayerTools::getYPosFromX(flecs::world &world, float x) {
+float PlayerTools::getYPosFromX(const flecs::world &world, float x) {
     auto mountain = world.get<Mountain>();
     return 0;
 }
