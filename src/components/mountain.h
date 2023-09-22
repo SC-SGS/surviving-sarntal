@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include <random>
 
 struct IndexInterval {
     std::size_t start_index;
@@ -27,7 +28,7 @@ class Mountain {
      */
     static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
 
-    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 10;
+    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 100;
 
     static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
 
@@ -35,6 +36,11 @@ class Mountain {
      * steepness of ramp generated in prototype
      */
     static constexpr float SLOPE{0.25};
+
+    /** value beween 0 and 1 (prefereably between 0.5 and 0.75)
+     *
+     */
+    static constexpr float ROUGHNESS_TERRAIN{0.6};
 
     Mountain();
 
@@ -96,4 +102,10 @@ class Mountain {
     std::array<Position, NUMBER_OF_VERTICES>
         landscape_fixpoints_circular_array{};
     std::size_t start_of_circular_array{0};
+
+    std::random_device hardware_random_generator;
+    std::mt19937 random_engine;
+    std::uniform_real_distribution<double> distribution_used;
+
+    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
 };

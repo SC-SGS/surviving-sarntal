@@ -1,8 +1,10 @@
 #include "mountain.h"
 #include "iostream"
+#include <random>
 
-Mountain::Mountain() {
+Mountain::Mountain() : random_engine(hardware_random_generator()), distribution_used(0.0,1.0) {
     std::cout << "Mountain gets constructed" << std::endl;
+
 
     // create points and chunks corresponding to a simple ramp
     double current_x = 0.;
@@ -90,3 +92,32 @@ IndexInterval Mountain::getLatestChunk() {
     }
     return returnvalue;
 }
+
+void Mountain::generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement){
+    if(leftIndex+1 == rightIndex) return;
+    if(leftIndex == rightIndex) return;
+
+    std::size_t midIndex = (leftIndex+ rightIndex)/2;   //rounding down is fine
+    float change = (distribution_used(random_engine)*2 -1) * displacement;
+    landscape_fixpoints_circular_array[(midIndex+NUMBER_OF_VERTICES)%NUMBER_OF_VERTICES].y =
+    (landscape_fixpoints_circular_array[(leftIndex+NUMBER_OF_VERTICES)%NUMBER_OF_VERTICES].y +
+         landscape_fixpoints_circular_array[(rightIndex+NUMBER_OF_VERTICES)%NUMBER_OF_VERTICES].y)/2 +
+        change;
+    displacement = Mountain::ROUGHNESS_TERRAIN * displacement;
+    generateTerrainRecursive(leftIndex, midIndex, displacement);
+    generateTerrainRecursive(midIndex, rightIndex, displacement);
+}
+/*
+ * //code from http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
+function generateTerrain(leftIndex, rightIndex, displacement) {
+if((leftIndex + 1) == rightIndex) return;
+var midIndex = Math.floor((leftIndex + rightIndex) / 2);
+var change = (Math.random() * 2 - 1) * displacement;
+terrain_array[midIndex] = (terrain_array[leftIndex] + terrain_array[rightIndex]) / 2 + change;
+
+displacement = displacement * roughness;
+generateTerrain(leftIndex, midIndex, displacement);
+generateTerrain(midIndex, rightIndex, displacement);
+}
+
+ */
