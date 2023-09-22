@@ -19,6 +19,7 @@
 stages:          # List of stages for jobs, and their order of execution
   - validate
   - build
+  - validate-tidy
   - test
 
 
@@ -32,8 +33,15 @@ build-job:       # This job runs in the build stage, which runs first.
   artifacts:
     untracked: true
   script:
-    - cmake -S . -B cmake-build-debug
+    - cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
     - cmake --build cmake-build-debug
+
+clang-tidy-validate:
+  stage: validate-tidy
+  script:
+    - clang-tidy-17 src/main.cpp -p cmake-build-debug/
+  dependencies:
+    - build-job
 
 test-job:
   stage: test

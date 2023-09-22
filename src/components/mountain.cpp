@@ -43,7 +43,7 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
         returnvalue.end_index += NUMBER_OF_VERTICES;
 
     return returnvalue;
-    /*float leftmost_x = getVertice(0).x;
+    /*float leftmost_x = getVertex(0).x;
     IndexInterval returnvalue;
     returnvalue.start_index =
         (std::size_t)std::floor((min_x - leftmost_x) / SECTION_WIDTH);
@@ -72,9 +72,21 @@ void Mountain::generateNewChunk() {
         (start_of_circular_array + num_points_to_generate) % array_size;
 }
 
-IndexInterval Mountain::getIndexIntervalOfEntireMountain(){
+IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
     IndexInterval returnvalue;
     returnvalue.start_index = start_of_circular_array;
     returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
+    return returnvalue;
+}
+
+IndexInterval Mountain::getLatestChunk() {
+    IndexInterval returnvalue;
+    returnvalue.end_index = start_of_circular_array;
+    returnvalue.start_index = (start_of_circular_array -
+                               NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) %
+                              NUMBER_OF_VERTICES;
+    if (returnvalue.start_index > returnvalue.start_index) {
+        returnvalue.end_index += NUMBER_OF_VERTICES;
+    }
     return returnvalue;
 }

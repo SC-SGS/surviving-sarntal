@@ -5,6 +5,9 @@
 #include <raylib.h>
 
 namespace graphics {
+constexpr int SCREEN_WIDTH = 800;
+constexpr int SCREEN_HEIGHT = 450;
+
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
 
