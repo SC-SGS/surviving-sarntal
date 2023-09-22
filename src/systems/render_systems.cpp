@@ -158,30 +158,29 @@ void render_system(flecs::iter &iter) {
                     }
                 }
 
-                // Draw Sprites
-                flecs::filter<Position, SpriteComponent> q =
-                    world.filter<Position, SpriteComponent>();
+                //flecs::filter<Position, SpriteComponent> q =
+                //    world.filter<Position, SpriteComponent>();
 
-                q.each([&](Position &p, SpriteComponent &s) {
-                    if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
-                            s.resourceHandle);
+                //q.each([&](Position &p, SpriteComponent &s) {
+                //    if (s.resourceHandle != NULL_HANDLE) {
+                //        auto texture = world.get_mut<Resources>()->textures.Get(
+                //            s.resourceHandle);
 
-                        Rectangle sourceRec = {
-                            0.0f, 0.0f, (float)texture.width,
-                            (float)texture.height}; // part of the texture used
+                //        Rectangle sourceRec = {
+                //            0.0f, 0.0f, (float)texture.width,
+                //            (float)texture.height}; // part of the texture used
 
-                        Rectangle destRec = {
-                            p.x, p.y, static_cast<float>(s.width),
-                            static_cast<float>(
-                                s.height)}; // where to draw texture
+                //        Rectangle destRec = {
+                //            p.x, p.y, static_cast<float>(s.width),
+                //            static_cast<float>(
+                //                s.height)}; // where to draw texture
 
-                        DrawTexturePro(
-                            texture, sourceRec, destRec,
-                            {(float)texture.width, (float)texture.height}, 0,
-                            WHITE);
-                    }
-                });
+                //        DrawTexturePro(
+                //            texture, sourceRec, destRec,
+                //            {(float)texture.width, (float)texture.height}, 0,
+                //            WHITE);
+                //    }
+                //});
 
                 rotation++;
             }
@@ -222,6 +221,42 @@ void render_system(flecs::iter &iter) {
                 //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
+
+                flecs::filter<Position, SpriteComponent, BillboardComponent> q =
+                    world.filter<Position, SpriteComponent, BillboardComponent>();
+
+                q.each([&](Position &p, SpriteComponent &s, BillboardComponent &b) {
+                    if (s.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.Get(
+                            s.resourceHandle);
+
+                        Rectangle sourceRec = {
+                            0.0f, 0.0f, (float)texture.width,
+                            (float)texture.height}; // part of the texture used
+
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(s.width),
+                            static_cast<float>(
+                                s.height)}; // where to draw texture
+;
+                        DrawBillboardRec(
+                            debugCamera3D, texture, sourceRec,
+                            b.billPositionStatic,
+                            Vector2{static_cast<float>(s.width),
+                                    static_cast<float>(s.height)},
+                            WHITE); // vectors and camera need to be adapted
+
+                                    /*DrawBillboardPro(
+                                        debugCamera3D, texture, sourceRec,
+                                                     Vector3{p.x, p.y, 0}, b.billUp,
+                                        Vector2{static_cast<float>(s.width),
+                                                static_cast<float> (s.height)},
+                                        Vector2 origin, float rotation, Color tint);
+                                */
+                    }
+                });
+
+                
                 rlDisableBackfaceCulling();
                 matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
                 static float elapsed_time = 0.0f;
@@ -286,6 +321,24 @@ void init_render_system(flecs::world &world) {
                           c.x = 0;
                           c.y = 0;
                       }));
+
+    // billboard for 3d camera
+    //auto billboard = world.entity("Billboard").set([&](BillboardComponent &c) {
+    //    c = {0};
+    //    c.billUp = {0.0f, 1.0f, 0.0f};
+    //    c.billPositionStatic = {0.0f, 2.0f, 0.0f};
+    //}) .set([&](SpriteComponent &c) {
+    //    c = {0};
+    //    c.resourceHandle = world.get_mut<Resources>()->textures.Load(
+    //        LoadTextureFromImage(verticalGradient));
+    //    c.width = 100;
+    //    c.height = 100;
+    //    })
+    //    .set(([&](Position &c) {
+    //        c.x = 0;
+    //        c.y = 0;
+
+    //}));
 
     Vector2 min;
     Vector2 max;
