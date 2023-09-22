@@ -185,7 +185,7 @@ void render_system(flecs::iter& iter) {
 
             BeginMode3D(debugCamera3D);
             { 
-                DrawModel(model, {0.0, 0.0}, 1.0f, RED);
+                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
             }
             EndMode3D();
@@ -256,88 +256,69 @@ void init_render_system(flecs::world &world) {
 Mesh generate_chunk_mesh() {
     
     int terrainVertexCount = 10;
-
-    int triangleCount = (terrainVertexCount-1)*2;
-    int vertexCount = triangleCount * 3;
-    std::vector<float> vertices;
-    //(vertexCount * 3);
-    std::vector<float> texcoords;
-    //(vertexCount * 2);
-    std::vector<float> normals;
-    //(vertexCount * 3);
-
-
     // demo terrain
     std::vector<Vector3> terrainVertices;
     for (int i = 0; i < terrainVertexCount; i++) {
-        terrainVertices.push_back({(float)i, 0, (float)(i%2)});
+        terrainVertices.push_back({(float)i, 0, (float)(i % 2)});
     }
 
+    int levels = 10;
+    int levelsAtTheBack = 2; // number terrain layers behind the ridge
 
-    for (int i = 1; i < terrainVertexCount; i++) { // skip first tereain vertex
-        // draw 2 triangles
+    int triangleCount = levels*(terrainVertexCount-1)*2;
+    int vertexCount = triangleCount * 3;
+    std::vector<float> vertices;
+    std::vector<float> texcoords;
+    std::vector<float> normals;
 
-        // first triangle
+    for (int i = 1; i < terrainVertexCount; i++) { // skip first terrain vertex
+        // draw triangles in front of current and previous terrain vertecies
+
         auto v0 = terrainVertices[i - 1]; // terrain vertex i-1
-        auto v1 = terrainVertices[i]; // terrain vertex i
-        
-        vertices.push_back(v1.x);
-        vertices.push_back(v1.y);
-        vertices.push_back(v1.z);
+        auto v1 = terrainVertices[i];     // terrain vertex i
 
-        vertices.push_back(v0.x); 
-        vertices.push_back(v0.y); 
-        vertices.push_back(v0.z);
+        // start behind ridge
+        v0.y -= levelsAtTheBack;
+        v1.y -= levelsAtTheBack;
 
-        vertices.push_back(v0.x);
-        vertices.push_back(v0.y);
-        vertices.push_back(v0.z - 1.0);   // below terrain vertex i-1
+        for (int level = 0; level < levels; level++) {
+            auto v2 = v0; // in front of terrain vertex i-1
+            v2.y -= 1.0;
+            auto v3 = v1; // in front of terrain vertex i
+            v3.y -= 1.0;
+           
+            
+            // first triangle
+            vertices.push_back(v1.x);
+            vertices.push_back(v1.y);
+            vertices.push_back(v1.z);
 
+            vertices.push_back(v0.x);
+            vertices.push_back(v0.y);
+            vertices.push_back(v0.z);
 
-        // second triangle
-        vertices.push_back(v1.x);
-        vertices.push_back(v1.y);
-        vertices.push_back(v1.z);
+            vertices.push_back(v2.x);
+            vertices.push_back(v2.y);
+            vertices.push_back(v2.z); // below terrain vertex i-1
 
-        vertices.push_back(v0.x);
-        vertices.push_back(v0.y);
-        vertices.push_back(v0.z-1.0);
+            // second triangle
+            vertices.push_back(v1.x);
+            vertices.push_back(v1.y);
+            vertices.push_back(v1.z);
 
-        vertices.push_back(v1.x);
-        vertices.push_back(v1.y);
-        vertices.push_back(v1.z - 1.0); // below terrain vertex i
+            vertices.push_back(v2.x);
+            vertices.push_back(v2.y);
+            vertices.push_back(v2.z);
 
-    }
+            vertices.push_back(v3.x);
+            vertices.push_back(v3.y);
+            vertices.push_back(v3.z); // below terrain vertex i
 
-    //// Vertex at (0, 0, 0)
-    //vertices[0] = 0;
-    //vertices[1] = 0;
-    //vertices[2] = 0;
-    //normals[0] = 0;
-    //normals[1] = 1;
-    //normals[2] = 0;
-    //texcoords[0] = 0;
-    //texcoords[1] = 0;
-
-    //// Vertex at (1, 0, 2)
-    //vertices[3] = 10;
-    //vertices[4] = 0;
-    //vertices[5] = 0;
-    //normals[3] = 0;
-    //normals[4] = 1;
-    //normals[5] = 0;
-    //texcoords[2] = 0.5f;
-    //texcoords[3] = 1.0f;
-
-    //// Vertex at (2, 0, 0)
-    //vertices[6] = 10;
-    //vertices[7] = 0;
-    //vertices[8] = 10;
-    //normals[6] = 0;
-    //normals[7] = 1;
-    //normals[8] = 0;
-    //texcoords[4] = 1;
-    //texcoords[5] = 0;    
+            // shift to the front
+            v0 = v2;
+            v1 = v3;
+        }
+    }    
     
     Mesh mesh = {0};
     mesh.triangleCount = triangleCount;
