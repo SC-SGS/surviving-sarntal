@@ -6,12 +6,15 @@
 #include "flecs.h"
 #include <iostream>
 #include "../components/mountain.h"
+#include "raymath.h"
+#include <filesystem>
+#include "rlgl.h"
 
 namespace graphics {
 
 const int screenWidth = 1600;
 const int screenHeight = 900;
-
+#define MAX_INSTANCES 1000
 Texture2D gradientTex;
 HANDLE spriteTex;
 
@@ -21,6 +24,11 @@ bool useDebugCamera;
 Camera2D debugCamera;
 Camera3D debugCamera3D;
 Model model;
+Shader shader;
+Mesh grass_mesh;
+Texture2D grass_texture;
+std::vector<Matrix> transforms;
+Material matInstances;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -82,6 +90,13 @@ void render_system(flecs::iter &iter) {
     if (camera_entity.is_valid()) {
         auto camera = camera_entity.get_mut<Camera2DComponent>();
 
+        // Update the light shader with the camera view position
+        float cameraPos[3] = {debugCamera3D.position.x,
+                              debugCamera3D.position.y,
+                              debugCamera3D.position.z};
+        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos,
+                       SHADER_UNIFORM_VEC3);
+
         //if (useDebugCamera) {
         //    if (IsKeyDown(KEY_D))
         //        debugCamera.target.x += 2;
@@ -112,13 +127,7 @@ void render_system(flecs::iter &iter) {
                 BeginMode2D(*camera);
             }
             {
-                // DrawText("Congrats! You created your first window!", 190,
-                // 200, 20, LIGHTGRAY);
-
-                // loop for all sprites (sprite component + transform
-                // compoenent)
-
-                // loor for all
+                // Draw Mountain 2d
                 auto mountain = world.get_mut<Mountain>();
                 for (int i = interval.start_index; i < interval.end_index;
                      i++) {
@@ -149,6 +158,7 @@ void render_system(flecs::iter &iter) {
                     }
                 }
 
+                // Draw Sprites
                 flecs::filter<Position, SpriteComponent> q =
                     world.filter<Position, SpriteComponent>();
 
@@ -204,25 +214,19 @@ void render_system(flecs::iter &iter) {
                 debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
                 debugCamera3D.target.y = debugCamera3D.position.y + sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
+            }
 
-                //debugCamera3D.target.x = debugCamera3D.position.x;
-                //debugCamera3D.target.z = debugCamera3D.position.z;
-                //debugCamera3D.target.y = 1;
-            }
-            // 
-            // 
-            if (useDebugCamera) {
-                //UpdateCamera(&debugCamera3D, CAMERA_FIRST_PERSON);
-            }
-            // debugCamera3D.position = { debugCamera.target.x, -1.0,
-            // debugCamera.target.y}; debugCamera3D.target =
-            // {debugCamera.target.x,1.0,debugCamera.target.y};
 
             BeginMode3D(debugCamera3D);
             { 
                 DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 //DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20,0}, 10, 10, 10, RED);
+                rlDisableBackfaceCulling();
+                DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
+                                  MAX_INSTANCES);
+                rlEnableBackfaceCulling();
+                
             }
             EndMode3D();
         }
@@ -280,6 +284,50 @@ void init_render_system(flecs::world &world) {
 
 
     model = LoadModelFromMesh(generate_chunk_mesh(world));
+    //model = LoadModel("../../../assets/mesh/grass_patch.obj"); 
+    //std::cout << "current paht " << std::filesystem::current_path() << std::endl;
+    // Load lighting shader
+    shader = LoadShader("../../../assets/shaders/grass_instancing.vert",
+        "../../../assets/shaders/grass_instancing.frag");
+
+    // Get shader locations
+    shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(shader, "mvp");
+    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
+    shader.locs[SHADER_LOC_MATRIX_MODEL] =
+        GetShaderLocationAttrib(shader, "instanceTransform");
+
+    // Set shader value: ambient light level
+    int ambientLoc = GetShaderLocation(shader, "ambient");
+    float col[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+    SetShaderValue(
+        shader, ambientLoc, &col[0],
+                   SHADER_UNIFORM_VEC4);
+
+    // Define mesh to be instanced
+    //grass_mesh = GenMeshCube(1.0f, 1.0f, 1.0f);
+     
+    Model grass_model = LoadModel("../../../assets/mesh/grass_patch.obj");
+    grass_mesh = grass_model.meshes[0];
+
+    //DrawModel
+
+    //Texture2D grass_texture = LoadTexture("../../../assets/texture/grass.png");
+
+    // Define transforms to be uploaded to GPU for instances
+    transforms.reserve(MAX_INSTANCES);
+
+    // Translate and rotate cubes randomly
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        transforms.push_back(MatrixTranslate((float)GetRandomValue(-50, 50),
+                                             (float)GetRandomValue(-50, 50),
+                                             (float)GetRandomValue(-50, 50)));
+    }
+
+    // NOTE: We are assigning the intancing shader to material.shader
+    // to be used on mesh drawing with DrawMeshInstanced()
+    matInstances = LoadMaterialDefault();
+    matInstances.shader = shader;
+    matInstances.maps[MATERIAL_MAP_DIFFUSE].color = RED;
 
     debugCamera3D = {0};
     debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
@@ -378,11 +426,6 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         }
     }    
 
-    
-
-
-
-    
     Mesh mesh = {0};
     mesh.triangleCount = triangleCount;
     mesh.vertexCount = vertexCount;
