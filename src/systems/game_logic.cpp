@@ -1,4 +1,5 @@
 #include "game_logic.h"
+#include "../components/input.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
 #include "../components/vector.h"
@@ -51,7 +52,8 @@ void initGameLogic(flecs::world &world) {
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE, PlayerMovement::Direction::NEUTRAL, true, 0})
         .set<graphics::CircleShapeRenderComponent>({HIKER_HEIGHT})
         .set<Height>({HIKER_HEIGHT})
-        .set<Width>({HIKER_WIDTH});
+        .set<Width>({HIKER_WIDTH})
+        .set<InputEntity>({});
     world.set<KillBar>({0.});
 
     /* world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);

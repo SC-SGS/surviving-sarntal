@@ -11,8 +11,8 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -1000.8;
-constexpr float_type EPSILON = 0.1;
+constexpr float_type GRAVITATIONAL_CONSTANT = -100.;
+constexpr float_type EPSILON = 1e-3;
 
 struct Vertex {
     std::size_t index;
@@ -52,10 +52,9 @@ void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
  * //TODO so far, only force considered is gravity
  *
  * @param it
- * @param positions
  * @param velocities
  */
-void updateRockVelocity(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockVelocity(flecs::iter it, Velocity *velocities);
 
 /**
  * Updates position of a rock: pos_new = pos_old + v*dt.
@@ -65,7 +64,8 @@ void updateRockVelocity(flecs::iter it, Position *positions, Velocity *velocitie
  * @param positions
  * @param velocities
  */
-void updateRockPosition(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockPosition(flecs::iter it, Position *positions,
+                        Velocity *velocities);
 
 /**
  * Given a rock, find the closest vertex of the ground.
@@ -76,8 +76,7 @@ void updateRockPosition(flecs::iter it, Position *positions, Velocity *velocitie
  * @param mountain
  * @return int index, float distance
  */
-Vertex getClosestVertex(Position position, Radius radius,
-                               Mountain *mountain);
+Vertex getClosestVertex(Position position, Radius radius, Mountain *mountain);
 
 /**
  * Find the normal vector of a given vertex
@@ -114,7 +113,10 @@ void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
                        Radius r1, Radius r2);
 
-}
+bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
+
+void rockRockInteractions(flecs::iter it, Position *positions,
+                          Velocity *velocities, Radius *radius);
 
 /**
  * Updates the state of a player by first updating velocity based on input
@@ -127,8 +129,7 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
  * @param player_movements
  */
 void updatePlayerState(flecs::iter it, Position *positions,
-                            Velocity *velocities,
-                            PlayerMovement *player_movements);
+                       Velocity *velocities, PlayerMovement *player_movements);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position
@@ -140,4 +141,4 @@ void updatePlayerState(flecs::iter it, Position *positions,
  */
 float getYPosFromX(const flecs::world &world, float x);
 
-// namespace physics
+} // namespace physics
