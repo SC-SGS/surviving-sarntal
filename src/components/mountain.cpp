@@ -78,3 +78,15 @@ IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
     returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
     return returnvalue;
 }
+
+IndexInterval Mountain::getLatestChunk() {
+    IndexInterval returnvalue;
+    returnvalue.end_index = start_of_circular_array;
+    returnvalue.start_index = (start_of_circular_array -
+                               NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) %
+                              NUMBER_OF_VERTICES;
+    if (returnvalue.start_index > returnvalue.start_index) {
+        returnvalue.end_index += NUMBER_OF_VERTICES;
+    }
+    return returnvalue;
+}

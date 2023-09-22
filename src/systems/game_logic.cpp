@@ -2,7 +2,6 @@
 #include "../components/mountain.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
-#include "../components/vector.h"
 #include "iostream"
 #include "raylib.h"
 #include "render_systems.h"
@@ -59,7 +58,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
                            .y -
                        graphics::SCREEN_HEIGHT * 0.33;
 
-    std::cout << "Camera position: " << camera->target.y
+    /*std::cout << "Camera position: " << camera->target.y
               << " mountain left height: "
               << mountain
                      ->getVertex(mountain
@@ -75,7 +74,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
                                              killBar->x, killBar->x + 0.1)
                                          .start_index)
                          .y
-              << std::endl;
+              << std::endl;*/
 }
 
 /**
