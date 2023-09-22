@@ -136,6 +136,32 @@ void render_system(flecs::iter &iter) {
                 // compoenent)
 
                 // loor for all
+
+
+                flecs::filter<Position, SpriteComponent> q =
+                    world.filter<Position, SpriteComponent>();
+
+                q.each([&](Position &p, SpriteComponent &s) {
+                    if (s.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.Get(
+                            s.resourceHandle);
+
+                        Rectangle sourceRec = {
+                            0.0f, 0.0f, (float)texture.width,
+                            (float)texture.height}; // part of the texture used
+
+                        Rectangle destRec = {
+                            p.x, -p.y, static_cast<float>(s.width),
+                            static_cast<float>(
+                                s.height)}; // where to draw texture
+
+                        DrawTexturePro(
+                            texture, sourceRec, destRec,
+                            {(float)texture.width, (float)texture.height}, 0,
+                            WHITE);
+                    }
+                });
+
                 auto mountain = world.get_mut<Mountain>();
                 for (int i = interval.start_index; i < interval.end_index;
                      i++) {
@@ -165,30 +191,6 @@ void render_system(flecs::iter &iter) {
                                     BLUE); // Draw control points as circles
                     }
                 }
-
-                flecs::filter<Position, SpriteComponent> q =
-                    world.filter<Position, SpriteComponent>();
-
-                q.each([&](Position &p, SpriteComponent &s) {
-                    if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
-                            s.resourceHandle);
-
-                        Rectangle sourceRec = {
-                            0.0f, 0.0f, (float)texture.width,
-                            (float)texture.height}; // part of the texture used
-
-                        Rectangle destRec = {
-                            p.x, -p.y, static_cast<float>(s.width),
-                            static_cast<float>(
-                                s.height)}; // where to draw texture
-
-                        DrawTexturePro(
-                            texture, sourceRec, destRec,
-                            {(float)texture.width, (float)texture.height}, 0,
-                            WHITE);
-                    }
-                });
 
 
             flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
