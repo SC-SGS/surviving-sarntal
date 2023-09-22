@@ -14,7 +14,7 @@ Mountain::Mountain() {
         landscape_fixpoints_circular_array[i].x = current_x;
         landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
-        current_y -= SECTION_WIDTH * SLOPE;
+        current_y += SECTION_WIDTH * SLOPE;
     }
 
     for (int i = 0; i < NUMBER_OF_VERTICES / NUM_SECTIONS_PER_CHUNK; i++) {

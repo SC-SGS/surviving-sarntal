@@ -192,13 +192,13 @@ void render_system(flecs::iter &iter) {
                      i++) {
 
                     Vector2 control_point_0{mountain->getVertex(i).x,
-                                            mountain->getVertex(i).y};
+                                            -mountain->getVertex(i).y};
                     Vector2 control_point_1{mountain->getVertex(i + 1).x,
-                                            mountain->getVertex(i + 1).y};
+                                            -mountain->getVertex(i + 1).y};
                     Vector2 control_point_2{mountain->getVertex(i).x,
-                                            mountain->getVertex(i).y};
+                                            -mountain->getVertex(i).y};
                     Vector2 control_point_3{mountain->getVertex(i + 1).x,
-                                            mountain->getVertex(i + 1).y};
+                                            -mountain->getVertex(i + 1).y};
 
                     DrawLineBezierCubic(control_point_0, control_point_1,
                                         control_point_2, control_point_3, 5,
@@ -210,7 +210,7 @@ void render_system(flecs::iter &iter) {
                     for (int i = interval.start_index; i < interval.end_index;
                          i++) {
                         Vector2 point = {mountain->getVertex(i).x,
-                                         mountain->getVertex(i).y};
+                                         -mountain->getVertex(i).y};
 
                         DrawCircleV(point, 5,
                                     BLUE); // Draw control points as circles
