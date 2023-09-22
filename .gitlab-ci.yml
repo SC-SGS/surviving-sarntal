@@ -54,9 +54,15 @@ test-job:
     paths:
       - cmake-build-debug/surviving-sarntal
 
-#run_exe:
-  #stage: run_exe
-  #script:
+run-exe:
+  stage: run-exe
+  script:
+    - ./run_check.sh
+  dependencies:
+    - build-job
+  artifacts:
+    paths:
+      - cmake-build-debug/surviving-sarntal
 
 
 #unit-test-job:   # This job runs in the test stage.
