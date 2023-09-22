@@ -9,8 +9,8 @@ struct PhysicSystems {
 };
 
 namespace physics {
-constexpr float_type GRAVITATIONAL_CONSTANT = -1000.8;
-constexpr float_type EPSILON = 0.1;
+constexpr float_type GRAVITATIONAL_CONSTANT = -10.8;
+constexpr float_type EPSILON = 1;
 
 struct ClosestVertex {
     std::size_t index;
@@ -113,5 +113,10 @@ void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 
 void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
                        Radius r1, Radius r2);
+
+bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
+
+void rockRockInteractions(flecs::iter it, Position *positions,
+                          Velocity *velocities, Radius *radius);
 
 } // namespace physics

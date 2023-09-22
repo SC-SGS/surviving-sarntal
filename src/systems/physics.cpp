@@ -56,6 +56,10 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     return n / normalization;
 }
 
+bool physics::isCollided(Position p1, Position p2, Radius r1, Radius r2) {
+    return (p1.distanceTo(p2) <= r1.value + r2.value);
+}
+
 void physics::terrainCollision(flecs::iter it, Position *positions,
                                Velocity *velocities, Radius *r, Mountain *m) {
     for (auto i : it) {
@@ -96,40 +100,46 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
+    float_type distance_sq = pos_diff_vector * pos_diff_vector;
     Vector normal_vector =
-        pos_diff_vector * (1 / (pos_diff_vector * pos_diff_vector));
+        pos_diff_vector / (distance_sq + EPSILON);
 
-    // Wikipedia:
-    Vector exit_vel1 = v1 - pos_diff_vector * (2 * m2 / (m1 + m2)) *
-                                ((vel_diff_vector * pos_diff_vector) /
-                                 (pos_diff_vector * pos_diff_vector));
-    Vector exit_vel2 = v2 + pos_diff_vector * (2 * m1 / (m1 + m2)) *
-                                ((vel_diff_vector * pos_diff_vector) /
-                                 (pos_diff_vector * pos_diff_vector));
+    // Velocity Update
+    float_type total_mass = m1 + m2;
+    v1 -= pos_diff_vector * 2 * m2 * (vel_diff_vector * pos_diff_vector)
+          / (distance_sq * total_mass + EPSILON);
+    v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector)
+          / (distance_sq * total_mass + EPSILON);
 
-    float_type normal_v1 = exit_vel1 * normal_vector;
-    float_type normal_v2 = exit_vel2 * normal_vector;
-    float_type normal_p1 = p1 * normal_vector;
-    float_type normal_p2 = p2 * normal_vector;
+    // Position update using new velocities
 
-    float_type overlap = radius_sum - std::abs(normal_p1 - normal_p2);
-    float_type overlap1 = overlap * m1 / (m1 + m2);
-    float_type overlap2 = overlap * m2 / (m1 + m2);
+    std::cout << v1.x << " " << v1.y << std::endl;
+    std::cout << normal_vector.x << " " << normal_vector.y << std::endl;
 
-    float_type exit_time1 = overlap1 / normal_v1;
-    float_type exit_time2 = overlap2 / normal_v2;
+    float_type normal_v1 = std::abs(v1 * normal_vector);
+    float_type normal_v2 = std::abs(v2 * normal_vector);
 
-    v1 = (Velocity)exit_vel1;
-    v2 = (Velocity)exit_vel2;
+    float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
+    float_type overlap1 = overlap * m2 / (m1 + m2);
+    float_type overlap2 = overlap * m1 / (m1 + m2);
 
-    p1 += v1 * exit_time1 + EPSILON;
-    p2 += v2 * exit_time2 + EPSILON;
+    float_type exit_time1 = overlap1 / (normal_v1 + EPSILON);
+    float_type exit_time2 = overlap2 / (normal_v2 + EPSILON);
+
+    p1 += v1 * exit_time1;
+    p2 += v2 * exit_time2;
 }
 
-void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
-                       Radius r1, Radius r2) {
-    if (std::sqrt((p1 - p2) * (p1 - p2)) <= (r1.value + r2.value)) {
-        rockCollision(p1, p2, v1, v2, r1, r2);
+void physics::rockRockInteractions(flecs::iter it, Position *positions,
+                                   Velocity *velocities, Radius *radius) {
+    for (int i = 0; i < it.count(); i++) {
+        for (int j = i + 1; j < it.count(); j++) {
+            if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
+                rockCollision(positions[i], positions[j], velocities[i],
+                              velocities[j], radius[i],
+                              radius[j]); // TODO: Optimization?
+            }
+        }
     }
 }
 
@@ -148,6 +158,8 @@ void physics::updateVelocity(flecs::iter it, Position *positions,
 
 void physics::updatePosition(flecs::iter it, Position *positions,
                              Velocity *velocities) {
+    std::cout << 1. / it.delta_time() << std::endl;
+
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
     }
@@ -156,16 +168,20 @@ void physics::updatePosition(flecs::iter it, Position *positions,
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
-    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
-        updateState);
+
+
+    world.system<Position, Velocity>().with<Rock>().iter(updateState);
+
+    world.system<Position, Velocity, Radius>().with<Rock>().iter(
+        rockRockInteractions);
 
     world.system<Position, Velocity, Radius, Mountain>()
         .term_at(4)
         .singleton()
         .iter(terrainCollision);
 
-    for (int i = 0; i < 10; i++) {
-        Position p{200.f + i * 2.f, 500.f};
+    for (int i = 0; i < 30; i++) {
+        Position p{300.f - i * 20.f, 200.f + i * 25.f};
         Velocity v{0., 0.};
         makeRock(world, p, v, 10.f);
     }
