@@ -100,7 +100,12 @@ IndexInterval Mountain::getLatestChunk() {
 }
 
 void Mountain::generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement){
-    if(leftIndex+1 == rightIndex) return;
+    if(leftIndex + 5 >= rightIndex){
+        interpolate(leftIndex, rightIndex);
+        return;
+    }
+
+    //if(leftIndex+1 == rightIndex) return;
     //if(leftIndex == rightIndex) return;
 
     std::random_device hardware_random_generator;
@@ -116,4 +121,14 @@ void Mountain::generateTerrainRecursive(std::size_t leftIndex, std::size_t right
     displacement = Mountain::ROUGHNESS_TERRAIN * displacement;
     generateTerrainRecursive(leftIndex, midIndex, displacement);
     generateTerrainRecursive(midIndex, rightIndex, displacement);
+}
+
+void Mountain::interpolate(std::size_t leftIndex, std::size_t rightIndex) {
+    auto leftVert = getVertex(leftIndex);
+    auto rightVert = getVertex(rightIndex);
+    float m = (leftVert.y - rightVert.y)/(rightVert.x - leftVert.x);
+    for (int i = 1; i < rightIndex - leftIndex; i++) {
+        landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES]
+            .y = i * m + getVertex(leftIndex).y;
+    }
 }

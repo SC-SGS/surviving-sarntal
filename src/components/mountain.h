@@ -112,4 +112,6 @@ class Mountain {
     void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
 
     void generateSlope();
+
+    void interpolate(std::size_t leftIndex, std::size_t rightIndex);
 };
