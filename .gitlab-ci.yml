@@ -48,7 +48,7 @@ test-job:
   script:
     - ctest --test-dir cmake-build-debug
   dependencies:
-    - clang-tidy-validate
+    - build-job
   artifacts:
     paths:
       - cmake-build-debug/surviving-sarntal
