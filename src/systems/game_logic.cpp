@@ -45,20 +45,20 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
     camera->target.x = (killBar->x) + graphics::SCREEN_WIDTH / 2;
     // fix camera to y-coord of player
-    // camera->target.y = position[0].y;
+    camera->target.y = -position[0].y;
 
     // this abomination of a term is taking the y coordinate of the leftmost
     // mountain vertex that is just barely on the screen and offsetting it by a
     // constant factor of the screen height if there aren't enough points the
     // camera will jerk upwards. with enough points this will do a smooth
     // upwards motion
-    camera->target.y = (float)-mountain
-                           ->getVertex(mountain
-                                           ->getRelevantMountainSection(
-                                               killBar->x, killBar->x + 0.1)
-                                           .start_index)
-                           .y -
-                       graphics::SCREEN_HEIGHT * 0.33;
+    // camera->target.y = (float)-mountain
+    //                       ->getVertex(mountain
+    //                                       ->getRelevantMountainSection(
+    //                                           killBar->x, killBar->x + 0.1)
+    //                                       .start_index)
+    //                       .y -
+    //                   graphics::SCREEN_HEIGHT * 0.33;
 
     /*std::cout << "Camera position: " << camera->target.y
               << " mountain left height: "
