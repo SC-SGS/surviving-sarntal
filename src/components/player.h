@@ -2,9 +2,19 @@
 
 constexpr float duckSpeedFactor = .5;
 constexpr float normalSpeed = 500;
-constexpr float JUMP_VELOCITY_CONSTANT = 1000;
+constexpr float JUMP_VELOCITY_CONSTANT = 250;
+constexpr float HIKER_HEIGHT = 25;
+constexpr float HIKER_WIDTH = 10;
 
 struct Player {};
+
+struct Height{
+    float h;
+};
+
+struct Width{
+    float w;
+};
 
 class PlayerMovement {
   public:
@@ -13,7 +23,7 @@ class PlayerMovement {
 
     MovementState current_state;
     Direction current_direction;
-
+    bool can_jump_again;
     float last_jump;
 };
 

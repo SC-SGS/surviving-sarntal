@@ -190,8 +190,12 @@ void updatePlayerState(flecs::iter it, Position *positions,
             PlayerMovement::MovementState::IN_AIR) {
             player_movements[0].last_jump = 0;
         }
-        if (player_movements[0].last_jump < 1.5) {
+        if (player_movements[0].last_jump < 1.5 && player_movements[0].can_jump_again) {
             velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
+            if (player_movements[0].current_state ==
+                PlayerMovement::MovementState::IN_AIR) {
+                player_movements[0].can_jump_again=false;
+            }
             player_movements[0].current_state =
                 PlayerMovement::MovementState::IN_AIR;
         }
@@ -247,10 +251,12 @@ void updatePlayerState(flecs::iter it, Position *positions,
             positions[0].y = terrain_y;
             player_movements[0].current_state =
                 PlayerMovement::MovementState::MOVING;
+            player_movements[0].can_jump_again = true;
         }
     } else {
         positions[0].y = terrain_y;
     }
+    positions[0].y += .5*HIKER_HEIGHT;
 }
 
 float getYPosFromX(const flecs::world &world, float x) {
