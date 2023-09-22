@@ -41,6 +41,17 @@ template <typename T> class ResourceManager {
         return handle;
     }
 
+    HANDLE Load(Music music) {
+        HANDLE handle = 0;
+        // generate unused handle
+        do {
+            handle = rand();
+        } while (res.find(handle) != res.end());
+
+        res.insert({handle, music});
+        return handle;
+    }
+
     T Get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
@@ -63,6 +74,8 @@ template <typename T> class ResourceManager {
 
 struct Resources {
     ResourceManager<Texture2D> textures;
+    ResourceManager<Music> music;
 };
+
 
 } // namespace graphics
