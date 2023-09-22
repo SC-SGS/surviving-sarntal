@@ -29,7 +29,7 @@ class Collisions {};
  * @param r radius, should be several times larger than section width in
  * mountain.h
  */
-void makeRock(const flecs::world &world, Position p, Velocity v,
+flecs::entity makeRock(const flecs::world &world, Position p, Velocity v,
               float_type radius);
 
 /**
@@ -118,4 +118,6 @@ bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
 void rockRockInteractions(flecs::iter it, Position *positions,
                           Velocity *velocities, Radius *radius);
 
+void explodeRock(const flecs::world& world,
+                 flecs::entity rock, const int number_of_rocks);
 } // namespace physics

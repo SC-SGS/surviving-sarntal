@@ -51,3 +51,5 @@ struct Radius {
 };
 
 struct Rock {};
+
+struct Exploding {};

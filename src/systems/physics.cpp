@@ -3,6 +3,7 @@
 #include "flecs.h"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 using namespace physics;
 
@@ -43,11 +44,10 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     Position vertex = m->getVertex(idx);
     Vector d = vertex - vertex_other;
     // compute normal from distances via rotation
-    // signbit is used to let normal vector always point in positive y direction
-    float_type sgn_n_x = ((float_type)std::signbit(-d.y) - 0.5f) * 2.f;
     // R =  (  0   -1  )
     //      (  1    0  )
-    Vector n = {sgn_n_x * -d.y, sgn_n_x * d.x};
+    Vector n = {-d.y, d.x};
+    if (n.y < 0) {n =  n * -1.f;}
     float_type normalization = std::sqrt(n * n);
     return n / normalization;
 }
@@ -75,12 +75,16 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
             (r[i].value + vertex_normal - position_normal) / velocity_normal;
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
+
+        if (it.entity(i).has<Exploding>()) {
+            explodeRock(it.world(), it.entity(i), 50);
+        }
     }
 }
 
-void physics::makeRock(const flecs::world &world, Position p, Velocity v,
+flecs::entity physics::makeRock(const flecs::world &world, Position p, Velocity v,
                        float_type radius) {
-    world.entity()
+    return world.entity()
         .set<Position>(p)
         .set<Velocity>(v)
         .set<Radius>({radius})
@@ -123,6 +127,11 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i],
                               radius[j]); // TODO: Optimization?
+
+                if (it.entity(i).has<Exploding>()) {
+                    std::cout << "eskalation" << std::endl;
+                    explodeRock(it.world(), it.entity(i), 5);
+                }
             }
         }
     }
@@ -147,6 +156,28 @@ void physics::updatePosition(flecs::iter it, Position *positions,
     }
 }
 
+void physics::explodeRock(const flecs::world& world,
+                          flecs::entity rock, const int number_of_rocks) {
+    auto position = *rock.get<Position>();
+    auto velocity = *rock.get<Velocity>();
+    auto radius = rock.get<Radius>()->value;
+    auto M = radius * radius;
+    rock.destruct();
+
+    float_type new_r = radius / std::sqrt(number_of_rocks);
+    float_type delta_angle = 2.0 * PI / number_of_rocks;
+
+    Position delta_direction, p;
+    Velocity v;
+    for (int i = 0; i < number_of_rocks; i++) {
+        delta_direction = Position{ std::sin(delta_angle * i),
+                                    std::cos(delta_angle * i)};
+        p = (Position)(position + delta_direction * radius);
+        v = (Velocity)(velocity + delta_direction * 10);
+        makeRock(world, p, v, new_r);
+    }
+}
+
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
@@ -160,9 +191,9 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .singleton()
         .iter(terrainCollision);
 
-    for (int i = 0; i < 20; i++) {
-        Position p{300.f, 200.f + 25.f * (float)i};
+    for (int i = 0; i < 1; i++) {
+        Position p{300.f, 400.f + 25.f * (float)i};
         Velocity v{0., 0.};
-        makeRock(world, p, v, 10.f);
+        makeRock(world, p, v, 40.f).add<Exploding>();
     }
 }
