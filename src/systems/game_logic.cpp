@@ -178,5 +178,5 @@ void initGameLogic(flecs::world &world) {
         .singleton()
         .iter(moveCamera);
 
-    // world.system<>().iter(spawnRocks);
+    world.system<>().iter(spawnRocks);
 }
