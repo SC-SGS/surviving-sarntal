@@ -16,7 +16,7 @@ class Mountain {
     /**
      * Number of Vertices explicitly stored by the mountain data structure
      */
-    static constexpr std::size_t NUMBER_OF_VERTICES{2048};
+    static constexpr std::size_t NUMBER_OF_VERTICES{512};
 
     /**
      * width covered by mountain generated at one point in time
@@ -40,7 +40,7 @@ class Mountain {
     /** value beween 0 and 1 (prefereably between 0.5 and 0.75)
      *
      */
-    static constexpr float ROUGHNESS_TERRAIN{0.5};
+    static constexpr float ROUGHNESS_TERRAIN{0.35};
 
     Mountain();
 
