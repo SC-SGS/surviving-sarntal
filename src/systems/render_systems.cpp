@@ -109,13 +109,13 @@ void render_system(flecs::iter &iter) {
                      i++) {
 
                     Vector2 control_point_0{mountain->getVertex(i).x,
-                                            mountain->getVertex(i).y};
+                                            -mountain->getVertex(i).y};
                     Vector2 control_point_1{mountain->getVertex(i + 1).x,
-                                            mountain->getVertex(i + 1).y};
+                                            -mountain->getVertex(i + 1).y};
                     Vector2 control_point_2{mountain->getVertex(i).x,
-                                            mountain->getVertex(i).y};
+                                            -mountain->getVertex(i).y};
                     Vector2 control_point_3{mountain->getVertex(i + 1).x,
-                                            mountain->getVertex(i + 1).y};
+                                            -mountain->getVertex(i + 1).y};
 
                     DrawLineBezierCubic(control_point_0, control_point_1,
                                         control_point_2, control_point_3, 5,
@@ -127,7 +127,7 @@ void render_system(flecs::iter &iter) {
                     for (int i = interval.start_index; i < interval.end_index;
                          i++) {
                         Vector2 point = {mountain->getVertex(i).x,
-                                         mountain->getVertex(i).y};
+                                         -mountain->getVertex(i).y};
 
                         DrawCircleV(point, 5,
                                     BLUE); // Draw control points as circles
@@ -147,7 +147,7 @@ void render_system(flecs::iter &iter) {
                             (float)texture.height}; // part of the texture used
 
                         Rectangle destRec = {
-                            p.x, p.y, static_cast<float>(s.width),
+                            p.x, -p.y, static_cast<float>(s.width),
                             static_cast<float>(
                                 s.height)}; // where to draw texture
 
@@ -158,8 +158,17 @@ void render_system(flecs::iter &iter) {
                     }
                 });
 
-                rotation++;
-            }
+
+            flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                world.filter<Position, CircleShapeRenderComponent>();
+
+            cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                DrawCircleLines(p.x, -p.y, s.radius, GREEN);
+            });
+
+
+            rotation++;
+        }
 
             EndMode2D();
         }
@@ -213,7 +222,9 @@ void init_render_system(flecs::world &world) {
                       .set(([&](Position &c) {
                           c.x = 0;
                           c.y = 0;
-                      }));
+                      }))
+                      .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f;
+                      });
 }
 
 void destroy() {
