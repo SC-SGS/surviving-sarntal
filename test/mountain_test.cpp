@@ -5,7 +5,7 @@
 
 void checkSectionIndices(Mountain& mountain, float min_x, float max_x){
     IndexInterval interval = mountain.getRelevantMountainSection(min_x, max_x);
-    //std::cout << "region: " << mountain.getVertice(interval.start_index).x << " " << mountain.getVertex(interval.end_index).x << " for rock: " << min_x << " " << max_x << std::endl;
+    //std::cout << "region: " << mountain.getVertex(interval.start_index).x << " " << mountain.getVertex(interval.end_index).x << " for rock: " << min_x << " " << max_x << std::endl;
     ASSERT_GE(min_x, mountain.getVertex(interval.start_index).x);
     ASSERT_GE(min_x, mountain.getVertex(interval.start_index - 1).x);
     ASSERT_GE(mountain.getVertex(interval.end_index).x, max_x);
