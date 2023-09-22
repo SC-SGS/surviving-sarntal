@@ -153,6 +153,15 @@ void render_system(flecs::iter& iter) {
                 }
             });
 
+
+            flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                world.filter<Position, CircleShapeRenderComponent>();
+
+            cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                DrawCircleLines(p.x, -p.y, s.radius, GREEN);
+            });
+
+
             rotation++;
         }
 
@@ -207,7 +216,9 @@ void init_render_system(flecs::world &world) {
                       .set(([&](Position &c) {
                           c.x = 0;
                           c.y = 0;
-                      }));
+                      }))
+                      .set([&](CircleShapeRenderComponent &c) { c.radius = 5.0f;
+                      });
 }
 
 void destroy() {
