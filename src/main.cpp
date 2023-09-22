@@ -9,18 +9,19 @@
 #include <iostream>
 
 #ifdef kinect
-#include <cstdio>
 #include <XnOpenNI.h>
 #include <XnVWaveDetector.h>
+#include <cstdio>
 
 // xml to initialize OpenNI
 #define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
 // callback for a new position of any hand
-void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext* pContext, void* cxt)
-{
-    printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X, pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);
+void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext *pContext,
+                                    void *cxt) {
+    printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X,
+           pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);
 }
 
 #endif
@@ -32,9 +33,9 @@ int main() {
 
     flecs::world world;
 
-    #ifdef kinect
+#ifdef kinect
     std::cout << "Kinect is active" << std::endl;
-    #endif
+#endif
 
     graphics::init_render_system(world);
 
