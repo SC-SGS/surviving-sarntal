@@ -16,10 +16,12 @@ constexpr int MAX_GAMEPADS = 8;
 bool isGamepad(int raylib_id) {
     if (!IsGamepadAvailable(raylib_id))
         return false;
+
     std::string gamepad_name(GetGamepadName(raylib_id));
-    return gamepad_name.find("Gamepad") != std::string::npos ||
-           gamepad_name.find("Controller") != std::string::npos ||
-           gamepad_name.find("gamepad") != std::string::npos;
+    bool result = gamepad_name.find("Gamepad") != std::string::npos ||
+                  gamepad_name.find("Controller") != std::string::npos ||
+                  gamepad_name.find("gamepad") != std::string::npos;
+    return result;
 }
 
 /**
@@ -108,12 +110,7 @@ double InputEntity::getVirtualAxis(VirtualAxis axis) const {
 
 int InputEntity::getGamepadId() const { return gamepad_id_raylib; }
 
-InputEntity::InputEntity() {
-    if (getGamepadCount() > 0)
-        setInputType(GAMEPAD, 0);
-    else
-        setInputType(MOUSE_KEYBOARD);
-};
+InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0){};
 InputEntity::~InputEntity() = default;
 
 bool InputEntity::getEvent(Event event) const {
@@ -138,6 +135,24 @@ bool InputEntity::getEvent(Event event) const {
     return active;
 }
 
+bool InputEntity::useVirtualAxis(VirtualAxis axis) const {
+    switch (current_input_type) {
+    case GAMEPAD:
+        return axis.positive.device == DEVICE_GAMEPAD ||
+               axis.negative.device == DEVICE_GAMEPAD;
+    case KINECT:
+        return axis.positive.device == DEVICE_KINECT ||
+               axis.negative.device == DEVICE_KINECT;
+    case MOUSE_KEYBOARD:
+        return axis.positive.device == DEVICE_KEYBOARD ||
+               axis.negative.device == DEVICE_KEYBOARD ||
+               axis.positive.device == DEVICE_MOUSE ||
+               axis.negative.device == DEVICE_MOUSE;
+    default:
+        return false;
+    }
+}
+
 double InputEntity::getAxis(Axis axis) const {
     double value = 0;
 
@@ -148,36 +163,35 @@ double InputEntity::getAxis(Axis axis) const {
             value = getGamepadAxis(gamepad_axis);
         }
     } else if (current_input_type == KINECT && hasKinect()) {
-        // do something here
+        // do something
+        return 0;
     }
 
     auto virtual_axis_iter = virtual_axis_map.find(axis);
     if (virtual_axis_iter != virtual_axis_map.end()) {
         auto virtual_axes = virtual_axis_iter->second;
 
-        // use value from virtual axis with maximal value
+        // use value from relevant virtual axes with maximal value
         for (auto virtual_axis : virtual_axes) {
             double virtual_value = getVirtualAxis(virtual_axis);
-            if (abs(virtual_value) > abs(value))
+            if (useVirtualAxis(virtual_axis) && abs(virtual_value) > abs(value))
                 value = virtual_value;
         }
     }
-
     return value;
 }
 
 void InputEntity::updateDevices() {
     // if something must be updated each frame
 
-    if (current_input_type == GAMEPAD) {
-        // update gamepad id
-        gamepad_id_raylib = findRaylibId(gamepad_num);
+    // update gamepad id
+    gamepad_id_raylib = findRaylibId(gamepad_num);
 
-        // use gamepad if present, keyboard otherwise
-        if (gamepad_id_raylib != NO_GAMEPAD_ID)
-            current_input_type = GAMEPAD;
-        else
-            current_input_type = MOUSE_KEYBOARD;
+    // use gamepad if present, keyboard otherwise
+    if (gamepad_id_raylib != NO_GAMEPAD_ID) {
+        current_input_type = GAMEPAD;
+    } else {
+        current_input_type = MOUSE_KEYBOARD;
     }
 }
 
