@@ -213,19 +213,6 @@ void render_system(flecs::iter &iter) {
             rotation++;
         }
 
-        Rectangle sourceRec = {
-            0.0f, 0.0f, (float)foreground_tex.width,
-            (float)foreground_tex.height}; // part of the texture used
-
-        Rectangle destRec = {
-            0.0, 0.0, static_cast<float>(5),
-            static_cast<float>(
-                5)}; // where to draw texture
-
-        DrawTexturePro(
-            foreground_tex, sourceRec, destRec,
-            {(float)foreground_tex.width, (float)foreground_tex.height}, 0,
-            RED);
 
             EndMode2D();
         }
