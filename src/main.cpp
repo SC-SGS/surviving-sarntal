@@ -14,7 +14,6 @@ int main() {
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
-    world.set_threads(4);
 
     graphics::init_render_system(world);
 
