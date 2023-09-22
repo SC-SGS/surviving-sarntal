@@ -297,9 +297,11 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     auto interval =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
+    interval.end_index = std::min(interval.end_index, interval.start_index + 2000); // TODO remove (last vertices are wrong...)
+
     int terrainVertexCount = interval.end_index - interval.start_index;
 
-    int levels = 20;
+    int levels = 15;
     int levelsAtTheBack = 0; // number terrain layers behind the ridge
 
     int triangleCount = levels * (terrainVertexCount - 1) * 2;
@@ -308,42 +310,39 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     std::vector<float> texcoords;
     std::vector<float> normals;
 
-    for (int i = interval.start_index; i < interval.end_index-1; i++) {
+    //for (int i = interval.start_index; i < interval.end_index-1; i++) {
 
+    for (int i = interval.start_index; i < interval.end_index - 1; i++) {
         int currentDepth = -levelsAtTheBack*0.1;
 
         const float x_scale = 0.1f;
 
         Vector3 v0;
-        //auto vertex = world.get_mut<Mountain>()->getVertex(interval.start_index + i);
-        //vertex.x = vertex.x * 0.01f;
-        //vertex.y = vertex.y * 0.01f;
-        float height = 0;
-        //
-        v0.x = i * x_scale;
-        v0.z = getTerrainHeight(v0.x, currentDepth, v0.x); // height;
+        auto vertex = world.get_mut<Mountain>()->getVertex(interval.start_index + i);
+        v0.x = vertex.x;
+        v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
 
-        //std::cout << "vertex: " << vertex.x << ", " << vertex.y << std::endl;
+        //std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y << std::endl;
 
 
         Vector3 v1;
-        //auto vertex2 =
-        //    world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
+        auto vertex2 =
+           world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
         //vertex2.x = vertex2.x * 0.01f;
         //vertex2.y = vertex2.y * 0.01f;
         // getTerrainHeight(vertex.x, currentDepth, vertex.y);
-        v1.x = (i + 1) * x_scale;
-        v1.z = getTerrainHeight(v1.x, currentDepth, v1.x); // height;
+        v1.x = vertex2.x;
+        v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
         v1.y = currentDepth;
 
 
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
-            v2.y -= 1.1;
+            v2.y -= 0.5;
             v2.z = getTerrainHeight(v2.x, v2.y, v2.z);
             auto v3 = v1; // in front of terrain vertex i
-            v3.y -= 1.1;
+            v3.y -= 0.5;
             v3.z = getTerrainHeight(v3.x, v3.y, v3.z);
 
             // first triangle
