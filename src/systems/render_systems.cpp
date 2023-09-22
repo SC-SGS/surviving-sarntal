@@ -51,7 +51,7 @@ float getTerrainHeight(float x, float y, float ridge_height,
 
     float falloff = -(y * y) * scale;
 
-    return ridge_height + falloff;
+    return (ridge_height + falloff);
 }
 
 void render_system(flecs::iter &iter) {

@@ -13,7 +13,7 @@ Mountain::Mountain() {
         landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * slope;
-        slope += ((rand() % 1000) - 500) / 1000.;
+        slope += ((rand() % 1000) - 500) / 10000.;
     }
     // printTempDebugInfo();
 }
