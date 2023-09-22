@@ -14,9 +14,9 @@ constexpr int MAX_GAMEPADS = 8;
  * @return
  */
 bool isGamepad(int raylib_id) {
+    if (!IsGamepadAvailable(raylib_id)) return false;
     std::string gamepad_name(GetGamepadName(raylib_id));
-    return IsGamepadAvailable(raylib_id) &&
-               gamepad_name.find("Gamepad") != std::string::npos ||
+    return gamepad_name.find("Gamepad") != std::string::npos ||
            gamepad_name.find("Controller") != std::string::npos ||
            gamepad_name.find("gamepad") != std::string::npos;
 }
