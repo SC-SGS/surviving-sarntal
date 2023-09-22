@@ -41,10 +41,19 @@ target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
 target_clangformat_setup(surviving-sarntal-library)
 
 target_link_libraries(surviving-sarntal-library PUBLIC flecs::flecs_static raylib raygui)
-add_library( NITE-lib SHARED IMPORTED )
-set_target_properties( NITE-lib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libs/NITE/libXnVNite_1_5_2.so)
-target_link_libraries(surviving-sarntal-library PUBLIC NITE-lib)
-target_link_libraries(surviving-sarntal-library PUBLIC OpenNI)
+if (KINECT)
+    add_library( NITE-lib SHARED IMPORTED )
+    set_target_properties( NITE-lib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libs/NITE/libXnVNite_1_5_2.so)
+    target_link_libraries(surviving-sarntal-library PUBLIC NITE-lib)
+    target_link_libraries(surviving-sarntal-library PUBLIC OpenNI)
+    configure_file(libs/NITE/Include/Sample-Scene.xml . COPYONLY)
+    configure_file(libs/NITE/Include/Sample-Tracking.xml . COPYONLY)
+    configure_file(libs/NITE/Include/Sample-User.xml . COPYONLY)
+    add_definitions(-Dkinect=1)
+    message(WARNING "Kinect is activated")
+endif ()
+
+
 #link some libraries to the surviving-sarntal-library that we are defining atm
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 #link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
