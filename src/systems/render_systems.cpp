@@ -296,7 +296,7 @@ void render_system(flecs::iter &iter) {
             {
                 //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawCube({-20, 0}, 10, 10, 10, RED);
+                //DrawCube({-20, 0}, 10, 10, 10, RED);
 
                 flecs::filter<Position, SpriteComponent, BillboardComponent> q =
                     world.filter<Position, SpriteComponent,
@@ -685,6 +685,14 @@ void init_render_system(flecs::world &world) {
                         1.0f};  // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
     debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
+
+
+    HANDLE test_texture = world.get_mut<Resources>()->textures.Load(
+        "../assets/texture/grass.png"); // LoadTexture("../assets/texture/grass.png");
+
+
+    world.get_mut<Resources>()->textures.Free(test_texture);
+
 }
 
 Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
@@ -707,7 +715,7 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh(flecs::world &world) {
-
+    std::cout << "gen chunk" << std::endl;
     world.get_mut<Mountain>()->generateNewChunk();
     auto interval =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();

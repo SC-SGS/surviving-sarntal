@@ -3,6 +3,8 @@
 #include "flecs.h"
 #include "raylib.h"
 #include "string"
+#include <functional>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -10,13 +12,12 @@ namespace graphics {
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
-// TODO, do not use yet
 template <typename T> class ResourceManager {
-
   public:
     HANDLE Load(const std::string &path) {
         // Create a unique hash for this resource
-        HANDLE hash = std::hash(path);
+        std::hash<std::string> hasher;
+        HANDLE hash = hasher(path);
 
         // check if resource was already loaded before
         auto it = res.find(hash);
@@ -30,25 +31,14 @@ template <typename T> class ResourceManager {
         }
     }
 
-    HANDLE Load(Texture2D texture) {
+    HANDLE Load(const T &resource) {
         HANDLE handle = 0;
         // generate unused handle
         do {
             handle = rand();
         } while (res.find(handle) != res.end());
 
-        res.insert({handle, texture});
-        return handle;
-    }
-
-    HANDLE Load(Music music) {
-        HANDLE handle = 0;
-        // generate unused handle
-        do {
-            handle = rand();
-        } while (res.find(handle) != res.end());
-
-        res.insert({handle, music});
+        res.insert({handle, resource});
         return handle;
     }
 
@@ -64,17 +54,38 @@ template <typename T> class ResourceManager {
     void Free(HANDLE handle) {
         auto it = res.find(handle);
         if (it != res.end()) {
+            onFree(it->second);
             res.erase(it);
         }
     }
 
+    void setOnFreeCallback(std::function<void(T)> callback) {
+        onFree = callback;
+    }
+
+    ~ResourceManager() {
+        for (auto &a : res) {
+            onFree(a.second);
+        }
+        res.clear();
+    }
+
   private:
     std::unordered_map<HANDLE, T> res;
+    std::function<void(T &)> onFree;
 };
 
 struct Resources {
     ResourceManager<Texture2D> textures;
     ResourceManager<Music> music;
+
+    Resources() {
+
+        textures.setOnFreeCallback(
+            [](Texture2D &texture) { UnloadTexture(texture); });
+
+        music.setOnFreeCallback([](Music &music) { UnloadMusicStream(music); });
+    }
 };
 
 } // namespace graphics
