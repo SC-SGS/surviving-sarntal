@@ -151,18 +151,6 @@ void initGameLogic(flecs::world &world) {
         .singleton()
         .iter(checkPlayerAlive);
 
-    /*world.system<Position, KillBar>()
-        .with<Player>()
-        .term_at(2)
-        .singleton()
-        .iter(debugRenderPlayer);*/
-
-    /*world.system<Position, KillBar>()
-        .with<Player>()
-        .term_at(2)
-        .singleton()
-        .iter(moveCamera);*/
-
     world.system<Mountain, KillBar>()
         .term_at(1)
         .singleton()

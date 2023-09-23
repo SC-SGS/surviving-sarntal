@@ -207,44 +207,44 @@ void render_system(flecs::iter &iter) {
                     }
                 });
 
-                auto mountain = world.get_mut<Mountain>();
-                for (int i = interval.start_index; i < interval.end_index;
-                     i++) {
+                //auto mountain = world.get_mut<Mountain>();
+                //for (int i = interval.start_index; i < interval.end_index;
+                //     i++) {
 
-                    Vector2 control_point_0{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
-                    Vector2 control_point_2{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
+                //    Vector2 control_point_0{mountain->getVertex(i).x,
+                //                            -mountain->getVertex(i).y};
+                //    Vector2 control_point_1{mountain->getVertex(i + 1).x,
+                //                            -mountain->getVertex(i + 1).y};
+                //    Vector2 control_point_2{mountain->getVertex(i).x,
+                //                            -mountain->getVertex(i).y};
+                //    Vector2 control_point_3{mountain->getVertex(i + 1).x,
+                //                            -mountain->getVertex(i + 1).y};
 
-                    DrawLineBezierCubic(control_point_0, control_point_1,
-                                        control_point_2, control_point_3, 5,
-                                        RED);
-                }
+                //    DrawLineBezierCubic(control_point_0, control_point_1,
+                //                        control_point_2, control_point_3, 5,
+                //                        RED);
+                //}
 
-                // Draw the control points and lines
-                if (DEBUG) {
-                    for (int i = interval.start_index; i < interval.end_index;
-                         i++) {
-                        Vector2 point = {mountain->getVertex(i).x,
-                                         -mountain->getVertex(i).y};
+                //// Draw the control points and lines
+                //if (DEBUG) {
+                //    for (int i = interval.start_index; i < interval.end_index;
+                //         i++) {
+                //        Vector2 point = {mountain->getVertex(i).x,
+                //                         -mountain->getVertex(i).y};
 
-                        DrawCircleV(point, 5,
-                                    BLUE); // Draw control points as circles
-                    }
-                }
+                //        DrawCircleV(point, 5,
+                //                    BLUE); // Draw control points as circles
+                //    }
+                //}
 
-                flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+               /* flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
                     world.filter<Position, CircleShapeRenderComponent>();
 
                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
                     DrawCircleLines(p.x, -p.y, s.radius, GREEN);
-                });
+                });*/
 
-                flecs::filter<Position, RectangleShapeRenderComponent>
+                /*flecs::filter<Position, RectangleShapeRenderComponent>
                     rectangle_q =
                         world.filter<Position, RectangleShapeRenderComponent>();
 
@@ -254,7 +254,7 @@ void render_system(flecs::iter &iter) {
                                       (int)s.height, RED);
                     });
 
-                rotation++;
+                rotation++;*/
             }
 
             EndMode2D();
@@ -263,7 +263,7 @@ void render_system(flecs::iter &iter) {
 
                 static float rotZ = 90;
 
-                if (IsKeyDown(KEY_D))
+                /*if (IsKeyDown(KEY_D))
                     debugCamera3D.position.x += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_A))
                     debugCamera3D.position.x -= 10 * iter.delta_time();
@@ -274,21 +274,27 @@ void render_system(flecs::iter &iter) {
                 else if (IsKeyDown(KEY_W))
                     debugCamera3D.position.y += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_S))
-                    debugCamera3D.position.y -= 10 * iter.delta_time();
+                    debugCamera3D.position.y -= 10 * iter.delta_time();*/
 
-                if (IsKeyDown(KEY_LEFT))
+                /*if (IsKeyDown(KEY_LEFT))
                     rotZ += 2 * iter.delta_time();
                 else if (IsKeyDown(KEY_RIGHT))
-                    rotZ -= 2 * iter.delta_time();
+                    rotZ -= 2 * iter.delta_time();*/
 
-                debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
-                debugCamera3D.target.y = debugCamera3D.position.y + sinf(rotZ);
+                debugCamera3D.position.x = camera->target.x - 200;
+                //debugCamera3D.position.z = camera->target.y;
+
+                debugCamera3D.target.x = debugCamera3D.position.x;//+cosf(rotZ);
+                debugCamera3D.target.y = debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
+
+                //debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
+                
             }
 
             BeginMode3D(debugCamera3D);
             {
-                // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawCube({-20, 0}, 10, 10, 10, RED);
 
@@ -337,8 +343,92 @@ void render_system(flecs::iter &iter) {
                 DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
                                   MAX_INSTANCES);
                 rlEnableBackfaceCulling();
+
+
+                // draw rocks
+                flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                    world.filter<Position, CircleShapeRenderComponent>();
+
+                cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                    DrawSphere({p.x- s.radius/2, -s.radius/2, p.y-s.radius/2}, s.radius, GREEN);
+                });
+
+
+                auto mountain = world.get_mut<Mountain>();
+
+                //if (DEBUG) {
+                //    for (int i = interval.start_index;
+                //         i < interval.start_index + 500;
+                //         i++) {
+                //        Vector2 point = {mountain->getVertex(i).x,
+                //                         -mountain->getVertex(i).y};
+
+                //        DrawSphere({point.x, 0, point.y}, 5,
+                //                   BLUE); // Draw control points as circles
+                //    }
+                //}
+                
+                
+                // draw player
+                flecs::filter<Position, RectangleShapeRenderComponent>
+                    rectangle_q =
+                        world.filter<Position, RectangleShapeRenderComponent>();
+
+                rectangle_q.each(
+                    [&](Position &p, RectangleShapeRenderComponent &s) {
+                        DrawCube({p.x, -0.5, p.y},
+                                 s.width, 1.0,
+                                 s.height, BLUE);
+                        DrawCube({p.x - s.width/2, -0.5, p.y - s.height/2}, s.width, 1.0, s.height, RED);
+                        /*DrawCube({p.x - s.width / 4, 0, p.y - s.height / 4},
+                                 s.width / 2, 1.0,
+                                 s.height / 2, BLUE);*/
+                    });
             }
             EndMode3D();
+
+            BeginMode2D(*camera);
+            {
+                auto mountain = world.get_mut<Mountain>();
+                for (int i = interval.start_index; i < interval.end_index;
+                     i++) {
+
+                    Vector2 control_point_0{mountain->getVertex(i).x,
+                                            -mountain->getVertex(i).y};
+                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
+                                            -mountain->getVertex(i + 1).y};
+                    Vector2 control_point_2{mountain->getVertex(i).x,
+                                            -mountain->getVertex(i).y};
+                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
+                                            -mountain->getVertex(i + 1).y};
+
+                    DrawLineBezierCubic(control_point_0, control_point_1,
+                                        control_point_2, control_point_3, 5,
+                                        RED);
+                }
+
+                // Draw the control points and lines
+                if (DEBUG) {
+                    for (int i = interval.start_index; i < interval.end_index;
+                         i++) {
+                        Vector2 point = {mountain->getVertex(i).x,
+                                         -mountain->getVertex(i).y};
+
+                        DrawCircleV(point, 5,
+                                    BLUE); // Draw control points as circles
+                    }
+                }
+                flecs::filter<Position, RectangleShapeRenderComponent>
+                    rectangle_q =
+                        world.filter<Position, RectangleShapeRenderComponent>();
+
+                rectangle_q.each(
+                    [&](Position &p, RectangleShapeRenderComponent &s) {
+                        DrawRectangle((int)p.x, (int)-p.y, (int)s.width,
+                                      (int)s.height, RED);
+                    });
+            }
+            EndMode2D();
         }
         EndDrawing();
     }
@@ -534,8 +624,8 @@ void init_render_system(flecs::world &world) {
     // std::cout << "current paht " << std::filesystem::current_path() <<
     // std::endl;
     //  Load lighting shader
-    shader = LoadShader("../../../assets/shaders/grass_instancing.vert",
-                        "../../../assets/shaders/grass_instancing.frag");
+    shader = LoadShader("../assets/shaders/grass_instancing.vert",
+                        "../assets/shaders/grass_instancing.frag");
 
     // Get shader locations
     shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(shader, "mvp");
@@ -551,12 +641,12 @@ void init_render_system(flecs::world &world) {
     // Define mesh to be instanced
     // grass_mesh = GenMeshCube(1.0f, 1.0f, 1.0f);
 
-    Model grass_model = LoadModel("../../../assets/mesh/grass_patch.obj");
+    Model grass_model = LoadModel("../assets/mesh/grass_patch.obj");
     grass_mesh = grass_model.meshes[0];
 
     // DrawModel
 
-    Texture2D grass_texture = LoadTexture("../../../assets/texture/grass.png");
+    Texture2D grass_texture = LoadTexture("../assets/texture/grass.png");
 
     int loc = GetShaderLocation(shader, "grasstex");
     loc_time = GetShaderLocation(shader, "time");
@@ -589,8 +679,8 @@ void init_render_system(flecs::world &world) {
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
 
     debugCamera3D = {0};
-    debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
-    debugCamera3D.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
+    debugCamera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
+    debugCamera3D.target = {0.0f, 1.0f, 0.0f};     // Camera looking at point
     debugCamera3D.up = {0.0f, 0.0f,
                         1.0f};  // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
@@ -625,7 +715,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     interval.end_index =
         std::min(interval.end_index,
                  interval.start_index +
-                     2000); // TODO remove (last vertices are wrong...)
+                     1000); // TODO remove (last vertices are wrong...)
 
     int terrainVertexCount = interval.end_index - interval.start_index;
 
@@ -644,7 +734,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         int currentDepth = -levelsAtTheBack * 0.1;
 
         const float x_scale = 0.1f;
-        const float y_scale = 0.5f;
+        const float y_scale = 10.0f;
 
         float maxX = (interval.end_index - 1 - interval.start_index) * x_scale;
         float maxY = levels * y_scale;
@@ -767,7 +857,6 @@ void destroy() {
     UnloadTexture(gradientTex);
     // UnloadModel(model);
 
-    CloseWindow();
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);
