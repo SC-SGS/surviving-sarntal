@@ -14,12 +14,6 @@ constexpr HANDLE NULL_HANDLE = -1;
 
 template <typename T> class ResourceManager {
   public:
-      //delete copy and assignment constructor
-    //ResourceManager(const ResourceManager &) = delete;
-
-    ResourceManager() { std::cout << "-------yo" << std::endl;
-    }
-
     HANDLE Load(const std::string &path) {
         // Create a unique hash for this resource
         std::hash<std::string> hasher;
