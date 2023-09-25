@@ -43,7 +43,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
                 Mountain *mountain) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
-    camera->target.x = (killBar->x) + graphics::SCREEN_WIDTH / 2;
+    camera->target.x = (killBar->x) + (graphics::SCREEN_WIDTH * 1.0f) / 2;
     // fix camera to y-coord of player
     camera->target.y = -position[0].y;
 
@@ -118,8 +118,9 @@ void spawnRocks(flecs::iter it) {
         fmod(GetTime(), ROCK_TIME_PERIOD) > 1.98) {
         it.world()
             .entity()
-            .set<Position>({camera->target.x + graphics::SCREEN_WIDTH / 2,
-                            -camera->target.y + graphics::SCREEN_HEIGHT / 2})
+            .set<Position>(
+                {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
+                 -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
             .set<Radius>({10.})
             .add<Rock>()
