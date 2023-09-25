@@ -202,11 +202,9 @@ class InputEntity {
      */
     explicit InputEntity(InputType input_type, int gamepad_num = NO_GAMEPAD_ID);
 
-    ~InputEntity();
-
     static const std::string &getAxisDisplayName(Axis axis);
 
-    const std::string &getEventDisplayName(Event event) const;
+    static const std::string &getEventDisplayName(Event event) ;
 
     /**
      * gets formatted info about currently provided events and axis inputs

@@ -157,6 +157,6 @@ void Mountain::interpolate(std::size_t leftIndex, std::size_t rightIndex) {
     float_type m = (left_vert.y - right_vert.y) / (right_vert.x - left_vert.x);
     for (int i = 1; i < rightIndex - leftIndex; i++) {
         landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES]
-            .y = i * m + getVertex(leftIndex).y;
+            .y = static_cast<float_type>(i) * m + getVertex(leftIndex).y;
     }
 }
