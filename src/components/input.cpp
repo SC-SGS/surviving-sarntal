@@ -73,7 +73,7 @@ bool InputEntity::getGamepadEvent(ButtonEvent event) const {
     }
 }
 
-bool InputEntity::getKeyboardEvent(ButtonEvent event) const {
+bool InputEntity::getKeyboardEvent(ButtonEvent event) {
     switch (event.keyPressType) {
     case PRESSED:
         return IsKeyPressed(event.key);
@@ -110,23 +110,22 @@ double InputEntity::getVirtualAxis(VirtualAxis axis) const {
 
 int InputEntity::getGamepadId() const { return gamepad_id_raylib; }
 
-InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0){};
-InputEntity::~InputEntity() = default;
+InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0) {}
 
 bool InputEntity::getEvent(Event event) const {
     bool active = false;
 
     if (current_input_type == GAMEPAD && hasGamepad()) {
-        auto gamepad_action_iter = gamepad_key_map.find(event);
-        if (gamepad_action_iter != gamepad_key_map.end()) {
+        auto gamepad_action_iter = GAMEPAD_KEY_MAP.find(event);
+        if (gamepad_action_iter != GAMEPAD_KEY_MAP.end()) {
             auto gamepad_action = gamepad_action_iter->second;
             active = getGamepadEvent(gamepad_action);
         }
     } else if (current_input_type == KINECT && hasKinect()) {
         // Do something here
     } else if (current_input_type == MOUSE_KEYBOARD) {
-        auto keyboard_action_iter = keyboard_key_map.find(event);
-        if (keyboard_action_iter != keyboard_key_map.end()) {
+        auto keyboard_action_iter = KEYBOARD_KEY_MAP.find(event);
+        if (keyboard_action_iter != KEYBOARD_KEY_MAP.end()) {
             auto keyboard_action = keyboard_action_iter->second;
             active = getKeyboardEvent(keyboard_action);
         }
@@ -157,8 +156,8 @@ double InputEntity::getAxis(Axis axis) const {
     double value = 0;
 
     if (current_input_type == GAMEPAD && hasGamepad()) {
-        auto gamepad_axis_iter = gamepad_axis_map.find(axis);
-        if (gamepad_axis_iter != gamepad_axis_map.end()) {
+        auto gamepad_axis_iter = GAMEPAD_AXIS_MAP.find(axis);
+        if (gamepad_axis_iter != GAMEPAD_AXIS_MAP.end()) {
             auto gamepad_axis = gamepad_axis_iter->second;
             value = getGamepadAxis(gamepad_axis);
         }
@@ -167,8 +166,8 @@ double InputEntity::getAxis(Axis axis) const {
         return 0;
     }
 
-    auto virtual_axis_iter = virtual_axis_map.find(axis);
-    if (virtual_axis_iter != virtual_axis_map.end()) {
+    auto virtual_axis_iter = VIRTUAL_AXIS_MAP.find(axis);
+    if (virtual_axis_iter != VIRTUAL_AXIS_MAP.end()) {
         auto virtual_axes = virtual_axis_iter->second;
 
         // use value from relevant virtual axes with maximal value
@@ -195,12 +194,12 @@ void InputEntity::updateDevices() {
     }
 }
 
-const std::string &InputEntity::getEventDisplayName(Event event) const {
-    return event_display_names.at(event);
+const std::string &InputEntity::getEventDisplayName(Event event) {
+    return EVENT_DISPLAY_NAMES.at(event);
 }
 
-const std::string &InputEntity::getAxisDisplayName(Axis axis) const {
-    return axis_display_names.at(axis);
+const std::string &InputEntity::getAxisDisplayName(Axis axis) {
+    return AXIS_DISPLAY_NAMES.at(axis);
 }
 
 std::string InputEntity::getInputInfo() const {
@@ -232,7 +231,7 @@ InputEntity::InputEntity(InputEntity::InputType input_type, int _gamepad_num) {
     setInputType(input_type, _gamepad_num);
 }
 
-bool InputEntity::getMouseEvent(ButtonEvent event) const {
+bool InputEntity::getMouseEvent(ButtonEvent event) {
     switch (event.keyPressType) {
     case PRESSED:
         return IsMouseButtonPressed(event.key);
@@ -247,4 +246,4 @@ bool InputEntity::getMouseEvent(ButtonEvent event) const {
     }
 }
 
-bool InputEntity::hasKinect() const { throw std::exception(); }
+bool InputEntity::hasKinect() { throw std::exception(); }

@@ -109,7 +109,7 @@ Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
  * @param r2
  */
 void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
-                   Radius r1, Radius r2);
+                   Radius r1, Radius r2, float dt);
 
 void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
                        Radius r1, Radius r2);

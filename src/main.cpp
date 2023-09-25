@@ -18,7 +18,7 @@
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
 // callback for a new position of any hand
-void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext *pContext,
+void XN_CALLBACK_TYPE onPointUpdate(const XnVHandPointContext *pContext,
                                     void *cxt) {
     printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X,
            pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);
@@ -37,7 +37,7 @@ int main() {
     std::cout << "Kinect is active" << std::endl;
 #endif
 
-    graphics::init_render_system(world);
+    graphics::initRenderSystem(world);
 
     world.import <PhysicSystems>();
     world.import <InputSystems>();
@@ -62,6 +62,7 @@ void mainLoop(flecs::world &world) {
 
     while (app_info->isRunning) {
         float dt = GetFrameTime();
+        std::cout << "Frame Rate:" << 1 / dt << std::endl;
         world.progress(dt);
     }
 }

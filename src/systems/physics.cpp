@@ -1,9 +1,6 @@
 #include "physics.h"
-#include "../components/input.h"
-#include "../components/mountain.h"
 #include "../components/render_components.h"
 #include "flecs.h"
-#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -12,7 +9,7 @@ using namespace physics;
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
     float_type x_max = p.x + r.value;
-    auto interval = m->getRelevantMountainSection(x_min, x_max);
+    auto interval = Mountain::getRelevantMountainSection(x_min, x_max);
 
     auto closest_index = interval.start_index;
     float_type closest_distance =
@@ -95,15 +92,17 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
-                            Velocity &v2, const Radius R1, const Radius R2) {
+                            Velocity &v2, const Radius R1, const Radius R2,
+                            float dt) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
-    float_type radius_sum = R1.value + R2.value;
+
+    p1 -= v1 * dt;
+    p2 -= v2 * dt;
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
     float_type distance_sq = pos_diff_vector * pos_diff_vector;
-    Vector normal_vector = pos_diff_vector / (distance_sq + EPSILON);
 
     // Velocity Update
     float_type total_mass = m1 + m2;
@@ -111,14 +110,6 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
-
-    // Position update using new velocities
-    float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
-    float_type overlap1 = overlap * m2 / (m1 + m2);
-    float_type overlap2 = overlap * m1 / (m1 + m2);
-
-    p1 += normal_vector * overlap1;
-    p2 -= normal_vector * overlap2;
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
@@ -127,8 +118,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
         for (int j = i + 1; j < it.count(); j++) {
             if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
-                              velocities[j], radius[i],
-                              radius[j]); // TODO: Optimization?
+                              velocities[j], radius[i], radius[j],
+                              it.delta_time()); // TODO: Optimization?
             }
         }
     }
@@ -142,7 +133,9 @@ void physics::updateRockState(flecs::iter it, Position *positions,
 
 void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
-        velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        if (velocities[i].length() <= 100) {
+            velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        }
     }
 }
 
@@ -252,7 +245,7 @@ void physics::checkXMovement(Velocity *velocities,
                 PlayerMovement::MovementState::MOVING;
         }
     }
-    velocities[0].x = NORMAL_SPEED * x_factor;
+    velocities[0].x = NORMAL_SPEED * (float_type)x_factor;
 }
 
 void physics::checkAerialState(flecs::iter it, Velocity *velocities,
@@ -281,7 +274,7 @@ void physics::checkDirection(Velocity *velocities,
 
 float physics::getYPosFromX(const flecs::world &world, float x) {
     auto mountain = world.get_mut<Mountain>();
-    auto interval = mountain->getRelevantMountainSection(x, x);
+    auto interval = Mountain::getRelevantMountainSection(x, x);
     std::size_t closest_indices[] = {interval.start_index, interval.end_index};
     auto closest_left_distance =
         std::abs(mountain->getVertex(interval.start_index).x - x);

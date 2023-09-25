@@ -40,3 +40,4 @@ class Inventory {
         selected_slot = (selected_slot + offset + slotCount()) % slotCount();
     }
 };
+#endif
