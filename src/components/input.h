@@ -61,7 +61,7 @@ struct VirtualAxis {
 
 // map containing strings with the english display names for the input
 // events
-const std::unordered_map<Event, std::string> event_display_names{
+const std::unordered_map<Event, std::string> EVENT_DISPLAY_NAMES{
     {JUMP, "Jump"},           {DUCK, "Duck"},
     {ITEM_PICK, "Pick item"}, {ITEM_USE, "Use item"},
     {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},

@@ -196,7 +196,7 @@ void InputEntity::updateDevices() {
 }
 
 const std::string &InputEntity::getEventDisplayName(Event event) const {
-    return event_display_names.at(event);
+   // return event_display_names.at(event);
 }
 
 const std::string &InputEntity::getAxisDisplayName(Axis axis) const {
