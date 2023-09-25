@@ -35,6 +35,9 @@ struct AudioComponent {
 struct BillboardComponent {
     Vector3 billUp;
     Vector3 billPositionStatic;
+    int width;
+    int height;
+    HANDLE resourceHandle;
 };
 
 typedef Camera2D Camera2DComponent;

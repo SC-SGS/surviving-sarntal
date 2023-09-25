@@ -39,7 +39,6 @@ Material matInstances;
 int loc_time;
 bool regenerateTerrain = true;
 
-
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -209,9 +208,9 @@ void render_system(flecs::iter &iter) {
                     }
                 });
 
-                //auto mountain = world.get_mut<Mountain>();
-                //for (int i = interval.start_index; i < interval.end_index;
-                //     i++) {
+                // auto mountain = world.get_mut<Mountain>();
+                // for (int i = interval.start_index; i < interval.end_index;
+                //      i++) {
 
                 //    Vector2 control_point_0{mountain->getVertex(i).x,
                 //                            -mountain->getVertex(i).y};
@@ -228,23 +227,24 @@ void render_system(flecs::iter &iter) {
                 //}
 
                 //// Draw the control points and lines
-                //if (DEBUG) {
-                //    for (int i = interval.start_index; i < interval.end_index;
-                //         i++) {
-                //        Vector2 point = {mountain->getVertex(i).x,
-                //                         -mountain->getVertex(i).y};
+                // if (DEBUG) {
+                //     for (int i = interval.start_index; i <
+                //     interval.end_index;
+                //          i++) {
+                //         Vector2 point = {mountain->getVertex(i).x,
+                //                          -mountain->getVertex(i).y};
 
                 //        DrawCircleV(point, 5,
                 //                    BLUE); // Draw control points as circles
                 //    }
                 //}
 
-               /* flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
-                    world.filter<Position, CircleShapeRenderComponent>();
+                /* flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                     world.filter<Position, CircleShapeRenderComponent>();
 
-                cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawCircleLines(p.x, -p.y, s.radius, GREEN);
-                });*/
+                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                     DrawCircleLines(p.x, -p.y, s.radius, GREEN);
+                 });*/
 
                 /*flecs::filter<Position, RectangleShapeRenderComponent>
                     rectangle_q =
@@ -265,42 +265,27 @@ void render_system(flecs::iter &iter) {
 
                 static float rotZ = 90;
 
-                /*if (IsKeyDown(KEY_D))
-                    debugCamera3D.position.x += 10 * iter.delta_time();
-                else if (IsKeyDown(KEY_A))
-                    debugCamera3D.position.x -= 10 * iter.delta_time();
-                else if (IsKeyDown(KEY_E))
-                    debugCamera3D.position.z -= 10 * iter.delta_time();
-                else if (IsKeyDown(KEY_Q))
-                    debugCamera3D.position.z += 10 * iter.delta_time();
-                else if (IsKeyDown(KEY_W))
-                    debugCamera3D.position.y += 10 * iter.delta_time();
-                else if (IsKeyDown(KEY_S))
-                    debugCamera3D.position.y -= 10 * iter.delta_time();*/
-
-                /*if (IsKeyDown(KEY_LEFT))
-                    rotZ += 2 * iter.delta_time();
-                else if (IsKeyDown(KEY_RIGHT))
-                    rotZ -= 2 * iter.delta_time();*/
-
                 debugCamera3D.position.x = camera->target.x - 200;
                 debugCamera3D.position.z = -camera->target.y;
+                //debugCamera3D.position.x = 0;
+                //debugCamera3D.position.y = 0;
+                //debugCamera3D.position.z = 0;
 
-                debugCamera3D.target.x = debugCamera3D.position.x;//+cosf(rotZ);
-                debugCamera3D.target.y = debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
+                debugCamera3D.target.x =
+                    debugCamera3D.position.x; //+cosf(rotZ);
+                debugCamera3D.target.y =
+                    debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
 
-                //debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
-                
+                // debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
             }
 
             if (regenerateTerrain) {
                 auto test = generate_chunk_mesh(world);
                 model = LoadModelFromMesh(test);
 
-                Shader shader_hill =
-                    LoadShader("../assets/shaders/hill.vert",
-                               "../assets/shaders/hill.frag");
+                Shader shader_hill = LoadShader("../assets/shaders/hill.vert",
+                                                "../assets/shaders/hill.frag");
                 model.materials[0].shader = shader_hill;
                 model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture =
                     gradientTex;
@@ -310,43 +295,33 @@ void render_system(flecs::iter &iter) {
 
             BeginMode3D(debugCamera3D);
             {
-                //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
-                //DrawCube({-20, 0}, 10, 10, 10, RED);
+                // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                // DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
+                // DrawCube({-20, 0}, 10, 10, 10, RED);
 
-                flecs::filter<Position, SpriteComponent, BillboardComponent> q =
-                    world.filter<Position, SpriteComponent,
-                                 BillboardComponent>();
+                flecs::filter<Position, BillboardComponent> q =
+                    world.filter<Position, BillboardComponent>();
 
-                q.each([&](Position &p, SpriteComponent &s,
-                           BillboardComponent &b) {
-                    if (s.resourceHandle != NULL_HANDLE) {
+                q.each([&](Position &p, BillboardComponent &b) {
+                    if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.Get(
-                            s.resourceHandle);
+                            b.resourceHandle);
 
                         Rectangle sourceRec = {
                             0.0f, 0.0f, (float)texture.width,
                             (float)texture.height}; // part of the texture used
 
                         Rectangle destRec = {
-                            p.x, p.y, static_cast<float>(s.width),
+                            p.x, p.y, static_cast<float>(b.width),
                             static_cast<float>(
-                                s.height)}; // where to draw texture
+                                b.height)}; // where to draw texture
                         ;
-                        DrawBillboardRec(
-                            debugCamera3D, texture, sourceRec,
-                            b.billPositionStatic,
-                            Vector2{static_cast<float>(s.width),
-                                    static_cast<float>(s.height)},
-                            WHITE); // vectors and camera need to be adapted
 
-                        /*DrawBillboardPro(
-                            debugCamera3D, texture, sourceRec,
-                                         Vector3{p.x, p.y, 0}, b.billUp,
-                            Vector2{static_cast<float>(s.width),
-                                    static_cast<float> (s.height)},
-                            Vector2 origin, float rotation, Color tint);
-                    */
+                        DrawBillboardPro(debugCamera3D, texture, sourceRec,
+                                         Vector3{800, -500.0f, 0}, b.billUp,
+                                         Vector2{static_cast<float>(b.width),
+                                                 static_cast<float>(b.width)},
+                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
                     }
                 });
 
@@ -360,18 +335,18 @@ void render_system(flecs::iter &iter) {
                                   MAX_INSTANCES);
                 rlEnableBackfaceCulling();
 
-
                 // draw rocks
                 flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
                     world.filter<Position, CircleShapeRenderComponent>();
 
                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawSphere({p.x- s.radius/2, -s.radius/2, p.y-s.radius/2}, s.radius, GREEN);
+                    DrawSphere(
+                        {p.x - s.radius / 2, -s.radius / 2, p.y - s.radius / 2},
+                        s.radius, GREEN);
                 });
 
-
                 auto mountain = world.get_mut<Mountain>();
-                
+
                 // draw player
                 flecs::filter<Position, RectangleShapeRenderComponent>
                     rectangle_q =
@@ -382,7 +357,8 @@ void render_system(flecs::iter &iter) {
                         /*DrawCube({p.x, -0.5, p.y},
                                  s.width, 1.0,
                                  s.height, BLUE);*/
-                        DrawCube({p.x, -0.5, p.y - s.height/2}, s.width, 1.0, s.height, RED);
+                        DrawCube({p.x, -0.5, p.y - s.height / 2}, s.width, 1.0,
+                                 s.height, RED);
                         /*DrawCube({p.x - s.width / 4, 0, p.y - s.height / 4},
                                  s.width / 2, 1.0,
                                  s.height / 2, BLUE);*/
@@ -390,11 +366,11 @@ void render_system(flecs::iter &iter) {
             }
             EndMode3D();
 
-            //BeginMode2D(*camera);
+            // BeginMode2D(*camera);
             //{
-            //    auto mountain = world.get_mut<Mountain>();
-            //    for (int i = interval.start_index; i < interval.end_index;
-            //         i++) {
+            //     auto mountain = world.get_mut<Mountain>();
+            //     for (int i = interval.start_index; i < interval.end_index;
+            //          i++) {
 
             //        Vector2 control_point_0{mountain->getVertex(i).x,
             //                                -mountain->getVertex(i).y};
@@ -409,7 +385,7 @@ void render_system(flecs::iter &iter) {
             //                            control_point_2, control_point_3, 5,
             //                            RED);
             //    }
-            //    
+            //
             //    // Draw the control points and lines
             //    if (DEBUG) {
             //        for (int i = interval.start_index; i < interval.end_index;
@@ -423,7 +399,8 @@ void render_system(flecs::iter &iter) {
             //    }
             //    flecs::filter<Position, RectangleShapeRenderComponent>
             //        rectangle_q =
-            //            world.filter<Position, RectangleShapeRenderComponent>();
+            //            world.filter<Position,
+            //            RectangleShapeRenderComponent>();
 
             //    rectangle_q.each(
             //        [&](Position &p, RectangleShapeRenderComponent &s) {
@@ -431,7 +408,7 @@ void render_system(flecs::iter &iter) {
             //                          (int)s.height, RED);
             //        });
             //}
-            //EndMode2D();
+            // EndMode2D();
         }
         EndDrawing();
     }
@@ -601,23 +578,21 @@ void init_render_system(flecs::world &world) {
         });
 
     // billboard for 3d camera
-    // auto billboard = world.entity("Billboard").set([&](BillboardComponent &c)
-    // {
-    //    c = {0};
-    //    c.billUp = {0.0f, 1.0f, 0.0f};
-    //    c.billPositionStatic = {0.0f, 2.0f, 0.0f};
-    //}) .set([&](SpriteComponent &c) {
-    //    c = {0};
-    //    c.resourceHandle = world.get_mut<Resources>()->textures.Load(
-    //        LoadTextureFromImage(verticalGradient));
-    //    c.width = 100;
-    //    c.height = 100;
-    //    })
-    //    .set(([&](Position &c) {
-    //        c.x = 0;
-    //        c.y = 0;
-
-    //}));
+    auto billboard = world.entity("Billboard")
+                         .set([&](BillboardComponent &c) {
+                             c = {0};
+                             c.billUp = {0.0f, 0.0f, 1.0f};
+                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     "../assets/texture/raylib_256x256.png");
+                             c.width = 100;
+                             c.height = 100;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 600;
+                             c.y = 0;
+                         }));
 
     Vector2 min;
     Vector2 max;
@@ -679,19 +654,16 @@ void init_render_system(flecs::world &world) {
 
     debugCamera3D = {0};
     debugCamera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
-    debugCamera3D.target = {0.0f, 1.0f, 0.0f};     // Camera looking at point
+    debugCamera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
     debugCamera3D.up = {0.0f, 0.0f,
                         1.0f};  // Camera up vector (rotation towards target)
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
     debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
 
-
     HANDLE test_texture = world.get_mut<Resources>()->textures.Load(
         "../assets/texture/grass.png"); // LoadTexture("../assets/texture/grass.png");
 
-
     world.get_mut<Resources>()->textures.Free(test_texture);
-
 }
 
 Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
@@ -715,16 +687,15 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh(flecs::world &world) {
     std::cout << "gen chunk" << std::endl;
-    //world.get_mut<Mountain>()->generateNewChunk();
-
+    // world.get_mut<Mountain>()->generateNewChunk();
 
     auto interval =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
-    //interval.end_index =
-    //    std::min(interval.end_index,
-    //             interval.start_index +
-    //                 1500); // TODO remove (last vertices are wrong...)
+    // interval.end_index =
+    //     std::min(interval.end_index,
+    //              interval.start_index +
+    //                  1500); // TODO remove (last vertices are wrong...)
 
     int terrainVertexCount = interval.end_index - interval.start_index;
 
