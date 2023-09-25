@@ -94,15 +94,17 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                 mountain->getIndexIntervalOfEntireMountain().start_index)
             .x};
     constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{1.0};
-    // std::cout << "Position killbar: " << killBar->x << " left point mountain:
-    // " << leftest_point_of_mountain << std::endl;
+    // std::cout << "Position killbar: " << killBar->x << " left point
+    // mountain:"
+    //<< leftest_point_of_mountain << std::endl;
     if (leftest_point_of_mountain < current_left_edge_screen -
                                         Mountain::CHUNK_WIDTH -
                                         CHUNK_DESTROY_BUFFER_CONSTANT) {
         // leftest_point_of_mountain =
         // mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).x;
-        // std::cout << "Position killbar: " << killBar->x << " left point
-        // mountain: " << leftest_point_of_mountain << std::endl;
+        std::cout << "Position killbar: " << killBar->x
+                  << " left point mountain: " << leftest_point_of_mountain
+                  << std::endl;
         mountain->generateNewChunk();
         // std::cout << "chunk generated" << std::endl;
     }
@@ -132,7 +134,10 @@ void initGameLogic(flecs::world &world) {
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
-        .set<graphics::CircleShapeRenderComponent>({HIKER_HEIGHT})
+        .set<graphics::RectangleShapeRenderComponent>({
+            HIKER_WIDTH,
+            HIKER_HEIGHT,
+        })
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({});
