@@ -249,7 +249,7 @@ void physics::checkXMovement(Velocity *velocities,
                 PlayerMovement::MovementState::MOVING;
         }
     }
-    velocities[0].x = NORMAL_SPEED * (float_type) x_factor;
+    velocities[0].x = NORMAL_SPEED * (float_type)x_factor;
 }
 
 void physics::checkAerialState(flecs::iter it, Velocity *velocities,

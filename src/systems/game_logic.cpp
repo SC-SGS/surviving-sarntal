@@ -118,8 +118,9 @@ void spawnRocks(flecs::iter it) {
         fmod(GetTime(), ROCK_TIME_PERIOD) > 1.98) {
         it.world()
             .entity()
-            .set<Position>({camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
-                            -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
+            .set<Position>(
+                {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
+                 -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
             .set<Radius>({10.})
             .add<Rock>()

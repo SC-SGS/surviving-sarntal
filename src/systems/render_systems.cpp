@@ -41,8 +41,7 @@ void regenerateGradientTexture(int screenW, int screenH) {
     UnloadImage(vertical_gradient);
 }
 
-float getTerrainHeight(float, float y, float ridge_height,
-                       float = 0.0f) {
+float getTerrainHeight(float, float y, float ridge_height, float = 0.0f) {
     const float SCALE = 0.01f;
     float falloff = -(y * y) * SCALE;
     return (ridge_height + falloff);
@@ -233,8 +232,8 @@ void renderSystem(flecs::iter &iter) {
                     world.filter<Position, CircleShapeRenderComponent>();
 
                 circle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawCircle(static_cast<int>(p.x),
-                                    static_cast<int>(-p.y), s.radius, ORANGE);
+                    DrawCircle(static_cast<int>(p.x), static_cast<int>(-p.y),
+                               s.radius, ORANGE);
                 });
 
                 flecs::filter<Position, RectangleShapeRenderComponent>
