@@ -100,8 +100,8 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
 
-    p1 -= v1*dt;
-    p2 -= v2*dt;
+    p1 -= v1 * dt;
+    p2 -= v2 * dt;
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
@@ -113,7 +113,6 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
-
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
@@ -122,8 +121,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
         for (int j = i + 1; j < it.count(); j++) {
             if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
-                              velocities[j], radius[i],
-                              radius[j], it.delta_time()); // TODO: Optimization?
+                              velocities[j], radius[i], radius[j],
+                              it.delta_time()); // TODO: Optimization?
             }
         }
     }
