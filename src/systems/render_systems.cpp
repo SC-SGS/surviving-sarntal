@@ -37,7 +37,6 @@ Texture2D grass_texture;
 std::vector<Matrix> transforms;
 Material matInstances;
 int loc_time;
-bool regenerateTerrain = true;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -277,7 +276,8 @@ void render_system(flecs::iter &iter) {
                 // debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
             }
 
-            if (regenerateTerrain) {
+            if (s_regenerateTerrain) {
+                std::cout << "---> regen terrain" << std::endl;
                 auto test = generate_chunk_mesh(world);
                 model = LoadModelFromMesh(test);
 
@@ -290,7 +290,7 @@ void render_system(flecs::iter &iter) {
                 /*int loc = GetShaderLocation(shader, "hilltex");
                 SetShaderValueTexture(shader, loc, gradientTex);*/
 
-                regenerateTerrain = false;
+                s_regenerateTerrain = false;
             }
 
             BeginMode3D(debugCamera3D);
@@ -416,6 +416,7 @@ void render_system(flecs::iter &iter) {
 }
 
 void init_render_system(flecs::world &world) {
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
 
@@ -592,7 +593,7 @@ void init_render_system(flecs::world &world) {
                          })
                          .set(([&](Position &c) {
                              c.x = 800;
-                             c.y = 0;
+                             c.y = 50;
                          }));
 
     Vector2 min;
@@ -687,11 +688,14 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh(flecs::world &world) {
-    std::cout << "gen chunk" << std::endl;
+    std::cout << "graphics: gen chunk" << std::endl;
     // world.get_mut<Mountain>()->generateNewChunk();
 
-    auto interval =
+    auto interval2 =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
+
+    auto interval =
+        world.get_mut<Mountain>()->getLatestChunk();
 
     // interval.end_index =
     //     std::min(interval.end_index,

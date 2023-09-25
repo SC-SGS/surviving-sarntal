@@ -11,6 +11,9 @@ const int SCREEN_HEIGHT = 900;
 
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
+static bool s_regenerateTerrain = true;
+
+struct GenChunkEvent {};
 
 void init_render_system(flecs::world &world);
 void render_system(flecs::iter &iter);

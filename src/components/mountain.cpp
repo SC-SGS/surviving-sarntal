@@ -65,7 +65,7 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
 }
 
 void Mountain::generateNewChunk() {
-    // std::cout << "Chunk generated" << std::endl;
+    std::cout << "Chunk generated" << std::endl;
     generateSlope();
     generateTerrainRecursive(
         start_of_circular_array,
@@ -104,7 +104,7 @@ IndexInterval Mountain::getLatestChunk() {
     returnvalue.start_index = (start_of_circular_array -
                                NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) %
                               NUMBER_OF_VERTICES;
-    if (returnvalue.start_index > returnvalue.start_index) {
+    if (returnvalue.start_index > returnvalue.end_index) {
         returnvalue.end_index += NUMBER_OF_VERTICES;
     }
     return returnvalue;
