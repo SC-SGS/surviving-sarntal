@@ -20,7 +20,7 @@ Mountain::Mountain() {
     for (int i = 0; i < NUMBER_OF_VERTICES / NUM_SECTIONS_PER_CHUNK; i++) {
         generateTerrainRecursive(
             start_of_circular_array,
-            start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 50);
+            start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 200);
         start_of_circular_array =
             (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) %
             NUMBER_OF_VERTICES;

@@ -758,7 +758,6 @@ void destroy() {
     UnloadTexture(gradient_tex);
     // UnloadModel(model);
 
-    CloseWindow();
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);

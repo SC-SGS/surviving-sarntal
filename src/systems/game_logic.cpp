@@ -119,8 +119,9 @@ void spawnRocks(flecs::iter it) {
 
     if ((GetTime() - rock_spawn_time) > 0) {
         rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
-        double r = ((double) std::rand() / (RAND_MAX));
-        float radius = ((float) r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+        double r = ((double)std::rand() / (RAND_MAX));
+        float radius =
+            ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
         it.world()
             .entity()
@@ -130,14 +131,14 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({20.});
+            .set<graphics::CircleShapeRenderComponent>({radius});
     }
 }
 
 void initGameLogic(flecs::world &world) {
     world.entity()
         .add<Player>()
-        .set<Position>({200., 200.})
+        .set<Position>({200., physics::getYPosFromX(world, 200.)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
