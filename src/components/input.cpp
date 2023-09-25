@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "../utils/game_constants.h"
 
 constexpr int MAX_GAMEPADS = 8;
 
@@ -121,7 +122,7 @@ bool InputEntity::getEvent(Event event) const {
             auto gamepad_action = gamepad_action_iter->second;
             active = getGamepadEvent(gamepad_action);
         }
-    } else if (current_input_type == KINECT && hasKinect()) {
+    } else if (current_input_type == KINECT) {
         // Do something here
     } else if (current_input_type == MOUSE_KEYBOARD) {
         auto keyboard_action_iter = KEYBOARD_KEY_MAP.find(event);
@@ -183,6 +184,11 @@ double InputEntity::getAxis(Axis axis) const {
 void InputEntity::updateDevices() {
     // if something must be updated each frame
 
+    // use kinect if connected
+    if (kinect_mode) {
+        current_input_type = KINECT;
+        return;
+    }
     // update gamepad id
     gamepad_id_raylib = findRaylibId(gamepad_num);
 
@@ -245,5 +251,3 @@ bool InputEntity::getMouseEvent(ButtonEvent event) {
         return false;
     }
 }
-
-bool InputEntity::hasKinect() { throw std::exception(); }
