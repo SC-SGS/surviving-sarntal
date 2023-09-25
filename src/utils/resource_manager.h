@@ -2,13 +2,15 @@
 
 #include "flecs.h"
 #include "raylib.h"
-#include "string"
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
 namespace graphics {
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
+
+constexpr std::hash<std::string> hasher{};
 
 // TODO, do not use yet
 template <typename T> class ResourceManager {
@@ -16,7 +18,7 @@ template <typename T> class ResourceManager {
   public:
     HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
-        HANDLE hash = std::hash(path);
+        HANDLE hash = hasher(path);
 
         // check if resource was already loaded before
         auto it = res.find(hash);

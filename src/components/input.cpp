@@ -110,7 +110,7 @@ double InputEntity::getVirtualAxis(VirtualAxis axis) const {
 
 int InputEntity::getGamepadId() const { return gamepad_id_raylib; }
 
-InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0){};
+InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0) {}
 InputEntity::~InputEntity() = default;
 
 bool InputEntity::getEvent(Event event) const {
@@ -196,7 +196,7 @@ void InputEntity::updateDevices() {
 }
 
 const std::string &InputEntity::getEventDisplayName(Event event) const {
-   // return event_display_names.at(event);
+    return EVENT_DISPLAY_NAMES.at(event);
 }
 
 const std::string &InputEntity::getAxisDisplayName(Axis axis) {
