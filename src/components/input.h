@@ -204,7 +204,7 @@ class InputEntity {
 
     static const std::string &getAxisDisplayName(Axis axis);
 
-    static const std::string &getEventDisplayName(Event event) ;
+    static const std::string &getEventDisplayName(Event event);
 
     /**
      * gets formatted info about currently provided events and axis inputs
