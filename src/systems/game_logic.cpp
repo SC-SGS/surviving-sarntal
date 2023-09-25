@@ -4,10 +4,10 @@
 #include "../components/player.h"
 #include "../components/render_components.h"
 #include "iostream"
+#include "physics.h"
 #include "raylib.h"
 #include "render_systems.h"
 #include <cmath>
-#include "physics.h"
 
 float rock_spawn_time = 0;
 
@@ -128,7 +128,6 @@ void spawnRocks(flecs::iter it) {
             .add<Rock>()
             .set<graphics::CircleShapeRenderComponent>({20.});
     }
-
 }
 
 void initGameLogic(flecs::world &world) {
