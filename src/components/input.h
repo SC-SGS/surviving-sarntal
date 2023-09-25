@@ -121,9 +121,9 @@ class InputEntity {
     enum InputType { GAMEPAD, MOUSE_KEYBOARD, KINECT };
 
   private:
-    InputType current_input_type;
+    InputType current_input_type = {};
     // number of the gamepad to use (if input type is Gamepad)
-    int gamepad_num;
+    int gamepad_num = 0;
     // the gamepad id in raylib (if input type is Gamepad)
     int gamepad_id_raylib = NO_GAMEPAD_ID;
 
@@ -139,14 +139,14 @@ class InputEntity {
      * @param event
      * @return
      */
-    bool getKeyboardEvent(ButtonEvent event) const;
+    static bool getKeyboardEvent(ButtonEvent event) ;
 
     /**
      * checks for mouse button events
      * @param event
      * @return
      */
-    bool getMouseEvent(ButtonEvent event) const;
+    static bool getMouseEvent(ButtonEvent event) ;
 
     /**
      * reads the value of a gamepad axis (stick or trigger buttons)
@@ -171,7 +171,7 @@ class InputEntity {
      * checks if kinect is selected for input and available
      * @return
      */
-    bool hasKinect() const;
+    static bool hasKinect() ;
 
     /**
      * checks if a virtual axis should be used with the currently selected input
@@ -204,7 +204,7 @@ class InputEntity {
 
     ~InputEntity();
 
-    const std::string &getAxisDisplayName(Axis axis) const;
+    static const std::string &getAxisDisplayName(Axis axis) ;
 
     const std::string &getEventDisplayName(Event event) const;
 
