@@ -40,8 +40,7 @@ build-job:       # This job runs in the build stage, which runs first.
 clang-tidy-validate:
   stage: validate-tidy
   script:
-    - clang-tidy-17 src/main.cpp -p cmake-build-debug/
-    - for f in $(find src -name '*.cpp' -or -name '*.h'); do clang-tidy-17 $f -p cmake-build-debug; done;
+    - for f in $(find src -name '*.cpp' -or -name '*.h'); do clang-tidy-17 $f -p cmake-build-debug ; done;
   dependencies:
     - build-job
 
