@@ -134,7 +134,19 @@ void spawnRocks(flecs::iter it) {
     }
 }
 
+void mountainLoadChunks(const flecs::world& world) {
+    Mountain *mountain = world.get_mut<Mountain>();
+    for (std::size_t i{0};
+         i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK;
+         i++) {
+        mountain->generateNewChunk();
+        graphics::generate_chunk_mesh(world);
+        }
+}
+
 void initGameLogic(flecs::world &world) {
+    mountainLoadChunks(world);
+
     world.entity()
         .add<Player>()
         .set<Position>({200., 200.})
