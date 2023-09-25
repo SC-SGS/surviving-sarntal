@@ -30,7 +30,9 @@ int rotation = 0;
 bool useDebugCamera;
 Camera2D debugCamera;
 Camera3D debugCamera3D;
-Model model;
+const int NUM_CHUNKS = 25;
+int next_mountain_replace = 0;
+std::array<Model, NUM_CHUNKS> mountain_model;
 Shader shader;
 Mesh grass_mesh;
 Texture2D grass_texture;
@@ -55,10 +57,6 @@ float getTerrainHeight(float x, float y, float ridge_height,
 
     return (ridge_height + falloff);
 }
-
-
-
-
 
 void handleWindow(flecs::world &world) {
     if (IsKeyPressed(KEY_F11)) {
@@ -171,8 +169,8 @@ void render_system(flecs::iter &iter) {
         //        debugCamera.rotation++;
         //}
 
-        auto interval =
-            world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
+        //auto interval =
+        //    world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
         BeginDrawing();
         {
@@ -308,28 +306,15 @@ void render_system(flecs::iter &iter) {
                 debugCamera3D.target.z = debugCamera3D.position.z;
             }
 
-            if (s_regenerateTerrain) {
-                std::cout << "---> regen terrain" << std::endl;
-                auto test = generate_chunk_mesh(world);
-                model = LoadModelFromMesh(test);
-
-                /*Shader shader_hill =
-                    LoadShader("../assets/shaders/hill.vert",
-                               "../assets/shaders/hill.frag");
-                model.materials[0].shader = shader_hill;*/
-                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
-
-                /*int loc = GetShaderLocation(shader, "hilltex");
-                SetShaderValueTexture(shader, loc, gradientTex);*/
-
-                s_regenerateTerrain = false;
-            }
+            
 
             BeginMode3D(debugCamera3D);
             {
                 //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);// GREEN);
+                for (int i = 0; i < NUM_CHUNKS; i++) {
+                    DrawModel(mountain_model[i], {0.0, 0.0}, 1.0f, WHITE); // GREEN);
                 //DrawCube({-20, 0}, 10, 10, 10, RED);
+                }
 
                 flecs::filter<Position, BillboardComponent> q =
                     world.filter<Position, BillboardComponent>();
@@ -675,8 +660,7 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh(flecs::world &world) {
-    std::cout << "graphics: gen chunk" << std::endl;
+void generate_chunk_mesh(flecs::world &world) {
     // world.get_mut<Mountain>()->generateNewChunk();
 
     auto interval2 =
@@ -685,12 +669,18 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     auto interval =
         world.get_mut<Mountain>()->getLatestChunk();
 
+    std::cout << "graphics: gen chunk: " << interval.start_index
+              << ", "<< interval.end_index << std::endl;
+
+    size_t start_index = interval.start_index-1;
+    size_t end_index = interval.end_index;
+
     // interval.end_index =
     //     std::min(interval.end_index,
     //              interval.start_index +
     //                  1500); // TODO remove (last vertices are wrong...)
 
-    int terrainVertexCount = interval.end_index - interval.start_index;
+    int terrainVertexCount = end_index - start_index;
 
     int levels = 10;
     int levelsAtTheBack = 0; // number terrain layers behind the ridge
@@ -702,18 +692,18 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     std::vector<float> normals;
 
     // for (int i = interval.start_index; i < interval.end_index-1; i++) {
-    for (int i = interval.start_index; i < interval.end_index - 1; i++) {
+    for (int i = start_index; i < end_index - 1; i++) {
         int currentDepth = -levelsAtTheBack * 0.1;
 
         const float x_scale = 0.1f;
         const float y_scale = 15.0f;
 
-        float maxX = (interval.end_index - 1 - interval.start_index) * x_scale;
+        float maxX = (end_index - 1 - start_index) * x_scale;
         float maxY = levels * y_scale;
 
         Vector3 v0;
         auto vertex =
-            world.get_mut<Mountain>()->getVertex(interval.start_index + i);
+            world.get_mut<Mountain>()->getVertex(i);
         v0.x = vertex.x;
         v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
@@ -723,7 +713,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
 
         Vector3 v1;
         auto vertex2 =
-            world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
+            world.get_mut<Mountain>()->getVertex(i + 1);
         // vertex2.x = vertex2.x * 0.01f;
         // vertex2.y = vertex2.y * 0.01f;
         //  getTerrainHeight(vertex.x, currentDepth, vertex.y);
@@ -731,6 +721,18 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
         v1.y = currentDepth;
 
+
+        if(i == start_index) {
+            std::cout << "START IIIIIII " << v0.x << ", "
+                      << start_index
+                      << std::endl;
+        }
+
+        if (interval.end_index - 2 == i)
+        {
+            std::cout << "END IIIIIII " << v1.x << ", " << end_index
+                      << std::endl;
+        }
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
             v2.y -= y_scale;
@@ -801,6 +803,8 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
 
+
+
             // grass pos
             if (level > 2 && rand() % 15 == 0 /* && level < levels - 1 &&
                 i < interval.end_index - 20*/) {
@@ -842,7 +846,48 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
     UploadMesh(&mesh, false);
 
-    return mesh;
+    //
+    if (mountain_model[next_mountain_replace].meshes != nullptr) {
+        for (int i = 0; i < mountain_model[next_mountain_replace].meshCount; i++) {
+            //rlUnloadVertexBuffer(mountain_model[next_mountain_replace].meshes[0].vaoId);
+            rlUnloadVertexArray(
+                mountain_model[next_mountain_replace].meshes[i].vaoId);
+            if (mesh.vboId != NULL)
+                for (int j = 0; j < 7; j++)
+                    rlUnloadVertexBuffer(mountain_model[next_mountain_replace]
+                                             .meshes[i]
+                                             .vboId[j]);
+        }
+    
+    }
+
+
+
+    //UnloadMesh();
+
+    std::cout << "---> regen terrain" << std::endl;
+    mountain_model[next_mountain_replace] =
+        LoadModelFromMesh(mesh);
+
+    //UnloadModel(mountain_model[next_mountain_replace]);// since q
+
+    /*Shader shader_hill =
+        LoadShader("../assets/shaders/hill.vert",
+                    "../assets/shaders/hill.frag");
+    model.materials[0].shader = shader_hill;*/
+    mountain_model[next_mountain_replace]
+        .materials[0]
+        .maps[MATERIAL_MAP_DIFFUSE]
+        .texture =
+        gradientTex;
+
+    next_mountain_replace = (next_mountain_replace + 1) % NUM_CHUNKS;
+
+    /*int loc = GetShaderLocation(shader, "hilltex");
+    SetShaderValueTexture(shader, loc, gradientTex);*/
+
+    
+
 }
 
 void destroy() {
