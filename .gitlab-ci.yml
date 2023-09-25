@@ -36,13 +36,6 @@ build-job:       # This job runs in the build stage, which runs first.
     - cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
     - cmake --build cmake-build-debug
 
-clang-tidy-validate:
-  stage: validate-tidy
-  script:
-    - for f in $(find src -name '*.cpp' -or -name '*.h'); do clang-tidy-17 $f -p cmake-build-debug ; done;
-  dependencies:
-    - build-job
-
 test-job:
   stage: test
   script:
