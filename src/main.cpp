@@ -37,7 +37,7 @@ int main() {
     std::cout << "Kinect is active" << std::endl;
 #endif
 
-    graphics::init_render_system(world);
+    graphics::initRenderSystem(world);
 
     world.import <PhysicSystems>();
     world.import <InputSystems>();
