@@ -8,6 +8,7 @@
 #include <flecs.h>
 #include <iostream>
 #include "utils/game_constants.h"
+#include <chrono>
 
 #ifdef kinect
     #include "components/kinect_handler.h"
@@ -19,6 +20,7 @@ void mainLoop(flecs::world &world);
 bool kinect_mode;
 
 int main() {
+    using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
@@ -28,6 +30,7 @@ int main() {
     std::cout << "Kinect is active" << std::endl;
     kinect_mode = true;
     std::thread kinect_thread(initKinect);
+    std::this_thread::sleep_for(10s);
 #endif
 
     graphics::initRenderSystem(world);

@@ -17,7 +17,9 @@ XnVFlowRouter *g_pMainFlowRouter;
 void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
                                                void *cxt) {
     printf("fValue %6.2f %6.2f\n", xValue * 2.0f - 1.0f, yValue * 2.0f - 1.0f);
-    horizontal_axis = xValue;
+    float scaled_x_value = xValue * 2.0f - 1.0f;
+    float scaled_y_value = yValue * 2.0f - 1.0f;
+    horizontal_axis = scaled_x_value;
 }
 
 // Callback for when the focus is in progress
