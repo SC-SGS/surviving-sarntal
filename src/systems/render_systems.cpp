@@ -435,7 +435,7 @@ void render_system(flecs::iter &iter) {
     }
 }
 
-void init_render_system(flecs::world &world) {
+void init_render_system(const flecs::world &world) {
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
@@ -726,7 +726,7 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh(flecs::world &world) {
+Mesh generate_chunk_mesh(const flecs::world &world) {
     std::cout << "graphics: gen chunk" << std::endl;
     // world.get_mut<Mountain>()->generateNewChunk();
 
