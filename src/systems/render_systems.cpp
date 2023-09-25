@@ -45,6 +45,7 @@ Material matInstances;
 int loc_time;
 bool regenerateTerrain = true;
 bool alive = true;
+int grassInsertIndex = 0;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -372,7 +373,7 @@ void render_system(flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debugCamera3D, texture, sourceRec,
-                                         Vector3{p.x, -500.0f, p.y}, b.billUp,
+                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
@@ -633,7 +634,7 @@ void init_render_system(const flecs::world &world) {
                          }));
 
      // billboard with animated sprite for 3d camera
-    auto animatedBillboard = world.entity("AnimatedBillboard")
+    /*auto animatedBillboard = world.entity("AnimatedBillboard")
                          .set([&](AnimatedBillboardComponent &c) {
                              c = {0};
                              c.billUp = {0.0f, 0.0f, 1.0f};
@@ -649,7 +650,7 @@ void init_render_system(const flecs::world &world) {
                          .set(([&](Position &c) {
                              c.x = 800;
                              c.y = 300;
-                         }));
+                         }));*/
 
     Vector2 min;
     Vector2 max;
@@ -905,11 +906,24 @@ void generate_chunk_mesh(const flecs::world &world) {
                 
                 auto v12 = Vector3Subtract(v1, v2); // down
                 auto translate = MatrixTranslate(v1.x, v1.y, v1.z + v12.z * r0);
-                
-                //auto translate = MatrixTranslate(v1.x, v1.y, v1.z);
-                auto scale = MatrixScale(20.0, 20.0, 20.0);
 
-                transforms.push_back(MatrixMultiply(scale, translate));     
+                float scale = 20.0;
+                translate.m0 = scale;
+                translate.m5 = scale;
+                translate.m10 = scale;
+
+                if (transforms.size() >= MAX_INSTANCES) {  // TODO improve?
+                    transforms[grassInsertIndex] = translate;
+                    std::cout << grassInsertIndex << std::endl;
+                } else {
+                    transforms.push_back(translate);
+                }
+                grassInsertIndex++;
+                
+                if (grassInsertIndex >= MAX_INSTANCES) {
+                    grassInsertIndex = 0;
+                }
+
             }
 
             // shift to the front
