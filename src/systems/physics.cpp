@@ -95,10 +95,25 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
-                            Velocity &v2, const Radius R1, const Radius R2) {
+                            Velocity &v2, const Radius R1, const Radius R2, float dt) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
     float_type radius_sum = R1.value + R2.value;
+
+// /*
+
+    auto p1_previous = p1 - v1*dt;
+    auto p2_previous = p2 - v2*dt;
+    auto d1 = p1.distanceTo(p2);
+    auto d0 = p1_previous.distanceTo(p2_previous);
+
+    auto t = (R1.value + R2.value + EPSILON/10000 - d1) / (d1 - d0);
+
+    p1 = (Position)(p1_previous + v1 * t * dt);
+    p2 = (Position)(p2_previous + v2 * t * dt);
+
+// */
+
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
@@ -111,24 +126,6 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
-// /*
-    float_type x1 = p1.x - p2.x;
-    float_type x2 = p1.y - p2.y;
-    float_type y1 = v2.x * (m2/m1 + 1);
-    float_type y2 = v2.y * (m2/m1 + 1);
-
-    float_type b = 2*x1*y1 + 2*x2*y2;
-    b -= std::sqrt( b*b - 4* (y1*y1 + y2*y2) * (x1*x1 + x2*x2 - (R1.value + R2.value)*(R1.value + R2.value)) );
-    b = b / (2* (y1*y1 + y2*y2));
-
-    float_type a = -b * m2 * v2.x / (m1 * v1.x);
-
-    a += EPSILON;
-    b += EPSILON;
-
-    p1 += v1 * a;
-    p2 += v2 * b;
-// */
 
  /*
     // Position update using new velocities
@@ -149,7 +146,7 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i],
-                              radius[j]); // TODO: Optimization?
+                              radius[j], it.delta_time()); // TODO: Optimization?
             }
         }
     }
@@ -163,7 +160,9 @@ void physics::updateRockState(flecs::iter it, Position *positions,
 
 void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
-        velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        if (velocities[i].length() <= 100) {
+            velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        }
     }
 }
 

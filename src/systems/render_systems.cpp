@@ -241,7 +241,7 @@ void render_system(flecs::iter &iter) {
                     world.filter<Position, CircleShapeRenderComponent>();
 
                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawCircleLines(p.x, -p.y, s.radius, GREEN);
+                    DrawCircle(p.x, -p.y, s.radius, RED);
                 });
 
                 flecs::filter<Position, RectangleShapeRenderComponent>

@@ -7,6 +7,9 @@
 #include "raylib.h"
 #include "render_systems.h"
 #include <cmath>
+#include "physics.h"
+
+float rock_spawn_time = 0;
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
@@ -114,17 +117,18 @@ void spawnRocks(flecs::iter it) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
 
-    if (fmod(GetTime(), ROCK_TIME_PERIOD) < 0.02 ||
-        fmod(GetTime(), ROCK_TIME_PERIOD) > 1.98) {
+    if ((GetTime() - rock_spawn_time) > 0) {
+        rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
         it.world()
             .entity()
             .set<Position>({camera->target.x + graphics::SCREEN_WIDTH / 2,
                             -camera->target.y + graphics::SCREEN_HEIGHT / 2})
             .set<Velocity>({0, 0})
-            .set<Radius>({10.})
+            .set<Radius>({20.})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({10.});
+            .set<graphics::CircleShapeRenderComponent>({20.});
     }
+
 }
 
 void initGameLogic(flecs::world &world) {

@@ -62,6 +62,7 @@ void mainLoop(flecs::world &world) {
 
     while (app_info->isRunning) {
         float dt = GetFrameTime();
+        std::cout<<"Frame Rate:"<<1/dt<<std::endl;
         world.progress(dt);
     }
 }
