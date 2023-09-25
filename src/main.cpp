@@ -5,14 +5,14 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
-#include <flecs.h>
-#include <iostream>
 #include "utils/game_constants.h"
 #include <chrono>
+#include <flecs.h>
+#include <iostream>
 
 #ifdef kinect
-    #include "components/kinect_handler.h"
-    #include <thread>
+#include "components/kinect_handler.h"
+#include <thread>
 #endif
 
 void mainLoop(flecs::world &world);
