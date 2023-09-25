@@ -18,7 +18,7 @@
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
 // callback for a new position of any hand
-void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext *pContext,
+void XN_CALLBACK_TYPE onPointUpdate(const XnVHandPointContext *pContext,
                                     void *cxt) {
     printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X,
            pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);

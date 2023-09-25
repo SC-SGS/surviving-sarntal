@@ -73,7 +73,7 @@ bool InputEntity::getGamepadEvent(ButtonEvent event) const {
     }
 }
 
-bool InputEntity::getKeyboardEvent(ButtonEvent event) const {
+bool InputEntity::getKeyboardEvent(ButtonEvent event) {
     switch (event.keyPressType) {
     case PRESSED:
         return IsKeyPressed(event.key);
@@ -199,7 +199,7 @@ const std::string &InputEntity::getEventDisplayName(Event event) const {
    // return event_display_names.at(event);
 }
 
-const std::string &InputEntity::getAxisDisplayName(Axis axis) const {
+const std::string &InputEntity::getAxisDisplayName(Axis axis) {
     return axis_display_names.at(axis);
 }
 
@@ -232,7 +232,7 @@ InputEntity::InputEntity(InputEntity::InputType input_type, int _gamepad_num) {
     setInputType(input_type, _gamepad_num);
 }
 
-bool InputEntity::getMouseEvent(ButtonEvent event) const {
+bool InputEntity::getMouseEvent(ButtonEvent event) {
     switch (event.keyPressType) {
     case PRESSED:
         return IsMouseButtonPressed(event.key);
@@ -247,4 +247,4 @@ bool InputEntity::getMouseEvent(ButtonEvent event) const {
     }
 }
 
-bool InputEntity::hasKinect() const { throw std::exception(); }
+bool InputEntity::hasKinect() { throw std::exception(); }

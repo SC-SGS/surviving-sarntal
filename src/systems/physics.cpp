@@ -1,9 +1,6 @@
 #include "physics.h"
-#include "../components/input.h"
-#include "../components/mountain.h"
 #include "../components/render_components.h"
 #include "flecs.h"
-#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -252,7 +249,7 @@ void physics::checkXMovement(Velocity *velocities,
                 PlayerMovement::MovementState::MOVING;
         }
     }
-    velocities[0].x = NORMAL_SPEED * x_factor;
+    velocities[0].x = NORMAL_SPEED * (float_type) x_factor;
 }
 
 void physics::checkAerialState(flecs::iter it, Velocity *velocities,
