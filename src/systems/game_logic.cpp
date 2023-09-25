@@ -130,7 +130,7 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({20.});
+            .set<graphics::CircleShapeRenderComponent>({radius});
     }
 }
 
