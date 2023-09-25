@@ -188,7 +188,7 @@ void render_system(flecs::iter &iter) {
 
                 q.each([&](Position &p, SpriteComponent &s) {
                     if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
                         Rectangle sourceRec = {
@@ -299,7 +299,7 @@ void render_system(flecs::iter &iter) {
                 q.each([&](Position &p, SpriteComponent &s,
                            BillboardComponent &b) {
                     if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
                         Rectangle sourceRec = {
@@ -400,7 +400,7 @@ void init_render_system(flecs::world &world) {
         world.entity("TestEntity")
             .set([&](SpriteComponent &c) {
                 c = {0};
-                c.resourceHandle = world.get_mut<Resources>()->textures.Load(
+                c.resourceHandle = world.get_mut<Resources>()->textures.load(
                     LoadTextureFromImage(verticalGradient));
                 c.width = 100;
                 c.height = 100;
@@ -416,7 +416,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
+                    world.get_mut<Resources>()->textures.load(background_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -431,7 +431,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
+                    world.get_mut<Resources>()->textures.load(background_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -446,7 +446,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
+                    world.get_mut<Resources>()->textures.load(midground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -461,7 +461,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
+                    world.get_mut<Resources>()->textures.load(midground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -476,7 +476,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -490,7 +490,7 @@ void init_render_system(flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -504,7 +504,7 @@ void init_render_system(flecs::world &world) {
         world.entity("AmbientSound").set([&](AudioComponent &c) {
             c = {0};
             c.resourceHandle =
-                world.get_mut<Resources>()->music.Load(ambient_audio);
+                world.get_mut<Resources>()->music.load(ambient_audio);
         });
 
     // billboard for 3d camera
