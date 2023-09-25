@@ -82,9 +82,9 @@ struct Resources {
     Resources() {
 
         textures.setOnFreeCallback(
-            [](Texture2D &texture) { UnloadTexture(texture); });
+            UnloadTexture);
 
-        music.setOnFreeCallback([](Music &music) { UnloadMusicStream(music); });
+        music.setOnFreeCallback(UnloadMusicStream);
     }
 };
 
