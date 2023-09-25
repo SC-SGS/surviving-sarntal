@@ -5,58 +5,49 @@
 #include "flecs.h"
 #include "raymath.h"
 #include "rlgl.h"
-#include <filesystem>
-#include <iostream>
 
 namespace graphics {
 
 Music ambient_audio;
 
-Texture2D gradientTex;
+Texture2D gradient_tex;
 
 Texture2D background_tex;
 Texture2D midground_tex;
 Texture2D foreground_tex;
 
 // Initialize the scrolling speed
-float scrollingBack = 0.0f;
-float scrollingMid = 0.0f;
-float scrollingFore = 0.0f;
-
-HANDLE spriteTex;
+float scrolling_back = 0.0f;
+float scrolling_mid = 0.0f;
+float scrolling_fore = 0.0f;
 
 int rotation = 0;
 
-bool useDebugCamera;
-Camera2D debugCamera;
-Camera3D debugCamera3D;
+bool use_debug_camera;
+Camera2D debug_camera;
+Camera3D debug_camera3_d;
 Model model;
 Shader shader;
 Mesh grass_mesh;
 Texture2D grass_texture;
 std::vector<Matrix> transforms;
-Material matInstances;
+Material mat_instances;
 int loc_time;
 
 void regenerateGradientTexture(int screenW, int screenH) {
-    UnloadTexture(gradientTex); // TODO necessary?
-    Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
-    gradientTex = LoadTextureFromImage(verticalGradient);
-    UnloadImage(verticalGradient);
+    UnloadTexture(gradient_tex); // TODO necessary?
+    Image vertical_gradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
+    gradient_tex = LoadTextureFromImage(vertical_gradient);
+    UnloadImage(vertical_gradient);
 }
 
-float getTerrainHeight(float x, float y, float ridge_height,
-                       float baseline = 0.0f) {
-    const float scale = 0.01f;
-
-    float distance_from_baseline = std::abs(y - baseline);
-
-    float falloff = -(y * y) * scale;
-
+float getTerrainHeight(float, float y, float ridge_height, float = 0.0f) {
+    const float SCALE = 0.01f;
+    float falloff = -(y * y) * SCALE;
     return (ridge_height + falloff);
 }
 
-void render_system(flecs::iter &iter) {
+void renderSystem(flecs::iter &iter) {
     auto world = iter.world();
 
     UpdateMusicStream(ambient_audio);
@@ -81,13 +72,13 @@ void render_system(flecs::iter &iter) {
         ToggleFullscreen();
     }
     if (WindowShouldClose()) {
-        // switch Appinfo isRunning to false;
+        // switch AppInfo isRunning to false;
         auto info = world.get_mut<AppInfo>();
         info->isRunning = false;
     }
 
     if (IsKeyPressed(KEY_P)) {
-        useDebugCamera = !useDebugCamera;
+        use_debug_camera = !use_debug_camera;
     }
 
     auto camera_entity = world.lookup("Camera");
@@ -95,10 +86,10 @@ void render_system(flecs::iter &iter) {
         auto camera = camera_entity.get_mut<Camera2DComponent>();
 
         // Update the light shader with the camera view position
-        float cameraPos[3] = {debugCamera3D.position.x,
-                              debugCamera3D.position.y,
-                              debugCamera3D.position.z};
-        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos,
+        float camera_pos[3] = {debug_camera3_d.position.x,
+                               debug_camera3_d.position.y,
+                               debug_camera3_d.position.z};
+        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], camera_pos,
                        SHADER_UNIFORM_VEC3);
 
         // if (useDebugCamera) {
@@ -128,49 +119,49 @@ void render_system(flecs::iter &iter) {
             // DrawTexture(gradientTex, 0, 0, WHITE);
 
             // Update the scrolling speed
-            scrollingBack -= 0.1f;
-            scrollingMid -= 0.5f;
-            scrollingFore -= 1.0f;
+            scrolling_back -= 0.1f;
+            scrolling_mid -= 0.5f;
+            scrolling_fore -= 1.0f;
 
-            if (scrollingBack <= -background_tex.width * 2)
-                scrollingBack = 0;
-            if (scrollingMid <= -midground_tex.width * 2)
-                scrollingMid = 0;
-            if (scrollingFore <= -foreground_tex.width * 2)
-                scrollingFore = 0;
+            if (scrolling_back <= -background_tex.width * 2.0)
+                scrolling_back = 0;
+            if (scrolling_mid <= -midground_tex.width * 2.0)
+                scrolling_mid = 0;
+            if (scrolling_fore <= -foreground_tex.width * 2.0)
+                scrolling_fore = 0;
 
             world.entity("Background").get_mut<Position>()->x =
-                scrollingBack + camera->target.x;
+                scrolling_back + camera->target.x;
             world.entity("Midground").get_mut<Position>()->x =
-                scrollingMid + camera->target.x;
+                scrolling_mid + camera->target.x;
             world.entity("Foreground").get_mut<Position>()->x =
-                scrollingFore + camera->target.x;
+                scrolling_fore + camera->target.x;
 
             world.entity("BackgroundDuplicate").get_mut<Position>()->x =
-                scrollingBack + graphics::SCREEN_WIDTH + camera->target.x;
+                scrolling_back + graphics::SCREEN_WIDTH + camera->target.x;
             world.entity("MidgroundDuplicate").get_mut<Position>()->x =
-                scrollingMid + graphics::SCREEN_WIDTH + camera->target.x;
+                scrolling_mid + graphics::SCREEN_WIDTH + camera->target.x;
             world.entity("ForegroundDuplicate").get_mut<Position>()->x =
-                scrollingFore + graphics::SCREEN_WIDTH + camera->target.x;
+                scrolling_fore + graphics::SCREEN_WIDTH + camera->target.x;
 
             world.entity("Background").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
             world.entity("Midground").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
             world.entity("Foreground").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
 
             world.entity("BackgroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
             world.entity("MidgroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
             world.entity("ForegroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25 + camera->target.y);
+                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
 
             /*world.get_mut<Resources>()*/
 
-            if (useDebugCamera) {
-                BeginMode2D(debugCamera);
+            if (use_debug_camera) {
+                BeginMode2D(debug_camera);
             } else {
                 BeginMode2D(*camera);
             }
@@ -188,28 +179,28 @@ void render_system(flecs::iter &iter) {
 
                 q.each([&](Position &p, SpriteComponent &s) {
                     if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
-                        Rectangle sourceRec = {
+                        Rectangle source_rec = {
                             0.0f, 0.0f, (float)texture.width,
                             (float)texture.height}; // part of the texture used
 
-                        Rectangle destRec = {
+                        Rectangle dest_rec = {
                             p.x, -p.y, static_cast<float>(s.width),
                             static_cast<float>(
                                 s.height)}; // where to draw texture
 
                         DrawTexturePro(
-                            texture, sourceRec, destRec,
+                            texture, source_rec, dest_rec,
                             {(float)texture.width, (float)texture.height}, 0,
                             WHITE);
                     }
                 });
 
                 auto mountain = world.get_mut<Mountain>();
-                for (int i = interval.start_index; i < interval.end_index;
-                     i++) {
+                for (std::size_t i = interval.start_index;
+                     i < interval.end_index; i++) {
 
                     Vector2 control_point_0{mountain->getVertex(i).x,
                                             -mountain->getVertex(i).y};
@@ -227,8 +218,8 @@ void render_system(flecs::iter &iter) {
 
                 // Draw the control points and lines
                 if (DEBUG) {
-                    for (int i = interval.start_index; i < interval.end_index;
-                         i++) {
+                    for (std::size_t i = interval.start_index;
+                         i < interval.end_index; i++) {
                         Vector2 point = {mountain->getVertex(i).x,
                                          -mountain->getVertex(i).y};
 
@@ -237,11 +228,12 @@ void render_system(flecs::iter &iter) {
                     }
                 }
 
-                flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                flecs::filter<Position, CircleShapeRenderComponent> circle_q =
                     world.filter<Position, CircleShapeRenderComponent>();
 
-                cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawCircle(p.x, -p.y, s.radius, RED);
+                circle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                    DrawCircle(static_cast<int>(p.x), static_cast<int>(-p.y),
+                               s.radius, ORANGE);
                 });
 
                 flecs::filter<Position, RectangleShapeRenderComponent>
@@ -259,34 +251,35 @@ void render_system(flecs::iter &iter) {
 
             EndMode2D();
 
-            if (useDebugCamera || true) {
-
-                static float rotZ = 90;
+            if (use_debug_camera) {
+                static float rot_z = 90;
 
                 if (IsKeyDown(KEY_D))
-                    debugCamera3D.position.x += 10 * iter.delta_time();
+                    debug_camera3_d.position.x += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_A))
-                    debugCamera3D.position.x -= 10 * iter.delta_time();
+                    debug_camera3_d.position.x -= 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_E))
-                    debugCamera3D.position.z -= 10 * iter.delta_time();
+                    debug_camera3_d.position.z -= 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_Q))
-                    debugCamera3D.position.z += 10 * iter.delta_time();
+                    debug_camera3_d.position.z += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_W))
-                    debugCamera3D.position.y += 10 * iter.delta_time();
+                    debug_camera3_d.position.y += 10 * iter.delta_time();
                 else if (IsKeyDown(KEY_S))
-                    debugCamera3D.position.y -= 10 * iter.delta_time();
+                    debug_camera3_d.position.y -= 10 * iter.delta_time();
 
                 if (IsKeyDown(KEY_LEFT))
-                    rotZ += 2 * iter.delta_time();
+                    rot_z += 2 * iter.delta_time();
                 else if (IsKeyDown(KEY_RIGHT))
-                    rotZ -= 2 * iter.delta_time();
+                    rot_z -= 2 * iter.delta_time();
 
-                debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
-                debugCamera3D.target.y = debugCamera3D.position.y + sinf(rotZ);
-                debugCamera3D.target.z = debugCamera3D.position.z;
+                debug_camera3_d.target.x =
+                    debug_camera3_d.position.x + cosf(rot_z);
+                debug_camera3_d.target.y =
+                    debug_camera3_d.position.y + sinf(rot_z);
+                debug_camera3_d.target.z = debug_camera3_d.position.z;
             }
 
-            BeginMode3D(debugCamera3D);
+            BeginMode3D(debug_camera3_d);
             {
                 // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
@@ -299,20 +292,20 @@ void render_system(flecs::iter &iter) {
                 q.each([&](Position &p, SpriteComponent &s,
                            BillboardComponent &b) {
                     if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
-                        Rectangle sourceRec = {
+                        Rectangle source_rec = {
                             0.0f, 0.0f, (float)texture.width,
                             (float)texture.height}; // part of the texture used
 
-                        Rectangle destRec = {
+                        /*Rectangle dest_rec = {
                             p.x, p.y, static_cast<float>(s.width),
                             static_cast<float>(
                                 s.height)}; // where to draw texture
-                        ;
+                        ;*/
                         DrawBillboardRec(
-                            debugCamera3D, texture, sourceRec,
+                            debug_camera3_d, texture, source_rec,
                             b.billPositionStatic,
                             Vector2{static_cast<float>(s.width),
                                     static_cast<float>(s.height)},
@@ -329,12 +322,13 @@ void render_system(flecs::iter &iter) {
                 });
 
                 rlDisableBackfaceCulling();
-                matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
+                mat_instances.maps[MATERIAL_MAP_DIFFUSE].texture =
+                    grass_texture;
                 static float elapsed_time = 0.0f;
                 elapsed_time += iter.delta_time();
                 SetShaderValue(shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
-                DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
+                DrawMeshInstanced(grass_mesh, mat_instances, transforms.data(),
                                   MAX_INSTANCES);
                 rlEnableBackfaceCulling();
             }
@@ -344,7 +338,7 @@ void render_system(flecs::iter &iter) {
     }
 }
 
-void init_render_system(flecs::world &world) {
+void initRenderSystem(flecs::world &world) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
 
@@ -366,7 +360,7 @@ void init_render_system(flecs::world &world) {
     // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.Get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
 
     // add the camera entity here for now
-    auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
+    world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
         c.target = {0.0f, 0.0f};
         c.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
@@ -374,138 +368,131 @@ void init_render_system(flecs::world &world) {
         c.zoom = 1.0f;
     });
 
-    useDebugCamera = false;
+    use_debug_camera = false;
 
-    debugCamera = {0};
-    debugCamera.target = {0.0f, 0.0f};
-    debugCamera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
-    debugCamera.rotation = 0.0f;
-    debugCamera.zoom = 1.0f;
+    debug_camera = {0};
+    debug_camera.target = {0.0f, 0.0f};
+    debug_camera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
+    debug_camera.rotation = 0.0f;
+    debug_camera.zoom = 1.0f;
 
     // add the render system
-    world.system().kind(flecs::PostUpdate).iter(render_system);
+    world.system().kind(flecs::PostUpdate).iter(renderSystem);
 
     // add the resource manager
     world.set<Resources>({});
 
     // misc
     regenerateGradientTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-    Image verticalGradient =
+    Image vertical_gradient =
         GenImageGradientV(SCREEN_WIDTH / 5, SCREEN_HEIGHT / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
     // world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
-    auto test_e =
-        world.entity("TestEntity")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle = world.get_mut<Resources>()->textures.Load(
-                    LoadTextureFromImage(verticalGradient));
-                c.width = 100;
-                c.height = 100;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+    world.entity("TestEntity")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle = world.get_mut<Resources>()->textures.load(
+                LoadTextureFromImage(vertical_gradient));
+            c.width = 100;
+            c.height = 100;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
 
-    auto background =
-        world.entity("Background")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    auto background_duplicate =
-        world.entity("BackgroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    auto midground =
-        world.entity("Midground")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    auto midground_duplicate =
-        world.entity("MidgroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    auto foreground =
-        world.entity("Foreground")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-    auto foreground_duplicate =
-        world.entity("ForegroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    auto ambient_sound =
-        world.entity("AmbientSound").set([&](AudioComponent &c) {
+    world.entity("Background")
+        .set([&](SpriteComponent &c) {
             c = {0};
             c.resourceHandle =
-                world.get_mut<Resources>()->music.Load(ambient_audio);
-        });
+                world.get_mut<Resources>()->textures.load(background_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("BackgroundDuplicate")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle =
+                world.get_mut<Resources>()->textures.load(background_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("Midground")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle =
+                world.get_mut<Resources>()->textures.load(midground_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("MidgroundDuplicate")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle =
+                world.get_mut<Resources>()->textures.load(midground_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("Foreground")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle =
+                world.get_mut<Resources>()->textures.load(foreground_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("ForegroundDuplicate")
+        .set([&](SpriteComponent &c) {
+            c = {0};
+            c.resourceHandle =
+                world.get_mut<Resources>()->textures.load(foreground_tex);
+            c.width = SCREEN_WIDTH;
+            c.height = SCREEN_HEIGHT;
+        })
+        .set(([&](Position &c) {
+            c.x = 0;
+            c.y = 0;
+        }))
+        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    world.entity("AmbientSound").set([&](AudioComponent &c) {
+        c = {0};
+        c.resourceHandle =
+            world.get_mut<Resources>()->music.load(ambient_audio);
+    });
 
     // billboard for 3d camera
     // auto billboard = world.entity("Billboard").set([&](BillboardComponent &c)
@@ -526,9 +513,7 @@ void init_render_system(flecs::world &world) {
 
     //}));
 
-    Vector2 min;
-    Vector2 max;
-    auto test = generate_chunk_mesh(world);
+    auto test = generateChunkMesh(world);
     model = LoadModelFromMesh(test);
     // model = LoadModel("../../../assets/mesh/grass_patch.obj");
     // std::cout << "current paht " << std::filesystem::current_path() <<
@@ -544,19 +529,19 @@ void init_render_system(flecs::world &world) {
         GetShaderLocationAttrib(shader, "instanceTransform");
 
     // Set shader value: ambient light level
-    int ambientLoc = GetShaderLocation(shader, "ambient");
+    int ambient_loc = GetShaderLocation(shader, "ambient");
     float col[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-    SetShaderValue(shader, ambientLoc, &col[0], SHADER_UNIFORM_VEC4);
+    SetShaderValue(shader, ambient_loc, &col[0], SHADER_UNIFORM_VEC4);
 
     // Define mesh to be instanced
     // grass_mesh = GenMeshCube(1.0f, 1.0f, 1.0f);
 
-    Model grass_model = LoadModel("../../../assets/mesh/grass_patch.obj");
-    grass_mesh = grass_model.meshes[0];
+    grass_mesh = LoadModel("../../../assets/mesh/grass_patch.obj").meshes[0];
 
     // DrawModel
 
-    Texture2D grass_texture = LoadTexture("../../../assets/texture/grass.png");
+    // TODO local or global variable?
+    grass_texture = LoadTexture("../../../assets/texture/grass.png");
 
     int loc = GetShaderLocation(shader, "grasstex");
     loc_time = GetShaderLocation(shader, "time");
@@ -573,50 +558,50 @@ void init_render_system(flecs::world &world) {
     //                                         0));
     //}
 
-    // NOTE: We are assigning the intancing shader to material.shader
+    // NOTE: We are assigning the instancing shader to material.shader
     // to be used on mesh drawing with DrawMeshInstanced()
-    matInstances = LoadMaterialDefault();
-    matInstances.shader = shader;
+    mat_instances = LoadMaterialDefault();
+    mat_instances.shader = shader;
     // matInstances.maps[MATERIAL_MAP_DIFFUSE].color = RED;
-    matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
+    mat_instances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
 
     /*Image checked = GenImageChecked(2, 2, 1, 1, RED, GREEN);
     Texture2D texture = LoadTextureFromImage(checked);
     UnloadImage(checked);*/
 
-    Shader shader_hill = LoadShader(0, TextFormat("", 330));
+    Shader shader_hill = LoadShader(nullptr, TextFormat("", 330));
     model.materials[0].shader = shader_hill;
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradient_tex;
 
-    debugCamera3D = {0};
-    debugCamera3D.position = {0.0f, -10.0f, 0.0f}; // Camera position
-    debugCamera3D.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
-    debugCamera3D.up = {0.0f, 0.0f,
-                        1.0f};  // Camera up vector (rotation towards target)
-    debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
-    debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
+    debug_camera3_d = {0};
+    debug_camera3_d.position = {0.0f, -10.0f, 0.0f}; // Camera position
+    debug_camera3_d.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
+    debug_camera3_d.up = {0.0f, 0.0f,
+                          1.0f};  // Camera up vector (rotation towards target)
+    debug_camera3_d.fovy = 45.0f; // Camera field-of-view Y
+    debug_camera3_d.projection = CAMERA_PERSPECTIVE; // Camera mode type
 }
 
-Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
+Vector3 computeNormal(Vector3 p1, Vector3 p2, Vector3 p3) {
     Vector3 n;
 
-    auto Ax = p2.x - p1.x;
-    auto Ay = p2.y - p1.y;
-    auto Az = p2.z - p1.z;
+    auto ax = p2.x - p1.x;
+    auto ay = p2.y - p1.y;
+    auto az = p2.z - p1.z;
 
-    auto Bx = p3.x - p1.x;
-    auto By = p3.y - p1.y;
-    auto Bz = p3.z - p1.z;
+    auto bx = p3.x - p1.x;
+    auto by = p3.y - p1.y;
+    auto bz = p3.z - p1.z;
 
-    n.x = Ay * Bz - Az * By;
-    n.y = Az * Bx - Ax * Bz;
-    n.z = Ax * By - Ay * Bx;
+    n.x = ay * bz - az * by;
+    n.y = az * bx - ax * bz;
+    n.z = ax * by - ay * bx;
 
     return n;
 }
 
 // Generate a simple triangle mesh from code
-Mesh generate_chunk_mesh(flecs::world &world) {
+Mesh generateChunkMesh(flecs::world &world) {
 
     world.get_mut<Mountain>()->generateNewChunk();
     auto interval =
@@ -627,34 +612,39 @@ Mesh generate_chunk_mesh(flecs::world &world) {
                  interval.start_index +
                      2000); // TODO remove (last vertices are wrong...)
 
-    int terrainVertexCount = interval.end_index - interval.start_index;
+    int terrain_vertex_count = static_cast<int>(interval.end_index) -
+                               static_cast<int>(interval.start_index);
 
     int levels = 15;
-    int levelsAtTheBack = 0; // number terrain layers behind the ridge
+    int levels_at_the_back = 0; // number terrain layers behind the ridge
 
-    int triangleCount = levels * (terrainVertexCount - 1) * 2;
-    int vertexCount = triangleCount * 3;
+    int triangle_count = levels * (terrain_vertex_count - 1) * 2;
+    int vertex_count = triangle_count * 3;
     std::vector<float> vertices;
     std::vector<float> texcoords;
     std::vector<float> normals;
 
     // for (int i = interval.start_index; i < interval.end_index-1; i++) {
 
-    for (int i = interval.start_index; i < interval.end_index - 1; i++) {
-        int currentDepth = -levelsAtTheBack * 0.1;
+    for (std::size_t i = interval.start_index; i < interval.end_index - 1;
+         i++) {
+        int current_depth = static_cast<int>(-levels_at_the_back * 0.1);
 
-        const float x_scale = 0.1f;
-        const float y_scale = 0.5f;
+        const float X_SCALE = 0.1f;
+        const float Y_SCALE = 0.5f;
 
-        float maxX = (interval.end_index - 1 - interval.start_index) * x_scale;
-        float maxY = levels * y_scale;
+        float max_x =
+            static_cast<float>(interval.end_index - 1 - interval.start_index) *
+            X_SCALE;
+        float max_y = static_cast<float>(levels) * Y_SCALE;
 
         Vector3 v0;
         auto vertex =
             world.get_mut<Mountain>()->getVertex(interval.start_index + i);
         v0.x = vertex.x;
-        v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
-        v0.y = currentDepth;
+        v0.z = getTerrainHeight(vertex.x, static_cast<float>(current_depth),
+                                vertex.y);
+        v0.y = static_cast<float>(current_depth);
 
         // std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y
         // << std::endl;
@@ -666,26 +656,27 @@ Mesh generate_chunk_mesh(flecs::world &world) {
         // vertex2.y = vertex2.y * 0.01f;
         //  getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v1.x = vertex2.x;
-        v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
-        v1.y = currentDepth;
+        v1.z = getTerrainHeight(vertex2.x, static_cast<float>(current_depth),
+                                vertex2.y); // height;
+        v1.y = static_cast<float>(current_depth);
 
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
-            v2.y -= y_scale;
+            v2.y -= Y_SCALE;
             v2.z = getTerrainHeight(v2.x, v2.y, v2.z);
             auto v3 = v1; // in front of terrain vertex i
-            v3.y -= y_scale;
+            v3.y -= Y_SCALE;
             v3.z = getTerrainHeight(v3.x, v3.y, v3.z);
 
             // first triangle
             // v1, v0, v2
-            auto normal = compute_normal(v1, v0, v2);
+            auto normal = computeNormal(v1, v0, v2);
 
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
-            texcoords.push_back(v1.x / maxX);
-            texcoords.push_back(v1.y / maxY);
+            texcoords.push_back(v1.x / max_x);
+            texcoords.push_back(v1.y / max_y);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
@@ -693,8 +684,8 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             vertices.push_back(v0.x);
             vertices.push_back(v0.y);
             vertices.push_back(v0.z);
-            texcoords.push_back(v0.x / maxX);
-            texcoords.push_back(v0.y / maxY);
+            texcoords.push_back(v0.x / max_x);
+            texcoords.push_back(v0.y / max_y);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
@@ -702,21 +693,21 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z); // below terrain vertex i-1
-            texcoords.push_back(v2.x / maxX);
-            texcoords.push_back(v2.y / maxY);
+            texcoords.push_back(v2.x / max_x);
+            texcoords.push_back(v2.y / max_y);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
 
             // second triangle
             // v1, v2, v3
-            auto normal2 = compute_normal(v1, v2, v3);
+            auto normal2 = computeNormal(v1, v2, v3);
 
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
-            texcoords.push_back(v1.x / maxX);
-            texcoords.push_back(v1.y / maxY);
+            texcoords.push_back(v1.x / max_x);
+            texcoords.push_back(v1.y / max_y);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
@@ -724,8 +715,8 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z);
-            texcoords.push_back(v2.x / maxX);
-            texcoords.push_back(v2.y / maxY);
+            texcoords.push_back(v2.x / max_x);
+            texcoords.push_back(v2.y / max_y);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
@@ -733,14 +724,14 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             vertices.push_back(v3.x);
             vertices.push_back(v3.y);
             vertices.push_back(v3.z); // below terrain vertex i
-            texcoords.push_back(v3.x / maxX);
-            texcoords.push_back(v3.y / maxY);
+            texcoords.push_back(v3.x / max_x);
+            texcoords.push_back(v3.y / max_y);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
 
             // grass pos
-            if (rand() % 3 == 0)
+            if (rand() % 3 == 0) // NOLINT(*-msc50-cpp)
                 transforms.push_back(MatrixTranslate(v1.x, v1.y, v1.z));
 
             // shift to the front
@@ -750,8 +741,8 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     }
 
     Mesh mesh = {0};
-    mesh.triangleCount = triangleCount;
-    mesh.vertexCount = vertexCount;
+    mesh.triangleCount = triangle_count;
+    mesh.vertexCount = vertex_count;
     mesh.vertices = vertices.data(); // 3 vertices, 3 coordinates each (x, y, z)
     mesh.texcoords = texcoords.data(); // 3 vertices, 2 coordinates each (x, y)
     mesh.normals = normals.data(); // 3 vertices, 3 coordinates each (x, y, z)
@@ -764,7 +755,7 @@ Mesh generate_chunk_mesh(flecs::world &world) {
 
 void destroy() {
     UnloadShader(shader);
-    UnloadTexture(gradientTex);
+    UnloadTexture(gradient_tex);
     // UnloadModel(model);
 
     CloseWindow();
