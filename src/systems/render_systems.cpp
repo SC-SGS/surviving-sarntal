@@ -284,7 +284,7 @@ void render_system(flecs::iter &iter) {
                     rotZ -= 2 * iter.delta_time();*/
 
                 debugCamera3D.position.x = camera->target.x - 200;
-                debugCamera3D.position.z = -camera->target.y;
+                debugCamera3D.position.z = -camera->target.y + 100;
 
                 debugCamera3D.target.x = debugCamera3D.position.x;//+cosf(rotZ);
                 debugCamera3D.target.y = debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
@@ -298,12 +298,14 @@ void render_system(flecs::iter &iter) {
                 auto test = generate_chunk_mesh(world);
                 model = LoadModelFromMesh(test);
 
-                Shader shader_hill =
+                /*Shader shader_hill =
                     LoadShader("../assets/shaders/hill.vert",
                                "../assets/shaders/hill.frag");
-                model.materials[0].shader = shader_hill;
-                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture =
-                    gradientTex;
+                model.materials[0].shader = shader_hill;*/
+                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
+
+                /*int loc = GetShaderLocation(shader, "hilltex");
+                SetShaderValueTexture(shader, loc, gradientTex);*/
 
                 regenerateTerrain = false;
             }
@@ -311,7 +313,7 @@ void render_system(flecs::iter &iter) {
             BeginMode3D(debugCamera3D);
             {
                 //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
+                DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);// GREEN);
                 //DrawCube({-20, 0}, 10, 10, 10, RED);
 
                 flecs::filter<Position, SpriteComponent, BillboardComponent> q =
@@ -356,8 +358,9 @@ void render_system(flecs::iter &iter) {
                 elapsed_time += iter.delta_time();
                 SetShaderValue(shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
+                int count = std::min((int)transforms.size(), MAX_INSTANCES);
                 DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
-                                  MAX_INSTANCES);
+                                  count);
                 rlEnableBackfaceCulling();
 
 
@@ -838,8 +841,29 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             normals.push_back(normal2.z);
 
             // grass pos
-            if (rand() % 3 == 0)
-                transforms.push_back(MatrixTranslate(v1.x, v1.y, v1.z));
+            if (level > 2 && rand() % 15 == 0 /* && level < levels - 1 &&
+                i < interval.end_index - 20*/) {
+
+                float r0 = ((float) rand()) / RAND_MAX;
+                //float r1 = rand() / RAND_MAX;
+                //// random position in quad
+                //auto v01 = Vector3Scale(Vector3Subtract(v0, v1), r0);
+                //auto v02 = Vector3Scale(Vector3Subtract(v0, v2), r1);
+
+                //auto position = Vector3Add(v0, Vector3Add(v01, v02));
+
+                ////transforms.push_back(MatrixTranslate(position.x, position.y, position.z));
+                //
+                //auto translate = MatrixTranslate(position.x, position.y, position.z); // MatrixTranslate(v1.x, v1.y, v1.z);
+                
+                auto v12 = Vector3Subtract(v1, v2); // down
+                auto translate = MatrixTranslate(v1.x, v1.y, v1.z + v12.z * r0);
+                
+                //auto translate = MatrixTranslate(v1.x, v1.y, v1.z);
+                auto scale = MatrixScale(20.0, 20.0, 20.0);
+
+                transforms.push_back(MatrixMultiply(scale, translate));     
+            }
 
             // shift to the front
             v0 = v2;
