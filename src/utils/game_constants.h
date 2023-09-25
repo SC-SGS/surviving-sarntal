@@ -11,6 +11,9 @@ constexpr float_type HIKER_WIDTH = 15.f;
 constexpr float_type HIKER_ITEM_COLLECTION_RANGE = 10.f;
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
+constexpr float_type MIN_ROCK_SIZE = 20.f;
+constexpr float_type MAX_ROCK_SIZE = 150.f;
+constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = 1.f;
 
 bool kinect_mode = false;
 
