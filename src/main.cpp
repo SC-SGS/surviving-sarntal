@@ -42,6 +42,7 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
+
     world.set<Mountain>({});
 
     initGameLogic(world);
