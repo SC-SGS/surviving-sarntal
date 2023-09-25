@@ -8,6 +8,9 @@
 #include <filesystem>
 #include <iostream>
 
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
 namespace graphics {
 
 Music ambient_audio;
@@ -38,6 +41,7 @@ std::vector<Matrix> transforms;
 Material matInstances;
 int loc_time;
 bool regenerateTerrain = true;
+bool alive = true;
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -131,7 +135,6 @@ void renderBackground(flecs::world &world, float cameraX, float cameraY) {
     world.entity("ForegroundDuplicate").get_mut<Position>()->y =
         -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
 }
-
 
 void render_system(flecs::iter &iter) {
     auto world = iter.world();
@@ -301,12 +304,14 @@ void render_system(flecs::iter &iter) {
                 debugCamera3D.target.z = debugCamera3D.position.z;
             } else {
                 
-                debugCamera3D.position.x = camera->target.x - 200;
-                debugCamera3D.position.z = -camera->target.y + 100;
+                if (alive) {
+                    debugCamera3D.position.x = camera->target.x - 200;
+                    debugCamera3D.position.z = -camera->target.y + 100;
 
-                debugCamera3D.target.x = debugCamera3D.position.x;
-                debugCamera3D.target.y = debugCamera3D.position.y + 1.0;
-                debugCamera3D.target.z = debugCamera3D.position.z;
+                    debugCamera3D.target.x = debugCamera3D.position.x;
+                    debugCamera3D.target.y = debugCamera3D.position.y + 1.0;
+                    debugCamera3D.target.z = debugCamera3D.position.z;
+                }
             }
 
             if (regenerateTerrain) {
@@ -398,6 +403,32 @@ void render_system(flecs::iter &iter) {
                     });
             }
             EndMode3D();
+
+
+            // health bar
+            int healthbar_width = SCREEN_WIDTH / 4;
+            int healthbar_height = SCREEN_HEIGHT / 30;
+            DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE); 
+            int offset = 2;
+            float player_health = 0.9; // percent
+            DrawRectangle(20 + offset, 20 + offset,
+                          player_health * healthbar_width - 2 * offset,
+                          healthbar_height - 2*offset, GREEN); 
+
+            // score
+            DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
+
+            
+            if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
+                alive = false; // TODO get from somewhere
+            }
+
+            if (!alive) {
+                DrawText("You died!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 70, RED);
+            }
+
+            
+            DrawFPS(0, 0);
         }
         EndDrawing();
     }
