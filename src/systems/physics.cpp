@@ -9,7 +9,7 @@ using namespace physics;
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
     float_type x_max = p.x + r.value;
-    auto interval = m->getRelevantMountainSection(x_min, x_max);
+    auto interval = Mountain::getRelevantMountainSection(x_min, x_max);
 
     auto closest_index = interval.start_index;
     float_type closest_distance =
@@ -278,7 +278,7 @@ void physics::checkDirection(Velocity *velocities,
 
 float physics::getYPosFromX(const flecs::world &world, float x) {
     auto mountain = world.get_mut<Mountain>();
-    auto interval = mountain->getRelevantMountainSection(x, x);
+    auto interval = Mountain::getRelevantMountainSection(x, x);
     std::size_t closest_indices[] = {interval.start_index, interval.end_index};
     auto closest_left_distance =
         std::abs(mountain->getVertex(interval.start_index).x - x);
