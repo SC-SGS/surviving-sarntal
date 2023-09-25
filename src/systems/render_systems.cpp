@@ -26,6 +26,7 @@ float scrollingFore = 0.0f;
 HANDLE spriteTex;
 
 int rotation = 0;
+int currentFrame = 0;
 
 bool useDebugCamera;
 Camera2D debugCamera;
@@ -257,9 +258,14 @@ void render_system(flecs::iter &iter) {
                     });
 
                 rotation++;*/
+
+
             }
 
             EndMode2D();
+            currentFrame++;
+            if (currentFrame > 5)
+                currentFrame = 0;
 
             if (useDebugCamera || true) {
 
@@ -268,10 +274,8 @@ void render_system(flecs::iter &iter) {
                 debugCamera3D.position.x = camera->target.x - 200;
                 debugCamera3D.position.z = -camera->target.y + 100;
 
-                debugCamera3D.target.x =
-                    debugCamera3D.position.x; //+cosf(rotZ);
-                debugCamera3D.target.y =
-                    debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
+                debugCamera3D.target.x = debugCamera3D.position.x; //+cosf(rotZ);
+                debugCamera3D.target.y = debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
 
                 // debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
@@ -299,10 +303,10 @@ void render_system(flecs::iter &iter) {
                 DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);// GREEN);
                 //DrawCube({-20, 0}, 10, 10, 10, RED);
 
-                flecs::filter<Position, BillboardComponent> q =
+                flecs::filter<Position, BillboardComponent> qb =
                     world.filter<Position, BillboardComponent>();
 
-                q.each([&](Position &p, BillboardComponent &b) {
+                qb.each([&](Position &p, BillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.Get(
                             b.resourceHandle);
@@ -320,7 +324,34 @@ void render_system(flecs::iter &iter) {
                         DrawBillboardPro(debugCamera3D, texture, sourceRec,
                                          Vector3{p.x, -500.0f, p.y}, b.billUp,
                                          Vector2{static_cast<float>(b.width),
-                                                 static_cast<float>(b.width)},
+                                                 static_cast<float>(b.height)},
+                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                    }
+                });
+
+                flecs::filter<Position, AnimatedBillboardComponent> q =
+                    world.filter<Position, AnimatedBillboardComponent>();
+
+                q.each([&](Position &p, AnimatedBillboardComponent &b) {
+                    if (b.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.Get(
+                            b.resourceHandle);
+
+                        Rectangle sourceRec = {
+                            (float)currentFrame * (float)texture.width / b.numFrames,
+                            0.0f, (float)texture.width / b.numFrames,
+                            (float)texture.height}; // part of the texture used
+
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(b.width),
+                            static_cast<float>(
+                                b.height)}; // where to draw texture
+                        ;
+
+                        DrawBillboardPro(debugCamera3D, texture, sourceRec,
+                                         Vector3{p.x, -500.0f, p.y}, b.billUp,
+                                         Vector2{static_cast<float>(b.width),
+                                                 static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
                     }
                 });
@@ -593,6 +624,25 @@ void init_render_system(flecs::world &world) {
                          .set(([&](Position &c) {
                              c.x = 800;
                              c.y = 0;
+                         }));
+
+     // billboard with animated sprite for 3d camera
+    auto animatedBillboard = world.entity("AnimatedBillboard")
+                         .set([&](AnimatedBillboardComponent &c) {
+                             c = {0};
+                             c.billUp = {0.0f, 0.0f, 1.0f};
+                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     "../assets/texture/test_sprite_small.png");
+                             c.width = 100;
+                             c.height = 100;
+                             c.currentFrame = 0;
+                             c.numFrames = 6;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 800;
+                             c.y = 300;
                          }));
 
     Vector2 min;
