@@ -17,7 +17,7 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
 
 void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
-
+    // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
         // exit(0);
@@ -119,13 +119,16 @@ void spawnRocks(flecs::iter it) {
 
     if ((GetTime() - rock_spawn_time) > 0) {
         rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
+        float radius =
+            (std::rand() - MIN_ROCK_SIZE) / (MAX_ROCK_SIZE - MIN_ROCK_SIZE);
+
         it.world()
             .entity()
             .set<Position>(
                 {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
                  -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
-            .set<Radius>({20.})
+            .set<Radius>({radius})
             .add<Rock>()
             .set<graphics::CircleShapeRenderComponent>({20.});
     }
@@ -144,7 +147,8 @@ void initGameLogic(flecs::world &world) {
         })
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
-        .set<InputEntity>({});
+        .set<InputEntity>({})
+        .set<Health>({100});
     world.set<KillBar>({0.});
 
     world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
