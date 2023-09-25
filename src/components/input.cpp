@@ -10,6 +10,7 @@
 
 constexpr int MAX_GAMEPADS = 8;
 double horizontal_axis = 0.0;
+bool do_kinect_jump = false;
 
 /**
  * checks if the device with the given id (in raylib) is a valid gamepad.
@@ -126,7 +127,7 @@ bool InputEntity::getEvent(Event event) const {
             active = getGamepadEvent(gamepad_action);
         }
     } else if (current_input_type == KINECT) {
-        // Do something here
+        active = do_kinect_jump;
     } else if (current_input_type == MOUSE_KEYBOARD) {
         auto keyboard_action_iter = KEYBOARD_KEY_MAP.find(event);
         if (keyboard_action_iter != KEYBOARD_KEY_MAP.end()) {

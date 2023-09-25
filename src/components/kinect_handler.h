@@ -23,5 +23,6 @@
 int initKinect();
 
 extern double horizontal_axis;
+extern bool do_kinect_jump;
 
 #endif // SURVIVING_SARNTAL_KINECT_HANDLER_H

@@ -9,6 +9,7 @@ constexpr float_type JUMP_VELOCITY_CONSTANT = 500.f;
 constexpr float_type HIKER_HEIGHT = 50.f;
 constexpr float_type HIKER_WIDTH = 15.f;
 constexpr float_type HIKER_ITEM_COLLECTION_RANGE = 10.f;
+constexpr float_type VELOCITY_CAP = 600.;
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
 constexpr float_type MIN_ROCK_SIZE = 10.f;

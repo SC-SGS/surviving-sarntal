@@ -133,8 +133,9 @@ void physics::updateRockState(flecs::iter it, Position *positions,
 
 void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
-        if (velocities[i].length() <= 100) {
-            velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        if (velocities[i].length() > VELOCITY_CAP) {
+            velocities[i] = (Velocity) (velocities[i] * VELOCITY_CAP / velocities[i].length());
         }
     }
 }

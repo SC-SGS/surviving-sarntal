@@ -2,6 +2,7 @@
 // Created by tanja on 25.09.23.
 //
 #include "kinect_handler.h"
+#include "input.h"
 
 // xml to initialize OpenNI
 #define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
@@ -9,7 +10,7 @@
 
 XnVSelectableSlider2D *g_pMainSlider2D;
 XnVFlowRouter *g_pMainFlowRouter;
-
+bool just_jumped = false;
 //-----------------------------------------------------------------------------
 // Callbacks
 //-----------------------------------------------------------------------------
@@ -20,6 +21,15 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
     float scaled_x_value = xValue * 2.0f - 1.0f;
     float scaled_y_value = yValue * 2.0f - 1.0f;
     horizontal_axis = scaled_x_value;
+    do_kinect_jump = false;
+    if (scaled_y_value > 0.3){
+        if (!just_jumped){
+            do_kinect_jump = true;
+            just_jumped = true;
+        }
+    } else {
+        just_jumped = false;
+    }
 }
 
 // Callback for when the focus is in progress
