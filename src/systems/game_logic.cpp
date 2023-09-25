@@ -14,7 +14,7 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
 
 void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
-
+    // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
         // exit(0);
