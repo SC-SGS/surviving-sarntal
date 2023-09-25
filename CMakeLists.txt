@@ -73,5 +73,9 @@ target_link_libraries(
 )
 #use surviving-sarntal-library for tests aswell. this way all the src-files only have to be compiled once instead of compiling it for the main executable and the tests
 
+set_target_properties(
+    surviving-sarntal PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
 include(GoogleTest)
 gtest_discover_tests(main_test)

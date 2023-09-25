@@ -5,6 +5,7 @@
 #include "flecs.h"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 using namespace physics;
 
@@ -50,6 +51,10 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     //      (  1    0  )
     Vector n = {sgn_n_x * -d.y, sgn_n_x * d.x};
     float_type normalization = std::sqrt(n * n);
+
+    if (n.y < 0) {
+        n = n * (-1);
+    }
     return n / normalization;
 }
 
@@ -148,100 +153,33 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
     }
 }
 
-PhysicSystems::PhysicSystems(flecs::world &world) {
-    world.module<PhysicSystems>();
-
-    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
-        updateRockState);
-
-    world.system<Position, Velocity, Radius>().with<Rock>().iter(
-        rockRockInteractions);
-
-    world.system<Position, Velocity, Radius, Mountain>()
-        .term_at(4)
-        .singleton()
-        .iter(terrainCollision);
-
-    world.system<Position, Velocity, PlayerMovement, InputEntity>()
-        .with<Player>()
-        .iter(updatePlayerState);
-
-    // for (int i = 0; i < 20; i++) {
-    //     Position p{300.f + 200.f, 25.f * (float)i};
-    //     Velocity v{0., 0.};
-    //     makeRock(world, p, v, 10.f);
-    // }
-}
-
 void physics::updatePlayerState(flecs::iter it, Position *positions,
                                 Velocity *velocities,
                                 PlayerMovement *player_movements,
-                                InputEntity *input_entities) {
-    auto input = input_entities;
+                                InputEntity *input_entities, Height *heights,
+                                Width *widths) {
 
-    // Update Velocities
+    updatePlayerVelocity(it, positions, velocities, player_movements,
+                         input_entities, heights);
+    updatePlayerPosition(it, positions, velocities, player_movements);
+}
 
-    if (input->getEvent(Event::JUMP)) {
-        float factor = 1;
-        if (player_movements[0].current_state ==
-            PlayerMovement::MovementState::DUCKED) {
-            factor = duckSpeedFactor;
-        }
-        if (player_movements[0].current_state !=
-            PlayerMovement::MovementState::IN_AIR) {
-            player_movements[0].last_jump = 0;
-        }
-        if (player_movements[0].last_jump < 1.5 &&
-            player_movements[0].can_jump_again) {
-            velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
-            if (player_movements[0].current_state ==
-                PlayerMovement::MovementState::IN_AIR) {
-                player_movements[0].can_jump_again = false;
-            }
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::IN_AIR;
-        }
-    }
+void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
+                                   Velocity *velocities,
+                                   PlayerMovement *player_movements,
+                                   InputEntity *input_entities,
+                                   Height *heights) {
 
-    if (input->getEvent(Event::DUCK) &&
-        player_movements[0].current_state !=
-            PlayerMovement::MovementState::IN_AIR) {
-        velocities[0].x *= duckSpeedFactor;
-        player_movements[0].current_state =
-            PlayerMovement::MovementState::DUCKED;
-    }
+    checkJumpEvent(velocities, player_movements, input_entities);
+    checkDuckEvent(velocities, player_movements, input_entities, heights);
+    checkXMovement(velocities, player_movements, input_entities);
+    checkAerialState(it, velocities, player_movements, input_entities);
+    checkDirection(velocities, player_movements, input_entities);
+}
 
-    double x_factor = input->getAxis(Axis::MOVEMENT_X);
-    if (player_movements[0].current_state !=
-        PlayerMovement::MovementState::IN_AIR) {
-        if (x_factor == 0) {
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::IDLE;
-        } else {
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::MOVING;
-        }
-    }
-    velocities[0].x = normalSpeed * x_factor;
-
-    if (player_movements[0].current_state ==
-        PlayerMovement::MovementState::IN_AIR) {
-        player_movements[0].last_jump += it.delta_time();
-        velocities[0].y += GRAVITATIONAL_CONSTANT * it.delta_time();
-    }
-
-    if (velocities[0].x < 0) {
-        player_movements[0].current_direction = PlayerMovement::Direction::LEFT;
-    } else if (velocities[0].x > 0) {
-        player_movements[0].current_direction =
-            PlayerMovement::Direction::RIGHT;
-    } else {
-        player_movements[0].current_direction =
-            PlayerMovement::Direction::NEUTRAL;
-    }
-
-    // Update Positions
-
+void physics::updatePlayerPosition(flecs::iter it, Position *positions,
+                                   Velocity *velocities,
+                                   PlayerMovement *player_movements) {
     positions[0].x += velocities[0].x * it.delta_time();
     auto terrain_y = getYPosFromX(it.world(), positions[0].x);
     if (player_movements[0].current_state ==
@@ -258,7 +196,87 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
     } else {
         positions[0].y = terrain_y;
     }
-    positions[0].y += .5 * HIKER_HEIGHT;
+}
+
+void physics::checkJumpEvent(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    if (input_entities->getEvent(Event::JUMP)) {
+        float factor = 1;
+        if (player_movements[0].current_state ==
+            PlayerMovement::MovementState::DUCKED) {
+            factor = DUCK_SPEED_FACTOR;
+        }
+        if (player_movements[0].current_state !=
+            PlayerMovement::MovementState::IN_AIR) {
+            player_movements[0].last_jump = 0;
+        }
+        if (player_movements[0].last_jump < 1.5 &&
+            player_movements[0].can_jump_again) {
+            velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
+            if (player_movements[0].current_state ==
+                PlayerMovement::MovementState::IN_AIR) {
+                player_movements[0].can_jump_again = false;
+            }
+            player_movements[0].current_state =
+                PlayerMovement::MovementState::IN_AIR;
+        }
+    }
+}
+
+// TODO not ducking anymore
+void physics::checkDuckEvent(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities, Height *heights) {
+    if (input_entities->getEvent(Event::DUCK) &&
+        player_movements[0].current_state !=
+            PlayerMovement::MovementState::IN_AIR) {
+        velocities[0].x *= DUCK_SPEED_FACTOR;
+        player_movements[0].current_state =
+            PlayerMovement::MovementState::DUCKED;
+        // heights[0].h = HIKER_HEIGHT/2;
+    }
+}
+
+void physics::checkXMovement(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    double x_factor = input_entities->getAxis(Axis::MOVEMENT_X);
+    if (player_movements[0].current_state !=
+        PlayerMovement::MovementState::IN_AIR) {
+        if (x_factor == 0) {
+            player_movements[0].current_state =
+                PlayerMovement::MovementState::IDLE;
+        } else {
+            player_movements[0].current_state =
+                PlayerMovement::MovementState::MOVING;
+        }
+    }
+    velocities[0].x = NORMAL_SPEED * x_factor;
+}
+
+void physics::checkAerialState(flecs::iter it, Velocity *velocities,
+                               PlayerMovement *player_movements,
+                               InputEntity *input_entities) {
+    if (player_movements[0].current_state ==
+        PlayerMovement::MovementState::IN_AIR) {
+        player_movements[0].last_jump += it.delta_time();
+        velocities[0].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+    }
+}
+
+void physics::checkDirection(Velocity *velocities,
+                             PlayerMovement *player_movements,
+                             InputEntity *input_entities) {
+    if (velocities[0].x < 0) {
+        player_movements[0].current_direction = PlayerMovement::Direction::LEFT;
+    } else if (velocities[0].x > 0) {
+        player_movements[0].current_direction =
+            PlayerMovement::Direction::RIGHT;
+    } else {
+        player_movements[0].current_direction =
+            PlayerMovement::Direction::NEUTRAL;
+    }
 }
 
 float physics::getYPosFromX(const flecs::world &world, float x) {
@@ -290,5 +308,79 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
 
     return ((x - vertex_left.x) * vertex_right.y +
             (vertex_right.x - x) * vertex_left.y) /
-           (vertex_right.x - vertex_left.x);
+               (vertex_right.x - vertex_left.x) +
+           HIKER_HEIGHT;
+}
+
+void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
+                               Radius *radii) {
+    rock_it.world()
+        .filter_builder<Width, Height, Position>()
+        .with<Player>()
+        .build()
+        .iter([&](flecs::iter player_it, Width *widths, Height *heights,
+                  Position *player_positions) {
+            auto w = widths[0].w;
+            auto h = heights[0].h;
+            auto player_position = player_positions[0];
+            bool is_hit = false;
+            for (auto i : rock_it) {
+                auto rock_position = rock_positions[i];
+                auto x_centre_distance =
+                    std::abs(player_position.x - rock_position.x);
+                auto y_centre_distance =
+                    std::abs(player_position.y - rock_position.y);
+                auto r = radii[i].value;
+
+                if (x_centre_distance > w / 2 + r ||
+                    y_centre_distance > h / 2 + r) {
+                } else if (x_centre_distance <= w / 2 ||
+                           y_centre_distance <= h / 2) {
+                    is_hit = true;
+                } else {
+
+                    auto corner_distance_sq =
+                        std::pow(x_centre_distance - w / 2, 2) +
+                        std::pow(y_centre_distance - h / 2, 2);
+
+                    if (corner_distance_sq <= std::pow(r, 2)) {
+                        is_hit = true;
+                    }
+                }
+                if (is_hit) {
+                    // TODO end animation or sth.
+                    std::cout << "Player unalive" << std::endl;
+                    rock_it.world().get_mut<AppInfo>()->isRunning = false;
+                }
+            }
+        });
+}
+
+PhysicSystems::PhysicSystems(flecs::world &world) {
+    world.module<PhysicSystems>();
+
+    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
+        updateRockState);
+
+    world.system<Position, Velocity, Radius>().with<Rock>().iter(
+        rockRockInteractions);
+
+    world.system<Position, Radius>().with<Rock>().iter(checkPlayerIsHit);
+
+    world.system<Position, Velocity, Radius, Mountain>()
+        .term_at(4)
+        .singleton()
+        .iter(terrainCollision);
+
+    world
+        .system<Position, Velocity, PlayerMovement, InputEntity, Height,
+                Width>()
+        .with<Player>()
+        .iter(updatePlayerState);
+
+    // for (int i = 0; i < 20; i++) {
+    //     Position p{300.f + 200.f, 25.f * (float)i};
+    //     Velocity v{0., 0.};
+    //     makeRock(world, p, v, 10.f);
+    // }
 }

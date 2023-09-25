@@ -1,6 +1,9 @@
 #include "mountain.h"
 #include "iostream"
+#include <random>
 
+// Mountain::Mountain() : random_engine(hardware_random_generator()),
+// distribution_used(0.0,1.0) {
 Mountain::Mountain() {
     std::cout << "Mountain gets constructed" << std::endl;
 
@@ -12,6 +15,15 @@ Mountain::Mountain() {
         landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
+    }
+
+    for (int i = 0; i < NUMBER_OF_VERTICES / NUM_SECTIONS_PER_CHUNK; i++) {
+        generateTerrainRecursive(
+            start_of_circular_array,
+            start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 50);
+        start_of_circular_array =
+            (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) %
+            NUMBER_OF_VERTICES;
     }
     // printTempDebugInfo();
 }
@@ -53,6 +65,16 @@ IndexInterval Mountain::getRelevantMountainSection(float min_x, float max_x) {
 }
 
 void Mountain::generateNewChunk() {
+    // std::cout << "Chunk generated" << std::endl;
+    generateSlope();
+    generateTerrainRecursive(
+        start_of_circular_array,
+        start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 100);
+    start_of_circular_array =
+        (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
+}
+
+void Mountain::generateSlope() {
     int num_points_to_generate = NUM_SECTIONS_PER_CHUNK;
     const std::size_t array_size = landscape_fixpoints_circular_array.size();
     const std::size_t index_rightest_vertice =
@@ -67,9 +89,6 @@ void Mountain::generateNewChunk() {
                                            array_size] =
             Position{current_x, current_y};
     }
-
-    start_of_circular_array =
-        (start_of_circular_array + num_points_to_generate) % array_size;
 }
 
 IndexInterval Mountain::getIndexIntervalOfEntireMountain() {
@@ -89,4 +108,53 @@ IndexInterval Mountain::getLatestChunk() {
         returnvalue.end_index += NUMBER_OF_VERTICES;
     }
     return returnvalue;
+}
+
+void Mountain::generateTerrainRecursive(std::size_t leftIndex,
+                                        std::size_t rightIndex,
+                                        float displacement) {
+    // if(leftIndex + 1 >= rightIndex){
+    //     interpolate(leftIndex, rightIndex);
+    //     return;
+    // }
+
+    if (leftIndex + 1 == rightIndex)
+        return;
+    if (leftIndex == rightIndex)
+        return;
+
+    if (leftIndex + 32 >= rightIndex)
+        displacement = 0;
+
+    std::random_device hardware_random_generator;
+    std::mt19937 random_engine(hardware_random_generator());
+    std::uniform_real_distribution<double> distribution_used(0.0, 1.0);
+
+    std::size_t midIndex = (leftIndex + rightIndex) / 2; // rounding down is
+                                                         // fine
+    float change = (distribution_used(random_engine) * 2 - 1) * displacement;
+    landscape_fixpoints_circular_array[(midIndex + NUMBER_OF_VERTICES) %
+                                       NUMBER_OF_VERTICES]
+        .y =
+        (landscape_fixpoints_circular_array[(leftIndex + NUMBER_OF_VERTICES) %
+                                            NUMBER_OF_VERTICES]
+             .y +
+         landscape_fixpoints_circular_array[(rightIndex + NUMBER_OF_VERTICES) %
+                                            NUMBER_OF_VERTICES]
+             .y) /
+            2 +
+        change;
+    displacement = Mountain::ROUGHNESS_TERRAIN * displacement;
+    generateTerrainRecursive(leftIndex, midIndex, displacement);
+    generateTerrainRecursive(midIndex, rightIndex, displacement);
+}
+
+void Mountain::interpolate(std::size_t leftIndex, std::size_t rightIndex) {
+    auto leftVert = getVertex(leftIndex);
+    auto rightVert = getVertex(rightIndex);
+    float m = (leftVert.y - rightVert.y) / (rightVert.x - leftVert.x);
+    for (int i = 1; i < rightIndex - leftIndex; i++) {
+        landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES]
+            .y = i * m + getVertex(leftIndex).y;
+    }
 }

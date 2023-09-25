@@ -1,8 +1,7 @@
 #pragma once
 
+#include "../utils/game_constants.h"
 #include "raylib.h"
-
-typedef float float_type;
 
 struct Position;
 
