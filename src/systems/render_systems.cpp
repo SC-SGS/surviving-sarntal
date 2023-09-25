@@ -266,10 +266,7 @@ void render_system(flecs::iter &iter) {
                 static float rotZ = 90;
 
                 debugCamera3D.position.x = camera->target.x - 200;
-                debugCamera3D.position.z = -camera->target.y;
-                //debugCamera3D.position.x = 0;
-                //debugCamera3D.position.y = 0;
-                //debugCamera3D.position.z = 0;
+                debugCamera3D.position.z = -camera->target.y + 100;
 
                 debugCamera3D.target.x =
                     debugCamera3D.position.x; //+cosf(rotZ);
@@ -284,20 +281,23 @@ void render_system(flecs::iter &iter) {
                 auto test = generate_chunk_mesh(world);
                 model = LoadModelFromMesh(test);
 
-                Shader shader_hill = LoadShader("../assets/shaders/hill.vert",
-                                                "../assets/shaders/hill.frag");
-                model.materials[0].shader = shader_hill;
-                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture =
-                    gradientTex;
+                /*Shader shader_hill =
+                    LoadShader("../assets/shaders/hill.vert",
+                               "../assets/shaders/hill.frag");
+                model.materials[0].shader = shader_hill;*/
+                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
+
+                /*int loc = GetShaderLocation(shader, "hilltex");
+                SetShaderValueTexture(shader, loc, gradientTex);*/
 
                 regenerateTerrain = false;
             }
 
             BeginMode3D(debugCamera3D);
             {
-                // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                // DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
-                // DrawCube({-20, 0}, 10, 10, 10, RED);
+                //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                DrawModel(model, {0.0, 0.0}, 1.0f, WHITE);// GREEN);
+                //DrawCube({-20, 0}, 10, 10, 10, RED);
 
                 flecs::filter<Position, BillboardComponent> q =
                     world.filter<Position, BillboardComponent>();
@@ -318,7 +318,7 @@ void render_system(flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debugCamera3D, texture, sourceRec,
-                                         Vector3{800, -500.0f, 0}, b.billUp,
+                                         Vector3{p.x, -500.0f, p.y}, b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.width)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
@@ -331,8 +331,9 @@ void render_system(flecs::iter &iter) {
                 elapsed_time += iter.delta_time();
                 SetShaderValue(shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
+                int count = std::min((int)transforms.size(), MAX_INSTANCES);
                 DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
-                                  MAX_INSTANCES);
+                                  count);
                 rlEnableBackfaceCulling();
 
                 // draw rocks
@@ -590,7 +591,7 @@ void init_render_system(flecs::world &world) {
                              c.height = 100;
                          })
                          .set(([&](Position &c) {
-                             c.x = 600;
+                             c.x = 800;
                              c.y = 0;
                          }));
 
@@ -809,8 +810,29 @@ Mesh generate_chunk_mesh(flecs::world &world) {
             normals.push_back(normal2.z);
 
             // grass pos
-            if (rand() % 3 == 0)
-                transforms.push_back(MatrixTranslate(v1.x, v1.y, v1.z));
+            if (level > 2 && rand() % 15 == 0 /* && level < levels - 1 &&
+                i < interval.end_index - 20*/) {
+
+                float r0 = ((float) rand()) / RAND_MAX;
+                //float r1 = rand() / RAND_MAX;
+                //// random position in quad
+                //auto v01 = Vector3Scale(Vector3Subtract(v0, v1), r0);
+                //auto v02 = Vector3Scale(Vector3Subtract(v0, v2), r1);
+
+                //auto position = Vector3Add(v0, Vector3Add(v01, v02));
+
+                ////transforms.push_back(MatrixTranslate(position.x, position.y, position.z));
+                //
+                //auto translate = MatrixTranslate(position.x, position.y, position.z); // MatrixTranslate(v1.x, v1.y, v1.z);
+                
+                auto v12 = Vector3Subtract(v1, v2); // down
+                auto translate = MatrixTranslate(v1.x, v1.y, v1.z + v12.z * r0);
+                
+                //auto translate = MatrixTranslate(v1.x, v1.y, v1.z);
+                auto scale = MatrixScale(20.0, 20.0, 20.0);
+
+                transforms.push_back(MatrixMultiply(scale, translate));     
+            }
 
             // shift to the front
             v0 = v2;
