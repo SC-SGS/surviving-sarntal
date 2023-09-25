@@ -98,27 +98,13 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
                             Velocity &v2, const Radius R1, const Radius R2, float dt) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
-    float_type radius_sum = R1.value + R2.value;
 
-// /*
-
-    auto p1_previous = p1 - v1*dt;
-    auto p2_previous = p2 - v2*dt;
-    auto d1 = p1.distanceTo(p2);
-    auto d0 = p1_previous.distanceTo(p2_previous);
-
-    auto t = (R1.value + R2.value + EPSILON/10000 - d1) / (d1 - d0);
-
-    p1 = (Position)(p1_previous + v1 * t * dt);
-    p2 = (Position)(p2_previous + v2 * t * dt);
-
-// */
-
+    p1 -= v1*dt;
+    p2 -= v2*dt;
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
     float_type distance_sq = pos_diff_vector * pos_diff_vector;
-    Vector normal_vector = pos_diff_vector / (distance_sq + EPSILON);
 
     // Velocity Update
     float_type total_mass = m1 + m2;
@@ -126,16 +112,6 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
-
- /*
-    // Position update using new velocities
-    float_type overlap = radius_sum - pos_diff_vector.length() + EPSILON;
-    float_type overlap1 = overlap * m2 / (m1 + m2);
-    float_type overlap2 = overlap * m1 / (m1 + m2);
-
-    p1 += normal_vector * overlap1;
-    p2 -= normal_vector * overlap2;
- */
 
 }
 
