@@ -47,7 +47,9 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     // R =  (  0   -1  )
     //      (  1    0  )
     Vector n = {-d.y, d.x};
-    if (n.y < 0) {n =  n * -1.f;}
+    if (n.y < 0) {
+        n = n * -1.f;
+    }
     float_type normalization = std::sqrt(n * n);
     return n / normalization;
 }
@@ -77,13 +79,13 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
         if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 50);
+            explodeRock(it.world(), it.entity(i), 200);
         }
     }
 }
 
-flecs::entity physics::makeRock(const flecs::world &world, Position p, Velocity v,
-                       float_type radius) {
+flecs::entity physics::makeRock(const flecs::world &world, Position p,
+                                Velocity v, float_type radius) {
     return world.entity()
         .set<Position>(p)
         .set<Velocity>(v)
@@ -156,24 +158,26 @@ void physics::updatePosition(flecs::iter it, Position *positions,
     }
 }
 
-void physics::explodeRock(const flecs::world& world,
-                          flecs::entity rock, const int number_of_rocks) {
+void physics::explodeRock(const flecs::world &world, flecs::entity rock,
+                          const int number_of_rocks) {
     auto position = *rock.get<Position>();
     auto velocity = *rock.get<Velocity>();
     auto radius = rock.get<Radius>()->value;
-    auto M = radius * radius;
     rock.destruct();
 
-    float_type new_r = radius / std::sqrt(number_of_rocks);
-    float_type delta_angle = 2.0 * PI / number_of_rocks;
+    float_type new_r = 0.5 * radius / std::sqrt(number_of_rocks);
+    new_r = 3.0;
 
     Position delta_direction, p;
     Velocity v;
     for (int i = 0; i < number_of_rocks; i++) {
-        delta_direction = Position{ std::sin(delta_angle * i),
-                                    std::cos(delta_angle * i)};
+        auto angle = (rand() % 10000000) * PI / 10000000.0 - PI / 2.0;
+        radius = (rand() % 10000000) * radius / 10000000.0;
+
+        delta_direction =
+            Position{(float_type)std::sin(angle), (float_type)std::cos(angle)};
         p = (Position)(position + delta_direction * radius);
-        v = (Velocity)(velocity + delta_direction * 10);
+        v = (Velocity)(delta_direction * 400);
         makeRock(world, p, v, new_r);
     }
 }
