@@ -37,12 +37,13 @@ int main() {
     std::cout << "Kinect is active" << std::endl;
 #endif
 
-    graphics::init_render_system(world);
-
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
+
     world.set<Mountain>({});
+    graphics::init_render_system(world);
+
 
     initGameLogic(world);
 

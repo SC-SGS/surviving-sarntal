@@ -16,7 +16,7 @@ void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
 
     if (position[0].x < killBar->x) {
-        std::cout << "Player Dead" << std::endl;
+        //std::cout << "Player Dead" << std::endl;
         // exit(0);
     }
 }
@@ -106,6 +106,13 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
         mountain->generateNewChunk();
+        graphics::generate_chunk_mesh(it.world());
+        //flecs::entity e = it.world().entity("tmp_event");
+        //it.world()
+        //    .event<graphics::GenChunkEvent>()
+        //    .id<Mountain>()
+        //    .entity(e)
+        //    .emit();
         // std::cout << "chunk generated" << std::endl;
     }
 }
@@ -127,7 +134,19 @@ void spawnRocks(flecs::iter it) {
     }
 }
 
+void mountainLoadChunks(const flecs::world& world) {
+    Mountain *mountain = world.get_mut<Mountain>();
+    for (std::size_t i{0};
+         i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK;
+         i++) {
+        mountain->generateNewChunk();
+        graphics::generate_chunk_mesh(world);
+        }
+}
+
 void initGameLogic(flecs::world &world) {
+    mountainLoadChunks(world);
+
     world.entity()
         .add<Player>()
         .set<Position>({200., 200.})
