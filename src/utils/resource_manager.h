@@ -14,7 +14,7 @@ constexpr HANDLE NULL_HANDLE = -1;
 template <typename T> class ResourceManager {
 
   public:
-    HANDLE Load(const std::string &path) {
+    HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
         HANDLE hash = std::hash(path);
 
@@ -26,33 +26,33 @@ template <typename T> class ResourceManager {
             return hash;
         } else {
             // not found, create new
-            return Load(LoadTexture(path.c_str()));
+            return load(LoadTexture(path.c_str()));
         }
     }
 
-    HANDLE Load(Texture2D texture) {
-        HANDLE handle = 0;
+    HANDLE load(Texture2D texture) {
+        HANDLE handle;
         // generate unused handle
         do {
-            handle = rand();
+            handle = rand(); // NOLINT(*-msc50-cpp)
         } while (res.find(handle) != res.end());
 
         res.insert({handle, texture});
         return handle;
     }
 
-    HANDLE Load(Music music) {
-        HANDLE handle = 0;
+    HANDLE load(Music music) {
+        HANDLE handle;
         // generate unused handle
         do {
-            handle = rand();
+            handle = rand(); // NOLINT(*-msc50-cpp)
         } while (res.find(handle) != res.end());
 
         res.insert({handle, music});
         return handle;
     }
 
-    T Get(HANDLE handle) const {
+    T get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
             return it->second;
@@ -61,7 +61,7 @@ template <typename T> class ResourceManager {
         }
     }
 
-    void Free(HANDLE handle) {
+    void free(HANDLE handle) {
         auto it = res.find(handle);
         if (it != res.end()) {
             res.erase(it);
