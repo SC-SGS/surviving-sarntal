@@ -1,12 +1,15 @@
 #include "input.h"
 
+#include "../utils/game_constants.h"
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "../utils/game_constants.h"
+
+#include "kinect_handler.h"
 
 constexpr int MAX_GAMEPADS = 8;
+double horizontal_axis = 0.0;
 
 /**
  * checks if the device with the given id (in raylib) is a valid gamepad.
@@ -162,9 +165,8 @@ double InputEntity::getAxis(Axis axis) const {
             auto gamepad_axis = gamepad_axis_iter->second;
             value = getGamepadAxis(gamepad_axis);
         }
-    } else if (current_input_type == KINECT && hasKinect()) {
-        // do something
-        return 0;
+    } else if (current_input_type == KINECT) {
+        value = horizontal_axis;
     }
 
     auto virtual_axis_iter = VIRTUAL_AXIS_MAP.find(axis);

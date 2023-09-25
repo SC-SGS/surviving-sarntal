@@ -7,17 +7,27 @@
 #include "systems/render_systems.h"
 #include <flecs.h>
 #include <iostream>
+#include "utils/game_constants.h"
+
+#ifdef kinect
+    #include "components/kinect_handler.h"
+    #include <thread>
+#endif
 
 void mainLoop(flecs::world &world);
+
+bool kinect_mode;
 
 int main() {
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
+    kinect_mode = false;
 
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
     kinect_mode = true;
+    std::thread kinect_thread(initKinect);
 #endif
 
     graphics::initRenderSystem(world);

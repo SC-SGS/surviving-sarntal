@@ -7,71 +7,72 @@
 #define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
 #define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
 
-XnVSelectableSlider2D* g_pMainSlider2D;
-XnVFlowRouter* g_pMainFlowRouter;
+XnVSelectableSlider2D *g_pMainSlider2D;
+XnVFlowRouter *g_pMainFlowRouter;
 
 //-----------------------------------------------------------------------------
 // Callbacks
 //-----------------------------------------------------------------------------
 
-void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue, void* cxt)
-{
+void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
+                                               void *cxt) {
     printf("fValue %6.2f %6.2f\n", xValue * 2.0f - 1.0f, yValue * 2.0f - 1.0f);
+    horizontal_axis = xValue;
 }
 
 // Callback for when the focus is in progress
-void XN_CALLBACK_TYPE SessionProgress(const XnChar* strFocus, const XnPoint3D& ptFocusPoint, XnFloat fProgress, void* UserCxt)
-{
-}
+void XN_CALLBACK_TYPE SessionProgress(const XnChar *strFocus,
+                                      const XnPoint3D &ptFocusPoint,
+                                      XnFloat fProgress, void *UserCxt) {}
 
 // callback for session start
-void XN_CALLBACK_TYPE SessionStart(const XnPoint3D& ptFocusPoint, void* UserCxt)
-{
+void XN_CALLBACK_TYPE SessionStart(const XnPoint3D &ptFocusPoint,
+                                   void *UserCxt) {
     printf("Session started.\n");
     g_pMainFlowRouter->SetActive(g_pMainSlider2D);
 }
 // Callback for session end
-void XN_CALLBACK_TYPE SessionEnd(void* UserCxt)
-{
+void XN_CALLBACK_TYPE SessionEnd(void *UserCxt) {
     printf("Session ended. Please perform focus gesture to start session\n");
     g_pMainFlowRouter->SetActive(NULL);
 }
 
-XnBool fileExists(const char *fn)
-{
+XnBool fileExists(const char *fn) {
     XnBool exists;
     xnOSDoesFileExist(fn, &exists);
     return exists;
 }
 
-int init_kinect()
-{
+int initKinect() {
     xn::Context context;
     xn::ScriptNode scriptNode;
-    XnVSessionGenerator* pSessionGenerator;
+    XnVSessionGenerator *pSessionGenerator;
     XnBool bRemoting = FALSE;
 
     // Create context
     const char *fn = NULL;
-    if      (fileExists(SAMPLE_XML_FILE)) fn = SAMPLE_XML_FILE;
-    else if (fileExists(SAMPLE_XML_FILE_LOCAL)) fn = SAMPLE_XML_FILE_LOCAL;
+    if (fileExists(SAMPLE_XML_FILE))
+        fn = SAMPLE_XML_FILE;
+    else if (fileExists(SAMPLE_XML_FILE_LOCAL))
+        fn = SAMPLE_XML_FILE_LOCAL;
     else {
-        printf("Could not find '%s' nor '%s'. Aborting.\n" , SAMPLE_XML_FILE, SAMPLE_XML_FILE_LOCAL);
+        printf("Could not find '%s' nor '%s'. Aborting.\n", SAMPLE_XML_FILE,
+               SAMPLE_XML_FILE_LOCAL);
         return XN_STATUS_ERROR;
     }
     XnStatus rc = context.InitFromXmlFile(fn, scriptNode);
-    if (rc != XN_STATUS_OK)
-    {
+    if (rc != XN_STATUS_OK) {
         printf("Couldn't initialize: %s\n", xnGetStatusString(rc));
         return 1;
     }
 
     // Create the Session Manager
     pSessionGenerator = new XnVSessionManager();
-    rc = ((XnVSessionManager*)pSessionGenerator)->Initialize(&context, "Click", "RaiseHand");
-    if (rc != XN_STATUS_OK)
-    {
-        printf("Session Manager couldn't initialize: %s\n", xnGetStatusString(rc));
+    rc = ((XnVSessionManager *)pSessionGenerator)
+             ->Initialize(&context, "Click", "RaiseHand");
+    if (rc != XN_STATUS_OK) {
+        printf("Session Manager couldn't initialize: %s\n",
+               xnGetStatusString(rc));
         delete pSessionGenerator;
         return 1;
     }
@@ -80,7 +81,8 @@ int init_kinect()
     context.StartGeneratingAll();
 
     // Register session callbacks
-    pSessionGenerator->RegisterSession(NULL, &SessionStart, &SessionEnd, &SessionProgress);
+    pSessionGenerator->RegisterSession(NULL, &SessionStart, &SessionEnd,
+                                       &SessionProgress);
 
     g_pMainSlider2D = new XnVSelectableSlider2D(3, 3);
     g_pMainSlider2D->RegisterValueChange(NULL, &MainSlider_OnValueChange);
@@ -94,17 +96,9 @@ int init_kinect()
     printf("Hit any key to exit\n");
 
     // Main loop
-    while (!xnOSWasKeyboardHit())
-    {
-        if (bRemoting)
-        {
-            ((XnVMultiProcessFlowClient*)pSessionGenerator)->ReadState();
-        }
-        else
-        {
-            context.WaitAnyUpdateAll();
-            ((XnVSessionManager*)pSessionGenerator)->Update(&context);
-        }
+    while (!xnOSWasKeyboardHit()) {
+        context.WaitAnyUpdateAll();
+        ((XnVSessionManager *)pSessionGenerator)->Update(&context);
     }
 
     delete pSessionGenerator;

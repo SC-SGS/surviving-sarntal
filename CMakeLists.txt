@@ -28,11 +28,15 @@ FetchContent_MakeAvailable(googletest)
 include_directories(libs/NITE/Include /usr/include/ni)
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
-list(FILTER SRC EXCLUDE REGEX "main.cpp")
+if (KINECT)
+    list(FILTER SRC EXCLUDE REGEX "main.cpp")
+else ()
+    list(FILTER SRC EXCLUDE REGEX "main.cpp|kinect_handler.h|kinect_handler.cpp")
+endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
-#message(WARNING ${SRC})    #for CMAKE debugging purposes
+message(WARNING ${SRC})    #for CMAKE debugging purposes
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 

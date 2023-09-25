@@ -15,6 +15,6 @@ constexpr float_type MIN_ROCK_SIZE = 20.f;
 constexpr float_type MAX_ROCK_SIZE = 150.f;
 constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = 1.f;
 
-bool kinect_mode = false;
+extern bool kinect_mode;
 
 #endif // SURVIVING_SARNTAL_GAME_CONSTANTS_H
