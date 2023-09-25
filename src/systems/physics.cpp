@@ -315,11 +315,11 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
 void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                                Radius *radii) {
     rock_it.world()
-        .filter_builder<Width, Height, Position>()
+        .filter_builder<Width, Height, Position, Health>()
         .with<Player>()
         .build()
         .iter([&](flecs::iter player_it, Width *widths, Height *heights,
-                  Position *player_positions) {
+                  Position *player_positions, Health *healths) {
             auto w = widths[0].w;
             auto h = heights[0].h;
             auto player_position = player_positions[0];
@@ -348,9 +348,16 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
-                    // TODO end animation or sth.
-                    std::cout << "Player unalive" << std::endl;
-                    rock_it.world().get_mut<AppInfo>()->isRunning = false;
+                    int rock_dmg =
+                        std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
+                            (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
+                        1;
+                    healths[0].hp -= rock_dmg;
+                    if (healths[0].hp <= 0) {
+                        // TODO end animation or sth.
+                        std::cout << "Player unalive" << std::endl;
+                        rock_it.world().get_mut<AppInfo>()->isRunning = false;
+                    }
                 }
             }
         });

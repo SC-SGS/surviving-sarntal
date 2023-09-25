@@ -116,12 +116,14 @@ void spawnRocks(flecs::iter it) {
 
     if (fmod(GetTime(), ROCK_TIME_PERIOD) < 0.02 ||
         fmod(GetTime(), ROCK_TIME_PERIOD) > 1.98) {
+        float radius =
+            (std::rand() - MIN_ROCK_SIZE) / (MAX_ROCK_SIZE - MIN_ROCK_SIZE);
         it.world()
             .entity()
             .set<Position>({camera->target.x + graphics::SCREEN_WIDTH / 2,
                             -camera->target.y + graphics::SCREEN_HEIGHT / 2})
             .set<Velocity>({0, 0})
-            .set<Radius>({10.})
+            .set<Radius>({radius})
             .add<Rock>()
             .set<graphics::CircleShapeRenderComponent>({10.});
     }
@@ -140,7 +142,8 @@ void initGameLogic(flecs::world &world) {
         })
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
-        .set<InputEntity>({});
+        .set<InputEntity>({})
+        .set<Health>({100});
     world.set<KillBar>({0.});
 
     world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
