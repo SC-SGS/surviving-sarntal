@@ -37,6 +37,8 @@ Texture2D grass_texture;
 std::vector<Matrix> transforms;
 Material matInstances;
 int loc_time;
+bool regenerateTerrain = true;
+
 
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradientTex); // TODO necessary?
@@ -125,7 +127,7 @@ void render_system(flecs::iter &iter) {
             // ClearBackground(BLUE);
 
             ClearBackground(WHITE);
-            // DrawTexture(gradientTex, 0, 0, WHITE);
+            DrawTexture(gradientTex, 0, 0, WHITE);
 
             // Update the scrolling speed
             scrollingBack -= 0.1f;
@@ -282,7 +284,7 @@ void render_system(flecs::iter &iter) {
                     rotZ -= 2 * iter.delta_time();*/
 
                 debugCamera3D.position.x = camera->target.x - 200;
-                //debugCamera3D.position.z = camera->target.y;
+                debugCamera3D.position.z = -camera->target.y;
 
                 debugCamera3D.target.x = debugCamera3D.position.x;//+cosf(rotZ);
                 debugCamera3D.target.y = debugCamera3D.position.y + 1.0; //+ sinf(rotZ);
@@ -290,6 +292,20 @@ void render_system(flecs::iter &iter) {
 
                 //debugCamera3D.position.x = camera->target.x; //+cosf(rotZ);
                 
+            }
+
+            if (regenerateTerrain) {
+                auto test = generate_chunk_mesh(world);
+                model = LoadModelFromMesh(test);
+
+                Shader shader_hill =
+                    LoadShader("../assets/shaders/hill.vert",
+                               "../assets/shaders/hill.frag");
+                model.materials[0].shader = shader_hill;
+                model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture =
+                    gradientTex;
+
+                regenerateTerrain = false;
             }
 
             BeginMode3D(debugCamera3D);
@@ -355,19 +371,6 @@ void render_system(flecs::iter &iter) {
 
 
                 auto mountain = world.get_mut<Mountain>();
-
-                //if (DEBUG) {
-                //    for (int i = interval.start_index;
-                //         i < interval.start_index + 500;
-                //         i++) {
-                //        Vector2 point = {mountain->getVertex(i).x,
-                //                         -mountain->getVertex(i).y};
-
-                //        DrawSphere({point.x, 0, point.y}, 5,
-                //                   BLUE); // Draw control points as circles
-                //    }
-                //}
-                
                 
                 // draw player
                 flecs::filter<Position, RectangleShapeRenderComponent>
@@ -376,10 +379,10 @@ void render_system(flecs::iter &iter) {
 
                 rectangle_q.each(
                     [&](Position &p, RectangleShapeRenderComponent &s) {
-                        DrawCube({p.x, -0.5, p.y},
+                        /*DrawCube({p.x, -0.5, p.y},
                                  s.width, 1.0,
-                                 s.height, BLUE);
-                        DrawCube({p.x - s.width/2, -0.5, p.y - s.height/2}, s.width, 1.0, s.height, RED);
+                                 s.height, BLUE);*/
+                        DrawCube({p.x, -0.5, p.y - s.height/2}, s.width, 1.0, s.height, RED);
                         /*DrawCube({p.x - s.width / 4, 0, p.y - s.height / 4},
                                  s.width / 2, 1.0,
                                  s.height / 2, BLUE);*/
@@ -387,48 +390,48 @@ void render_system(flecs::iter &iter) {
             }
             EndMode3D();
 
-            BeginMode2D(*camera);
-            {
-                auto mountain = world.get_mut<Mountain>();
-                for (int i = interval.start_index; i < interval.end_index;
-                     i++) {
+            //BeginMode2D(*camera);
+            //{
+            //    auto mountain = world.get_mut<Mountain>();
+            //    for (int i = interval.start_index; i < interval.end_index;
+            //         i++) {
 
-                    Vector2 control_point_0{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
-                    Vector2 control_point_2{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
+            //        Vector2 control_point_0{mountain->getVertex(i).x,
+            //                                -mountain->getVertex(i).y};
+            //        Vector2 control_point_1{mountain->getVertex(i + 1).x,
+            //                                -mountain->getVertex(i + 1).y};
+            //        Vector2 control_point_2{mountain->getVertex(i).x,
+            //                                -mountain->getVertex(i).y};
+            //        Vector2 control_point_3{mountain->getVertex(i + 1).x,
+            //                                -mountain->getVertex(i + 1).y};
 
-                    DrawLineBezierCubic(control_point_0, control_point_1,
-                                        control_point_2, control_point_3, 5,
-                                        RED);
-                }
+            //        DrawLineBezierCubic(control_point_0, control_point_1,
+            //                            control_point_2, control_point_3, 5,
+            //                            RED);
+            //    }
+            //    
+            //    // Draw the control points and lines
+            //    if (DEBUG) {
+            //        for (int i = interval.start_index; i < interval.end_index;
+            //             i++) {
+            //            Vector2 point = {mountain->getVertex(i).x,
+            //                             -mountain->getVertex(i).y};
 
-                // Draw the control points and lines
-                if (DEBUG) {
-                    for (int i = interval.start_index; i < interval.end_index;
-                         i++) {
-                        Vector2 point = {mountain->getVertex(i).x,
-                                         -mountain->getVertex(i).y};
+            //            DrawCircleV(point, 5,
+            //                        BLUE); // Draw control points as circles
+            //        }
+            //    }
+            //    flecs::filter<Position, RectangleShapeRenderComponent>
+            //        rectangle_q =
+            //            world.filter<Position, RectangleShapeRenderComponent>();
 
-                        DrawCircleV(point, 5,
-                                    BLUE); // Draw control points as circles
-                    }
-                }
-                flecs::filter<Position, RectangleShapeRenderComponent>
-                    rectangle_q =
-                        world.filter<Position, RectangleShapeRenderComponent>();
-
-                rectangle_q.each(
-                    [&](Position &p, RectangleShapeRenderComponent &s) {
-                        DrawRectangle((int)p.x, (int)-p.y, (int)s.width,
-                                      (int)s.height, RED);
-                    });
-            }
-            EndMode2D();
+            //    rectangle_q.each(
+            //        [&](Position &p, RectangleShapeRenderComponent &s) {
+            //            DrawRectangle((int)p.x, (int)-p.y, (int)s.width,
+            //                          (int)s.height, RED);
+            //        });
+            //}
+            //EndMode2D();
         }
         EndDrawing();
     }
@@ -618,8 +621,8 @@ void init_render_system(flecs::world &world) {
 
     Vector2 min;
     Vector2 max;
-    auto test = generate_chunk_mesh(world);
-    model = LoadModelFromMesh(test);
+    /*auto test = generate_chunk_mesh(world);
+    model = LoadModelFromMesh(test);*/
     // model = LoadModel("../../../assets/mesh/grass_patch.obj");
     // std::cout << "current paht " << std::filesystem::current_path() <<
     // std::endl;
@@ -674,10 +677,6 @@ void init_render_system(flecs::world &world) {
     Texture2D texture = LoadTextureFromImage(checked);
     UnloadImage(checked);*/
 
-    Shader shader_hill = LoadShader(0, TextFormat("", 330));
-    model.materials[0].shader = shader_hill;
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradientTex;
-
     debugCamera3D = {0};
     debugCamera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
     debugCamera3D.target = {0.0f, 1.0f, 0.0f};     // Camera looking at point
@@ -716,18 +715,20 @@ Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
 // Generate a simple triangle mesh from code
 Mesh generate_chunk_mesh(flecs::world &world) {
     std::cout << "gen chunk" << std::endl;
-    world.get_mut<Mountain>()->generateNewChunk();
+    //world.get_mut<Mountain>()->generateNewChunk();
+
+
     auto interval =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
-    interval.end_index =
-        std::min(interval.end_index,
-                 interval.start_index +
-                     1000); // TODO remove (last vertices are wrong...)
+    //interval.end_index =
+    //    std::min(interval.end_index,
+    //             interval.start_index +
+    //                 1500); // TODO remove (last vertices are wrong...)
 
     int terrainVertexCount = interval.end_index - interval.start_index;
 
-    int levels = 15;
+    int levels = 10;
     int levelsAtTheBack = 0; // number terrain layers behind the ridge
 
     int triangleCount = levels * (terrainVertexCount - 1) * 2;
@@ -737,12 +738,11 @@ Mesh generate_chunk_mesh(flecs::world &world) {
     std::vector<float> normals;
 
     // for (int i = interval.start_index; i < interval.end_index-1; i++) {
-
     for (int i = interval.start_index; i < interval.end_index - 1; i++) {
         int currentDepth = -levelsAtTheBack * 0.1;
 
         const float x_scale = 0.1f;
-        const float y_scale = 10.0f;
+        const float y_scale = 15.0f;
 
         float maxX = (interval.end_index - 1 - interval.start_index) * x_scale;
         float maxY = levels * y_scale;
