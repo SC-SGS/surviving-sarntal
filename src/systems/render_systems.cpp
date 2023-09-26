@@ -107,12 +107,9 @@ void renderBackground(flecs::world &world, float cameraX, float cameraY) {
     if (scrollingFore <= -foreground_tex.width * 2)
         scrollingFore = 0;
 
-    world.entity("Background").get_mut<Position>()->x =
-        scrollingBack + cameraX;
-    world.entity("Midground").get_mut<Position>()->x =
-        scrollingMid + cameraX;
-    world.entity("Foreground").get_mut<Position>()->x =
-        scrollingFore + cameraX;
+    world.entity("Background").get_mut<Position>()->x = scrollingBack + cameraX;
+    world.entity("Midground").get_mut<Position>()->x = scrollingMid + cameraX;
+    world.entity("Foreground").get_mut<Position>()->x = scrollingFore + cameraX;
 
     world.entity("BackgroundDuplicate").get_mut<Position>()->x =
         scrollingBack + graphics::SCREEN_WIDTH + cameraX;
@@ -175,8 +172,8 @@ void render_system(flecs::iter &iter) {
         //        debugCamera.rotation++;
         //}
 
-        //auto interval =
-        //    world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
+        // auto interval =
+        //     world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
         BeginDrawing();
         {
@@ -203,7 +200,7 @@ void render_system(flecs::iter &iter) {
 
                 q.each([&](Position &p, SpriteComponent &s) {
                     if (s.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
                         Rectangle sourceRec = {
@@ -300,13 +297,12 @@ void render_system(flecs::iter &iter) {
                 else if (IsKeyDown(KEY_RIGHT))
                     rotZ -= 2 * iter.delta_time();
 
-                debugCamera3D.target.x =
-                    debugCamera3D.position.x +cosf(rotZ);
+                debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
                 debugCamera3D.target.y =
-                    debugCamera3D.position.y +1.0 + sinf(rotZ);
+                    debugCamera3D.position.y + 1.0 + sinf(rotZ);
                 debugCamera3D.target.z = debugCamera3D.position.z;
             } else {
-                
+
                 if (alive) {
                     debugCamera3D.position.x = camera->target.x - 200;
                     debugCamera3D.position.z = -camera->target.y + 100;
@@ -317,14 +313,13 @@ void render_system(flecs::iter &iter) {
                 }
             }
 
-            
-
             BeginMode3D(debugCamera3D);
             {
-                //DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
+                // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
                 for (int i = 0; i < NUM_CHUNKS; i++) {
-                    DrawModel(mountain_model[i], {0.0, 0.0}, 1.0f, WHITE); // GREEN);
-                //DrawCube({-20, 0}, 10, 10, 10, RED);
+                    DrawModel(mountain_model[i], {0.0, 0.0}, 1.0f,
+                              WHITE); // GREEN);
+                    // DrawCube({-20, 0}, 10, 10, 10, RED);
                 }
 
                 flecs::filter<Position, BillboardComponent> qb =
@@ -332,7 +327,7 @@ void render_system(flecs::iter &iter) {
 
                 qb.each([&](Position &p, BillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
 
                         Rectangle sourceRec = {
@@ -358,11 +353,12 @@ void render_system(flecs::iter &iter) {
 
                 q.each([&](Position &p, AnimatedBillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
-                        auto texture = world.get_mut<Resources>()->textures.Get(
+                        auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
 
                         Rectangle sourceRec = {
-                            (float)currentFrame * (float)texture.width / b.numFrames,
+                            (float)currentFrame * (float)texture.width /
+                                b.numFrames,
                             0.0f, (float)texture.width / b.numFrames,
                             (float)texture.height}; // part of the texture used
 
@@ -422,30 +418,28 @@ void render_system(flecs::iter &iter) {
             }
             EndMode3D();
 
-
             // health bar
             int healthbar_width = SCREEN_WIDTH / 4;
             int healthbar_height = SCREEN_HEIGHT / 30;
-            DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE); 
+            DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE);
             int offset = 2;
             float player_health = 0.9; // percent
             DrawRectangle(20 + offset, 20 + offset,
                           player_health * healthbar_width - 2 * offset,
-                          healthbar_height - 2*offset, GREEN); 
+                          healthbar_height - 2 * offset, GREEN);
 
             // score
             DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
 
-            
             if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
                 alive = false; // TODO get from somewhere
             }
 
             if (!alive) {
-                DrawText("You died!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 70, RED);
+                DrawText("You died!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 70,
+                         RED);
             }
 
-            
             DrawFPS(0, 0);
         }
         EndDrawing();
@@ -472,7 +466,7 @@ void init_render_system(const flecs::world &world) {
             PlayMusicStream(resources->music.Get(audioComponent->resourceHandle));
         }*/
 
-    // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.Get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
+    // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
 
     // add the camera entity here for now
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
@@ -509,7 +503,7 @@ void init_render_system(const flecs::world &world) {
         world.entity("TestEntity")
             .set([&](SpriteComponent &c) {
                 c = {0};
-                c.resourceHandle = world.get_mut<Resources>()->textures.Load(
+                c.resourceHandle = world.get_mut<Resources>()->textures.load(
                     LoadTextureFromImage(verticalGradient));
                 c.width = 100;
                 c.height = 100;
@@ -525,7 +519,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
+                    world.get_mut<Resources>()->textures.load(background_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -540,7 +534,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(background_tex);
+                    world.get_mut<Resources>()->textures.load(background_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -555,7 +549,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
+                    world.get_mut<Resources>()->textures.load(midground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -570,7 +564,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(midground_tex);
+                    world.get_mut<Resources>()->textures.load(midground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -585,7 +579,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -599,7 +593,7 @@ void init_render_system(const flecs::world &world) {
             .set([&](SpriteComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.Load(foreground_tex);
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
                 c.width = SCREEN_WIDTH;
                 c.height = SCREEN_HEIGHT;
             })
@@ -613,7 +607,7 @@ void init_render_system(const flecs::world &world) {
         world.entity("AmbientSound").set([&](AudioComponent &c) {
             c = {0};
             c.resourceHandle =
-                world.get_mut<Resources>()->music.Load(ambient_audio);
+                world.get_mut<Resources>()->music.load(ambient_audio);
         });
 
     // billboard for 3d camera
@@ -623,7 +617,7 @@ void init_render_system(const flecs::world &world) {
                              c.billUp = {0.0f, 0.0f, 1.0f};
                              c.billPositionStatic = {0.0f, 0.0f, 0.0f};
                              c.resourceHandle =
-                                 world.get_mut<Resources>()->textures.Load(
+                                 world.get_mut<Resources>()->textures.load(
                                      "../assets/texture/raylib_256x256.png");
                              c.width = 100;
                              c.height = 100;
@@ -633,7 +627,7 @@ void init_render_system(const flecs::world &world) {
                              c.y = 50;
                          }));
 
-     // billboard with animated sprite for 3d camera
+    // billboard with animated sprite for 3d camera
     /*auto animatedBillboard = world.entity("AnimatedBillboard")
                          .set([&](AnimatedBillboardComponent &c) {
                              c = {0};
@@ -718,10 +712,10 @@ void init_render_system(const flecs::world &world) {
     debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
     debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
 
-    HANDLE test_texture = world.get_mut<Resources>()->textures.Load(
+    HANDLE test_texture = world.get_mut<Resources>()->textures.load(
         "../assets/texture/grass.png"); // LoadTexture("../assets/texture/grass.png");
 
-    world.get_mut<Resources>()->textures.Free(test_texture);
+    world.get_mut<Resources>()->textures.free(test_texture);
 }
 
 Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
@@ -749,13 +743,12 @@ void generate_chunk_mesh(const flecs::world &world) {
     auto interval2 =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
-    auto interval =
-        world.get_mut<Mountain>()->getLatestChunk();
+    auto interval = world.get_mut<Mountain>()->getLatestChunk();
 
-    std::cout << "graphics: gen chunk: " << interval.start_index
-              << ", "<< interval.end_index << std::endl;
+    std::cout << "graphics: gen chunk: " << interval.start_index << ", "
+              << interval.end_index << std::endl;
 
-    size_t start_index = interval.start_index-1;
+    size_t start_index = interval.start_index - 1;
     size_t end_index = interval.end_index;
 
     // interval.end_index =
@@ -785,8 +778,7 @@ void generate_chunk_mesh(const flecs::world &world) {
         float maxY = levels * y_scale;
 
         Vector3 v0;
-        auto vertex =
-            world.get_mut<Mountain>()->getVertex(i);
+        auto vertex = world.get_mut<Mountain>()->getVertex(i);
         v0.x = vertex.x;
         v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
@@ -795,8 +787,7 @@ void generate_chunk_mesh(const flecs::world &world) {
         // << std::endl;
 
         Vector3 v1;
-        auto vertex2 =
-            world.get_mut<Mountain>()->getVertex(i + 1);
+        auto vertex2 = world.get_mut<Mountain>()->getVertex(i + 1);
         // vertex2.x = vertex2.x * 0.01f;
         // vertex2.y = vertex2.y * 0.01f;
         //  getTerrainHeight(vertex.x, currentDepth, vertex.y);
@@ -804,15 +795,12 @@ void generate_chunk_mesh(const flecs::world &world) {
         v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
         v1.y = currentDepth;
 
-
-        if(i == start_index) {
-            std::cout << "START IIIIIII " << v0.x << ", "
-                      << start_index
+        if (i == start_index) {
+            std::cout << "START IIIIIII " << v0.x << ", " << start_index
                       << std::endl;
         }
 
-        if (interval.end_index - 2 == i)
-        {
+        if (interval.end_index - 2 == i) {
             std::cout << "END IIIIIII " << v1.x << ", " << end_index
                       << std::endl;
         }
@@ -886,24 +874,24 @@ void generate_chunk_mesh(const flecs::world &world) {
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
 
-
-
             // grass pos
             if (level > 2 && rand() % 15 == 0 /* && level < levels - 1 &&
-                i < interval.end_index - 20*/) {
+                    i < interval.end_index - 20*/) {
 
-                float r0 = ((float) rand()) / RAND_MAX;
-                //float r1 = rand() / RAND_MAX;
+                float r0 = ((float)rand()) / RAND_MAX;
+                // float r1 = rand() / RAND_MAX;
                 //// random position in quad
-                //auto v01 = Vector3Scale(Vector3Subtract(v0, v1), r0);
-                //auto v02 = Vector3Scale(Vector3Subtract(v0, v2), r1);
+                // auto v01 = Vector3Scale(Vector3Subtract(v0, v1), r0);
+                // auto v02 = Vector3Scale(Vector3Subtract(v0, v2), r1);
 
-                //auto position = Vector3Add(v0, Vector3Add(v01, v02));
+                // auto position = Vector3Add(v0, Vector3Add(v01, v02));
 
-                ////transforms.push_back(MatrixTranslate(position.x, position.y, position.z));
+                ////transforms.push_back(MatrixTranslate(position.x, position.y,
+                /// position.z));
                 //
-                //auto translate = MatrixTranslate(position.x, position.y, position.z); // MatrixTranslate(v1.x, v1.y, v1.z);
-                
+                // auto translate = MatrixTranslate(position.x, position.y,
+                // position.z); // MatrixTranslate(v1.x, v1.y, v1.z);
+
                 auto v12 = Vector3Subtract(v1, v2); // down
                 auto translate = MatrixTranslate(v1.x, v1.y, v1.z + v12.z * r0);
 
@@ -912,18 +900,17 @@ void generate_chunk_mesh(const flecs::world &world) {
                 translate.m5 = scale;
                 translate.m10 = scale;
 
-                if (transforms.size() >= MAX_INSTANCES) {  // TODO improve?
+                if (transforms.size() >= MAX_INSTANCES) { // TODO improve?
                     transforms[grassInsertIndex] = translate;
                     std::cout << grassInsertIndex << std::endl;
                 } else {
                     transforms.push_back(translate);
                 }
                 grassInsertIndex++;
-                
+
                 if (grassInsertIndex >= MAX_INSTANCES) {
                     grassInsertIndex = 0;
                 }
-
             }
 
             // shift to the front
@@ -944,8 +931,9 @@ void generate_chunk_mesh(const flecs::world &world) {
 
     //
     if (mountain_model[next_mountain_replace].meshes != nullptr) {
-        for (int i = 0; i < mountain_model[next_mountain_replace].meshCount; i++) {
-            //rlUnloadVertexBuffer(mountain_model[next_mountain_replace].meshes[0].vaoId);
+        for (int i = 0; i < mountain_model[next_mountain_replace].meshCount;
+             i++) {
+            // rlUnloadVertexBuffer(mountain_model[next_mountain_replace].meshes[0].vaoId);
             rlUnloadVertexArray(
                 mountain_model[next_mountain_replace].meshes[i].vaoId);
             if (mesh.vboId != NULL)
@@ -954,18 +942,14 @@ void generate_chunk_mesh(const flecs::world &world) {
                                              .meshes[i]
                                              .vboId[j]);
         }
-    
     }
 
-
-
-    //UnloadMesh();
+    // UnloadMesh();
 
     std::cout << "---> regen terrain" << std::endl;
-    mountain_model[next_mountain_replace] =
-        LoadModelFromMesh(mesh);
+    mountain_model[next_mountain_replace] = LoadModelFromMesh(mesh);
 
-    //UnloadModel(mountain_model[next_mountain_replace]);// since q
+    // UnloadModel(mountain_model[next_mountain_replace]);// since q
 
     /*Shader shader_hill =
         LoadShader("../assets/shaders/hill.vert",
@@ -974,16 +958,12 @@ void generate_chunk_mesh(const flecs::world &world) {
     mountain_model[next_mountain_replace]
         .materials[0]
         .maps[MATERIAL_MAP_DIFFUSE]
-        .texture =
-        gradientTex;
+        .texture = gradientTex;
 
     next_mountain_replace = (next_mountain_replace + 1) % NUM_CHUNKS;
 
     /*int loc = GetShaderLocation(shader, "hilltex");
     SetShaderValueTexture(shader, loc, gradientTex);*/
-
-    
-
 }
 
 void destroy() {

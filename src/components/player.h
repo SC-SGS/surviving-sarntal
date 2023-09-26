@@ -24,3 +24,7 @@ class PlayerMovement {
 struct KillBar {
     float x;
 };
+
+struct Health {
+    int hp;
+};

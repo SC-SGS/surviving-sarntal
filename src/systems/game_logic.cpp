@@ -4,9 +4,12 @@
 #include "../components/player.h"
 #include "../components/render_components.h"
 #include "iostream"
+#include "physics.h"
 #include "raylib.h"
 #include "render_systems.h"
 #include <cmath>
+
+float rock_spawn_time = 0;
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
@@ -14,10 +17,10 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
 
 void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
-
+    // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
-        //std::cout << "Player Dead" << std::endl;
-        // exit(0);
+        // std::cout << "Player Dead" << std::endl;
+        //  exit(0);
     }
 }
 
@@ -43,7 +46,7 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
                 Mountain *mountain) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
-    camera->target.x = (killBar->x) + graphics::SCREEN_WIDTH / 2;
+    camera->target.x = (killBar->x) + (graphics::SCREEN_WIDTH * 1.0f) / 2;
     // fix camera to y-coord of player
     camera->target.y = -position[0].y;
 
@@ -107,13 +110,13 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                   << std::endl;
         mountain->generateNewChunk();
         graphics::generate_chunk_mesh(it.world());
-        //flecs::entity e = it.world().entity("tmp_event");
-        //it.world()
-        //    .event<graphics::GenChunkEvent>()
-        //    .id<Mountain>()
-        //    .entity(e)
-        //    .emit();
-        // std::cout << "chunk generated" << std::endl;
+        // flecs::entity e = it.world().entity("tmp_event");
+        // it.world()
+        //     .event<graphics::GenChunkEvent>()
+        //     .id<Mountain>()
+        //     .entity(e)
+        //     .emit();
+        //  std::cout << "chunk generated" << std::endl;
     }
 }
 
@@ -121,27 +124,32 @@ void spawnRocks(flecs::iter it) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
 
-    if (fmod(GetTime(), ROCK_TIME_PERIOD) < 0.02 ||
-        fmod(GetTime(), ROCK_TIME_PERIOD) > 1.98) {
+    if ((GetTime() - rock_spawn_time) > 0) {
+        rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
+        double r = ((double)std::rand() / (RAND_MAX));
+        float radius =
+            ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+
         it.world()
             .entity()
-            .set<Position>({camera->target.x + graphics::SCREEN_WIDTH / 2,
-                            -camera->target.y + graphics::SCREEN_HEIGHT / 2})
+            .set<Position>(
+                {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
+                 -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
-            .set<Radius>({10.})
+            .set<Radius>({radius})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({10.});
+            .set<graphics::CircleShapeRenderComponent>({radius});
     }
 }
 
-void mountainLoadChunks(const flecs::world& world) {
+void mountainLoadChunks(const flecs::world &world) {
     Mountain *mountain = world.get_mut<Mountain>();
     for (std::size_t i{0};
          i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK;
          i++) {
         mountain->generateNewChunk();
         graphics::generate_chunk_mesh(world);
-        }
+    }
 }
 
 void initGameLogic(flecs::world &world) {
@@ -160,12 +168,14 @@ void initGameLogic(flecs::world &world) {
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({})
+        .set<Health>({100})
         .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
-            c.resourceHandle = world.get_mut<graphics::Resources>()->textures.Load(
-                "../assets/texture/test_sprite_small.png");
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/test_sprite_small.png");
             c.width = 100;
             c.height = 100;
             c.currentFrame = 0;

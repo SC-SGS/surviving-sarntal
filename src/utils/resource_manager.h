@@ -6,17 +6,20 @@
 #include <functional>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
 namespace graphics {
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
+constexpr std::hash<std::string> hasher{};
+
+// TODO, do not use yet
 template <typename T> class ResourceManager {
   public:
-    HANDLE Load(const std::string &path) {
+    HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
-        std::hash<std::string> hasher;
         HANDLE hash = hasher(path);
 
         // check if resource was already loaded before
@@ -27,22 +30,33 @@ template <typename T> class ResourceManager {
             return hash;
         } else {
             // not found, create new
-            return Load(LoadTexture(path.c_str()));
+            return load(LoadTexture(path.c_str()));
         }
     }
 
-    HANDLE Load(const T &resource) {
-        HANDLE handle = 0;
+    HANDLE load(Texture2D texture) {
+        HANDLE handle;
         // generate unused handle
         do {
-            handle = rand();
+            handle = rand(); // NOLINT(*-msc50-cpp)
         } while (res.find(handle) != res.end());
 
-        res.insert({handle, resource});
+        res.insert({handle, texture});
         return handle;
     }
 
-    T Get(HANDLE handle) const {
+    HANDLE load(Music music) {
+        HANDLE handle;
+        // generate unused handle
+        do {
+            handle = rand(); // NOLINT(*-msc50-cpp)
+        } while (res.find(handle) != res.end());
+
+        res.insert({handle, music});
+        return handle;
+    }
+
+    T get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
             return it->second;
@@ -51,7 +65,7 @@ template <typename T> class ResourceManager {
         }
     }
 
-    void Free(HANDLE handle) {
+    void free(HANDLE handle) {
         auto it = res.find(handle);
         if (it != res.end()) {
             onFree(it->second);

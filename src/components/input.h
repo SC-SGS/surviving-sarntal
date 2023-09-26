@@ -61,7 +61,7 @@ struct VirtualAxis {
 
 // map containing strings with the english display names for the input
 // events
-const std::unordered_map<Event, std::string> event_display_names{
+const std::unordered_map<Event, std::string> EVENT_DISPLAY_NAMES{
     {JUMP, "Jump"},           {DUCK, "Duck"},
     {ITEM_PICK, "Pick item"}, {ITEM_USE, "Use item"},
     {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},
@@ -69,14 +69,14 @@ const std::unordered_map<Event, std::string> event_display_names{
 };
 
 // map containing the english display names of the relevant axes
-const std::unordered_map<Axis, std::string> axis_display_names{
+const std::unordered_map<Axis, std::string> AXIS_DISPLAY_NAMES{
     {MOVEMENT_X, "Movement X"},
     {MOVEMENT_Y, "Movement Y"},
     {SECONDARY_X, "Secondary X"},
     {SECONDARY_Y, "Secondary Y"},
     {ITEM_SWITCH, "Switch Item"}};
 
-const std::unordered_map<Event, ButtonEvent> keyboard_key_map{
+const std::unordered_map<Event, ButtonEvent> KEYBOARD_KEY_MAP{
     {JUMP, {DEVICE_KEYBOARD, KEY_SPACE, PRESSED}},
     {DUCK, {DEVICE_KEYBOARD, KEY_LEFT_CONTROL, DOWN}},
     {ITEM_PICK, {DEVICE_KEYBOARD, KEY_E, PRESSED}},
@@ -85,7 +85,7 @@ const std::unordered_map<Event, ButtonEvent> keyboard_key_map{
     {SPECIAL_ABILITY, {DEVICE_KEYBOARD, KEY_G, PRESSED}},
     {PAUSE, {DEVICE_KEYBOARD, KEY_ESCAPE, PRESSED}}};
 
-const std::unordered_map<Event, ButtonEvent> gamepad_key_map{
+const std::unordered_map<Event, ButtonEvent> GAMEPAD_KEY_MAP{
     {JUMP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_DOWN, PRESSED}},
     {DUCK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, PRESSED}},
     {ITEM_PICK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_LEFT, PRESSED}},
@@ -96,7 +96,7 @@ const std::unordered_map<Event, ButtonEvent> gamepad_key_map{
     {PAUSE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_MIDDLE, PRESSED}},
 };
 
-const std::unordered_map<Axis, GamepadAxis> gamepad_axis_map{
+const std::unordered_map<Axis, GamepadAxis> GAMEPAD_AXIS_MAP{
     {MOVEMENT_X, {GAMEPAD_AXIS_LEFT_X}},
     {MOVEMENT_Y, {GAMEPAD_AXIS_LEFT_Y}},
     {SECONDARY_X, {GAMEPAD_AXIS_RIGHT_X}},
@@ -104,7 +104,7 @@ const std::unordered_map<Axis, GamepadAxis> gamepad_axis_map{
 
 // a map that stores sources for virtual axes (axes derived from key
 // presses)
-const std::unordered_map<Axis, std::list<VirtualAxis>> virtual_axis_map{
+const std::unordered_map<Axis, std::list<VirtualAxis>> VIRTUAL_AXIS_MAP{
     {ITEM_SWITCH,
      {{DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, DOWN},
       {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, DOWN}}},
@@ -121,9 +121,9 @@ class InputEntity {
     enum InputType { GAMEPAD, MOUSE_KEYBOARD, KINECT };
 
   private:
-    InputType current_input_type;
+    InputType current_input_type = {};
     // number of the gamepad to use (if input type is Gamepad)
-    int gamepad_num;
+    int gamepad_num = 0;
     // the gamepad id in raylib (if input type is Gamepad)
     int gamepad_id_raylib = NO_GAMEPAD_ID;
 
@@ -139,14 +139,14 @@ class InputEntity {
      * @param event
      * @return
      */
-    bool getKeyboardEvent(ButtonEvent event) const;
+    static bool getKeyboardEvent(ButtonEvent event);
 
     /**
      * checks for mouse button events
      * @param event
      * @return
      */
-    bool getMouseEvent(ButtonEvent event) const;
+    static bool getMouseEvent(ButtonEvent event);
 
     /**
      * reads the value of a gamepad axis (stick or trigger buttons)
@@ -171,7 +171,7 @@ class InputEntity {
      * checks if kinect is selected for input and available
      * @return
      */
-    bool hasKinect() const;
+    static bool hasKinect();
 
     /**
      * checks if a virtual axis should be used with the currently selected input
@@ -200,13 +200,11 @@ class InputEntity {
      * @param input_type
      * @param gamepad_num
      */
-    InputEntity(InputType input_type, int gamepad_num = NO_GAMEPAD_ID);
+    explicit InputEntity(InputType input_type, int gamepad_num = NO_GAMEPAD_ID);
 
-    ~InputEntity();
+    static const std::string &getAxisDisplayName(Axis axis);
 
-    const std::string &getAxisDisplayName(Axis axis) const;
-
-    const std::string &getEventDisplayName(Event event) const;
+    static const std::string &getEventDisplayName(Event event);
 
     /**
      * gets formatted info about currently provided events and axis inputs

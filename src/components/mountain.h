@@ -65,7 +65,7 @@ class Mountain {
      * @return Returns start_index and end_index of the section from min_x to
      * max_x INCLUDING start_index and EXCLUDING end_index;
      */
-    IndexInterval getRelevantMountainSection(float min_x, float max_x);
+    static IndexInterval getRelevantMountainSection(float min_x, float max_x);
 
     /** Returns a position from a given index. The index should previously be
      * obtained via a seperate function of the mountain.
@@ -82,7 +82,7 @@ class Mountain {
      * with the indices from 2 to 22
      * @return
      */
-    IndexInterval getIndexIntervalOfEntireMountain();
+    IndexInterval getIndexIntervalOfEntireMountain() const;
 
     /**
      * @return Returns start_index and end_index of the latest generated
@@ -96,7 +96,7 @@ class Mountain {
      * However, the points might be close enough together that this is not
      * necessary. (If this API sucks it can easily be changed)
      */
-    IndexInterval getLatestChunk();
+    IndexInterval getLatestChunk() const;
 
   private:
     std::array<Position, NUMBER_OF_VERTICES>

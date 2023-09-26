@@ -4,6 +4,8 @@
 
 constexpr float KILL_BAR_VELOCITY = 100.;
 
-constexpr int ROCK_TIME_PERIOD = 2;
+constexpr float ROCK_TIME_PERIOD_DIFFICULT = 1;
+constexpr float ROCK_TIME_PERIOD_MEDIUM = 0.5;
+constexpr float ROCK_TIME_PERIOD_EASY = 2;
 
 void initGameLogic(flecs::world &);
