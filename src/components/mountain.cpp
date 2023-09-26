@@ -11,7 +11,7 @@ Mountain::Mountain() {
     double current_x = -MOUNTAIN_WIDTH;
     double current_y = 0.;
 
-    //only initialize a horizontal line
+    // only initialize a horizontal line
     for (int i = 0; i < landscape_fixpoints_circular_array.size(); i++) {
         landscape_fixpoints_circular_array[i].x = current_x;
         landscape_fixpoints_circular_array[i].y = current_y;

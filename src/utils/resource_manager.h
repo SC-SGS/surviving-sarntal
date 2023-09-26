@@ -95,8 +95,7 @@ struct Resources {
 
     Resources() {
 
-        textures.setOnFreeCallback(
-            UnloadTexture);
+        textures.setOnFreeCallback(UnloadTexture);
 
         music.setOnFreeCallback(UnloadMusicStream);
     }
