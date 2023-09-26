@@ -902,7 +902,6 @@ void generate_chunk_mesh(const flecs::world &world) {
 
                 if (transforms.size() >= MAX_INSTANCES) { // TODO improve?
                     transforms[grassInsertIndex] = translate;
-                    std::cout << grassInsertIndex << std::endl;
                 } else {
                     transforms.push_back(translate);
                 }
