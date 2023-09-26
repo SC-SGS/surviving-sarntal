@@ -5,53 +5,67 @@
 #include "flecs.h"
 #include "raymath.h"
 #include "rlgl.h"
+#include <filesystem>
+#include <iostream>
+
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
 namespace graphics {
 
 Music ambient_audio;
 
-Texture2D gradient_tex;
+Texture2D gradientTex;
 
 Texture2D background_tex;
 Texture2D midground_tex;
 Texture2D foreground_tex;
 
 // Initialize the scrolling speed
-float scrolling_back = 0.0f;
-float scrolling_mid = 0.0f;
-float scrolling_fore = 0.0f;
+float scrollingBack = 0.0f;
+float scrollingMid = 0.0f;
+float scrollingFore = 0.0f;
+
+HANDLE spriteTex;
 
 int rotation = 0;
+int currentFrame = 0;
 
-bool use_debug_camera;
-Camera2D debug_camera;
-Camera3D debug_camera3_d;
-Model model;
+bool useDebugCamera;
+Camera2D debugCamera;
+Camera3D debugCamera3D;
+const int NUM_CHUNKS = 25;
+int next_mountain_replace = 0;
+std::array<Model, NUM_CHUNKS> mountain_model;
 Shader shader;
 Mesh grass_mesh;
 Texture2D grass_texture;
 std::vector<Matrix> transforms;
-Material mat_instances;
+Material matInstances;
 int loc_time;
+bool regenerateTerrain = true;
+bool alive = true;
+int grassInsertIndex = 0;
 
 void regenerateGradientTexture(int screenW, int screenH) {
-    UnloadTexture(gradient_tex); // TODO necessary?
-    Image vertical_gradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
-    gradient_tex = LoadTextureFromImage(vertical_gradient);
-    UnloadImage(vertical_gradient);
+    UnloadTexture(gradientTex); // TODO necessary?
+    Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
+    gradientTex = LoadTextureFromImage(verticalGradient);
+    UnloadImage(verticalGradient);
 }
 
-float getTerrainHeight(float, float y, float ridge_height, float = 0.0f) {
-    const float SCALE = 0.01f;
-    float falloff = -(y * y) * SCALE;
+float getTerrainHeight(float x, float y, float ridge_height,
+                       float baseline = 0.0f) {
+    const float scale = 0.01f;
+
+    float distance_from_baseline = std::abs(y - baseline);
+
+    float falloff = -(y * y) * scale;
+
     return (ridge_height + falloff);
 }
 
-void renderSystem(flecs::iter &iter) {
-    auto world = iter.world();
-
-    UpdateMusicStream(ambient_audio);
-
+void handleWindow(flecs::world &world) {
     if (IsKeyPressed(KEY_F11)) {
         int display = GetCurrentMonitor();
         if (!IsWindowFullscreen()) {
@@ -72,24 +86,74 @@ void renderSystem(flecs::iter &iter) {
         ToggleFullscreen();
     }
     if (WindowShouldClose()) {
-        // switch AppInfo isRunning to false;
+        // switch Appinfo isRunning to false;
         auto info = world.get_mut<AppInfo>();
         info->isRunning = false;
     }
+}
+
+void renderBackground(flecs::world &world, float cameraX, float cameraY) {
+    DrawTexture(gradientTex, 0, 0, WHITE);
+
+    // Update the scrolling speed
+    scrollingBack -= 0.1f;
+    scrollingMid -= 0.5f;
+    scrollingFore -= 1.0f;
+
+    if (scrollingBack <= -background_tex.width * 2)
+        scrollingBack = 0;
+    if (scrollingMid <= -midground_tex.width * 2)
+        scrollingMid = 0;
+    if (scrollingFore <= -foreground_tex.width * 2)
+        scrollingFore = 0;
+
+    world.entity("Background").get_mut<Position>()->x = scrollingBack + cameraX;
+    world.entity("Midground").get_mut<Position>()->x = scrollingMid + cameraX;
+    world.entity("Foreground").get_mut<Position>()->x = scrollingFore + cameraX;
+
+    world.entity("BackgroundDuplicate").get_mut<Position>()->x =
+        scrollingBack + graphics::SCREEN_WIDTH + cameraX;
+    world.entity("MidgroundDuplicate").get_mut<Position>()->x =
+        scrollingMid + graphics::SCREEN_WIDTH + cameraX;
+    world.entity("ForegroundDuplicate").get_mut<Position>()->x =
+        scrollingFore + graphics::SCREEN_WIDTH + cameraX;
+
+    world.entity("Background").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+    world.entity("Midground").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+    world.entity("Foreground").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+
+    world.entity("BackgroundDuplicate").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+    world.entity("MidgroundDuplicate").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+    world.entity("ForegroundDuplicate").get_mut<Position>()->y =
+        -(-graphics::SCREEN_HEIGHT * 0.25 + cameraY);
+}
+
+void render_system(flecs::iter &iter) {
+    auto world = iter.world();
+
+    UpdateMusicStream(ambient_audio);
+
+    handleWindow(world);
 
     if (IsKeyPressed(KEY_P)) {
-        use_debug_camera = !use_debug_camera;
+        useDebugCamera = !useDebugCamera;
     }
 
     auto camera_entity = world.lookup("Camera");
+
     if (camera_entity.is_valid()) {
         auto camera = camera_entity.get_mut<Camera2DComponent>();
 
         // Update the light shader with the camera view position
-        float camera_pos[3] = {debug_camera3_d.position.x,
-                               debug_camera3_d.position.y,
-                               debug_camera3_d.position.z};
-        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], camera_pos,
+        float cameraPos[3] = {debugCamera3D.position.x,
+                              debugCamera3D.position.y,
+                              debugCamera3D.position.z};
+        SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos,
                        SHADER_UNIFORM_VEC3);
 
         // if (useDebugCamera) {
@@ -108,60 +172,17 @@ void renderSystem(flecs::iter &iter) {
         //        debugCamera.rotation++;
         //}
 
-        auto interval =
-            world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
+        // auto interval =
+        //     world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
         BeginDrawing();
         {
-            // ClearBackground(BLUE);
-
             ClearBackground(WHITE);
-            // DrawTexture(gradientTex, 0, 0, WHITE);
-
-            // Update the scrolling speed
-            scrolling_back -= 0.1f;
-            scrolling_mid -= 0.5f;
-            scrolling_fore -= 1.0f;
-
-            if (scrolling_back <= -background_tex.width * 2.0)
-                scrolling_back = 0;
-            if (scrolling_mid <= -midground_tex.width * 2.0)
-                scrolling_mid = 0;
-            if (scrolling_fore <= -foreground_tex.width * 2.0)
-                scrolling_fore = 0;
-
-            world.entity("Background").get_mut<Position>()->x =
-                scrolling_back + camera->target.x;
-            world.entity("Midground").get_mut<Position>()->x =
-                scrolling_mid + camera->target.x;
-            world.entity("Foreground").get_mut<Position>()->x =
-                scrolling_fore + camera->target.x;
-
-            world.entity("BackgroundDuplicate").get_mut<Position>()->x =
-                scrolling_back + graphics::SCREEN_WIDTH + camera->target.x;
-            world.entity("MidgroundDuplicate").get_mut<Position>()->x =
-                scrolling_mid + graphics::SCREEN_WIDTH + camera->target.x;
-            world.entity("ForegroundDuplicate").get_mut<Position>()->x =
-                scrolling_fore + graphics::SCREEN_WIDTH + camera->target.x;
-
-            world.entity("Background").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-            world.entity("Midground").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-            world.entity("Foreground").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-
-            world.entity("BackgroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-            world.entity("MidgroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-            world.entity("ForegroundDuplicate").get_mut<Position>()->y =
-                -(-graphics::SCREEN_HEIGHT * 0.25f + camera->target.y);
-
+            renderBackground(world, camera->target.x, camera->target.y);
             /*world.get_mut<Resources>()*/
 
-            if (use_debug_camera) {
-                BeginMode2D(debug_camera);
+            if (useDebugCamera) {
+                BeginMode2D(debugCamera);
             } else {
                 BeginMode2D(*camera);
             }
@@ -182,61 +203,61 @@ void renderSystem(flecs::iter &iter) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             s.resourceHandle);
 
-                        Rectangle source_rec = {
+                        Rectangle sourceRec = {
                             0.0f, 0.0f, (float)texture.width,
                             (float)texture.height}; // part of the texture used
 
-                        Rectangle dest_rec = {
+                        Rectangle destRec = {
                             p.x, -p.y, static_cast<float>(s.width),
                             static_cast<float>(
                                 s.height)}; // where to draw texture
 
                         DrawTexturePro(
-                            texture, source_rec, dest_rec,
+                            texture, sourceRec, destRec,
                             {(float)texture.width, (float)texture.height}, 0,
                             WHITE);
                     }
                 });
 
-                auto mountain = world.get_mut<Mountain>();
-                for (std::size_t i = interval.start_index;
-                     i < interval.end_index; i++) {
+                // auto mountain = world.get_mut<Mountain>();
+                // for (int i = interval.start_index; i < interval.end_index;
+                //      i++) {
 
-                    Vector2 control_point_0{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_1{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
-                    Vector2 control_point_2{mountain->getVertex(i).x,
-                                            -mountain->getVertex(i).y};
-                    Vector2 control_point_3{mountain->getVertex(i + 1).x,
-                                            -mountain->getVertex(i + 1).y};
+                //    Vector2 control_point_0{mountain->getVertex(i).x,
+                //                            -mountain->getVertex(i).y};
+                //    Vector2 control_point_1{mountain->getVertex(i + 1).x,
+                //                            -mountain->getVertex(i + 1).y};
+                //    Vector2 control_point_2{mountain->getVertex(i).x,
+                //                            -mountain->getVertex(i).y};
+                //    Vector2 control_point_3{mountain->getVertex(i + 1).x,
+                //                            -mountain->getVertex(i + 1).y};
 
-                    DrawLineBezierCubic(control_point_0, control_point_1,
-                                        control_point_2, control_point_3, 5,
-                                        RED);
-                }
+                //    DrawLineBezierCubic(control_point_0, control_point_1,
+                //                        control_point_2, control_point_3, 5,
+                //                        RED);
+                //}
 
-                // Draw the control points and lines
-                if (DEBUG) {
-                    for (std::size_t i = interval.start_index;
-                         i < interval.end_index; i++) {
-                        Vector2 point = {mountain->getVertex(i).x,
-                                         -mountain->getVertex(i).y};
+                //// Draw the control points and lines
+                // if (DEBUG) {
+                //     for (int i = interval.start_index; i <
+                //     interval.end_index;
+                //          i++) {
+                //         Vector2 point = {mountain->getVertex(i).x,
+                //                          -mountain->getVertex(i).y};
 
-                        DrawCircleV(point, 5,
-                                    BLUE); // Draw control points as circles
-                    }
-                }
+                //        DrawCircleV(point, 5,
+                //                    BLUE); // Draw control points as circles
+                //    }
+                //}
 
-                flecs::filter<Position, CircleShapeRenderComponent> circle_q =
-                    world.filter<Position, CircleShapeRenderComponent>();
+                /* flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                     world.filter<Position, CircleShapeRenderComponent>();
 
-                circle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawCircle(static_cast<int>(p.x), static_cast<int>(-p.y),
-                               s.radius, ORANGE);
-                });
+                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                     DrawCircleLines(p.x, -p.y, s.radius, GREEN);
+                 });*/
 
-                flecs::filter<Position, RectangleShapeRenderComponent>
+                /*flecs::filter<Position, RectangleShapeRenderComponent>
                     rectangle_q =
                         world.filter<Position, RectangleShapeRenderComponent>();
 
@@ -246,99 +267,187 @@ void renderSystem(flecs::iter &iter) {
                                       (int)s.height, RED);
                     });
 
-                rotation++;
+                rotation++;*/
             }
 
             EndMode2D();
+            currentFrame++;
+            if (currentFrame > 5)
+                currentFrame = 0;
 
-            if (use_debug_camera) {
-                static float rot_z = 90;
+            if (useDebugCamera) {
+
+                static float rotZ = 0;
 
                 if (IsKeyDown(KEY_D))
-                    debug_camera3_d.position.x += 10 * iter.delta_time();
+                    debugCamera3D.position.x += 100 * iter.delta_time();
                 else if (IsKeyDown(KEY_A))
-                    debug_camera3_d.position.x -= 10 * iter.delta_time();
+                    debugCamera3D.position.x -= 100 * iter.delta_time();
                 else if (IsKeyDown(KEY_E))
-                    debug_camera3_d.position.z -= 10 * iter.delta_time();
+                    debugCamera3D.position.z -= 100 * iter.delta_time();
                 else if (IsKeyDown(KEY_Q))
-                    debug_camera3_d.position.z += 10 * iter.delta_time();
+                    debugCamera3D.position.z += 100 * iter.delta_time();
                 else if (IsKeyDown(KEY_W))
-                    debug_camera3_d.position.y += 10 * iter.delta_time();
+                    debugCamera3D.position.y += 100 * iter.delta_time();
                 else if (IsKeyDown(KEY_S))
-                    debug_camera3_d.position.y -= 10 * iter.delta_time();
+                    debugCamera3D.position.y -= 100 * iter.delta_time();
 
                 if (IsKeyDown(KEY_LEFT))
-                    rot_z += 2 * iter.delta_time();
+                    rotZ += 2 * iter.delta_time();
                 else if (IsKeyDown(KEY_RIGHT))
-                    rot_z -= 2 * iter.delta_time();
+                    rotZ -= 2 * iter.delta_time();
 
-                debug_camera3_d.target.x =
-                    debug_camera3_d.position.x + cosf(rot_z);
-                debug_camera3_d.target.y =
-                    debug_camera3_d.position.y + sinf(rot_z);
-                debug_camera3_d.target.z = debug_camera3_d.position.z;
+                debugCamera3D.target.x = debugCamera3D.position.x + cosf(rotZ);
+                debugCamera3D.target.y =
+                    debugCamera3D.position.y + 1.0 + sinf(rotZ);
+                debugCamera3D.target.z = debugCamera3D.position.z;
+            } else {
+
+                if (alive) {
+                    debugCamera3D.position.x = camera->target.x - 200;
+                    debugCamera3D.position.z = -camera->target.y + 100;
+
+                    debugCamera3D.target.x = debugCamera3D.position.x;
+                    debugCamera3D.target.y = debugCamera3D.position.y + 1.0;
+                    debugCamera3D.target.z = debugCamera3D.position.z;
+                }
             }
 
-            BeginMode3D(debug_camera3_d);
+            BeginMode3D(debugCamera3D);
             {
                 // DrawModelWires(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawModel(model, {0.0, 0.0}, 1.0f, GREEN);
-                DrawCube({-20, 0}, 10, 10, 10, RED);
+                for (int i = 0; i < NUM_CHUNKS; i++) {
+                    DrawModel(mountain_model[i], {0.0, 0.0}, 1.0f,
+                              WHITE); // GREEN);
+                    // DrawCube({-20, 0}, 10, 10, 10, RED);
+                }
 
-                flecs::filter<Position, SpriteComponent, BillboardComponent> q =
-                    world.filter<Position, SpriteComponent,
-                                 BillboardComponent>();
+                flecs::filter<Position, BillboardComponent> qb =
+                    world.filter<Position, BillboardComponent>();
 
-                q.each([&](Position &p, SpriteComponent &s,
-                           BillboardComponent &b) {
-                    if (s.resourceHandle != NULL_HANDLE) {
+                qb.each([&](Position &p, BillboardComponent &b) {
+                    if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
-                            s.resourceHandle);
+                            b.resourceHandle);
 
-                        Rectangle source_rec = {
+                        Rectangle sourceRec = {
                             0.0f, 0.0f, (float)texture.width,
                             (float)texture.height}; // part of the texture used
 
-                        /*Rectangle dest_rec = {
-                            p.x, p.y, static_cast<float>(s.width),
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(b.width),
                             static_cast<float>(
-                                s.height)}; // where to draw texture
-                        ;*/
-                        DrawBillboardRec(
-                            debug_camera3_d, texture, source_rec,
-                            b.billPositionStatic,
-                            Vector2{static_cast<float>(s.width),
-                                    static_cast<float>(s.height)},
-                            WHITE); // vectors and camera need to be adapted
+                                b.height)}; // where to draw texture
+                        ;
 
-                        /*DrawBillboardPro(
-                            debugCamera3D, texture, sourceRec,
-                                         Vector3{p.x, p.y, 0}, b.billUp,
-                            Vector2{static_cast<float>(s.width),
-                                    static_cast<float> (s.height)},
-                            Vector2 origin, float rotation, Color tint);
-                    */
+                        DrawBillboardPro(debugCamera3D, texture, sourceRec,
+                                         Vector3{p.x, -500.0f, p.y}, b.billUp,
+                                         Vector2{static_cast<float>(b.width),
+                                                 static_cast<float>(b.height)},
+                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                    }
+                });
+
+                flecs::filter<Position, AnimatedBillboardComponent> q =
+                    world.filter<Position, AnimatedBillboardComponent>();
+
+                q.each([&](Position &p, AnimatedBillboardComponent &b) {
+                    if (b.resourceHandle != NULL_HANDLE) {
+                        auto texture = world.get_mut<Resources>()->textures.get(
+                            b.resourceHandle);
+
+                        Rectangle sourceRec = {
+                            (float)currentFrame * (float)texture.width /
+                                b.numFrames,
+                            0.0f, (float)texture.width / b.numFrames,
+                            (float)texture.height}; // part of the texture used
+
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(b.width),
+                            static_cast<float>(
+                                b.height)}; // where to draw texture
+                        ;
+
+                        DrawBillboardPro(debugCamera3D, texture, sourceRec,
+                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
+                                         Vector2{static_cast<float>(b.width),
+                                                 static_cast<float>(b.height)},
+                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
                     }
                 });
 
                 rlDisableBackfaceCulling();
-                mat_instances.maps[MATERIAL_MAP_DIFFUSE].texture =
-                    grass_texture;
+                matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
                 static float elapsed_time = 0.0f;
                 elapsed_time += iter.delta_time();
                 SetShaderValue(shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
-                DrawMeshInstanced(grass_mesh, mat_instances, transforms.data(),
-                                  MAX_INSTANCES);
+                int count = std::min((int)transforms.size(), MAX_INSTANCES);
+                DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
+                                  count);
                 rlEnableBackfaceCulling();
+
+                // draw rocks
+                flecs::filter<Position, CircleShapeRenderComponent> cirle_q =
+                    world.filter<Position, CircleShapeRenderComponent>();
+
+                cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
+                    DrawSphere(
+                        {p.x - s.radius / 2, -s.radius / 2, p.y - s.radius / 2},
+                        s.radius, GREEN);
+                });
+
+                auto mountain = world.get_mut<Mountain>();
+
+                // draw player
+                flecs::filter<Position, RectangleShapeRenderComponent>
+                    rectangle_q =
+                        world.filter<Position, RectangleShapeRenderComponent>();
+
+                rectangle_q.each(
+                    [&](Position &p, RectangleShapeRenderComponent &s) {
+                        /*DrawCube({p.x, -0.5, p.y},
+                                 s.width, 1.0,
+                                 s.height, BLUE);*/
+                        DrawCube({p.x, -0.5, p.y - s.height / 2}, s.width, 1.0,
+                                 s.height, RED);
+                        /*DrawCube({p.x - s.width / 4, 0, p.y - s.height / 4},
+                                 s.width / 2, 1.0,
+                                 s.height / 2, BLUE);*/
+                    });
             }
             EndMode3D();
+
+            // health bar
+            int healthbar_width = SCREEN_WIDTH / 4;
+            int healthbar_height = SCREEN_HEIGHT / 30;
+            DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE);
+            int offset = 2;
+            float player_health = 0.9; // percent
+            DrawRectangle(20 + offset, 20 + offset,
+                          player_health * healthbar_width - 2 * offset,
+                          healthbar_height - 2 * offset, GREEN);
+
+            // score
+            DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
+
+            if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
+                alive = false; // TODO get from somewhere
+            }
+
+            if (!alive) {
+                DrawText("You died!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 70,
+                         RED);
+            }
+
+            DrawFPS(0, 0);
         }
         EndDrawing();
     }
 }
 
-void initRenderSystem(flecs::world &world) {
+void init_render_system(const flecs::world &world) {
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
 
@@ -357,10 +466,10 @@ void initRenderSystem(flecs::world &world) {
             PlayMusicStream(resources->music.Get(audioComponent->resourceHandle));
         }*/
 
-    // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.Get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
+    // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
 
     // add the camera entity here for now
-    world.entity("Camera").set([](Camera2DComponent &c) {
+    auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
         c.target = {0.0f, 0.0f};
         c.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
@@ -368,159 +477,185 @@ void initRenderSystem(flecs::world &world) {
         c.zoom = 1.0f;
     });
 
-    use_debug_camera = false;
+    useDebugCamera = false;
 
-    debug_camera = {0};
-    debug_camera.target = {0.0f, 0.0f};
-    debug_camera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
-    debug_camera.rotation = 0.0f;
-    debug_camera.zoom = 1.0f;
+    debugCamera = {0};
+    debugCamera.target = {0.0f, 0.0f};
+    debugCamera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
+    debugCamera.rotation = 0.0f;
+    debugCamera.zoom = 1.0f;
 
     // add the render system
-    world.system().kind(flecs::PostUpdate).iter(renderSystem);
+    world.system().kind(flecs::PostUpdate).iter(render_system);
 
     // add the resource manager
     world.set<Resources>({});
 
     // misc
     regenerateGradientTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
-    Image vertical_gradient =
+    Image verticalGradient =
         GenImageGradientV(SCREEN_WIDTH / 5, SCREEN_HEIGHT / 5, RED, YELLOW);
     // spriteTex = LoadTextureFromImage(verticalGradient);
     // world.get_mut<Resources>()->textures.Load;
 
     // add the camera entity here for now
-    world.entity("TestEntity")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle = world.get_mut<Resources>()->textures.load(
-                LoadTextureFromImage(vertical_gradient));
-            c.width = 100;
-            c.height = 100;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+    auto test_e =
+        world.entity("TestEntity")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle = world.get_mut<Resources>()->textures.load(
+                    LoadTextureFromImage(verticalGradient));
+                c.width = 100;
+                c.height = 100;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
 
-    world.entity("Background")
-        .set([&](SpriteComponent &c) {
+    auto background =
+        world.entity("Background")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(background_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    auto background_duplicate =
+        world.entity("BackgroundDuplicate")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(background_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    auto midground =
+        world.entity("Midground")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(midground_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    auto midground_duplicate =
+        world.entity("MidgroundDuplicate")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(midground_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    auto foreground =
+        world.entity("Foreground")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+    auto foreground_duplicate =
+        world.entity("ForegroundDuplicate")
+            .set([&](SpriteComponent &c) {
+                c = {0};
+                c.resourceHandle =
+                    world.get_mut<Resources>()->textures.load(foreground_tex);
+                c.width = SCREEN_WIDTH;
+                c.height = SCREEN_HEIGHT;
+            })
+            .set(([&](Position &c) {
+                c.x = 0;
+                c.y = 0;
+            }))
+            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+    auto ambient_sound =
+        world.entity("AmbientSound").set([&](AudioComponent &c) {
             c = {0};
             c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(background_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("BackgroundDuplicate")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(background_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("Midground")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(midground_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("MidgroundDuplicate")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(midground_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("Foreground")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(foreground_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("ForegroundDuplicate")
-        .set([&](SpriteComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->textures.load(foreground_tex);
-            c.width = SCREEN_WIDTH;
-            c.height = SCREEN_HEIGHT;
-        })
-        .set(([&](Position &c) {
-            c.x = 0;
-            c.y = 0;
-        }))
-        .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-
-    world.entity("AmbientSound").set([&](AudioComponent &c) {
-        c = {0};
-        c.resourceHandle =
-            world.get_mut<Resources>()->music.load(ambient_audio);
-    });
+                world.get_mut<Resources>()->music.load(ambient_audio);
+        });
 
     // billboard for 3d camera
-    // auto billboard = world.entity("Billboard").set([&](BillboardComponent &c)
-    // {
-    //    c = {0};
-    //    c.billUp = {0.0f, 1.0f, 0.0f};
-    //    c.billPositionStatic = {0.0f, 2.0f, 0.0f};
-    //}) .set([&](SpriteComponent &c) {
-    //    c = {0};
-    //    c.resourceHandle = world.get_mut<Resources>()->textures.Load(
-    //        LoadTextureFromImage(verticalGradient));
-    //    c.width = 100;
-    //    c.height = 100;
-    //    })
-    //    .set(([&](Position &c) {
-    //        c.x = 0;
-    //        c.y = 0;
+    auto billboard = world.entity("Billboard")
+                         .set([&](BillboardComponent &c) {
+                             c = {0};
+                             c.billUp = {0.0f, 0.0f, 1.0f};
+                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.load(
+                                     "../assets/texture/raylib_256x256.png");
+                             c.width = 100;
+                             c.height = 100;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 800;
+                             c.y = 50;
+                         }));
 
-    //}));
+    // billboard with animated sprite for 3d camera
+    /*auto animatedBillboard = world.entity("AnimatedBillboard")
+                         .set([&](AnimatedBillboardComponent &c) {
+                             c = {0};
+                             c.billUp = {0.0f, 0.0f, 1.0f};
+                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                             c.resourceHandle =
+                                 world.get_mut<Resources>()->textures.Load(
+                                     "../assets/texture/test_sprite_small.png");
+                             c.width = 100;
+                             c.height = 100;
+                             c.currentFrame = 0;
+                             c.numFrames = 6;
+                         })
+                         .set(([&](Position &c) {
+                             c.x = 800;
+                             c.y = 300;
+                         }));*/
 
-    auto test = generateChunkMesh(world);
-    model = LoadModelFromMesh(test);
+    Vector2 min;
+    Vector2 max;
+    /*auto test = generate_chunk_mesh(world);
+    model = LoadModelFromMesh(test);*/
     // model = LoadModel("../../../assets/mesh/grass_patch.obj");
     // std::cout << "current paht " << std::filesystem::current_path() <<
     // std::endl;
     //  Load lighting shader
-    shader = LoadShader("../../../assets/shaders/grass_instancing.vert",
-                        "../../../assets/shaders/grass_instancing.frag");
+    shader = LoadShader("../assets/shaders/grass_instancing.vert",
+                        "../assets/shaders/grass_instancing.frag");
 
     // Get shader locations
     shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(shader, "mvp");
@@ -529,19 +664,19 @@ void initRenderSystem(flecs::world &world) {
         GetShaderLocationAttrib(shader, "instanceTransform");
 
     // Set shader value: ambient light level
-    int ambient_loc = GetShaderLocation(shader, "ambient");
+    int ambientLoc = GetShaderLocation(shader, "ambient");
     float col[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-    SetShaderValue(shader, ambient_loc, &col[0], SHADER_UNIFORM_VEC4);
+    SetShaderValue(shader, ambientLoc, &col[0], SHADER_UNIFORM_VEC4);
 
     // Define mesh to be instanced
     // grass_mesh = GenMeshCube(1.0f, 1.0f, 1.0f);
 
-    grass_mesh = LoadModel("../../../assets/mesh/grass_patch.obj").meshes[0];
+    Model grass_model = LoadModel("../assets/mesh/grass_patch.obj");
+    grass_mesh = grass_model.meshes[0];
 
     // DrawModel
 
-    // TODO local or global variable?
-    grass_texture = LoadTexture("../../../assets/texture/grass.png");
+    Texture2D grass_texture = LoadTexture("../assets/texture/grass.png");
 
     int loc = GetShaderLocation(shader, "grasstex");
     loc_time = GetShaderLocation(shader, "time");
@@ -558,125 +693,134 @@ void initRenderSystem(flecs::world &world) {
     //                                         0));
     //}
 
-    // NOTE: We are assigning the instancing shader to material.shader
+    // NOTE: We are assigning the intancing shader to material.shader
     // to be used on mesh drawing with DrawMeshInstanced()
-    mat_instances = LoadMaterialDefault();
-    mat_instances.shader = shader;
+    matInstances = LoadMaterialDefault();
+    matInstances.shader = shader;
     // matInstances.maps[MATERIAL_MAP_DIFFUSE].color = RED;
-    mat_instances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
+    matInstances.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
 
     /*Image checked = GenImageChecked(2, 2, 1, 1, RED, GREEN);
     Texture2D texture = LoadTextureFromImage(checked);
     UnloadImage(checked);*/
 
-    Shader shader_hill = LoadShader(nullptr, TextFormat("", 330));
-    model.materials[0].shader = shader_hill;
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gradient_tex;
+    debugCamera3D = {0};
+    debugCamera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
+    debugCamera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
+    debugCamera3D.up = {0.0f, 0.0f,
+                        1.0f};  // Camera up vector (rotation towards target)
+    debugCamera3D.fovy = 45.0f; // Camera field-of-view Y
+    debugCamera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
 
-    debug_camera3_d = {0};
-    debug_camera3_d.position = {0.0f, -10.0f, 0.0f}; // Camera position
-    debug_camera3_d.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
-    debug_camera3_d.up = {0.0f, 0.0f,
-                          1.0f};  // Camera up vector (rotation towards target)
-    debug_camera3_d.fovy = 45.0f; // Camera field-of-view Y
-    debug_camera3_d.projection = CAMERA_PERSPECTIVE; // Camera mode type
+    HANDLE test_texture = world.get_mut<Resources>()->textures.load(
+        "../assets/texture/grass.png"); // LoadTexture("../assets/texture/grass.png");
+
+    world.get_mut<Resources>()->textures.free(test_texture);
 }
 
-Vector3 computeNormal(Vector3 p1, Vector3 p2, Vector3 p3) {
+Vector3 compute_normal(Vector3 p1, Vector3 p2, Vector3 p3) {
     Vector3 n;
 
-    auto ax = p2.x - p1.x;
-    auto ay = p2.y - p1.y;
-    auto az = p2.z - p1.z;
+    auto Ax = p2.x - p1.x;
+    auto Ay = p2.y - p1.y;
+    auto Az = p2.z - p1.z;
 
-    auto bx = p3.x - p1.x;
-    auto by = p3.y - p1.y;
-    auto bz = p3.z - p1.z;
+    auto Bx = p3.x - p1.x;
+    auto By = p3.y - p1.y;
+    auto Bz = p3.z - p1.z;
 
-    n.x = ay * bz - az * by;
-    n.y = az * bx - ax * bz;
-    n.z = ax * by - ay * bx;
+    n.x = Ay * Bz - Az * By;
+    n.y = Az * Bx - Ax * Bz;
+    n.z = Ax * By - Ay * Bx;
 
     return n;
 }
 
 // Generate a simple triangle mesh from code
-Mesh generateChunkMesh(flecs::world &world) {
+void generate_chunk_mesh(const flecs::world &world) {
+    // world.get_mut<Mountain>()->generateNewChunk();
 
-    world.get_mut<Mountain>()->generateNewChunk();
-    auto interval =
+    auto interval2 =
         world.get_mut<Mountain>()->getIndexIntervalOfEntireMountain();
 
-    interval.end_index =
-        std::min(interval.end_index,
-                 interval.start_index +
-                     2000); // TODO remove (last vertices are wrong...)
+    auto interval = world.get_mut<Mountain>()->getLatestChunk();
 
-    int terrain_vertex_count = static_cast<int>(interval.end_index) -
-                               static_cast<int>(interval.start_index);
+    std::cout << "graphics: gen chunk: " << interval.start_index << ", "
+              << interval.end_index << std::endl;
 
-    int levels = 15;
-    int levels_at_the_back = 0; // number terrain layers behind the ridge
+    size_t start_index = interval.start_index - 1;
+    size_t end_index = interval.end_index;
 
-    int triangle_count = levels * (terrain_vertex_count - 1) * 2;
-    int vertex_count = triangle_count * 3;
+    // interval.end_index =
+    //     std::min(interval.end_index,
+    //              interval.start_index +
+    //                  1500); // TODO remove (last vertices are wrong...)
+
+    int terrainVertexCount = end_index - start_index;
+
+    int levels = 10;
+    int levelsAtTheBack = 0; // number terrain layers behind the ridge
+
+    int triangleCount = levels * (terrainVertexCount - 1) * 2;
+    int vertexCount = triangleCount * 3;
     std::vector<float> vertices;
     std::vector<float> texcoords;
     std::vector<float> normals;
 
     // for (int i = interval.start_index; i < interval.end_index-1; i++) {
+    for (int i = start_index; i < end_index - 1; i++) {
+        int currentDepth = -levelsAtTheBack * 0.1;
 
-    for (std::size_t i = interval.start_index; i < interval.end_index - 1;
-         i++) {
-        int current_depth = static_cast<int>(-levels_at_the_back * 0.1);
+        const float x_scale = 0.1f;
+        const float y_scale = 15.0f;
 
-        const float X_SCALE = 0.1f;
-        const float Y_SCALE = 0.5f;
-
-        float max_x =
-            static_cast<float>(interval.end_index - 1 - interval.start_index) *
-            X_SCALE;
-        float max_y = static_cast<float>(levels) * Y_SCALE;
+        float maxX = (end_index - 1 - start_index) * x_scale;
+        float maxY = levels * y_scale;
 
         Vector3 v0;
-        auto vertex =
-            world.get_mut<Mountain>()->getVertex(interval.start_index + i);
+        auto vertex = world.get_mut<Mountain>()->getVertex(i);
         v0.x = vertex.x;
-        v0.z = getTerrainHeight(vertex.x, static_cast<float>(current_depth),
-                                vertex.y);
-        v0.y = static_cast<float>(current_depth);
+        v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
+        v0.y = currentDepth;
 
         // std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y
         // << std::endl;
 
         Vector3 v1;
-        auto vertex2 =
-            world.get_mut<Mountain>()->getVertex(interval.start_index + i + 1);
+        auto vertex2 = world.get_mut<Mountain>()->getVertex(i + 1);
         // vertex2.x = vertex2.x * 0.01f;
         // vertex2.y = vertex2.y * 0.01f;
         //  getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v1.x = vertex2.x;
-        v1.z = getTerrainHeight(vertex2.x, static_cast<float>(current_depth),
-                                vertex2.y); // height;
-        v1.y = static_cast<float>(current_depth);
+        v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
+        v1.y = currentDepth;
 
+        if (i == start_index) {
+            std::cout << "START IIIIIII " << v0.x << ", " << start_index
+                      << std::endl;
+        }
+
+        if (interval.end_index - 2 == i) {
+            std::cout << "END IIIIIII " << v1.x << ", " << end_index
+                      << std::endl;
+        }
         for (int level = 0; level < levels; level++) {
             auto v2 = v0; // in front of terrain vertex i-1
-            v2.y -= Y_SCALE;
+            v2.y -= y_scale;
             v2.z = getTerrainHeight(v2.x, v2.y, v2.z);
             auto v3 = v1; // in front of terrain vertex i
-            v3.y -= Y_SCALE;
+            v3.y -= y_scale;
             v3.z = getTerrainHeight(v3.x, v3.y, v3.z);
 
             // first triangle
             // v1, v0, v2
-            auto normal = computeNormal(v1, v0, v2);
+            auto normal = compute_normal(v1, v0, v2);
 
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
-            texcoords.push_back(v1.x / max_x);
-            texcoords.push_back(v1.y / max_y);
+            texcoords.push_back(v1.x / maxX);
+            texcoords.push_back(v1.y / maxY);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
@@ -684,8 +828,8 @@ Mesh generateChunkMesh(flecs::world &world) {
             vertices.push_back(v0.x);
             vertices.push_back(v0.y);
             vertices.push_back(v0.z);
-            texcoords.push_back(v0.x / max_x);
-            texcoords.push_back(v0.y / max_y);
+            texcoords.push_back(v0.x / maxX);
+            texcoords.push_back(v0.y / maxY);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
@@ -693,21 +837,21 @@ Mesh generateChunkMesh(flecs::world &world) {
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z); // below terrain vertex i-1
-            texcoords.push_back(v2.x / max_x);
-            texcoords.push_back(v2.y / max_y);
+            texcoords.push_back(v2.x / maxX);
+            texcoords.push_back(v2.y / maxY);
             normals.push_back(normal.x);
             normals.push_back(normal.y);
             normals.push_back(normal.z);
 
             // second triangle
             // v1, v2, v3
-            auto normal2 = computeNormal(v1, v2, v3);
+            auto normal2 = compute_normal(v1, v2, v3);
 
             vertices.push_back(v1.x);
             vertices.push_back(v1.y);
             vertices.push_back(v1.z);
-            texcoords.push_back(v1.x / max_x);
-            texcoords.push_back(v1.y / max_y);
+            texcoords.push_back(v1.x / maxX);
+            texcoords.push_back(v1.y / maxY);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
@@ -715,8 +859,8 @@ Mesh generateChunkMesh(flecs::world &world) {
             vertices.push_back(v2.x);
             vertices.push_back(v2.y);
             vertices.push_back(v2.z);
-            texcoords.push_back(v2.x / max_x);
-            texcoords.push_back(v2.y / max_y);
+            texcoords.push_back(v2.x / maxX);
+            texcoords.push_back(v2.y / maxY);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
@@ -724,15 +868,49 @@ Mesh generateChunkMesh(flecs::world &world) {
             vertices.push_back(v3.x);
             vertices.push_back(v3.y);
             vertices.push_back(v3.z); // below terrain vertex i
-            texcoords.push_back(v3.x / max_x);
-            texcoords.push_back(v3.y / max_y);
+            texcoords.push_back(v3.x / maxX);
+            texcoords.push_back(v3.y / maxY);
             normals.push_back(normal2.x);
             normals.push_back(normal2.y);
             normals.push_back(normal2.z);
 
             // grass pos
-            if (rand() % 3 == 0) // NOLINT(*-msc50-cpp)
-                transforms.push_back(MatrixTranslate(v1.x, v1.y, v1.z));
+            if (level > 2 && rand() % 15 == 0 /* && level < levels - 1 &&
+                    i < interval.end_index - 20*/) {
+
+                float r0 = ((float)rand()) / RAND_MAX;
+                // float r1 = rand() / RAND_MAX;
+                //// random position in quad
+                // auto v01 = Vector3Scale(Vector3Subtract(v0, v1), r0);
+                // auto v02 = Vector3Scale(Vector3Subtract(v0, v2), r1);
+
+                // auto position = Vector3Add(v0, Vector3Add(v01, v02));
+
+                ////transforms.push_back(MatrixTranslate(position.x, position.y,
+                /// position.z));
+                //
+                // auto translate = MatrixTranslate(position.x, position.y,
+                // position.z); // MatrixTranslate(v1.x, v1.y, v1.z);
+
+                auto v12 = Vector3Subtract(v1, v2); // down
+                auto translate = MatrixTranslate(v1.x, v1.y, v1.z + v12.z * r0);
+
+                float scale = 20.0;
+                translate.m0 = scale;
+                translate.m5 = scale;
+                translate.m10 = scale;
+
+                if (transforms.size() >= MAX_INSTANCES) { // TODO improve?
+                    transforms[grassInsertIndex] = translate;
+                } else {
+                    transforms.push_back(translate);
+                }
+                grassInsertIndex++;
+
+                if (grassInsertIndex >= MAX_INSTANCES) {
+                    grassInsertIndex = 0;
+                }
+            }
 
             // shift to the front
             v0 = v2;
@@ -741,8 +919,8 @@ Mesh generateChunkMesh(flecs::world &world) {
     }
 
     Mesh mesh = {0};
-    mesh.triangleCount = triangle_count;
-    mesh.vertexCount = vertex_count;
+    mesh.triangleCount = triangleCount;
+    mesh.vertexCount = vertexCount;
     mesh.vertices = vertices.data(); // 3 vertices, 3 coordinates each (x, y, z)
     mesh.texcoords = texcoords.data(); // 3 vertices, 2 coordinates each (x, y)
     mesh.normals = normals.data(); // 3 vertices, 3 coordinates each (x, y, z)
@@ -750,15 +928,48 @@ Mesh generateChunkMesh(flecs::world &world) {
     // Upload mesh data from CPU (RAM) to GPU (VRAM) memory
     UploadMesh(&mesh, false);
 
-    return mesh;
+    //
+    if (mountain_model[next_mountain_replace].meshes != nullptr) {
+        for (int i = 0; i < mountain_model[next_mountain_replace].meshCount;
+             i++) {
+            // rlUnloadVertexBuffer(mountain_model[next_mountain_replace].meshes[0].vaoId);
+            rlUnloadVertexArray(
+                mountain_model[next_mountain_replace].meshes[i].vaoId);
+            if (mesh.vboId != NULL)
+                for (int j = 0; j < 7; j++)
+                    rlUnloadVertexBuffer(mountain_model[next_mountain_replace]
+                                             .meshes[i]
+                                             .vboId[j]);
+        }
+    }
+
+    // UnloadMesh();
+
+    std::cout << "---> regen terrain" << std::endl;
+    mountain_model[next_mountain_replace] = LoadModelFromMesh(mesh);
+
+    // UnloadModel(mountain_model[next_mountain_replace]);// since q
+
+    /*Shader shader_hill =
+        LoadShader("../assets/shaders/hill.vert",
+                    "../assets/shaders/hill.frag");
+    model.materials[0].shader = shader_hill;*/
+    mountain_model[next_mountain_replace]
+        .materials[0]
+        .maps[MATERIAL_MAP_DIFFUSE]
+        .texture = gradientTex;
+
+    next_mountain_replace = (next_mountain_replace + 1) % NUM_CHUNKS;
+
+    /*int loc = GetShaderLocation(shader, "hilltex");
+    SetShaderValueTexture(shader, loc, gradientTex);*/
 }
 
 void destroy() {
     UnloadShader(shader);
-    UnloadTexture(gradient_tex);
+    UnloadTexture(gradientTex);
     // UnloadModel(model);
 
-    CloseWindow();
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);

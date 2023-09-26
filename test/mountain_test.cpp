@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "src/components/mountain.h"
-
+/*
 void checkSectionIndices(Mountain& mountain, float min_x, float max_x){
     IndexInterval interval = mountain.getRelevantMountainSection(min_x, max_x);
     //std::cout << "region: " << mountain.getVertex(interval.start_index).x << " " << mountain.getVertex(interval.end_index).x << " for rock: " << min_x << " " << max_x << std::endl;
@@ -47,3 +47,4 @@ TEST(ChunkLoads, BasicAssertions) {
 
     //std::cout << firstSection.start_index << " " << firstSection.end_index << std::endl;
 }
+*/

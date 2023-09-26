@@ -8,11 +8,20 @@ Mountain::Mountain() {
     std::cout << "Mountain gets constructed" << std::endl;
 
     // create points and chunks corresponding to a simple ramp
-    double current_x = 0.;
+    double current_x = -MOUNTAIN_WIDTH;
     double current_y = 0.;
-    for (auto &i : landscape_fixpoints_circular_array) {
-        i.x = static_cast<float_type>(current_x);
-        i.y = static_cast<float_type>(current_y);
+
+    // only initialize a horizontal line
+    for (int i = 0; i < landscape_fixpoints_circular_array.size(); i++) {
+        landscape_fixpoints_circular_array[i].x = current_x;
+        landscape_fixpoints_circular_array[i].y = current_y;
+        current_x += SECTION_WIDTH;
+    }
+
+    /*
+    for (int i = 0; i < landscape_fixpoints_circular_array.size(); i++) {
+        landscape_fixpoints_circular_array[i].x = current_x;
+        landscape_fixpoints_circular_array[i].y = current_y;
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
     }
@@ -24,7 +33,8 @@ Mountain::Mountain() {
         start_of_circular_array =
             (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) %
             NUMBER_OF_VERTICES;
-    }
+
+    }*/
     // printTempDebugInfo();
 }
 
@@ -66,7 +76,7 @@ IndexInterval Mountain::getRelevantMountainSection(float_type min_x,
 }
 
 void Mountain::generateNewChunk() {
-    // std::cout << "Chunk generated" << std::endl;
+    std::cout << "Chunk generated" << std::endl;
     generateSlope();
     generateTerrainRecursive(
         start_of_circular_array,
