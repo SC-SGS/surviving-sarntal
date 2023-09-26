@@ -40,10 +40,8 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
-
     world.set<Mountain>({});
     graphics::init_render_system(world);
-
 
     initGameLogic(world);
 
