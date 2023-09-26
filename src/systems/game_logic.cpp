@@ -15,12 +15,12 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
 }
 
-void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
+void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
-        // std::cout << "Player Dead" << std::endl;
-        //  exit(0);
+        std::cout << "Player Dead" << std::endl;
+        iter.world().get_mut<AppInfo>()->isRunning = false;
     }
 }
 
