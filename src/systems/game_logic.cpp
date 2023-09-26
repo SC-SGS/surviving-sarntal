@@ -119,8 +119,9 @@ void spawnRocks(flecs::iter it) {
 
     if ((GetTime() - rock_spawn_time) > 0) {
         rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
-        double r = ((double) std::rand() / (RAND_MAX));
-        float radius = ((float) r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+        double r = ((double)std::rand() / (RAND_MAX));
+        float radius =
+            ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
         it.world()
             .entity()
