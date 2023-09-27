@@ -7,9 +7,8 @@
 #include "physics.h"
 #include "raylib.h"
 #include "render_systems.h"
+#include "rockSpawnStuff.h"
 #include <cmath>
-
-float rock_spawn_time = 0;
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
@@ -120,26 +119,66 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
     }
 }
 
-void spawnRocks(flecs::iter it) {
+void spawnRocks(flecs::iter it, Mountain *mountain) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
 
-    if ((GetTime() - rock_spawn_time) > 0) {
-        rock_spawn_time = rock_spawn_time + ROCK_TIME_PERIOD_MEDIUM;
-        double r = ((double)std::rand() / (RAND_MAX));
-        float radius =
-            ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+    auto gameTime = GetTime();
+    RockSpawnPhase rockSpawnPhase =
+        rockSpawnStuff::determineRockSpawnPhase(gameTime);
+    float time_between_rockspawns =
+        rockSpawnStuff::rockSpawnTimeFromPhase(rockSpawnPhase);
 
-        it.world()
-            .entity()
-            .set<Position>(
-                {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
-                 -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
-            .set<Velocity>({0, 0})
-            .set<Radius>({radius})
-            .add<Rock>()
-            .add<Exploding>()
-            .set<graphics::CircleShapeRenderComponent>({radius});
+    if (gameTime > rockSpawnStuff::rock_spawn_time + time_between_rockspawns) {
+        rockSpawnStuff::rock_spawn_time =
+            rockSpawnStuff::rock_spawn_time + time_between_rockspawns;
+
+        // compute spawn Basepoint
+        // offset on x-axis by -300 to spawn visible on screen
+        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 100.;
+
+        const float spawn_x_coord = camera->target.x +
+                                    ((float)graphics::SCREEN_WIDTH) / 2 -
+                                    200.; //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
+        Position spawnBasepoint = mountain->getVertex(
+            mountain->getRelevantMountainSection(spawn_x_coord, spawn_x_coord)
+                .start_index);
+        // spawn rocks offset by constant amount above mountain
+        spawnBasepoint.y += 350.;
+
+        int num_rocks_to_spawn =
+            rockSpawnStuff::computeNumRocksToSpawn(rockSpawnPhase);
+        const std::vector<Position> offsets_additional_rocks{
+            {0., 0.},
+            {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.},
+            {-MAX_ROCK_SIZE - 5., MAX_ROCK_SIZE * 2 + 10.}};
+
+        for (int i{0}; i < num_rocks_to_spawn; i++) {
+            double r = ((double)std::rand() / (RAND_MAX));
+            float radius =
+                ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+
+            std::cout << "rock spawned" << std::endl;
+            auto rock_entity =
+                it.world()
+                    .entity()
+                    .set<Position>(
+                        {spawnBasepoint.x + offsets_additional_rocks[i].x,
+                         spawnBasepoint.y + offsets_additional_rocks[i].y})
+                    .set<Velocity>({-200., 0})
+                    .set<Radius>({radius})
+                    .add<Rock>()
+                    //.add<Exploding>()
+                    .set<graphics::CircleShapeRenderComponent>({radius});
+
+            if (rockSpawnPhase == explosiveBatches) {
+                rockSpawnStuff::explosive_rock_modulo_count++;
+                if (rockSpawnStuff::explosive_rock_modulo_count >= 10) {
+                    rockSpawnStuff::explosive_rock_modulo_count = 0;
+                    rock_entity.add<Exploding>();
+                }
+            }
+        }
     }
 }
 
@@ -157,6 +196,15 @@ void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
     appInfo->score = std::max(appInfo->score, (int)position[0].x);
     // std::cout << "Score: " << appInfo->score << std::endl;
 }
+
+// debug function
+// void countRocks(flecs::iter it, Rock* rocks){
+//     int acc{0};
+//     for(auto i: it){
+//         acc++;
+//     }
+//     std::cout<<"rock count: " << acc << std::endl;
+// }
 
 void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
@@ -218,5 +266,5 @@ void initGameLogic(flecs::world &world) {
         .singleton()
         .iter(updateScore);
 
-    world.system<>().iter(spawnRocks);
+    world.system<Mountain>().term_at(1).singleton().iter(spawnRocks);
 }
