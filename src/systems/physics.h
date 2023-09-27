@@ -27,7 +27,6 @@ struct Vertex {
  * @param v velocity
  * @param r radius, should be several times larger than section width in
  * mountain.h
- * TODO spawn here probably???
  */
 void makeRock(const flecs::world &world, Position p, Velocity v,
               float_type radius);
@@ -267,6 +266,8 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
  */
 float getYPosFromX(const flecs::world &world, float x);
 
+void explodeRock(const flecs::world &world, flecs::entity rock,
+                 const int number_of_rocks);
 } // namespace physics
 
 namespace math {
