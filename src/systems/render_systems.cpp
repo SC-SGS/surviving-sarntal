@@ -798,7 +798,8 @@ void renderSystem(const flecs::iter &iter) {
                 flecs::filter<Position, BillboardComponent> qb =
                     world.filter<Position, BillboardComponent>();
 
-                qb.each([&](Position &p, BillboardComponent &b) {
+                qb.each([&](flecs::entity e, Position &p,
+                            BillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
@@ -813,6 +814,11 @@ void renderSystem(const flecs::iter &iter) {
                                 b.height)}; // where to draw texture
                         ;
 
+                        float rotation = 0;
+                        if (e.has<Rotation>()) {
+                            rotation = e.get<Rotation>()->angular_offset;
+                        }
+
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
                                          Vector3{p.x + b.billPositionStatic.x,
                                                  0.0f + b.billPositionStatic.y,
@@ -820,7 +826,7 @@ void renderSystem(const flecs::iter &iter) {
                                          b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
-                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                                         Vector2{0.0f, 0.0f}, rotation, WHITE);
                     }
                 });
 
@@ -845,7 +851,10 @@ void renderSystem(const flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
+                                         Vector3{p.x + b.billPositionStatic.x,
+                                                 0.0f + b.billPositionStatic.y,
+                                                 p.y + b.billPositionStatic.z},
+                                         b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
@@ -884,8 +893,8 @@ void renderSystem(const flecs::iter &iter) {
 
                 rectangle_q.each(
                     [&](Position &p, RectangleShapeRenderComponent &s) {
-                        DrawCube({p.x, -0.5, p.y - s.height / 2}, s.width, 1.0,
-                                 s.height, RED);
+                        DrawCubeWires({p.x, -0.5, p.y - s.height / 2}, s.width,
+                                      1.0, s.height, RED);
                     });
 
                 auto killbar = world.get<KillBar>();
@@ -912,8 +921,10 @@ void renderHUD(const flecs::iter &iter) {
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
 
+    int score = iter.world().get_mut<AppInfo>()->score;
     // score
-    DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
+    DrawText(TextFormat("Score: %d", score), SCREEN_WIDTH * 5 / 6, 50, 40,
+             BLACK);
 
     // if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
     //     alive = false;                            // TODO get from somewhere
