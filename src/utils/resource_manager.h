@@ -10,14 +10,19 @@
 #include <unordered_map>
 
 namespace graphics {
+
 typedef int HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
 constexpr std::hash<std::string> hasher{};
 
-// TODO, do not use yet
 template <typename T> class ResourceManager {
   public:
+    /*
+     * Loads the resource from disc into memory and sets it up for use.
+     * @return HANDLE to the resource.
+     * Use Get to retrieve the resource.
+     */
     HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
         HANDLE hash = hasher(path);
@@ -34,28 +39,28 @@ template <typename T> class ResourceManager {
         }
     }
 
-    HANDLE load(Texture2D texture) {
-        HANDLE handle;
+    /*
+     * Inserts the resource into the manager
+     * see load(const std::string &path) above
+     */
+    HANDLE load(const T &resource) {
+        HANDLE handle = 0;
         // generate unused handle
         do {
-            handle = rand(); // NOLINT(*-msc50-cpp)
+            handle = rand();
         } while (res.find(handle) != res.end());
 
-        res.insert({handle, texture});
+        res.insert({handle, resource});
         return handle;
     }
 
-    HANDLE load(Music music) {
-        HANDLE handle;
-        // generate unused handle
-        do {
-            handle = rand(); // NOLINT(*-msc50-cpp)
-        } while (res.find(handle) != res.end());
-
-        res.insert({handle, music});
-        return handle;
-    }
-
+    /**
+     * Retrieve the resource behind the handle.
+     * Do not store the returned resource in your own variables.
+     * Instead always use the handle with this get method anytime you access
+     * this resource
+     * @param resource assigned to this handle
+     */
     T get(HANDLE handle) const {
         auto it = res.find(handle);
         if (it != res.end()) {
@@ -65,6 +70,14 @@ template <typename T> class ResourceManager {
         }
     }
 
+    /**
+     * Free the resource behind this handle.
+     * After calling this the handle is invaild and is not pointing to a
+     * resource anymore This means for any other entity the resource is unloaded
+     * too! Only call this once this resource will not in use for the current
+     * game state
+     * @param handle
+     */
     void free(HANDLE handle) {
         auto it = res.find(handle);
         if (it != res.end()) {
@@ -73,15 +86,20 @@ template <typename T> class ResourceManager {
         }
     }
 
-    void setOnFreeCallback(std::function<void(T)> callback) {
-        onFree = callback;
-    }
-
+    /**
+     * frees all resources
+     */
     ~ResourceManager() {
         for (auto &a : res) {
             onFree(a.second);
         }
         res.clear();
+    }
+
+  protected:
+    friend struct Resources;
+    void setOnFreeCallback(std::function<void(T)> callback) {
+        onFree = callback;
     }
 
   private:
