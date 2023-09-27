@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace physics;
+using namespace math;
 
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
@@ -208,10 +209,12 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                             next_y_pos - positions[0].y};
         float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) +
                                  std::pow(next_y_pos - positions[0].y, 2));
-        positions[0].x =
-            (it.delta_time() * std::abs(velocities[0].x) / length) *
-                direction.x +
-            positions[0].x;
+        float slope = direction.y / direction.x;
+        float speed_factor = getSpeedFactor(slope);
+        positions[0].x = (it.delta_time() *
+                          std::abs(velocities[0].x * speed_factor) / length) *
+                             direction.x +
+                         positions[0].x;
         positions[0].y = getYPosFromX(it.world(), positions[0].x);
     } else {
     }
@@ -219,6 +222,24 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
         it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
         positions[0].x =
             it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET;
+    }
+}
+
+float physics::getSpeedFactor(float slope) {
+    if (slope <= SLOWEST_NEG_SLOPE) {
+        return MIN_SPEED_NEG_SLOPE;
+    } else if (slope <= FASTEST_NEG_SCOPE) {
+        return linearInterpolation(slope,
+                                   {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
+                                   {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
+    } else if (slope <= 0) {
+        return linearInterpolation(
+            slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+    } else if (slope <= SLOWEST_POS_SCOPE) {
+        return linearInterpolation(slope, {0, 1},
+                                   {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+    } else {
+        return MIN_SPEED_POS_SCOPE;
     }
 }
 
@@ -330,10 +351,9 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
     auto vertex_left = mountain->getVertex(closest_indices[0]);
     auto vertex_right = mountain->getVertex(closest_indices[1]);
 
-    return ((x - vertex_left.x) * vertex_right.y +
-            (vertex_right.x - x) * vertex_left.y) /
-               (vertex_right.x - vertex_left.x) +
-           HIKER_HEIGHT;
+    // TODO offset might be a game constant and not necessarily equal to
+    // HIKER_HEIGHT
+    return linearInterpolation(x, vertex_left, vertex_right) + HIKER_HEIGHT;
 }
 
 void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
@@ -389,6 +409,11 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 }
             }
         });
+}
+
+float math::linearInterpolation(float x, Position left, Position right) {
+    return ((x - left.x) * right.y + (right.x - x) * left.y) /
+           (right.x - left.x);
 }
 
 PhysicSystems::PhysicSystems(flecs::world &world) {
