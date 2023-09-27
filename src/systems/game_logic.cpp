@@ -154,7 +154,7 @@ void mountainLoadChunks(const flecs::world &world) {
 
 void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
     appInfo->score = std::max(appInfo->score, (int)position[0].x);
-    //std::cout << "Score: " << appInfo->score << std::endl;
+    // std::cout << "Score: " << appInfo->score << std::endl;
 }
 
 void initGameLogic(flecs::world &world) {
