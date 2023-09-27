@@ -13,8 +13,6 @@ struct PhysicSystems {
 
 namespace physics {
 
-constexpr float_type CO = 100.f;
-
 struct Vertex {
     std::size_t index;
     float distance;
@@ -29,6 +27,7 @@ struct Vertex {
  * @param v velocity
  * @param r radius, should be several times larger than section width in
  * mountain.h
+ * TODO spawn here probably???
  */
 void makeRock(const flecs::world &world, Position p, Velocity v,
               float_type radius);
@@ -67,6 +66,13 @@ void updateRockVelocity(flecs::iter it, Velocity *velocities);
  */
 void updateRockPosition(flecs::iter it, Position *positions,
                         Velocity *velocities);
+
+/**
+ * Checks whether the rocks are in scope and deletes those that are not.
+ * @param it
+ * @param positions
+ */
+void checkRockInScope(flecs::iter it, Position *positions);
 
 /**
  * Given a rock, find the closest vertex of the ground.
