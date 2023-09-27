@@ -795,10 +795,10 @@ void renderSystem(const flecs::iter &iter) {
                               WHITE); // GREEN);
                 }
 
-                flecs::filter<Position, BillboardComponent> qb =
-                    world.filter<Position, BillboardComponent>();
+                flecs::filter<Position, BillboardComponent, Rotation> qb =
+                    world.filter<Position, BillboardComponent, Rotation>();
 
-                qb.each([&](Position &p, BillboardComponent &b) {
+                qb.each([&](Position &p, BillboardComponent &b, Rotation &r) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
@@ -820,7 +820,8 @@ void renderSystem(const flecs::iter &iter) {
                                          b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
-                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                                         Vector2{0.0f, 0.0f}, r.angular_offset,
+                                         WHITE);
                     }
                 });
 
@@ -912,8 +913,10 @@ void renderHUD(const flecs::iter &iter) {
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
 
+    int score = iter.world().get_mut<AppInfo>()->score;
     // score
-    DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
+    DrawText(TextFormat("Score: %d", score), SCREEN_WIDTH * 5 / 6, 50, 40,
+             BLACK);
 
     // if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
     //     alive = false;                            // TODO get from somewhere
