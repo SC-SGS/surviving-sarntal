@@ -38,7 +38,8 @@ void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-void updateRockState(flecs::iter it, Position *positions, Velocity *velocities);
+void updateRockState(flecs::iter it, Position *positions, Velocity *velocities,
+                     Rotation *rot);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
@@ -64,7 +65,7 @@ void updateRockVelocity(flecs::iter it, Velocity *velocities);
  * @param velocities
  */
 void updateRockPosition(flecs::iter it, Position *positions,
-                        Velocity *velocities);
+                        Velocity *velocities, Rotation *rot);
 
 /**
  * Checks whether the rocks are in scope and deletes those that are not.

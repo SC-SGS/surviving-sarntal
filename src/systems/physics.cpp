@@ -81,7 +81,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
-        rot->angular_velocity += GAMMA * velocity_parallel / m;
+        rot->angular_velocity += 200 * GAMMA * velocity_parallel / m;
         if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
             rot->angular_velocity = MAX_ANGULAR_VELOCITY;
         }
@@ -183,9 +183,9 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
 }
 
 void physics::updateRockState(flecs::iter it, Position *positions,
-                              Velocity *velocities) {
+                              Velocity *velocities, Rotation *rot) {
     updateRockVelocity(it, velocities);
-    updateRockPosition(it, positions, velocities);
+    updateRockPosition(it, positions, velocities, rot);
     checkRockInScope(it, positions);
 }
 
@@ -200,9 +200,10 @@ void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
 }
 
 void physics::updateRockPosition(flecs::iter it, Position *positions,
-                                 Velocity *velocities) {
+                                 Velocity *velocities, Rotation *rot) {
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
+        rot[i].angular_offset += rot[i].angular_velocity * it.delta_time();
     }
 }
 
@@ -495,8 +496,10 @@ float math::linearInterpolation(float x, Position left, Position right) {
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
-    world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
-        updateRockState);
+    world.system<Position, Velocity, Rotation>()
+        .with<Rock>()
+        .multi_threaded(true)
+        .iter(updateRockState);
 
     world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
