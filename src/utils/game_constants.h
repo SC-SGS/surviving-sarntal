@@ -36,7 +36,17 @@ constexpr float_type SLOWEST_POS_SCOPE = 2.f;
 /**
  * Player items
  */
-constexpr float_type HIKER_ITEM_COLLECTION_RANGE = 10.f;
+constexpr float_type HIKER_ITEM_COLLECTION_RANGE = 200.f;
+
+constexpr int INVENTORY_SLOTS = 3;
+constexpr int KAISERSCHMARRN_HEALTH_RESTORATION = 30;
+constexpr int COIN_SCORE = 500;
+
+constexpr float_type ITEM_BASE_HEIGHT =
+    40.; // minimal height at which items are placed above the ground
+constexpr float_type ITEM_MAX_HEIGHT =
+    200.; // max height above the terrain where items are spawned
+constexpr float_type ITEMS_PER_SECOND = .05;
 
 /**
  * Rock sizes
@@ -84,5 +94,9 @@ constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
  */
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
+
+extern bool kinect_mode;
+
+constexpr int HIKER_MAX_HEALTH = 100;
 
 #endif // SURVIVING_SARNTAL_GAME_CONSTANTS_H
