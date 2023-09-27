@@ -78,9 +78,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
-        if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 2);
-        }
+
 
 
         auto m = r[i].value * r[i].value;
@@ -94,6 +92,10 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
             rot->angular_velocity = -MAX_ANGULAR_VELOCITY;
         }
         rot->angular_offset += it.delta_time() * rot->angular_velocity;
+
+        if (it.entity(i).has<Exploding>()) {
+            explodeRock(it.world(), it.entity(i), 2);
+        }
     }
 }
 
@@ -103,6 +105,7 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Position>(p)
         .set<Velocity>(v)
         .set<Radius>({radius})
+        .set<Rotation>({0,0})
         .add<Rock>()
         .set<graphics::CircleShapeRenderComponent>({radius});
 }
