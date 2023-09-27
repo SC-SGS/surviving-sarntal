@@ -381,7 +381,7 @@ void initRenderSystem(const flecs::world &world) {
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
 
-    ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
+    ambient_audio = LoadMusicStream("../assets/audio/background_music.mp3");
     PlayMusicStream(ambient_audio);
 
     /*    AudioComponent* audioComponent =
