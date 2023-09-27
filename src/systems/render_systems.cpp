@@ -5,7 +5,6 @@
 #include "flecs.h"
 #include "raymath.h"
 #include "rlgl.h"
-#include <filesystem>
 #include <iostream>
 
 #define RAYGUI_IMPLEMENTATION
