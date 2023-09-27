@@ -7,6 +7,7 @@
 #include "rlgl.h"
 #include <filesystem>
 #include <iostream>
+#include "../components/player.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -48,7 +49,6 @@ Material grass_material;
 
 int loc_time;
 bool regenerate_terrain = true;
-bool alive = true;
 int grass_insert_index = 0;
 
 //
@@ -786,7 +786,7 @@ void renderSystem(flecs::iter &iter) {
                 debug_camera3D.target.z = debug_camera3D.position.z;
             } else {
 
-                if (alive) {
+                if (world.get_mut<AppInfo>()->playerAlive) {
                     debug_camera3D.position.x = camera->target.x - 200;
                     debug_camera3D.position.z = -camera->target.y + 100;
 
@@ -823,7 +823,7 @@ void renderSystem(flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x, -500.0f, p.y}, b.billUp,
+                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
@@ -876,9 +876,9 @@ void renderSystem(flecs::iter &iter) {
                     world.filter<Position, CircleShapeRenderComponent>();
 
                 cirle_q.each([&](Position &p, CircleShapeRenderComponent &s) {
-                    DrawSphere(
+                    DrawSphereWires(
                         {p.x - s.radius / 2, -s.radius / 2, p.y - s.radius / 2},
-                        s.radius, GREEN);
+                        s.radius,10, 10, GREEN);
                 });
 
                 auto mountain = world.get_mut<Mountain>();
@@ -904,13 +904,16 @@ void renderHUD(flecs::iter &iter) {
 
     //std::cout << "### draw hud" << std::endl;
 
+    // TODO get hp some other way?
+    float player_health = 1; // 0.9; // percent
+    flecs::filter<Health> health_q = iter.world().filter<Health>();
+    health_q.each([&](Health h) { player_health = (float)h.hp / 100; });
 
     // health bar
     int healthbar_width = SCREEN_WIDTH / 4;
     int healthbar_height = SCREEN_HEIGHT / 30;
     DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE);
     int offset = 2;
-    float player_health = 0.9; // percent
     DrawRectangle(20 + offset, 20 + offset,
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
@@ -918,11 +921,11 @@ void renderHUD(flecs::iter &iter) {
     // score
     DrawText("0000", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
 
-    if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
-        alive = false;                            // TODO get from somewhere
-    }
+    //if (GuiButton({20, 50, 140, 30}, "Button")) { //"#05#Open Image")) {
+    //    alive = false;                            // TODO get from somewhere
+    //}
 
-    if (!alive) {
+    if (!iter.world().get_mut<AppInfo>()->playerAlive) {
         DrawText("You died!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 70, RED);
     }
 

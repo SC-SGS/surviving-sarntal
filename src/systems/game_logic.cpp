@@ -20,7 +20,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        //iter.world().get_mut<AppInfo>()->isRunning = false;
+        iter.world().get_mut<AppInfo>()->playerAlive = false;
     }
 }
 
@@ -169,7 +169,7 @@ void initGameLogic(flecs::world &world) {
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({})
         .set<Health>({100})
-        .set([&](graphics::AnimatedBillboardComponent &c) {
+        .set([&](graphics::BillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
@@ -178,8 +178,8 @@ void initGameLogic(flecs::world &world) {
                     "../assets/texture/test_sprite_small.png");
             c.width = 100;
             c.height = 100;
-            c.current_frame = 0;
-            c.numFrames = 6;
+            //c.current_frame = 0;
+            //c.numFrames = 6;
         });
     world.set<KillBar>({0.});
 
