@@ -138,6 +138,7 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
+            .add<Exploding>()
             .set<graphics::CircleShapeRenderComponent>({radius});
     }
 }

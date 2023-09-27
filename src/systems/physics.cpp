@@ -77,7 +77,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
         if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 50);
+            explodeRock(it.world(), it.entity(i), 2);
         }
     }
 }
