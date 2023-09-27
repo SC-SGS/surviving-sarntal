@@ -605,7 +605,7 @@ void initRenderSystem(const flecs::world &world) {
     // NOTE: We are assigning the intancing grass_shader to material.grass_shader
     // to be used on mesh drawing with DrawMeshInstanced()
     grass_material = LoadMaterialDefault();
-    grass_material.grass_shader = grass_shader;
+    grass_material.shader = grass_shader;
     grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
 
     debug_camera3D = {0};
