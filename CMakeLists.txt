@@ -40,7 +40,6 @@ endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
-message(WARNING ${SRC})    #for CMAKE debugging purposes
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
