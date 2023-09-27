@@ -152,6 +152,11 @@ void mountainLoadChunks(const flecs::world &world) {
     }
 }
 
+void updateScore(flecs::iter it, Position* position,AppInfo* appInfo){
+    appInfo->score = std::max(appInfo->score, (int) position[0].x);
+    std::cout << "Score: " << appInfo->score << std::endl;
+}
+
 void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
 
@@ -205,6 +210,12 @@ void initGameLogic(flecs::world &world) {
         .term_at(3)
         .singleton()
         .iter(moveCamera);
+
+    world.system<Position, AppInfo>()
+        .with<Player>()
+        .term_at(2)
+        .singleton()
+        .iter(updateScore);
 
     world.system<>().iter(spawnRocks);
 }
