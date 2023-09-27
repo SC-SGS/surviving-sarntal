@@ -51,6 +51,12 @@ bool regenerate_terrain = true;
 bool alive = true;
 int grass_insert_index = 0;
 
+//
+flecs::entity StartRender;
+flecs::entity OnRender;
+flecs::entity OnInterface;
+flecs::entity EndRender;
+
 /*helpers*/
 
 void regenerateGradientTexture(int screenW, int screenH) {
@@ -377,7 +383,6 @@ void generateChunkMesh(const flecs::world &world) {
     SetShaderValueTexture(grass_shader, loc, gradient_texture_background);*/
 }
 
-
 // init
 
 void initRenderSystem(const flecs::world &world) {
@@ -385,6 +390,39 @@ void initRenderSystem(const flecs::world &world) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
     InitAudioDevice();
 
+    // setup custom phases
+    StartRender =
+        world.entity().add(flecs::Phase).depends_on(flecs::PostUpdate);
+
+    OnRender =
+        world.entity().add(flecs::Phase).depends_on(StartRender);
+
+    OnInterface =
+        world.entity().add(flecs::Phase).depends_on(OnRender);
+
+    EndRender =
+        world.entity().add(flecs::Phase).depends_on(OnInterface);
+
+
+    // add the render system
+    world.system().kind(StartRender).iter(startRender);
+
+    // add the hud system
+    world.system().kind(EndRender).iter(endRender);
+
+}
+
+// prepare
+
+void prepareGame(const flecs::world &world) {
+
+    // add the render system
+    world.system().kind(OnRender).iter(renderSystem);
+
+    // add the hud system
+    world.system().kind(OnInterface).iter(renderHUD);
+
+    // resources
     background_tex = LoadTexture("../assets/layers/sky.png");
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
@@ -409,8 +447,6 @@ void initRenderSystem(const flecs::world &world) {
     debug_camera.rotation = 0.0f;
     debug_camera.zoom = 1.0f;
 
-    // add the render system
-    world.system().kind(flecs::PostUpdate).iter(renderSystem);
 
     // add the resource manager
     world.set<Resources>({});
@@ -420,229 +456,249 @@ void initRenderSystem(const flecs::world &world) {
     Image verticalGradient =
         GenImageGradientV(SCREEN_WIDTH / 5, SCREEN_HEIGHT / 5, RED, YELLOW);
 
-    // add the camera entity here for now
-    auto test_e =
-        world.entity("TestEntity")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle = world.get_mut<Resources>()->textures.load(
-                    LoadTextureFromImage(verticalGradient));
-                c.width = 100;
-                c.height = 100;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+    // spawn entities
+    {
+        // add the camera entity here for now
+        auto test_e =
+            world.entity("TestEntity")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            LoadTextureFromImage(verticalGradient));
+                    c.width = 100;
+                    c.height = 100;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
 
-    auto background =
-        world.entity("Background")
-            .set([&](SpriteComponent &c) {
+        auto background =
+            world.entity("Background")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            background_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+        auto background_duplicate =
+            world.entity("BackgroundDuplicate")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            background_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+        auto midground =
+            world.entity("Midground")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            midground_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+        auto midground_duplicate =
+            world.entity("MidgroundDuplicate")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            midground_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+        auto foreground =
+            world.entity("Foreground")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            foreground_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+        auto foreground_duplicate =
+            world.entity("ForegroundDuplicate")
+                .set([&](SpriteComponent &c) {
+                    c = {0};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            foreground_tex);
+                    c.width = SCREEN_WIDTH;
+                    c.height = SCREEN_HEIGHT;
+                })
+                .set(([&](Position &c) {
+                    c.x = 0;
+                    c.y = 0;
+                }))
+                .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+
+        auto ambient_sound =
+            world.entity("AmbientSound").set([&](AudioComponent &c) {
                 c = {0};
                 c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(background_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+                    world.get_mut<Resources>()->music.load(ambient_audio);
+            });
 
-    auto background_duplicate =
-        world.entity("BackgroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(background_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+        // billboard for 3d camera
+        auto billboard =
+            world.entity("Billboard")
+                .set([&](BillboardComponent &c) {
+                    c = {0};
+                    c.billUp = {0.0f, 0.0f, 1.0f};
+                    c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                    c.resourceHandle =
+                        world.get_mut<Resources>()->textures.load(
+                            "../assets/texture/raylib_256x256.png");
+                    c.width = 100;
+                    c.height = 100;
+                })
+                .set(([&](Position &c) {
+                    c.x = 800;
+                    c.y = 50;
+                }));
 
-    auto midground =
-        world.entity("Midground")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(midground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+        // billboard with animated sprite for 3d camera
+        /*auto animatedBillboard = world.entity("AnimatedBillboard")
+                             .set([&](AnimatedBillboardComponent &c) {
+                                 c = {0};
+                                 c.billUp = {0.0f, 0.0f, 1.0f};
+                                 c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                                 c.resourceHandle =
+                                     world.get_mut<Resources>()->textures.Load(
+                                         "../assets/texture/test_sprite_small.png");
+                                 c.width = 100;
+                                 c.height = 100;
+                                 c.current_frame = 0;
+                                 c.numFrames = 6;
+                             })
+                             .set(([&](Position &c) {
+                                 c.x = 800;
+                                 c.y = 300;
+                             }));*/
+    }
 
-    auto midground_duplicate =
-        world.entity("MidgroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(midground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+    // Grass
+    {
 
-    auto foreground =
-        world.entity("Foreground")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(foreground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
-    auto foreground_duplicate =
-        world.entity("ForegroundDuplicate")
-            .set([&](SpriteComponent &c) {
-                c = {0};
-                c.resourceHandle =
-                    world.get_mut<Resources>()->textures.load(foreground_tex);
-                c.width = SCREEN_WIDTH;
-                c.height = SCREEN_HEIGHT;
-            })
-            .set(([&](Position &c) {
-                c.x = 0;
-                c.y = 0;
-            }))
-            .set([&](CircleShapeRenderComponent &c) { c.radius = 25.0f; });
+        //  Load lighting grass_shader
+        grass_shader = LoadShader("../assets/shaders/"
+                                  "grass_instancing.vert",
+                                  "../assets/shaders/"
+                                  "grass_instancing.frag");
 
-    auto ambient_sound =
-        world.entity("AmbientSound").set([&](AudioComponent &c) {
-            c = {0};
-            c.resourceHandle =
-                world.get_mut<Resources>()->music.load(ambient_audio);
-        });
+        // Get grass_shader locations
+        grass_shader.locs[SHADER_LOC_MATRIX_MVP] =
+            GetShaderLocation(grass_shader, "mvp");
+        grass_shader.locs[SHADER_LOC_VECTOR_VIEW] =
+            GetShaderLocation(grass_shader, "viewPos");
+        grass_shader.locs[SHADER_LOC_MATRIX_MODEL] =
+            GetShaderLocationAttrib(grass_shader, "instanceTransform");
 
-    // billboard for 3d camera
-    auto billboard = world.entity("Billboard")
-                         .set([&](BillboardComponent &c) {
-                             c = {0};
-                             c.billUp = {0.0f, 0.0f, 1.0f};
-                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
-                             c.resourceHandle =
-                                 world.get_mut<Resources>()->textures.load(
-                                     "../assets/texture/raylib_256x256.png");
-                             c.width = 100;
-                             c.height = 100;
-                         })
-                         .set(([&](Position &c) {
-                             c.x = 800;
-                             c.y = 50;
-                         }));
+        // Set grass_shader value: ambient
+        // light level
+        int ambientLoc = GetShaderLocation(grass_shader, "ambient");
+        float col[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+        SetShaderValue(grass_shader, ambientLoc, &col[0], SHADER_UNIFORM_VEC4);
 
-    // billboard with animated sprite for 3d camera
-    /*auto animatedBillboard = world.entity("AnimatedBillboard")
-                         .set([&](AnimatedBillboardComponent &c) {
-                             c = {0};
-                             c.billUp = {0.0f, 0.0f, 1.0f};
-                             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
-                             c.resourceHandle =
-                                 world.get_mut<Resources>()->textures.Load(
-                                     "../assets/texture/test_sprite_small.png");
-                             c.width = 100;
-                             c.height = 100;
-                             c.current_frame = 0;
-                             c.numFrames = 6;
-                         })
-                         .set(([&](Position &c) {
-                             c.x = 800;
-                             c.y = 300;
-                         }));*/
+        // Define mesh to be instanced
+        Model grass_model = LoadModel("../assets/mesh/"
+                                      "grass_patch.obj");
+        grass_mesh = grass_model.meshes[0];
 
-    Vector2 min;
-    Vector2 max;
-    /*auto test = generateChunkMesh(world);
-    model = LoadModelFromMesh(test);*/
-    // model = LoadModel("../../../assets/mesh/grass_patch.obj");
-    // std::cout << "current paht " << std::filesystem::current_path() <<
-    // std::endl;
-    //  Load lighting grass_shader
-    grass_shader = LoadShader("../assets/shaders/grass_instancing.vert",
-                              "../assets/shaders/grass_instancing.frag");
+        Texture2D grass_texture = LoadTexture("../assets/texture/"
+                                              "grass.png");
 
-    // Get grass_shader locations
-    grass_shader.locs[SHADER_LOC_MATRIX_MVP] =
-        GetShaderLocation(grass_shader, "mvp");
-    grass_shader.locs[SHADER_LOC_VECTOR_VIEW] =
-        GetShaderLocation(grass_shader, "viewPos");
-    grass_shader.locs[SHADER_LOC_MATRIX_MODEL] =
-        GetShaderLocationAttrib(grass_shader, "instanceTransform");
+        int loc = GetShaderLocation(grass_shader, "grasstex");
+        loc_time = GetShaderLocation(grass_shader, "time");
+        SetShaderValueTexture(grass_shader, loc, grass_texture);
 
-    // Set grass_shader value: ambient light level
-    int ambientLoc = GetShaderLocation(grass_shader, "ambient");
-    float col[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-    SetShaderValue(grass_shader, ambientLoc, &col[0], SHADER_UNIFORM_VEC4);
+        // transforms
+        grass_transforms.reserve(MAX_INSTANCES);
 
-    // Define mesh to be instanced
-    // grass_mesh = GenMeshCube(1.0f, 1.0f, 1.0f);
+        //materail
+        grass_material = LoadMaterialDefault();
+        grass_material.shader = grass_shader;
+        grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
 
-    Model grass_model = LoadModel("../assets/mesh/grass_patch.obj");
-    grass_mesh = grass_model.meshes[0];
+    }
 
-    Texture2D grass_texture = LoadTexture("../assets/texture/grass.png");
-
-    int loc = GetShaderLocation(grass_shader, "grasstex");
-    loc_time = GetShaderLocation(grass_shader, "time");
-    SetShaderValueTexture(grass_shader, loc, grass_texture);
-
-    // Define grass_transforms to be uploaded to GPU for instances
-    grass_transforms.reserve(MAX_INSTANCES);
-
-    // NOTE: We are assigning the intancing grass_shader to
-    // material.grass_shader to be used on mesh drawing with DrawMeshInstanced()
-    grass_material = LoadMaterialDefault();
-    grass_material.shader = grass_shader;
-    grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
-
-    debug_camera3D = {0};
-    debug_camera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
-    debug_camera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
-    debug_camera3D.up = {0.0f, 0.0f,
-                         1.0f};  // Camera up vector (rotation towards target)
-    debug_camera3D.fovy = 45.0f; // Camera field-of-view Y
-    debug_camera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
-
-    HANDLE test_texture = world.get_mut<Resources>()->textures.load(
-        "../assets/texture/grass.png"); // LoadTexture("../assets/texture/grass.png");
-
-    world.get_mut<Resources>()->textures.free(test_texture);
+    //camera setup
+    {
+        debug_camera3D = {0};
+        debug_camera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
+        debug_camera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
+        debug_camera3D.up = {0.0f, 0.0f,
+                             1.0f};  // Camera up vector (rotation towards target)
+        debug_camera3D.fovy = 45.0f; // Camera field-of-view Y
+        debug_camera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
+    }
 }
-
-// prepare
-
-void prepareGame(const flecs::world &world) {}
 
 void prepareMenu(const flecs::world &world) {}
 
 void prepareHUD(const flecs::world &world) {}
 
+void startRender(flecs::iter &iter) {
+    //std::cout << "### start render" << std::endl;
+    handleWindow(iter.world());
+    BeginDrawing();
+    ClearBackground(WHITE);
+}
+
+void endRender(flecs::iter &iter) {
+    EndDrawing();
+
+    //std::cout << "### end render ----------------" << std::endl;
+}
+
 // draw
 
 void renderSystem(flecs::iter &iter) {
+
+    //std::cout << "### render system" << std::endl;
+
     auto world = iter.world();
 
     UpdateMusicStream(ambient_audio);
 
-    handleWindow(world);
 
     if (IsKeyPressed(KEY_P)) {
         use_debug_camera = !use_debug_camera;
@@ -660,9 +716,7 @@ void renderSystem(flecs::iter &iter) {
         SetShaderValue(grass_shader, grass_shader.locs[SHADER_LOC_VECTOR_VIEW],
                        cameraPos, SHADER_UNIFORM_VEC3);
 
-        BeginDrawing();
         {
-            ClearBackground(WHITE);
             renderBackground(world, camera->target.x, camera->target.y);
             /*world.get_mut<Resources>()*/
 
@@ -736,9 +790,9 @@ void renderSystem(flecs::iter &iter) {
                     debug_camera3D.position.x = camera->target.x - 200;
                     debug_camera3D.position.z = -camera->target.y + 100;
 
-                    debug_camera3D.target.x = debug_camera3D.position.x + 0.4f;
+                    debug_camera3D.target.x = debug_camera3D.position.x;
                     debug_camera3D.target.y = debug_camera3D.position.y + 1.0;
-                    debug_camera3D.target.z = debug_camera3D.position.z - 0.1f;
+                    debug_camera3D.target.z = debug_camera3D.position.z;
                 }
             }
 
@@ -843,11 +897,14 @@ void renderSystem(flecs::iter &iter) {
             EndMode3D();
         }
 
-        EndDrawing();
     }
 }
 
 void renderHUD(flecs::iter &iter) {
+
+    //std::cout << "### draw hud" << std::endl;
+
+
     // health bar
     int healthbar_width = SCREEN_WIDTH / 4;
     int healthbar_height = SCREEN_HEIGHT / 30;
@@ -875,7 +932,6 @@ void renderHUD(flecs::iter &iter) {
 void renderMenu(flecs::iter &iter) {
     DrawText("this is a menu", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
 }
-
 
 void destroy() {
     UnloadShader(grass_shader);

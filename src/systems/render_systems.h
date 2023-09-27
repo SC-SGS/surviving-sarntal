@@ -17,6 +17,10 @@ void prepareGame(const flecs::world &world);
 void prepareMenu(const flecs::world &world);
 void prepareHUD(const flecs::world &world);
 
+// pre rendering setup per frame
+void startRender(flecs::iter &iter);
+void endRender(flecs::iter &iter);
+
 // call per frame to render the current frame
 void renderSystem(flecs::iter &iter);
 void renderHUD(flecs::iter &iter);
