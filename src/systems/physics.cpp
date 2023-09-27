@@ -81,7 +81,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
-        rot->angular_velocity += 200*GAMMA * velocity_parallel / m;
+        rot->angular_velocity += 200 * GAMMA * velocity_parallel / m;
         if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
             rot->angular_velocity = MAX_ANGULAR_VELOCITY;
         }
@@ -496,8 +496,10 @@ float math::linearInterpolation(float x, Position left, Position right) {
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
-    world.system<Position, Velocity, Rotation>().with<Rock>().multi_threaded(true).iter(
-        updateRockState);
+    world.system<Position, Velocity, Rotation>()
+        .with<Rock>()
+        .multi_threaded(true)
+        .iter(updateRockState);
 
     world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
