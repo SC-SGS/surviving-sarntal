@@ -922,6 +922,9 @@ void renderHUD(const flecs::iter &iter) {
     DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE);
     int offset = 2;
     DrawRectangle(20 + offset, 20 + offset,
+                  healthbar_width - 2 * offset,
+                  healthbar_height - 2 * offset, GRAY);
+    DrawRectangle(20 + offset, 20 + offset,
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
 
