@@ -133,7 +133,7 @@ void spawnRocks(flecs::iter it) {
         it.world()
             .entity()
             .set<Position>(
-                {camera->target.x ,
+                {camera->target.x,
                  -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
