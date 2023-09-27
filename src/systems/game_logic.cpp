@@ -142,12 +142,12 @@ void spawnRocks(flecs::iter it) {
             .set([&](graphics::BillboardComponent &c) {
                 c = {0};
                 c.billUp = {0.0f, 0.0f, 1.0f};
-                c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                c.billPositionStatic = {-radius, 0.0f, -radius};
                 c.resourceHandle =
                     it.world().get_mut<graphics::Resources>()->textures.load(
                         "../assets/texture/stone.png");
-                c.width = 100;
-                c.height = 100;
+                c.width = radius * 2.0f;
+                c.height = radius * 2.0f;
             });
     }
 }

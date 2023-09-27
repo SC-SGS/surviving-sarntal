@@ -794,11 +794,10 @@ void renderSystem(const flecs::iter &iter) {
                               WHITE); // GREEN);
                 }
 
-                flecs::filter<Position, BillboardComponent, CircleShapeRenderComponent>
-                    qb = world.filter<Position, BillboardComponent, CircleShapeRenderComponent>();
+                flecs::filter<Position, BillboardComponent>
+                    qb = world.filter<Position, BillboardComponent>();
 
-                qb.each([&](Position &p, BillboardComponent &b,
-                            CircleShapeRenderComponent &c) {
+                qb.each([&](Position &p, BillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
@@ -814,7 +813,10 @@ void renderSystem(const flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
+                                         Vector3{p.x + b.billPositionStatic.x,
+                                                 0.0f + b.billPositionStatic.y,
+                                                 p.y + +b.billPositionStatic.z},
+                                         b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
