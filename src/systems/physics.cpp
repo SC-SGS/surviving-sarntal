@@ -46,7 +46,7 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     //      (  1    0  )
     Vector n = {-d.y, d.x};
     if (n.y < 0) {
-        n =  n * -1.f;
+        n = n * -1.f;
     }
     float_type normalization = std::sqrt(n * n);
     return n / normalization;
@@ -155,8 +155,8 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
     }
 }
 
-void physics::explodeRock(const flecs::world& world,
-                          flecs::entity rock, const int number_of_rocks) {
+void physics::explodeRock(const flecs::world &world, flecs::entity rock,
+                          const int number_of_rocks) {
     auto position = *rock.get<Position>();
     auto velocity = *rock.get<Velocity>();
     auto radius = rock.get<Radius>()->value;
@@ -169,8 +169,8 @@ void physics::explodeRock(const flecs::world& world,
     Position delta_direction, p;
     Velocity v;
     for (int i = 0; i < number_of_rocks; i++) {
-        delta_direction = Position{ std::sin(delta_angle * i),
-                                    std::cos(delta_angle * i)};
+        delta_direction =
+            Position{std::sin(delta_angle * i), std::cos(delta_angle * i)};
         p = (Position)(position + delta_direction * radius);
         v = (Velocity)(velocity + delta_direction * 10);
         makeRock(world, p, v, new_r);
