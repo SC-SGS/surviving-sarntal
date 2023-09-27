@@ -138,11 +138,11 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({radius})
+            //.set<graphics::CircleShapeRenderComponent>({radius})
             .set([&](graphics::BillboardComponent &c) {
                 c = {0};
                 c.billUp = {0.0f, 0.0f, 1.0f};
-                c.billPositionStatic = {-radius, 0.0f, -radius};
+                c.billPositionStatic = {-radius/2, 0.0f, -radius/2};
                 c.resourceHandle =
                     it.world().get_mut<graphics::Resources>()->textures.load(
                         "../assets/texture/stone.png");
