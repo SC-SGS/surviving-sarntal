@@ -392,16 +392,6 @@ void initRenderSystem(const flecs::world &world) {
     ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
     PlayMusicStream(ambient_audio);
 
-    /*    AudioComponent* audioComponent =
-       world.entity("AmbientSound").get_mut<AudioComponent>(); Resources*
-       resources = world.entity("AmbientSound").get_mut<Resources>();
-
-        if (audioComponent && resources) {
-            PlayMusicStream(resources->music.Get(audioComponent->resourceHandle));
-        }*/
-
-    // PlayMusicStream(world.entity("AmbientSound").get_mut<Resources>()->music.get(world.entity("AmbientSound").get_mut<AudioComponent>()->resourceHandle));
-
     // add the camera entity here for now
     auto camera = world.entity("Camera").set([](Camera2DComponent &c) {
         c = {0};
