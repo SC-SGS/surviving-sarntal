@@ -246,6 +246,6 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
  */
 float getYPosFromX(const flecs::world &world, float x);
 
-void explodeRock(const flecs::world& world,
-                 flecs::entity rock, const int number_of_rocks);
+void explodeRock(const flecs::world &world, flecs::entity rock,
+                 const int number_of_rocks);
 } // namespace physics
