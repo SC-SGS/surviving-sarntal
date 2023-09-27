@@ -49,15 +49,18 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
     camera->target.x = (killBar->x) + (graphics::SCREEN_WIDTH * 1.0f) / 2;
     // fix camera to y-coord of player
 
-    //smoothed movement in y-direction
-    constexpr int camera_smoothing{50}; //the higher this number the more aggressively it gets smoothed
+    // smoothed movement in y-direction
+    constexpr int camera_smoothing{
+        50}; // the higher this number the more aggressively it gets smoothed
     float current_camera_pos = camera->target.y;
     float target_camera_pos = -position[0].y;
-    float diff = target_camera_pos-current_camera_pos;
-    camera->target.y = ((current_camera_pos)*(camera_smoothing-1)+target_camera_pos) / camera_smoothing;
+    float diff = target_camera_pos - current_camera_pos;
+    camera->target.y =
+        ((current_camera_pos) * (camera_smoothing - 1) + target_camera_pos) /
+        camera_smoothing;
 
     // //not smoothed movement in y-direction
-    //camera->target.y = -position[0].y;
+    // camera->target.y = -position[0].y;
 }
 
 /**
