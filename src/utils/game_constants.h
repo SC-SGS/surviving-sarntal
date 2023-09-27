@@ -25,6 +25,7 @@ constexpr float_type EPSILON = 1e-3f;
 constexpr float_type MIN_ROCK_SIZE = 10.f;
 constexpr float_type MAX_ROCK_SIZE = 25.f;
 constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = .6f;
+constexpr float_type GAMMA = 0.1f;
 
 constexpr float_type ROCK_KILL_BAR_OFFSET = -(MAX_ROCK_SIZE + 50.f);
 constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =

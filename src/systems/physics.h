@@ -45,7 +45,7 @@ void updateRockState(flecs::iter it, Position *positions, Velocity *velocities);
  * Reset the rock to be outside of the terrain and reflect the velocity
  */
 void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
-                      Radius *r, Mountain *m);
+                      Radius *r, Mountain *m, Rotation *rot);
 
 /**
  * Updates velocity of a rock.
@@ -115,7 +115,9 @@ Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
  * @param r2
  */
 void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
-                   Radius r1, Radius r2, float dt);
+                   Radius r1, Radius r2, float dt, float_type &ang_vel1,
+                   float_type &ang_offset1, float_type &ang_vel2,
+                   float_type &ang_offset2);
 
 void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
                        Radius r1, Radius r2);
@@ -123,7 +125,7 @@ void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
 bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
 
 void rockRockInteractions(flecs::iter it, Position *positions,
-                          Velocity *velocities, Radius *radius);
+                          Velocity *velocities, Radius *radius, Rotation *rot);
 
 /**
  * Updates the state of a player by first updating velocity based on input

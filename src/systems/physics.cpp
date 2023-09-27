@@ -60,7 +60,7 @@ bool physics::isCollided(Position p1, Position p2, Radius r1, Radius r2) {
 }
 
 void physics::terrainCollision(flecs::iter it, Position *positions,
-                               Velocity *velocities, Radius *r, Mountain *m) {
+                               Velocity *velocities, Radius *r, Mountain *m, Rotation *rot) {
     for (auto i : it) {
         auto closest_vertex = getClosestVertex(positions[i], r[i], m);
         auto vertex_position = m->getVertex(closest_vertex.index);
@@ -78,6 +78,18 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
             (r[i].value + vertex_normal - position_normal) / velocity_normal;
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
+
+        auto m = r[i].value*r[i].value;
+        Vector parallel_vector = {-normal_vector.y, normal_vector.x};
+        auto velocity_parallel = velocities[i] * parallel_vector;
+        rot->angular_velocity += GAMMA * velocity_parallel / m;
+        if (rot->angular_velocity >= 1000){
+            rot->angular_velocity = 1000;
+        }
+        if (rot->angular_velocity <= -1000){
+            rot->angular_velocity = -1000;
+        }
+        rot->angular_offset += it.delta_time() * rot->angular_velocity;
     }
 }
 
@@ -93,7 +105,8 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
                             Velocity &v2, const Radius R1, const Radius R2,
-                            float dt) {
+                            float dt, float_type &ang_vel1, float_type &ang_offset1,
+                            float_type &ang_vel2, float_type &ang_offset2) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
 
@@ -110,16 +123,37 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
+
+    Vector normal_vector = {p2.y-p1.y, p1.x-p2.x};
+    ang_vel1 += GAMMA* std::abs((normal_vector*v1))* (ang_vel2-ang_vel1)/(2*m1);
+    ang_vel2 += GAMMA* std::abs((normal_vector*v2))* (ang_vel1-ang_vel2)/(2*m2);
+    if (ang_vel1 >= 1000){
+        ang_vel1 = 1000;
+    }
+    if (ang_vel1 <= -1000){
+        ang_vel1 = -1000;
+    }
+    if (ang_vel2 >= 1000){
+        ang_vel2 = 1000;
+    }
+    if (ang_vel2 <= -1000){
+        ang_vel2 = -1000;
+    }
+    ang_offset1 += dt*ang_vel1;
+    ang_offset2 += dt*ang_vel2;
+    std::cout << "ang_vel = " << ang_vel1 << std::endl;
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
-                                   Velocity *velocities, Radius *radius) {
+                                   Velocity *velocities, Radius *radius, Rotation *rot) {
     for (int i = 0; i < it.count(); i++) {
         for (int j = i + 1; j < it.count(); j++) {
             if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i], radius[j],
-                              it.delta_time()); // TODO: Optimization?
+                              it.delta_time(), rot[i].angular_velocity,
+                              rot[i].angular_offset, rot[j].angular_velocity,
+                              rot[j].angular_offset); // TODO: Optimization?
             }
         }
     }
@@ -397,12 +431,12 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
         updateRockState);
 
-    world.system<Position, Velocity, Radius>().with<Rock>().iter(
+    world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
 
     world.system<Position, Radius>().with<Rock>().iter(checkPlayerIsHit);
 
-    world.system<Position, Velocity, Radius, Mountain>()
+    world.system<Position, Velocity, Radius, Mountain, Rotation>()
         .term_at(4)
         .singleton()
         .iter(terrainCollision);

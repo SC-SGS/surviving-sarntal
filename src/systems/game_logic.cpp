@@ -137,6 +137,7 @@ void spawnRocks(flecs::iter it) {
                  -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
+            .set<Rotation>({0,0})
             .add<Rock>()
             .set<graphics::CircleShapeRenderComponent>({radius});
     }
