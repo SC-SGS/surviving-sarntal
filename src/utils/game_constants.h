@@ -70,6 +70,4 @@ constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
 
-extern bool kinect_mode;
-
 #endif // SURVIVING_SARNTAL_GAME_CONSTANTS_H

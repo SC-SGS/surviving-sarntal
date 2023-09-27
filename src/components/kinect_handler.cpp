@@ -2,6 +2,7 @@
 // Created by tanja on 25.09.23.
 //
 #include "kinect_handler.h"
+#include "../utils/kinect_variables.h"
 #include "input.h"
 
 // xml to initialize OpenNI
@@ -104,9 +105,10 @@ int initKinect() {
     g_pMainFlowRouter = new XnVFlowRouter;
     pSessionGenerator->AddListener(g_pMainFlowRouter);
 
-    printf("Please perform focus gesture to start session\n");
-    printf("Hit any key to exit\n");
-
+    // printf("Please perform focus gesture to start session\n");
+    // printf("Hit any key to exit\n");
+    printf("Player was found! The game starts soon...");
+    kinect_init = true;
     // Main loop
     while (!xnOSWasKeyboardHit()) {
         context.WaitAnyUpdateAll();
