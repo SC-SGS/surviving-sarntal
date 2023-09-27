@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace physics;
+using namespace math;
 
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
@@ -42,16 +43,13 @@ Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     Position vertex = m->getVertex(idx);
     Vector d = vertex - vertex_other;
     // compute normal from distances via rotation
-    // signbit is used to let normal vector always point in positive y direction
-    float_type sgn_n_x = ((float_type)std::signbit(-d.y) - 0.5f) * 2.f;
     // R =  (  0   -1  )
     //      (  1    0  )
-    Vector n = {sgn_n_x * -d.y, sgn_n_x * d.x};
-    float_type normalization = std::sqrt(n * n);
-
+    Vector n = {-d.y, d.x};
     if (n.y < 0) {
-        n = n * (-1);
+        n = n * -1.f;
     }
+    float_type normalization = std::sqrt(n * n);
     return n / normalization;
 }
 
@@ -78,6 +76,10 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
             (r[i].value + vertex_normal - position_normal) / velocity_normal;
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
+
+        if (it.entity(i).has<Exploding>()) {
+            explodeRock(it.world(), it.entity(i), 2);
+        }
     }
 }
 
@@ -93,7 +95,7 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
                             Velocity &v2, const Radius R1, const Radius R2,
-                            float dt) {
+                            float_type dt) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
 
@@ -120,6 +122,11 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i], radius[j],
                               it.delta_time()); // TODO: Optimization?
+
+                if (it.entity(i).has<Exploding>()) {
+                    std::cout << "eskalation" << std::endl;
+                    explodeRock(it.world(), it.entity(i), 5);
+                }
             }
         }
     }
@@ -146,6 +153,28 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
                                  Velocity *velocities) {
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
+    }
+}
+
+void physics::explodeRock(const flecs::world &world, flecs::entity rock,
+                          const int number_of_rocks) {
+    auto position = *rock.get<Position>();
+    auto velocity = *rock.get<Velocity>();
+    auto radius = rock.get<Radius>()->value;
+    auto M = radius * radius;
+    rock.destruct();
+
+    float_type new_r = radius / std::sqrt(number_of_rocks);
+    float_type delta_angle = 2.0 * PI / number_of_rocks;
+
+    Position delta_direction, p;
+    Velocity v;
+    for (int i = 0; i < number_of_rocks; i++) {
+        delta_direction =
+            Position{std::sin(delta_angle * i), std::cos(delta_angle * i)};
+        p = (Position)(position + delta_direction * radius);
+        v = (Velocity)(velocity + delta_direction * 10);
+        makeRock(world, p, v, new_r);
     }
 }
 
@@ -208,10 +237,12 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                             next_y_pos - positions[0].y};
         float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) +
                                  std::pow(next_y_pos - positions[0].y, 2));
-        positions[0].x =
-            (it.delta_time() * std::abs(velocities[0].x) / length) *
-                direction.x +
-            positions[0].x;
+        float slope = direction.y / direction.x;
+        float speed_factor = getSpeedFactor(slope);
+        positions[0].x = (it.delta_time() *
+                          std::abs(velocities[0].x * speed_factor) / length) *
+                             direction.x +
+                         positions[0].x;
         positions[0].y = getYPosFromX(it.world(), positions[0].x);
     } else {
     }
@@ -219,6 +250,24 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
         it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
         positions[0].x =
             it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET;
+    }
+}
+
+float physics::getSpeedFactor(float slope) {
+    if (slope <= SLOWEST_NEG_SLOPE) {
+        return MIN_SPEED_NEG_SLOPE;
+    } else if (slope <= FASTEST_NEG_SCOPE) {
+        return linearInterpolation(slope,
+                                   {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
+                                   {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
+    } else if (slope <= 0) {
+        return linearInterpolation(
+            slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+    } else if (slope <= SLOWEST_POS_SCOPE) {
+        return linearInterpolation(slope, {0, 1},
+                                   {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+    } else {
+        return MIN_SPEED_POS_SCOPE;
     }
 }
 
@@ -330,10 +379,9 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
     auto vertex_left = mountain->getVertex(closest_indices[0]);
     auto vertex_right = mountain->getVertex(closest_indices[1]);
 
-    return ((x - vertex_left.x) * vertex_right.y +
-            (vertex_right.x - x) * vertex_left.y) /
-               (vertex_right.x - vertex_left.x) +
-           HIKER_HEIGHT;
+    // TODO offset might be a game constant and not necessarily equal to
+    // HIKER_HEIGHT
+    return linearInterpolation(x, vertex_left, vertex_right) + HIKER_HEIGHT;
 }
 
 void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
@@ -389,6 +437,11 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 }
             }
         });
+}
+
+float math::linearInterpolation(float x, Position left, Position right) {
+    return ((x - left.x) * right.y + (right.x - x) * left.y) /
+           (right.x - left.x);
 }
 
 PhysicSystems::PhysicSystems(flecs::world &world) {

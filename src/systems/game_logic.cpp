@@ -138,6 +138,7 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
+            .add<Exploding>()
             .set<graphics::CircleShapeRenderComponent>({radius});
     }
 }
@@ -150,6 +151,11 @@ void mountainLoadChunks(const flecs::world &world) {
         mountain->generateNewChunk();
         graphics::generateChunkMesh(world);
     }
+}
+
+void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
+    appInfo->score = std::max(appInfo->score, (int)position[0].x);
+    // std::cout << "Score: " << appInfo->score << std::endl;
 }
 
 void initGameLogic(flecs::world &world) {
@@ -205,6 +211,12 @@ void initGameLogic(flecs::world &world) {
         .term_at(3)
         .singleton()
         .iter(moveCamera);
+
+    world.system<Position, AppInfo>()
+        .with<Player>()
+        .term_at(2)
+        .singleton()
+        .iter(updateScore);
 
     world.system<>().iter(spawnRocks);
 }
