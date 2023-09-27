@@ -326,6 +326,9 @@ void physics::checkJumpEvent(Velocity *velocities,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
         float factor = 1;
+
+        input_entities->rumble(40000, 300);
+
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
             factor = DUCK_SPEED_FACTOR;

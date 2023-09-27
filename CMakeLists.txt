@@ -63,6 +63,7 @@ endif ()
 
 
 #link some libraries to the surviving-sarntal-library that we are defining atm
+target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 #link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
 
