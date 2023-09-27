@@ -887,6 +887,9 @@ void renderSystem(const flecs::iter &iter) {
                         DrawCube({p.x, -0.5, p.y - s.height / 2}, s.width, 1.0,
                                  s.height, RED);
                     });
+
+                auto killbar = world.get<KillBar>();
+                DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
             }
             EndMode3D();
         }
