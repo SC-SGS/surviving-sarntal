@@ -77,7 +77,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
         if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 2);
+            explodeRock(it.world(), it.entity(i), 4);
         }
     }
 }
@@ -98,9 +98,6 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
 
-    p1 -= v1 * dt;
-    p2 -= v2 * dt;
-
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
     float_type distance_sq = pos_diff_vector * pos_diff_vector;
@@ -117,14 +114,17 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
                                    Velocity *velocities, Radius *radius) {
     for (int i = 0; i < it.count(); i++) {
         for (int j = i + 1; j < it.count(); j++) {
-            if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
+            auto next_pos1 = positions[i] + velocities[i] * it.delta_time();
+            auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
+            if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
+                           radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i], radius[j],
                               it.delta_time()); // TODO: Optimization?
 
                 if (it.entity(i).has<Exploding>()) {
                     std::cout << "eskalation" << std::endl;
-                    explodeRock(it.world(), it.entity(i), 5);
+                    explodeRock(it.world(), it.entity(i), 4);
                 }
             }
         }
@@ -160,7 +160,6 @@ void physics::explodeRock(const flecs::world &world, flecs::entity rock,
     auto position = *rock.get<Position>();
     auto velocity = *rock.get<Velocity>();
     auto radius = rock.get<Radius>()->value;
-    auto M = radius * radius;
     rock.destruct();
 
     float_type new_r = radius / std::sqrt(number_of_rocks);
