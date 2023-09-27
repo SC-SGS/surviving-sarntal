@@ -58,7 +58,8 @@ bool physics::isCollided(Position p1, Position p2, Radius r1, Radius r2) {
 }
 
 void physics::terrainCollision(flecs::iter it, Position *positions,
-                               Velocity *velocities, Radius *r, Mountain *m) {
+                               Velocity *velocities, Radius *r, Mountain *m,
+                               Rotation *rot) {
     for (auto i : it) {
         auto closest_vertex = getClosestVertex(positions[i], r[i], m);
         auto vertex_position = m->getVertex(closest_vertex.index);
@@ -77,8 +78,20 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
+        auto m = r[i].value * r[i].value;
+        Vector parallel_vector = {-normal_vector.y, normal_vector.x};
+        auto velocity_parallel = velocities[i] * parallel_vector;
+        rot->angular_velocity += GAMMA * velocity_parallel / m;
+        if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
+            rot->angular_velocity = MAX_ANGULAR_VELOCITY;
+        }
+        if (rot->angular_velocity <= -MAX_ANGULAR_VELOCITY) {
+            rot->angular_velocity = -MAX_ANGULAR_VELOCITY;
+        }
+        rot->angular_offset += it.delta_time() * rot->angular_velocity;
+
         if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 2);
+            explodeRock(it.world(), it.entity(i), 4);
         }
     }
 }
@@ -89,18 +102,29 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Position>(p)
         .set<Velocity>(v)
         .set<Radius>({radius})
+        .set<Rotation>({0, 0})
         .add<Rock>()
-        .set<graphics::CircleShapeRenderComponent>({radius});
+        //.set<graphics::CircleShapeRenderComponent>({radius})
+        .set([&](graphics::BillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/stone.png");
+            c.width = radius * 2.0f;
+            c.height = radius * 2.0f;
+        });
+    ;
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
                             Velocity &v2, const Radius R1, const Radius R2,
-                            float_type dt) {
+                            float_type dt, float_type &ang_vel1,
+                            float_type &ang_offset1, float_type &ang_vel2,
+                            float_type &ang_offset2) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
-
-    p1 -= v1 * dt;
-    p2 -= v2 * dt;
 
     Vector vel_diff_vector = v1 - v2;
     Vector pos_diff_vector = p1 - p2;
@@ -112,20 +136,46 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
     v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
           (distance_sq * total_mass + EPSILON);
+
+    Vector normal_vector = {p2.y - p1.y, p1.x - p2.x};
+    ang_vel1 += GAMMA * std::abs((normal_vector * v1)) * (ang_vel2 - ang_vel1) /
+                (2 * m1);
+    ang_vel2 += GAMMA * std::abs((normal_vector * v2)) * (ang_vel1 - ang_vel2) /
+                (2 * m2);
+    if (ang_vel1 >= MAX_ANGULAR_VELOCITY) {
+        ang_vel1 = MAX_ANGULAR_VELOCITY;
+    }
+    if (ang_vel1 <= -MAX_ANGULAR_VELOCITY) {
+        ang_vel1 = -MAX_ANGULAR_VELOCITY;
+    }
+    if (ang_vel2 >= MAX_ANGULAR_VELOCITY) {
+        ang_vel2 = MAX_ANGULAR_VELOCITY;
+    }
+    if (ang_vel2 <= -MAX_ANGULAR_VELOCITY) {
+        ang_vel2 = -MAX_ANGULAR_VELOCITY;
+    }
+    ang_offset1 += dt * ang_vel1;
+    ang_offset2 += dt * ang_vel2;
 }
 
 void physics::rockRockInteractions(flecs::iter it, Position *positions,
-                                   Velocity *velocities, Radius *radius) {
+                                   Velocity *velocities, Radius *radius,
+                                   Rotation *rot) {
     for (int i = 0; i < it.count(); i++) {
         for (int j = i + 1; j < it.count(); j++) {
-            if (isCollided(positions[i], positions[j], radius[i], radius[j])) {
+            auto next_pos1 = positions[i] + velocities[i] * it.delta_time();
+            auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
+            if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
+                           radius[j])) {
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i], radius[j],
-                              it.delta_time()); // TODO: Optimization?
+                              it.delta_time(), rot[i].angular_velocity,
+                              rot[i].angular_offset, rot[j].angular_velocity,
+                              rot[j].angular_offset); // TODO: Optimization?
 
                 if (it.entity(i).has<Exploding>()) {
                     std::cout << "eskalation" << std::endl;
-                    explodeRock(it.world(), it.entity(i), 5);
+                    explodeRock(it.world(), it.entity(i), 4);
                 }
             }
         }
@@ -161,7 +211,6 @@ void physics::explodeRock(const flecs::world &world, flecs::entity rock,
     auto position = *rock.get<Position>();
     auto velocity = *rock.get<Velocity>();
     auto radius = rock.get<Radius>()->value;
-    auto M = radius * radius;
     rock.destruct();
 
     float_type new_r = radius / std::sqrt(number_of_rocks);
@@ -431,8 +480,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
-                        // rock_it.world().get_mut<AppInfo>()->isRunning =
-                        // false;
+                        rock_it.world().get_mut<AppInfo>()->playerAlive = false;
                     }
                 }
             }
@@ -450,12 +498,12 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity>().with<Rock>().multi_threaded(true).iter(
         updateRockState);
 
-    world.system<Position, Velocity, Radius>().with<Rock>().iter(
+    world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
 
     world.system<Position, Radius>().with<Rock>().iter(checkPlayerIsHit);
 
-    world.system<Position, Velocity, Radius, Mountain>()
+    world.system<Position, Velocity, Radius, Mountain, Rotation>()
         .term_at(4)
         .singleton()
         .iter(terrainCollision);

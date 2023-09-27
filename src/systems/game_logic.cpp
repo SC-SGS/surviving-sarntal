@@ -20,7 +20,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        // iter.world().get_mut<AppInfo>()->isRunning = false;
+        iter.world().get_mut<AppInfo>()->playerAlive = false;
     }
 }
 
@@ -48,38 +48,19 @@ void moveCamera(flecs::iter it, Position *position, KillBar *killBar,
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
     camera->target.x = (killBar->x) + (graphics::SCREEN_WIDTH * 1.0f) / 2;
     // fix camera to y-coord of player
-    camera->target.y = -position[0].y;
 
-    // this abomination of a term is taking the y coordinate of the leftmost
-    // mountain vertex that is just barely on the screen and offsetting it by a
-    // constant factor of the screen height if there aren't enough points the
-    // camera will jerk upwards. with enough points this will do a smooth
-    // upwards motion
-    // camera->target.y = (float)-mountain
-    //                       ->getVertex(mountain
-    //                                       ->getRelevantMountainSection(
-    //                                           killBar->x, killBar->x + 0.1)
-    //                                       .start_index)
-    //                       .y -
-    //                   graphics::SCREEN_HEIGHT * 0.33;
+    // smoothed movement in y-direction
+    constexpr int camera_smoothing{
+        50}; // the higher this number the more aggressively it gets smoothed
+    float current_camera_pos = camera->target.y;
+    float target_camera_pos = -position[0].y;
+    float diff = target_camera_pos - current_camera_pos;
+    camera->target.y =
+        ((current_camera_pos) * (camera_smoothing - 1) + target_camera_pos) /
+        camera_smoothing;
 
-    /*std::cout << "Camera position: " << camera->target.y
-              << " mountain left height: "
-              << mountain
-                     ->getVertex(mountain
-                                     ->getRelevantMountainSection(
-                                         killBar->x, killBar->x + 0.1)
-                                     .start_index)
-                     .y
-              << " difference: "
-              << camera->target.y -
-                     mountain
-                         ->getVertex(mountain
-                                         ->getRelevantMountainSection(
-                                             killBar->x, killBar->x + 0.1)
-                                         .start_index)
-                         .y
-              << std::endl;*/
+    // //not smoothed movement in y-direction
+    // camera->target.y = -position[0].y;
 }
 
 /**
@@ -133,13 +114,24 @@ void spawnRocks(flecs::iter it) {
         it.world()
             .entity()
             .set<Position>(
-                {camera->target.x + (graphics::SCREEN_WIDTH * 1.0f) / 2,
+                {camera->target.x,
                  -camera->target.y + (graphics::SCREEN_HEIGHT * 1.0f) / 2})
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
+            .set<Rotation>({0, 0})
             .add<Rock>()
             .add<Exploding>()
-            .set<graphics::CircleShapeRenderComponent>({radius});
+            //.set<graphics::CircleShapeRenderComponent>({radius})
+            .set([&](graphics::BillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/stone.png");
+                c.width = radius * 2.0f;
+                c.height = radius * 2.0f;
+            });
     }
 }
 
