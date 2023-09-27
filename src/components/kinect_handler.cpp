@@ -11,10 +11,11 @@
 
 // xml to initialize OpenNI
 #define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
-#define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
+#define SAMPLE_XML_FILE_LOCAL "Sample-User.xml"
 
 XnVSelectableSlider2D *g_pMainSlider2D;
 XnVFlowRouter *g_pMainFlowRouter;
+xn::Context context;
 bool just_jumped = false;
 
 xn::DepthGenerator g_DepthGenerator;
@@ -22,6 +23,9 @@ xn::UserGenerator g_UserGenerator;
 
 XnUserID g_nPlayer = 0;
 XnBool g_bCalibrated = FALSE;
+
+xn::ScriptNode scriptNode;
+XnVSessionGenerator *pSessionGenerator;
 
 XnFloat initial_y = 0.0;
 XnFloat initial_z = 0.0;
@@ -104,6 +108,7 @@ void XN_CALLBACK_TYPE CalibrationStarted(xn::SkeletonCapability& skeleton, XnUse
 void XN_CALLBACK_TYPE CalibrationCompleted(xn::SkeletonCapability& skeleton, XnUserID user, XnCalibrationStatus eStatus, void* cxt)
 {
     printf("User found! You can start playing :) \n");
+    kinect_init = true;
     if (eStatus == XN_CALIBRATION_STATUS_OK)
     {
         if (!g_bCalibrated)
@@ -228,9 +233,6 @@ XnBool fileExists(const char *fn) {
 }
 
 int initKinect() {
-    xn::Context context;
-    xn::ScriptNode scriptNode;
-    XnVSessionGenerator *pSessionGenerator;
 
     // Create context
     const char *fn = NULL;
