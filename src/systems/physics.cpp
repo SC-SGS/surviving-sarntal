@@ -135,7 +135,8 @@ void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
         velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
         if (velocities[i].length() > VELOCITY_CAP) {
-            velocities[i] = (Velocity) (velocities[i] * VELOCITY_CAP / velocities[i].length());
+            velocities[i] = (Velocity)(velocities[i] * VELOCITY_CAP /
+                                       velocities[i].length());
         }
     }
 }
