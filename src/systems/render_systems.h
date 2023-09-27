@@ -6,9 +6,6 @@
 
 namespace graphics {
 
-const int SCREEN_WIDTH = 1600;
-const int SCREEN_HEIGHT = 900;
-
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
 
