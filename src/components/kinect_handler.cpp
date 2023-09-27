@@ -154,9 +154,13 @@ void glutDisplay (void)
         }
 
         XnFloat scaled_z = std::max(-1.0f, std::min(1.0f, -(jointData.position.position.Z - initial_z) / 700));
-        printf("%6.1f    (%6.1f)\n", scaled_z, jointData.position.position.Z);
+        // printf("%6.1f    (%6.1f)\n", scaled_z, jointData.position.position.Z);
+        horizontal_axis = scaled_z;
         if (jointData.position.position.Y > initial_y + 100 + 10 * scaled_z){
-            printf("JUMP %6.1f (init %6.1f)\n", jointData.position.position.Y, initial_y);
+            do_kinect_jump = true;
+            // printf("JUMP %6.1f (init %6.1f)\n", jointData.position.position.Y, initial_y);
+        } else {
+            do_kinect_jump = false;
         }
     }
 
