@@ -27,6 +27,8 @@ enum Event {
     ITEM_DROP,
     SPECIAL_ABILITY,
     PAUSE,
+    FULLSCREEN,
+    TOGGLE_DEBUG,
     EVENT_COUNT // can be used for iteration  over all events
 };
 
@@ -62,7 +64,7 @@ struct VirtualAxis {
 // map containing strings with the english display names for the input
 // events
 const std::unordered_map<Event, std::string> EVENT_DISPLAY_NAMES{
-    {JUMP, "Jump"},           {DUCK, "Duck"},
+    {JUMP, "Jump"},           {DUCK, "Ducking"},
     {ITEM_PICK, "Pick item"}, {ITEM_USE, "Use item"},
     {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},
     {PAUSE, "Pause"},
@@ -83,11 +85,13 @@ const std::unordered_map<Event, ButtonEvent> KEYBOARD_KEY_MAP{
     {ITEM_USE, {DEVICE_KEYBOARD, KEY_F, PRESSED}},
     {ITEM_DROP, {DEVICE_KEYBOARD, KEY_Q, PRESSED}},
     {SPECIAL_ABILITY, {DEVICE_KEYBOARD, KEY_G, PRESSED}},
+    {FULLSCREEN, {DEVICE_KEYBOARD, KEY_F11, PRESSED}},
+    {TOGGLE_DEBUG, {DEVICE_KEYBOARD, KEY_P, PRESSED}},
     {PAUSE, {DEVICE_KEYBOARD, KEY_ESCAPE, PRESSED}}};
 
 const std::unordered_map<Event, ButtonEvent> GAMEPAD_KEY_MAP{
     {JUMP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_DOWN, PRESSED}},
-    {DUCK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, PRESSED}},
+    {DUCK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, DOWN}},
     {ITEM_PICK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_LEFT, PRESSED}},
     {ITEM_USE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT, PRESSED}},
     {ITEM_DROP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_UP, PRESSED}},
@@ -105,9 +109,13 @@ const std::unordered_map<Axis, GamepadAxis> GAMEPAD_AXIS_MAP{
 // a map that stores sources for virtual axes (axes derived from key
 // presses)
 const std::unordered_map<Axis, std::list<VirtualAxis>> VIRTUAL_AXIS_MAP{
-    {ITEM_SWITCH,
-     {{DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, DOWN},
-      {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, DOWN}}},
+    {
+        ITEM_SWITCH,
+        {{DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, DOWN},
+         {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_TRIGGER_1, DOWN},
+         {{DEVICE_KEYBOARD, KEY_M, PRESSED},
+          {DEVICE_KEYBOARD, KEY_N, PRESSED}}},
+    },
     {MOVEMENT_X,
      {
          {{DEVICE_KEYBOARD, KEY_D, DOWN}, {DEVICE_KEYBOARD, KEY_A, DOWN}},
@@ -118,10 +126,13 @@ const std::unordered_map<Axis, std::list<VirtualAxis>> VIRTUAL_AXIS_MAP{
 
 class InputEntity {
   public:
-    enum InputType { GAMEPAD, MOUSE_KEYBOARD, KINECT };
+    enum InputType { DISABLED, GAMEPAD, MOUSE_KEYBOARD, KINECT };
 
   private:
-    InputType current_input_type = {};
+    // whether to automatically select the best input device on update
+    bool auto_select_device = false;
+
+    InputType current_input_type = DISABLED;
     // number of the gamepad to use (if input type is Gamepad)
     int gamepad_num = 0;
     // the gamepad id in raylib (if input type is Gamepad)
@@ -171,7 +182,7 @@ class InputEntity {
      * checks if kinect is selected for input and available
      * @return
      */
-    static bool hasKinect();
+    bool hasKinect() const;
 
     /**
      * checks if a virtual axis should be used with the currently selected input
@@ -189,14 +200,14 @@ class InputEntity {
 
   public:
     /**
-     * default constructor that selects the first gamepad if available
-     * or mouse and keyboard otherwise
+     * constructor for an InputEntity that automatically selects an input device
      */
-    InputEntity();
+    explicit InputEntity();
 
     /**
      * a constructor that allows to specify the input type and optionally the
-     * number of the gamepad
+     * number of the gamepad. This input type is kept even if the device(s)
+     * are not available.
      * @param input_type
      * @param gamepad_num
      */
@@ -223,12 +234,22 @@ class InputEntity {
     void setInputType(InputType type, int gamepad_num = NO_GAMEPAD_ID);
 
     /**
+     * gets the currently selected input type
+     */
+    InputType getInputType() const;
+    /**
+     * gets the number of the gamepad
+     * @return
+     */
+    int getDeviceNum() const;
+
+    /**
      * gets the number of gamepads that are attached
      * (filtering out devices that are wrongly recognized by raylib, like
      * touchpads)
      * @return the number of gamepads
      */
-    int getGamepadCount() const;
+    static int getGamepadCount();
 
     /**
      * checks if an event (usually pressing of a button) is present at the
