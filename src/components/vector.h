@@ -49,4 +49,11 @@ struct Radius {
     float_type value;
 };
 
+struct Rotation {
+    float_type angular_velocity;
+    float_type angular_offset;
+};
+
 struct Rock {};
+
+struct Exploding {};
