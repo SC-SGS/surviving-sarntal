@@ -38,9 +38,8 @@ int main() {
 
     world.set<Mountain>({});
     graphics::initRenderSystem(world);
-    graphics::prepareGame(world);
-    graphics::prepareHUD(world);
-    graphics::prepareMenu(world);
+    graphics::prepareGameResources(world);
+    graphics::prepareMenuResources(world);
 
     initGameLogic(world);
 
