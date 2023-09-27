@@ -28,7 +28,6 @@ float scrolling_back = 0.0f;
 float scrolling_mid = 0.0f;
 float scrolling_fore = 0.0f;
 
-int current_frame = 0;
 // Camera
 bool use_debug_camera;
 Camera2D debug_camera;
@@ -47,11 +46,13 @@ Texture2D grass_texture;
 std::vector<Matrix> grass_transforms;
 Material grass_material;
 
+// frame info
+int current_frame = 0;
 int loc_time;
 bool regenerate_terrain = true;
 int grass_insert_index = 0;
 
-//
+// Phases
 flecs::entity StartRender;
 flecs::entity OnRender;
 flecs::entity OnInterface;
@@ -394,31 +395,25 @@ void initRenderSystem(const flecs::world &world) {
     StartRender =
         world.entity().add(flecs::Phase).depends_on(flecs::PostUpdate);
 
-    OnRender =
-        world.entity().add(flecs::Phase).depends_on(StartRender);
+    OnRender = world.entity().add(flecs::Phase).depends_on(StartRender);
 
-    OnInterface =
-        world.entity().add(flecs::Phase).depends_on(OnRender);
+    OnInterface = world.entity().add(flecs::Phase).depends_on(OnRender);
 
-    EndRender =
-        world.entity().add(flecs::Phase).depends_on(OnInterface);
-
+    EndRender = world.entity().add(flecs::Phase).depends_on(OnInterface);
 
     // add the render system
     world.system().kind(StartRender).iter(startRender);
 
     // add the hud system
     world.system().kind(EndRender).iter(endRender);
-
 }
 
 // prepare
 
-void prepareGame(const flecs::world &world) {
+void prepareGameResources(const flecs::world &world) {
 
     // add the render system
     world.system().kind(OnRender).iter(renderSystem);
-
     // add the hud system
     world.system().kind(OnInterface).iter(renderHUD);
 
@@ -446,7 +441,6 @@ void prepareGame(const flecs::world &world) {
     debug_camera.offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f};
     debug_camera.rotation = 0.0f;
     debug_camera.zoom = 1.0f;
-
 
     // add the resource manager
     world.set<Resources>({});
@@ -653,52 +647,48 @@ void prepareGame(const flecs::world &world) {
         // transforms
         grass_transforms.reserve(MAX_INSTANCES);
 
-        //materail
+        // materail
         grass_material = LoadMaterialDefault();
         grass_material.shader = grass_shader;
         grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
-
     }
 
-    //camera setup
+    // camera setup
     {
         debug_camera3D = {0};
         debug_camera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
         debug_camera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
-        debug_camera3D.up = {0.0f, 0.0f,
-                             1.0f};  // Camera up vector (rotation towards target)
+        debug_camera3D.up = {
+            0.0f, 0.0f, 1.0f}; // Camera up vector (rotation towards target)
         debug_camera3D.fovy = 45.0f; // Camera field-of-view Y
         debug_camera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
     }
 }
 
-void prepareMenu(const flecs::world &world) {}
+void prepareMenuResources(const flecs::world &world) {}
 
-void prepareHUD(const flecs::world &world) {}
-
-void startRender(flecs::iter &iter) {
-    //std::cout << "### start render" << std::endl;
+void startRender(const flecs::iter &iter) {
+    // std::cout << "### start render" << std::endl;
     handleWindow(iter.world());
     BeginDrawing();
     ClearBackground(WHITE);
 }
 
-void endRender(flecs::iter &iter) {
+void endRender(const flecs::iter &iter) {
     EndDrawing();
 
-    //std::cout << "### end render ----------------" << std::endl;
+    // std::cout << "### end render ----------------" << std::endl;
 }
 
 // draw
 
-void renderSystem(flecs::iter &iter) {
+void renderSystem(const flecs::iter &iter) {
 
-    //std::cout << "### render system" << std::endl;
+    // std::cout << "### render system" << std::endl;
 
     auto world = iter.world();
 
     UpdateMusicStream(ambient_audio);
-
 
     if (IsKeyPressed(KEY_P)) {
         use_debug_camera = !use_debug_camera;
@@ -896,13 +886,10 @@ void renderSystem(flecs::iter &iter) {
             }
             EndMode3D();
         }
-
     }
 }
 
-void renderHUD(flecs::iter &iter) {
-
-    //std::cout << "### draw hud" << std::endl;
+void renderHUD(const flecs::iter &iter) {
 
     // TODO get hp some other way?
     float player_health = 1; // 0.9; // percent
@@ -932,7 +919,7 @@ void renderHUD(flecs::iter &iter) {
     DrawFPS(0, 0);
 }
 
-void renderMenu(flecs::iter &iter) {
+void renderMenu(const flecs::iter &iter) {
     DrawText("this is a menu", SCREEN_WIDTH * 5 / 6, 50, 40, BLACK);
 }
 
