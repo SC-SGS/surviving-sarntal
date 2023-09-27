@@ -148,7 +148,7 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                          spawnBasepoint.y + offsets_additional_rocks[i].y})
                     .set<Velocity>({-200., 0})
                     .set<Radius>({radius})
-                    .set<Rotation>({0,0})
+                    .set<Rotation>({0, 0})
                     .add<Rock>()
                     //.add<Exploding>()
                     //.set<graphics::CircleShapeRenderComponent>({radius});
@@ -157,8 +157,9 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                         c.billUp = {0.0f, 0.0f, 1.0f};
                         c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
                         c.resourceHandle =
-                            it.world().get_mut<graphics::Resources>()->textures.load(
-                                "../assets/texture/stone.png");
+                            it.world()
+                                .get_mut<graphics::Resources>()
+                                ->textures.load("../assets/texture/stone.png");
                         c.width = radius * 2.0f;
                         c.height = radius * 2.0f;
                     });
