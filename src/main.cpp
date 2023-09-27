@@ -41,7 +41,7 @@ int main() {
     world.import <InputSystems>();
 
     world.set<Mountain>({});
-    graphics::init_render_system(world);
+    graphics::initRenderSystem(world);
 
     initGameLogic(world);
 
