@@ -74,7 +74,7 @@ class Mountain {
      */
     Position getVertex(size_t index);
 
-     /** Returns a position from a given index. The index should previously be
+    /** Returns a position from a given index. The index should previously be
      * obtained via a seperate function of the mountain.
      * @param index
      * @return Position (consisting of x- and y-coordinate)
