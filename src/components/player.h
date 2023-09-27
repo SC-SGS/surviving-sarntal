@@ -21,10 +21,10 @@ class PlayerMovement {
     float last_jump;
 };
 
-struct KillBar {
-    float x;
-};
-
 struct Health {
     int hp;
+};
+
+struct KillBar {
+    float_type x;
 };

@@ -5,36 +5,32 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
+#include "utils/game_constants.h"
+#include <chrono>
 #include <flecs.h>
 #include <iostream>
 
 #ifdef kinect
-#include <XnOpenNI.h>
-#include <XnVWaveDetector.h>
-#include <cstdio>
-
-// xml to initialize OpenNI
-#define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
-#define SAMPLE_XML_FILE_LOCAL "Sample-Tracking.xml"
-
-// callback for a new position of any hand
-void XN_CALLBACK_TYPE onPointUpdate(const XnVHandPointContext *pContext,
-                                    void *cxt) {
-    printf("%d: (%f,%f,%f) [%f]\n", pContext->nID, pContext->ptPosition.X,
-           pContext->ptPosition.Y, pContext->ptPosition.Z, pContext->fTime);
-}
-
+#include "components/kinect_handler.h"
+#include <thread>
 #endif
 
 void mainLoop(flecs::world &world);
 
+bool kinect_mode;
+
 int main() {
+    using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
+    kinect_mode = false;
 
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
+    kinect_mode = true;
+    std::thread kinect_thread(initKinect);
+    std::this_thread::sleep_for(10s);
 #endif
 
     world.import <PhysicSystems>();

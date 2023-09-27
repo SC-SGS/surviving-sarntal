@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+cmake_policy(SET CMP0135 NEW)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
@@ -28,11 +29,15 @@ FetchContent_MakeAvailable(googletest)
 include_directories(libs/NITE/Include /usr/include/ni)
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
-list(FILTER SRC EXCLUDE REGEX "main.cpp")
+if (KINECT)
+    list(FILTER SRC EXCLUDE REGEX "main.cpp")
+else ()
+    list(FILTER SRC EXCLUDE REGEX "main.cpp|kinect_handler.h|kinect_handler.cpp")
+endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
-#message(WARNING ${SRC})    #for CMAKE debugging purposes
+message(WARNING ${SRC})    #for CMAKE debugging purposes
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
@@ -50,7 +55,7 @@ if (KINECT)
     configure_file(libs/NITE/Include/Sample-Tracking.xml . COPYONLY)
     configure_file(libs/NITE/Include/Sample-User.xml . COPYONLY)
     add_definitions(-Dkinect=1)
-    message(WARNING "Kinect is activated")
+    #message(WARNING "Kinect is activated")
 endif ()
 
 
