@@ -55,7 +55,7 @@ constexpr float_type MAX_ANGULAR_VELOCITY = 1000.f;
  * Rock spawn times
  */
 constexpr float_type ROCK_TIME_PERIOD_DIFFICULT = 1;
-constexpr float_type ROCK_TIME_PERIOD_MEDIUM = 0.5;
+constexpr float_type ROCK_TIME_PERIOD_MEDIUM = 5.;
 constexpr float_type ROCK_TIME_PERIOD_EASY = 2;
 
 /**

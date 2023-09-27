@@ -91,7 +91,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         rot->angular_offset += it.delta_time() * rot->angular_velocity;
 
         if (it.entity(i).has<Exploding>()) {
-            explodeRock(it.world(), it.entity(i), 4);
+            explodeRock(it.world(), it.entity(i), 1);
         }
     }
 }
@@ -175,7 +175,7 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
 
                 if (it.entity(i).has<Exploding>()) {
                     std::cout << "eskalation" << std::endl;
-                    explodeRock(it.world(), it.entity(i), 4);
+                    explodeRock(it.world(), it.entity(i), 1);
                 }
             }
         }
