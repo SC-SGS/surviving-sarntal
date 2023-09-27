@@ -121,7 +121,6 @@ void spawnRocks(flecs::iter it) {
             .set<Rotation>({0, 0})
             .add<Rock>()
             .add<Exploding>()
-            //.set<graphics::CircleShapeRenderComponent>({radius})
             .set([&](graphics::BillboardComponent &c) {
                 c = {0};
                 c.billUp = {0.0f, 0.0f, 1.0f};
@@ -177,6 +176,7 @@ void initGameLogic(flecs::world &world) {
             c.width = HIKER_HEIGHT; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
+            c.animation_speed = 20;
             c.numFrames = 4;
         });
     world.set<KillBar>({0.});

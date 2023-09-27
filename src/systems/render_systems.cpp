@@ -745,8 +745,6 @@ void renderSystem(const flecs::iter &iter) {
 
             EndMode2D();
             current_frame++;
-            if (current_frame > 5)
-                current_frame = 0;
 
             if (use_debug_camera) {
 
@@ -839,7 +837,7 @@ void renderSystem(const flecs::iter &iter) {
                             b.resourceHandle);
 
                         Rectangle sourceRec = {
-                            (float)current_frame * (float)texture.width /
+                            (float)b.current_frame * (float)texture.width /
                                 b.numFrames,
                             0.0f, (float)texture.width / b.numFrames,
                             (float)texture.height}; // part of the texture used
@@ -849,6 +847,12 @@ void renderSystem(const flecs::iter &iter) {
                             static_cast<float>(
                                 b.height)}; // where to draw texture
                         ;
+                        
+                        if (current_frame % b.animation_speed == 0) {
+                            b.current_frame++;
+                            b.current_frame = b.current_frame % b.numFrames;
+                        }
+                        //b.current_frame = ;
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
                                          Vector3{p.x + b.billPositionStatic.x,
