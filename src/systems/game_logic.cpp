@@ -20,7 +20,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        // iter.world().get_mut<AppInfo>()->isRunning = false;
+        iter.world().get_mut<AppInfo>()->playerAlive = false;
     }
 }
 
@@ -121,7 +121,17 @@ void spawnRocks(flecs::iter it) {
             .set<Rotation>({0, 0})
             .add<Rock>()
             .add<Exploding>()
-            .set<graphics::CircleShapeRenderComponent>({radius});
+            //.set<graphics::CircleShapeRenderComponent>({radius})
+            .set([&](graphics::BillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/stone.png");
+                c.width = radius * 2.0f;
+                c.height = radius * 2.0f;
+            });
     }
 }
 

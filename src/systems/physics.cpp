@@ -104,7 +104,18 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Radius>({radius})
         .set<Rotation>({0, 0})
         .add<Rock>()
-        .set<graphics::CircleShapeRenderComponent>({radius});
+        //.set<graphics::CircleShapeRenderComponent>({radius})
+        .set([&](graphics::BillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/stone.png");
+            c.width = radius * 2.0f;
+            c.height = radius * 2.0f;
+        });
+    ;
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
@@ -469,8 +480,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
-                        // rock_it.world().get_mut<AppInfo>()->isRunning =
-                        // false;
+                        rock_it.world().get_mut<AppInfo>()->playerAlive = false;
                     }
                 }
             }
