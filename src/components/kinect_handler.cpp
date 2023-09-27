@@ -22,8 +22,8 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
     float scaled_y_value = yValue * 2.0f - 1.0f;
     horizontal_axis = scaled_x_value;
     do_kinect_jump = false;
-    if (scaled_y_value > 0.3){
-        if (!just_jumped){
+    if (scaled_y_value > 0.3) {
+        if (!just_jumped) {
             do_kinect_jump = true;
             just_jumped = true;
         }
