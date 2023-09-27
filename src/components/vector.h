@@ -55,3 +55,5 @@ struct Rotation {
 };
 
 struct Rock {};
+
+struct Exploding {};

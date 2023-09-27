@@ -27,7 +27,6 @@ struct Vertex {
  * @param v velocity
  * @param r radius, should be several times larger than section width in
  * mountain.h
- * TODO spawn here probably???
  */
 void makeRock(const flecs::world &world, Position p, Velocity v,
               float_type radius);
@@ -146,6 +145,8 @@ void updatePlayerState(flecs::iter it, Position *positions,
 /**
  * Updates Player's Position based on velocity and current state.
  * Assumes that updatePlayerVelocity has been called beforehand.
+ * Speed on a slope is calculated by a function.
+ * Player cannot pass through barrier on the right side of the screen.
  *
  * @param it
  * @param positions
@@ -155,6 +156,24 @@ void updatePlayerState(flecs::iter it, Position *positions,
 void updatePlayerPosition(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements);
+
+/**
+ * Modular function that returns the speed factor on a slope.
+ * Can be changed to an arbitrary function, changing the player movement
+ * behaviour on a slope.
+ * In the current implementation, the function is defined as follows:
+ *          = MIN_SPEED_NEG_SLOPE (if slope <= SLOWEST_NEG_SLOPE)
+ *          = MAX_SPEED_NEG_SLOPE (if slope = FASTEST_NEG_SLOPE)
+ * f(slope) = 1 (if slope = 0)
+ *          = MIN_SPEED_POS_SLOPE (if slope >= SLOWEST_POS_SLOPE)
+ *
+ * Between those points, we interpolate linearly
+ * (might be changed to spline interpolation later).
+ *
+ * @param slope
+ * @return the speed factor.
+ */
+float getSpeedFactor(float slope);
 
 /**
  * Updates player velocity based on current input and state.
@@ -249,4 +268,19 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
  */
 float getYPosFromX(const flecs::world &world, float x);
 
+void explodeRock(const flecs::world &world, flecs::entity rock,
+                 const int number_of_rocks);
 } // namespace physics
+
+namespace math {
+
+/**
+ * Does as the name suggests.
+ *
+ * @param x
+ * @param left
+ * @param right
+ * @return f(x)
+ */
+float linearInterpolation(float x, Position left, Position right);
+} // namespace math
