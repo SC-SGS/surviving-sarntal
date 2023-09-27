@@ -383,8 +383,7 @@ void render_system(flecs::iter &iter) {
                 SetShaderValue(shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
                 int count = std::min((int)transforms.size(), MAX_INSTANCES);
-                DrawMeshInstanced(grass_mesh, matInstances, transforms.data(),
-                                  count);
+                DrawMeshInstanced(grass_mesh, matInstances, transforms.data(), count);
                 rlEnableBackfaceCulling();
 
                 // draw rocks
@@ -748,13 +747,8 @@ void generate_chunk_mesh(const flecs::world &world) {
     std::cout << "graphics: gen chunk: " << interval.start_index << ", "
               << interval.end_index << std::endl;
 
-    size_t start_index = interval.start_index - 1;
-    size_t end_index = interval.end_index;
-
-    // interval.end_index =
-    //     std::min(interval.end_index,
-    //              interval.start_index +
-    //                  1500); // TODO remove (last vertices are wrong...)
+    int start_index = interval.start_index - 1;
+    int end_index = interval.end_index;
 
     int terrainVertexCount = end_index - start_index;
 
@@ -767,7 +761,6 @@ void generate_chunk_mesh(const flecs::world &world) {
     std::vector<float> texcoords;
     std::vector<float> normals;
 
-    // for (int i = interval.start_index; i < interval.end_index-1; i++) {
     for (int i = start_index; i < end_index - 1; i++) {
         int currentDepth = -levelsAtTheBack * 0.1;
 
@@ -783,14 +776,8 @@ void generate_chunk_mesh(const flecs::world &world) {
         v0.z = getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v0.y = currentDepth;
 
-        // std::cout << "vertex: " <<i << ": " << vertex.x << ", " << vertex.y
-        // << std::endl;
-
         Vector3 v1;
         auto vertex2 = world.get_mut<Mountain>()->getVertex(i + 1);
-        // vertex2.x = vertex2.x * 0.01f;
-        // vertex2.y = vertex2.y * 0.01f;
-        //  getTerrainHeight(vertex.x, currentDepth, vertex.y);
         v1.x = vertex2.x;
         v1.z = getTerrainHeight(vertex2.x, currentDepth, vertex2.y); // height;
         v1.y = currentDepth;

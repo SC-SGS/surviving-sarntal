@@ -20,7 +20,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        iter.world().get_mut<AppInfo>()->isRunning = false;
+        //iter.world().get_mut<AppInfo>()->isRunning = false;
     }
 }
 
