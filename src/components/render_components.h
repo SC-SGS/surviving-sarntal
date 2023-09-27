@@ -21,7 +21,7 @@ struct RectangleShapeRenderComponent {
 
 struct AnimatedSpriteComponent {
     HANDLE resourceHandle;
-    HANDLE currentFrame;
+    HANDLE current_frame;
 };
 
 struct ChunkRenderComponent {
@@ -45,7 +45,7 @@ struct AnimatedBillboardComponent {
     int width;
     int height;
     HANDLE resourceHandle;
-    HANDLE currentFrame;
+    HANDLE current_frame;
     int numFrames;
 };
 

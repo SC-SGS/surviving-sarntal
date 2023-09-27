@@ -403,7 +403,8 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
-                        rock_it.world().get_mut<AppInfo>()->isRunning = false;
+                        // rock_it.world().get_mut<AppInfo>()->isRunning =
+                        // false;
                     }
                 }
             }

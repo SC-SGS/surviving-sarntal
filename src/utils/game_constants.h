@@ -3,6 +3,11 @@
 
 typedef float float_type;
 
+namespace graphics {
+constexpr int SCREEN_WIDTH = 1600;
+constexpr int SCREEN_HEIGHT = 900;
+} // namespace graphics
+
 /**
  * Player size
  */
@@ -56,7 +61,8 @@ constexpr float_type ROCK_TIME_PERIOD_EASY = 2;
  */
 constexpr float_type KILL_BAR_VELOCITY = 100.;
 constexpr float_type ROCK_KILL_BAR_OFFSET = -(MAX_ROCK_SIZE + 50.f);
-constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET = 1300;
+constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
+    (graphics::SCREEN_WIDTH * 0.8);
 
 /**
  * Physical constants

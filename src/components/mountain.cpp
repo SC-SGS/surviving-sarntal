@@ -50,8 +50,10 @@ void Mountain::printTempDebugInfo() {
 
 Position Mountain::getVertex(size_t index) {
     return landscape_fixpoints_circular_array[index % NUMBER_OF_VERTICES];
-    /*[(index + start_of_circular_array) %
-     landscape_fixpoints_circular_array.size()];*/
+}
+Position Mountain::getVertex(int index) {
+    return landscape_fixpoints_circular_array[(index + NUMBER_OF_VERTICES) %
+                                              NUMBER_OF_VERTICES];
 }
 
 IndexInterval Mountain::getRelevantMountainSection(float_type min_x,

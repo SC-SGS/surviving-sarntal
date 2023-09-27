@@ -20,7 +20,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        iter.world().get_mut<AppInfo>()->isRunning = false;
+        // iter.world().get_mut<AppInfo>()->isRunning = false;
     }
 }
 
@@ -109,7 +109,7 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
         mountain->generateNewChunk();
-        graphics::generate_chunk_mesh(it.world());
+        graphics::generateChunkMesh(it.world());
         // flecs::entity e = it.world().entity("tmp_event");
         // it.world()
         //     .event<graphics::GenChunkEvent>()
@@ -148,7 +148,7 @@ void mountainLoadChunks(const flecs::world &world) {
          i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK;
          i++) {
         mountain->generateNewChunk();
-        graphics::generate_chunk_mesh(world);
+        graphics::generateChunkMesh(world);
     }
 }
 
@@ -178,7 +178,7 @@ void initGameLogic(flecs::world &world) {
                     "../assets/texture/test_sprite_small.png");
             c.width = 100;
             c.height = 100;
-            c.currentFrame = 0;
+            c.current_frame = 0;
             c.numFrames = 6;
         });
     world.set<KillBar>({0.});

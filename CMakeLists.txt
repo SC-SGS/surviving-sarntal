@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-cmake_policy(SET CMP0135 NEW)
+
+if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
@@ -37,7 +40,6 @@ endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
-message(WARNING ${SRC})    #for CMAKE debugging purposes
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
