@@ -38,9 +38,7 @@ bool use_hand = false;
 // Callbacks for kinect body
 //-----------------------------------------------------------------------------
 
-
-XnBool AssignPlayer(XnUserID user)
-{
+XnBool AssignPlayer(XnUserID user) {
     if (g_nPlayer != 0)
         return FALSE;
 
@@ -54,11 +52,10 @@ XnBool AssignPlayer(XnUserID user)
     g_UserGenerator.GetSkeletonCap().StartTracking(user);
     g_nPlayer = user;
     return TRUE;
-
 }
 
-void XN_CALLBACK_TYPE NewUser(xn::UserGenerator& generator, XnUserID user, void* pCookie)
-{
+void XN_CALLBACK_TYPE NewUser(xn::UserGenerator &generator, XnUserID user,
+                              void *pCookie) {
     if (!g_bCalibrated) // check on player0 is enough
     {
         generator.GetSkeletonCap().StartTracking(user);
@@ -68,51 +65,44 @@ void XN_CALLBACK_TYPE NewUser(xn::UserGenerator& generator, XnUserID user, void*
     AssignPlayer(user);
 }
 
-void FindPlayer()
-{
-    if (g_nPlayer != 0)
-    {
+void FindPlayer() {
+    if (g_nPlayer != 0) {
         return;
     }
     XnUserID aUsers[20];
     XnUInt16 nUsers = 20;
     g_UserGenerator.GetUsers(aUsers, nUsers);
 
-    for (int i = 0; i < nUsers; ++i)
-    {
+    for (int i = 0; i < nUsers; ++i) {
         if (AssignPlayer(aUsers[i]))
             return;
     }
 }
 
-void LostPlayer()
-{
+void LostPlayer() {
     g_nPlayer = 0;
     FindPlayer();
-
 }
 
-void XN_CALLBACK_TYPE LostUser(xn::UserGenerator& generator, XnUserID user, void* pCookie)
-{
+void XN_CALLBACK_TYPE LostUser(xn::UserGenerator &generator, XnUserID user,
+                               void *pCookie) {
     printf("Lost user %d\n", user);
-    if (g_nPlayer == user)
-    {
+    if (g_nPlayer == user) {
         LostPlayer();
     }
 }
 
-void XN_CALLBACK_TYPE CalibrationStarted(xn::SkeletonCapability& skeleton, XnUserID user, void* cxt)
-{
-}
+void XN_CALLBACK_TYPE CalibrationStarted(xn::SkeletonCapability &skeleton,
+                                         XnUserID user, void *cxt) {}
 
-void XN_CALLBACK_TYPE CalibrationCompleted(xn::SkeletonCapability& skeleton, XnUserID user, XnCalibrationStatus eStatus, void* cxt)
-{
+void XN_CALLBACK_TYPE CalibrationCompleted(xn::SkeletonCapability &skeleton,
+                                           XnUserID user,
+                                           XnCalibrationStatus eStatus,
+                                           void *cxt) {
     printf("User found! You can start playing :) \n");
     kinect_init = true;
-    if (eStatus == XN_CALIBRATION_STATUS_OK)
-    {
-        if (!g_bCalibrated)
-        {
+    if (eStatus == XN_CALIBRATION_STATUS_OK) {
+        if (!g_bCalibrated) {
             g_UserGenerator.GetSkeletonCap().SaveCalibrationData(user, 0);
             g_nPlayer = user;
             g_UserGenerator.GetSkeletonCap().StartTracking(user);
@@ -124,68 +114,65 @@ void XN_CALLBACK_TYPE CalibrationCompleted(xn::SkeletonCapability& skeleton, XnU
         g_UserGenerator.GetUsers(aUsers, nUsers);
         for (int i = 0; i < nUsers; ++i)
             g_UserGenerator.GetPoseDetectionCap().StopPoseDetection(aUsers[i]);
-
     }
 }
 
 // this function is called each frame
-void glutDisplay (void)
-{
+void glutDisplay(void) {
     xn::SceneMetaData sceneMD;
     xn::DepthMetaData depthMD;
     g_DepthGenerator.GetMetaData(depthMD);
 
-    if (!g_bPause)
-    {
+    if (!g_bPause) {
         // Read next available data
         context.WaitOneUpdateAll(g_DepthGenerator);
     }
 
-    if (g_nPlayer != 0)
-    {
+    if (g_nPlayer != 0) {
         XnPoint3D com;
         g_UserGenerator.GetCoM(g_nPlayer, com);
-        if (com.Z == 0)
-        {
+        if (com.Z == 0) {
             g_nPlayer = 0;
             FindPlayer();
         }
 
         XnSkeletonJointTransformation jointData;
-        g_UserGenerator.GetSkeletonCap().GetSkeletonJoint(g_nPlayer, XN_SKEL_TORSO, jointData);
+        g_UserGenerator.GetSkeletonCap().GetSkeletonJoint(
+            g_nPlayer, XN_SKEL_TORSO, jointData);
         if (initial_y == 0.0) {
             initial_y = jointData.position.position.Y;
             initial_z = jointData.position.position.Z;
         }
 
-        XnFloat scaled_z = std::max(-1.0f, std::min(1.0f, -(jointData.position.position.Z - initial_z) / 700));
-        // printf("%6.1f    (%6.1f)\n", scaled_z, jointData.position.position.Z);
+        XnFloat scaled_z = std::max(
+            -1.0f,
+            std::min(1.0f, -(jointData.position.position.Z - initial_z) / 700));
+        // printf("%6.1f    (%6.1f)\n", scaled_z,
+        // jointData.position.position.Z);
         horizontal_axis = scaled_z;
-        if (jointData.position.position.Y > initial_y + 80 + 10 * scaled_z){
+        if (jointData.position.position.Y > initial_y + 80 + 10 * scaled_z) {
             do_kinect_jump = true;
-            // printf("JUMP %6.1f (init %6.1f)\n", jointData.position.position.Y, initial_y);
+            // printf("JUMP %6.1f (init %6.1f)\n",
+            // jointData.position.position.Y, initial_y);
         } else {
             do_kinect_jump = false;
         }
     }
-
 }
 
-#define CHECK_RC(rc, what)											\
-	if (rc != XN_STATUS_OK)											\
-	{																\
-		printf("%s failed: %s\n", what, xnGetStatusString(rc));		\
-		return rc;													\
-	}
+#define CHECK_RC(rc, what)                                                     \
+    if (rc != XN_STATUS_OK) {                                                  \
+        printf("%s failed: %s\n", what, xnGetStatusString(rc));                \
+        return rc;                                                             \
+    }
 
-#define CHECK_ERRORS(rc, errors, what)		\
-	if (rc == XN_STATUS_NO_NODE_PRESENT)	\
-{										\
-	XnChar strError[1024];				\
-	errors.ToString(strError, 1024);	\
-	printf("%s\n", strError);			\
-	return (rc);						\
-}
+#define CHECK_ERRORS(rc, errors, what)                                         \
+    if (rc == XN_STATUS_NO_NODE_PRESENT) {                                     \
+        XnChar strError[1024];                                                 \
+        errors.ToString(strError, 1024);                                       \
+        printf("%s\n", strError);                                              \
+        return (rc);                                                           \
+    }
 
 //-----------------------------------------------------------------------------
 // Callbacks for kinect hand
@@ -255,9 +242,9 @@ int initKinect() {
     rc = context.FindExistingNode(XN_NODE_TYPE_USER, g_UserGenerator);
     CHECK_RC(rc, "Find user generator");
     if (!g_UserGenerator.IsCapabilitySupported(XN_CAPABILITY_SKELETON) ||
-        !g_UserGenerator.IsCapabilitySupported(XN_CAPABILITY_POSE_DETECTION))
-    {
-        printf("User generator doesn't support either skeleton or pose detection.\n");
+        !g_UserGenerator.IsCapabilitySupported(XN_CAPABILITY_POSE_DETECTION)) {
+        printf("User generator doesn't support either skeleton or pose "
+               "detection.\n");
         return XN_STATUS_ERROR;
     }
 
@@ -294,16 +281,21 @@ int initKinect() {
             ((XnVSessionManager *)pSessionGenerator)->Update(&context);
         }
     } else {
-        g_UserGenerator.GetSkeletonCap().SetSkeletonProfile(XN_SKEL_PROFILE_UPPER);
+        g_UserGenerator.GetSkeletonCap().SetSkeletonProfile(
+            XN_SKEL_PROFILE_UPPER);
 
         rc = context.StartGeneratingAll();
         CHECK_RC(rc, "StartGenerating");
 
-        XnCallbackHandle hUserCBs, hCalibrationStartCB, hCalibrationCompleteCB, hPoseCBs;
-        g_UserGenerator.RegisterUserCallbacks(NewUser, LostUser, NULL, hUserCBs);
-        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationStart(CalibrationStarted, NULL, hCalibrationStartCB);
+        XnCallbackHandle hUserCBs, hCalibrationStartCB, hCalibrationCompleteCB,
+            hPoseCBs;
+        g_UserGenerator.RegisterUserCallbacks(NewUser, LostUser, NULL,
+                                              hUserCBs);
+        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationStart(
+            CalibrationStarted, NULL, hCalibrationStartCB);
         CHECK_RC(rc, "Register to calibration start");
-        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationComplete(CalibrationCompleted, NULL, hCalibrationCompleteCB);
+        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationComplete(
+            CalibrationCompleted, NULL, hCalibrationCompleteCB);
         CHECK_RC(rc, "Register to calibration complete");
 
         while (TRUE) {
