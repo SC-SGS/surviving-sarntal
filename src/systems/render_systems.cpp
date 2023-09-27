@@ -851,7 +851,10 @@ void renderSystem(const flecs::iter &iter) {
                         ;
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x, 0.0f, p.y}, b.billUp,
+                                         Vector3{p.x + b.billPositionStatic.x,
+                                                 0.0f + b.billPositionStatic.y,
+                                                 p.y + b.billPositionStatic.z},
+                                         b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
@@ -890,8 +893,8 @@ void renderSystem(const flecs::iter &iter) {
 
                 rectangle_q.each(
                     [&](Position &p, RectangleShapeRenderComponent &s) {
-                        DrawCube({p.x, -0.5, p.y - s.height / 2}, s.width, 1.0,
-                                 s.height, RED);
+                        DrawCubeWires({p.x, -0.5, p.y - s.height / 2}, s.width,
+                                      1.0, s.height, RED);
                     });
 
                 auto killbar = world.get<KillBar>();
