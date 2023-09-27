@@ -225,14 +225,14 @@ void initGameLogic(flecs::world &world) {
         .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
-            c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+            c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
             c.resourceHandle =
                 world.get_mut<graphics::Resources>()->textures.load(
-                    "../assets/texture/test_sprite_small.png");
-            c.width = 100;
-            c.height = 100;
+                    "../assets/texture/player_walk.png");
+            c.width = HIKER_HEIGHT; // TODO?
+            c.height = HIKER_HEIGHT;
             c.current_frame = 0;
-            c.numFrames = 6;
+            c.numFrames = 4;
         });
     world.set<KillBar>({0.});
 

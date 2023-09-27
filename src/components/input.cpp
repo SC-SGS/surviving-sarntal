@@ -1,6 +1,6 @@
 #include "input.h"
 
-#include "../utils/game_constants.h"
+#include "../utils/kinect_variables.h"
 #include <cmath>
 #include <iostream>
 #include <sstream>
