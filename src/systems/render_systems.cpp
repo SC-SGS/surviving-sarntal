@@ -812,7 +812,7 @@ void renderSystem(const flecs::iter &iter) {
                             static_cast<float>(
                                 b.height)}; // where to draw texture
                         ;
-                        
+
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
                                          Vector3{p.x + b.billPositionStatic.x,
                                                  0.0f + b.billPositionStatic.y,
@@ -820,7 +820,8 @@ void renderSystem(const flecs::iter &iter) {
                                          b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
-                                         Vector2{0.0f, 0.0f}, r.angular_offset, WHITE);
+                                         Vector2{0.0f, 0.0f}, r.angular_offset,
+                                         WHITE);
                     }
                 });
 
