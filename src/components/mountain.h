@@ -74,6 +74,13 @@ class Mountain {
      */
     Position getVertex(size_t index);
 
+     /** Returns a position from a given index. The index should previously be
+     * obtained via a seperate function of the mountain.
+     * @param index
+     * @return Position (consisting of x- and y-coordinate)
+     */
+    Position getVertex(int index);
+
     /**
      * You can access all the points currently being held in the mountain
      * datastructure via mountain.getVertice(a) with a in
