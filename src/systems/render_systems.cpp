@@ -13,7 +13,7 @@
 
 namespace graphics {
 
-    // Audio
+// Audio
 Music ambient_audio;
 
 // Background
@@ -111,9 +111,11 @@ void renderBackground(flecs::world &world, float cameraX, float cameraY) {
     if (scrolling_fore <= -foreground_tex.width * 2)
         scrolling_fore = 0;
 
-    world.entity("Background").get_mut<Position>()->x = scrolling_back + cameraX;
+    world.entity("Background").get_mut<Position>()->x =
+        scrolling_back + cameraX;
     world.entity("Midground").get_mut<Position>()->x = scrolling_mid + cameraX;
-    world.entity("Foreground").get_mut<Position>()->x = scrolling_fore + cameraX;
+    world.entity("Foreground").get_mut<Position>()->x =
+        scrolling_fore + cameraX;
 
     world.entity("BackgroundDuplicate").get_mut<Position>()->x =
         scrolling_back + graphics::SCREEN_WIDTH + cameraX;
@@ -157,8 +159,8 @@ void renderSystem(flecs::iter &iter) {
         float cameraPos[3] = {debug_camera3D.position.x,
                               debug_camera3D.position.y,
                               debug_camera3D.position.z};
-        SetShaderValue(grass_shader, grass_shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos,
-                       SHADER_UNIFORM_VEC3);
+        SetShaderValue(grass_shader, grass_shader.locs[SHADER_LOC_VECTOR_VIEW],
+                       cameraPos, SHADER_UNIFORM_VEC3);
 
         BeginDrawing();
         {
@@ -225,7 +227,8 @@ void renderSystem(flecs::iter &iter) {
                 else if (IsKeyDown(KEY_RIGHT))
                     rotZ -= 2 * iter.delta_time();
 
-                debug_camera3D.target.x = debug_camera3D.position.x + cosf(rotZ);
+                debug_camera3D.target.x =
+                    debug_camera3D.position.x + cosf(rotZ);
                 debug_camera3D.target.y =
                     debug_camera3D.position.y + 1.0 + sinf(rotZ);
                 debug_camera3D.target.z = debug_camera3D.position.z;
@@ -304,14 +307,16 @@ void renderSystem(flecs::iter &iter) {
                 });
 
                 rlDisableBackfaceCulling();
-                grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
+                grass_material.maps[MATERIAL_MAP_DIFFUSE].texture =
+                    grass_texture;
                 static float elapsed_time = 0.0f;
                 elapsed_time += iter.delta_time();
                 SetShaderValue(grass_shader, loc_time, &elapsed_time,
                                SHADER_UNIFORM_FLOAT);
-                int count = std::min((int)grass_transforms.size(), MAX_INSTANCES);
-                DrawMeshInstanced(grass_mesh, grass_material, grass_transforms.data(),
-                                  count);
+                int count =
+                    std::min((int)grass_transforms.size(), MAX_INSTANCES);
+                DrawMeshInstanced(grass_mesh, grass_material,
+                                  grass_transforms.data(), count);
                 rlEnableBackfaceCulling();
 
                 // draw rocks
@@ -574,11 +579,13 @@ void initRenderSystem(const flecs::world &world) {
     // std::endl;
     //  Load lighting grass_shader
     grass_shader = LoadShader("../assets/shaders/grass_instancing.vert",
-                        "../assets/shaders/grass_instancing.frag");
+                              "../assets/shaders/grass_instancing.frag");
 
     // Get grass_shader locations
-    grass_shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(grass_shader, "mvp");
-    grass_shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(grass_shader, "viewPos");
+    grass_shader.locs[SHADER_LOC_MATRIX_MVP] =
+        GetShaderLocation(grass_shader, "mvp");
+    grass_shader.locs[SHADER_LOC_VECTOR_VIEW] =
+        GetShaderLocation(grass_shader, "viewPos");
     grass_shader.locs[SHADER_LOC_MATRIX_MODEL] =
         GetShaderLocationAttrib(grass_shader, "instanceTransform");
 
@@ -602,8 +609,8 @@ void initRenderSystem(const flecs::world &world) {
     // Define grass_transforms to be uploaded to GPU for instances
     grass_transforms.reserve(MAX_INSTANCES);
 
-    // NOTE: We are assigning the intancing grass_shader to material.grass_shader
-    // to be used on mesh drawing with DrawMeshInstanced()
+    // NOTE: We are assigning the intancing grass_shader to
+    // material.grass_shader to be used on mesh drawing with DrawMeshInstanced()
     grass_material = LoadMaterialDefault();
     grass_material.shader = grass_shader;
     grass_material.maps[MATERIAL_MAP_DIFFUSE].texture = grass_texture;
@@ -612,7 +619,7 @@ void initRenderSystem(const flecs::world &world) {
     debug_camera3D.position = {500.0f, -1000.0f, 0.0f}; // Camera position
     debug_camera3D.target = {0.0f, 1.0f, 0.0f}; // Camera looking at point
     debug_camera3D.up = {0.0f, 0.0f,
-                        1.0f};  // Camera up vector (rotation towards target)
+                         1.0f};  // Camera up vector (rotation towards target)
     debug_camera3D.fovy = 45.0f; // Camera field-of-view Y
     debug_camera3D.projection = CAMERA_PERSPECTIVE; // Camera mode type
 
@@ -778,7 +785,8 @@ void generateChunkMesh(const flecs::world &world) {
 
                 // auto position = Vector3Add(v0, Vector3Add(v01, v02));
 
-                ////grass_transforms.push_back(MatrixTranslate(position.x, position.y,
+                ////grass_transforms.push_back(MatrixTranslate(position.x,
+                /// position.y,
                 /// position.z));
                 //
                 // auto translate = MatrixTranslate(position.x, position.y,
