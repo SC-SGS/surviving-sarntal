@@ -138,7 +138,17 @@ void spawnRocks(flecs::iter it) {
             .set<Velocity>({0, 0})
             .set<Radius>({radius})
             .add<Rock>()
-            .set<graphics::CircleShapeRenderComponent>({radius});
+            .set<graphics::CircleShapeRenderComponent>({radius})
+            .set([&](graphics::BillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/stone.png");
+                c.width = 100;
+                c.height = 100;
+            });
     }
 }
 
@@ -169,7 +179,7 @@ void initGameLogic(flecs::world &world) {
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({})
         .set<Health>({100})
-        .set([&](graphics::BillboardComponent &c) {
+        .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {0.0f, 0.0f, 0.0f};
@@ -178,8 +188,8 @@ void initGameLogic(flecs::world &world) {
                     "../assets/texture/test_sprite_small.png");
             c.width = 100;
             c.height = 100;
-            //c.current_frame = 0;
-            //c.numFrames = 6;
+            c.current_frame = 0;
+            c.numFrames = 6;
         });
     world.set<KillBar>({0.});
 

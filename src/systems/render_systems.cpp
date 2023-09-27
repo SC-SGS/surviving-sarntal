@@ -794,10 +794,11 @@ void renderSystem(const flecs::iter &iter) {
                               WHITE); // GREEN);
                 }
 
-                flecs::filter<Position, BillboardComponent> qb =
-                    world.filter<Position, BillboardComponent>();
+                flecs::filter<Position, BillboardComponent, CircleShapeRenderComponent>
+                    qb = world.filter<Position, BillboardComponent, CircleShapeRenderComponent>();
 
-                qb.each([&](Position &p, BillboardComponent &b) {
+                qb.each([&](Position &p, BillboardComponent &b,
+                            CircleShapeRenderComponent &c) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
@@ -817,6 +818,7 @@ void renderSystem(const flecs::iter &iter) {
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
                                          Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+
                     }
                 });
 

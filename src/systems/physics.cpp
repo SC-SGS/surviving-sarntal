@@ -88,16 +88,7 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Velocity>(v)
         .set<Radius>({radius})
         .add<Rock>()
-        .set<graphics::CircleShapeRenderComponent>({radius})
-        .set([&](graphics::BillboardComponent &c) {
-            c = {0};
-            c.billUp = {0.0f, 0.0f, 1.0f};
-            c.billPositionStatic = {0.0f, 0.0f, 0.0f};
-            c.resourceHandle = world.get_mut<graphics::Resources>()->textures.load(
-                "../assets/texture/stone.png");
-            c.width = 100;
-            c.height = 100;
-        });
+        .set<graphics::CircleShapeRenderComponent>({radius});
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
