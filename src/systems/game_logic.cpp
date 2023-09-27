@@ -157,7 +157,7 @@ void initGameLogic(flecs::world &world) {
 
     world.entity()
         .add<Player>()
-        .set<Position>({200., 200.})
+        .set<Position>({200., physics::getYPosFromX(world, 200.)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})

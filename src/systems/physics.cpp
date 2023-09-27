@@ -129,12 +129,15 @@ void physics::updateRockState(flecs::iter it, Position *positions,
                               Velocity *velocities) {
     updateRockVelocity(it, velocities);
     updateRockPosition(it, positions, velocities);
+    checkRockInScope(it, positions);
 }
 
 void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
-        if (velocities[i].length() <= 100) {
-            velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
+        if (velocities[i].length() > VELOCITY_CAP) {
+            velocities[i] = (Velocity)(velocities[i] * VELOCITY_CAP /
+                                       velocities[i].length());
         }
     }
 }
@@ -143,6 +146,16 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
                                  Velocity *velocities) {
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
+    }
+}
+
+void physics::checkRockInScope(flecs::iter it, Position *positions) {
+    auto rock_kill_bar =
+        it.world().get_mut<KillBar>()->x + ROCK_KILL_BAR_OFFSET;
+    for (auto i : it) {
+        if (positions[i].x < rock_kill_bar) {
+            it.entity(i).destruct();
+        }
     }
 }
 
@@ -173,10 +186,12 @@ void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
 void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                                    Velocity *velocities,
                                    PlayerMovement *player_movements) {
-    positions[0].x += velocities[0].x * it.delta_time();
-    auto terrain_y = getYPosFromX(it.world(), positions[0].x);
+
     if (player_movements[0].current_state ==
         PlayerMovement::MovementState::IN_AIR) {
+        positions[0].x +=
+            AIR_MOVEMENT_SPEED_FACTOR * velocities[0].x * it.delta_time();
+        auto terrain_y = getYPosFromX(it.world(), positions[0].x);
         auto air_y = positions[0].y + velocities[0].y * it.delta_time();
         if (air_y > terrain_y) {
             positions[0].y = air_y;
@@ -186,8 +201,24 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                 PlayerMovement::MovementState::MOVING;
             player_movements[0].can_jump_again = true;
         }
+    } else if (player_movements[0].current_state != PlayerMovement::IDLE) {
+        auto next_x_pos = velocities[0].x * it.delta_time() + positions[0].x;
+        auto next_y_pos = getYPosFromX(it.world(), next_x_pos);
+        Vector direction = {next_x_pos - positions[0].x,
+                            next_y_pos - positions[0].y};
+        float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) +
+                                 std::pow(next_y_pos - positions[0].y, 2));
+        positions[0].x =
+            (it.delta_time() * std::abs(velocities[0].x) / length) *
+                direction.x +
+            positions[0].x;
+        positions[0].y = getYPosFromX(it.world(), positions[0].x);
     } else {
-        positions[0].y = terrain_y;
+    }
+    if (positions[0].x >
+        it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
+        positions[0].x =
+            it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET;
     }
 }
 
@@ -345,7 +376,10 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
                         1;
+                    std::cout << rock_dmg << std::endl;
                     healths[0].hp -= rock_dmg;
+                    rock_it.entity(i).destruct();
+                    is_hit = false;
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
