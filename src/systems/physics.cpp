@@ -78,9 +78,6 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
-
-
-
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
@@ -105,7 +102,7 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
         .set<Position>(p)
         .set<Velocity>(v)
         .set<Radius>({radius})
-        .set<Rotation>({0,0})
+        .set<Rotation>({0, 0})
         .add<Rock>()
         .set<graphics::CircleShapeRenderComponent>({radius});
 }
