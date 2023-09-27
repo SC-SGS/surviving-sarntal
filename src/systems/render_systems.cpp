@@ -669,7 +669,8 @@ void prepareMenuResources(const flecs::world &world) {}
 
 void startRender(const flecs::iter &iter) {
     // std::cout << "### start render" << std::endl;
-    handleWindow(iter.world());
+    auto world = iter.world();
+    handleWindow(world);
     BeginDrawing();
     ClearBackground(WHITE);
 }
