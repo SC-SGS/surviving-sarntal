@@ -120,7 +120,7 @@ void spawnRocks(flecs::iter it) {
             .set<Radius>({radius})
             .set<Rotation>({0, 0})
             .add<Rock>()
-            .add<Exploding>()
+            //.add<Exploding>()
             //.set<graphics::CircleShapeRenderComponent>({radius})
             .set([&](graphics::BillboardComponent &c) {
                 c = {0};
