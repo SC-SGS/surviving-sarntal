@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
+cmake_policy(SET CMP0135 NEW)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
@@ -54,7 +55,7 @@ if (KINECT)
     configure_file(libs/NITE/Include/Sample-Tracking.xml . COPYONLY)
     configure_file(libs/NITE/Include/Sample-User.xml . COPYONLY)
     add_definitions(-Dkinect=1)
-    message(WARNING "Kinect is activated")
+    #message(WARNING "Kinect is activated")
 endif ()
 
 

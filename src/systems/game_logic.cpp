@@ -15,12 +15,12 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
 }
 
-void checkPlayerAlive(flecs::iter, Position *position, KillBar *killBar) {
+void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
     // TODO rename and/or combine with checkPlayerIsHit
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
-        // exit(0);
+        iter.world().get_mut<AppInfo>()->isRunning = false;
     }
 }
 
@@ -109,7 +109,14 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
         mountain->generateNewChunk();
-        // std::cout << "chunk generated" << std::endl;
+        graphics::generate_chunk_mesh(it.world());
+        // flecs::entity e = it.world().entity("tmp_event");
+        // it.world()
+        //     .event<graphics::GenChunkEvent>()
+        //     .id<Mountain>()
+        //     .entity(e)
+        //     .emit();
+        //  std::cout << "chunk generated" << std::endl;
     }
 }
 
@@ -135,10 +142,22 @@ void spawnRocks(flecs::iter it) {
     }
 }
 
+void mountainLoadChunks(const flecs::world &world) {
+    Mountain *mountain = world.get_mut<Mountain>();
+    for (std::size_t i{0};
+         i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK;
+         i++) {
+        mountain->generateNewChunk();
+        graphics::generate_chunk_mesh(world);
+    }
+}
+
 void initGameLogic(flecs::world &world) {
+    mountainLoadChunks(world);
+
     world.entity()
         .add<Player>()
-        .set<Position>({200., 200.})
+        .set<Position>({200., physics::getYPosFromX(world, 200.)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
@@ -149,7 +168,19 @@ void initGameLogic(flecs::world &world) {
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
         .set<InputEntity>({})
-        .set<Health>({100});
+        .set<Health>({100})
+        .set([&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, 0.0f};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/test_sprite_small.png");
+            c.width = 100;
+            c.height = 100;
+            c.currentFrame = 0;
+            c.numFrames = 6;
+        });
     world.set<KillBar>({0.});
 
     world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
@@ -159,18 +190,6 @@ void initGameLogic(flecs::world &world) {
         .term_at(2)
         .singleton()
         .iter(checkPlayerAlive);
-
-    /*world.system<Position, KillBar>()
-        .with<Player>()
-        .term_at(2)
-        .singleton()
-        .iter(debugRenderPlayer);*/
-
-    /*world.system<Position, KillBar>()
-        .with<Player>()
-        .term_at(2)
-        .singleton()
-        .iter(moveCamera);*/
 
     world.system<Mountain, KillBar>()
         .term_at(1)

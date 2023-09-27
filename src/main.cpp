@@ -33,12 +33,11 @@ int main() {
     std::this_thread::sleep_for(10s);
 #endif
 
-    graphics::initRenderSystem(world);
-
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
     world.set<Mountain>({});
+    graphics::init_render_system(world);
 
     initGameLogic(world);
 
@@ -58,7 +57,6 @@ void mainLoop(flecs::world &world) {
 
     while (app_info->isRunning) {
         float dt = GetFrameTime();
-        std::cout << "Frame Rate:" << 1 / dt << std::endl;
         world.progress(dt);
     }
 }

@@ -2,6 +2,9 @@
 
 #include "flecs.h"
 #include "raylib.h"
+#include "string"
+#include <functional>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -14,7 +17,6 @@ constexpr std::hash<std::string> hasher{};
 
 // TODO, do not use yet
 template <typename T> class ResourceManager {
-
   public:
     HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
@@ -66,17 +68,37 @@ template <typename T> class ResourceManager {
     void free(HANDLE handle) {
         auto it = res.find(handle);
         if (it != res.end()) {
+            onFree(it->second);
             res.erase(it);
         }
     }
 
+    void setOnFreeCallback(std::function<void(T)> callback) {
+        onFree = callback;
+    }
+
+    ~ResourceManager() {
+        for (auto &a : res) {
+            onFree(a.second);
+        }
+        res.clear();
+    }
+
   private:
     std::unordered_map<HANDLE, T> res;
+    std::function<void(T &)> onFree;
 };
 
 struct Resources {
     ResourceManager<Texture2D> textures;
     ResourceManager<Music> music;
+
+    Resources() {
+
+        textures.setOnFreeCallback(UnloadTexture);
+
+        music.setOnFreeCallback(UnloadMusicStream);
+    }
 };
 
 } // namespace graphics
