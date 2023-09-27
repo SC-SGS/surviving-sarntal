@@ -55,7 +55,7 @@ constexpr float_type MAX_ANGULAR_VELOCITY = 1000.f;
  * Rock spawn times
  */
 constexpr float_type ROCK_TIME_PERIOD_DIFFICULT = 1;
-constexpr float_type ROCK_TIME_PERIOD_MEDIUM = 0.5;
+constexpr float_type ROCK_TIME_PERIOD_MEDIUM = 5.;
 constexpr float_type ROCK_TIME_PERIOD_EASY = 2;
 
 enum RockSpawnPhase {
@@ -84,7 +84,5 @@ constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
  */
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
-
-extern bool kinect_mode;
 
 #endif // SURVIVING_SARNTAL_GAME_CONSTANTS_H
