@@ -328,10 +328,9 @@ void physics::checkJumpEvent(Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
-        float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
-            factor = DUCK_SPEED_FACTOR;
+            return;
         }
         if (player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
@@ -339,7 +338,7 @@ void physics::checkJumpEvent(Velocity *velocities,
         }
         if (player_movements[0].last_jump < 1.5 &&
             player_movements[0].can_jump_again) {
-            velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
+            velocities[0].y = JUMP_VELOCITY_CONSTANT;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
                 player_movements[0].can_jump_again = false;
