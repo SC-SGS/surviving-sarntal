@@ -29,6 +29,7 @@ XnVSessionGenerator *p_session_generator;
 
 XnFloat initial_y = 0.0;
 XnFloat initial_z = 0.0;
+XnFloat initial_head_y = 0.0;
 
 XnBool g_b_pause = false;
 
@@ -136,26 +137,35 @@ void glutDisplay() {
             findPlayer();
         }
 
-        XnSkeletonJointTransformation joint_data;
+        XnSkeletonJointTransformation torso_data;
+        XnSkeletonJointTransformation head_data;
         g_user_generator.GetSkeletonCap().GetSkeletonJoint(
-            g_n_player, XN_SKEL_TORSO, joint_data);
+            g_n_player, XN_SKEL_TORSO, torso_data);
+        g_user_generator.GetSkeletonCap().GetSkeletonJoint(
+            g_n_player, XN_SKEL_HEAD, head_data);
         if (initial_y == 0.0) {
-            initial_y = joint_data.position.position.Y;
-            initial_z = joint_data.position.position.Z;
+            initial_y = torso_data.position.position.Y;
+            initial_z = torso_data.position.position.Z;
+            initial_head_y = head_data.position.position.Y;
         }
 
         XnFloat scaled_z = std::max(
             -1.0f,
-            std::min(1.0f, -(joint_data.position.position.Z - initial_z) / 700));
+            std::min(1.0f, -(torso_data.position.position.Z - initial_z) / 700));
         // printf("%6.1f    (%6.1f)\n", scaled_z,
         // jointData.position.position.Z);
         horizontal_axis = scaled_z;
-        if (joint_data.position.position.Y > initial_y + 80 + 10 * scaled_z) {
+        if (torso_data.position.position.Y > initial_y + 80 + 10 * scaled_z) {
             do_kinect_jump = true;
             // printf("JUMP %6.1f (init %6.1f)\n",
             // jointData.position.position.Y, initial_y);
         } else {
             do_kinect_jump = false;
+        }
+        if (head_data.position.position.Y < initial_head_y - 200 - 10 * scaled_z) {
+            do_kinect_duck = true;
+        } else {
+            do_kinect_duck = false;
         }
     }
 }
@@ -192,6 +202,11 @@ void XN_CALLBACK_TYPE mainSliderOnValueChange(XnFloat xValue, XnFloat yValue,
         }
     } else {
         just_jumped = false;
+    }
+    if (scaled_y_value < -0.5) {
+        do_kinect_duck = true;
+    } else {
+        do_kinect_duck = false;
     }
 }
 
