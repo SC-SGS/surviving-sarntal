@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 
+
 struct ItemClass {
     std::string name;
     std::string texture;
@@ -40,11 +41,11 @@ struct ItemClass {
 // define item types here
 const std::vector<ItemClass> ITEM_CLASSES{
     {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png",
-     "../assets/audio/kaiserschmarrn.mp3", false, false, true,
+     "../assets/audio/kaiserschmarrn.wav", false, false, true,
      ItemClass::useKaiserschmarrn},
-    {"Coin", "../assets/texture/raylib_256x256.png", "../assets/audio/coin.mp3",
+    {"Coin", "../assets/texture/raylib_256x256.png", "../assets/audio/coin.wav",
      false, true, true, ItemClass::useCoin},
-    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.mp3", true,
+    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.wav", true,
      false, true, ItemClass::useDuck}};
 
 struct Item {
@@ -79,9 +80,13 @@ class Inventory {
     Inventory(size_t slot_count);
     Inventory();
 
+    static void initItems();
+
     size_t getSlotCount() const;
 
     void pickup(ItemClass::Items item_type);
+    static void useItem(ItemClass::Items item_type, const flecs::world &world,
+                        flecs::entity &player);
     void drop();
 
     void setItem(size_t slot, ItemClass::Items item_type);
