@@ -11,6 +11,7 @@ using namespace physics;
 using namespace math;
 
 AppInfo *app_info;
+bool meme_mode = false;
 
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
@@ -389,7 +390,7 @@ void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
         }
         if (player_movements[0].last_jump < 1.5 &&
             player_movements[0].can_jump_again) {
-            PlaySound(default_jump_sound);
+            PlaySound(jump_sound);
             velocities[0].y = JUMP_VELOCITY_CONSTANT;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
@@ -441,7 +442,7 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
         });
     } else if (player_movements[0].current_state == PlayerMovement::DUCKED &&
                !input_entities->getEvent(Event::DUCK)) {
-        PlaySound(fart_sound);
+        PlaySound(duck_sound);
         player_movements[0].current_state =
             PlayerMovement::MovementState::MOVING;
         heights[0].h = HIKER_HEIGHT;
@@ -570,7 +571,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
-                    PlaySound(dudum_sound);
+                    PlaySound(player_hit_sound);
 
                     // spawnExplosion(rock_it.world(), rock_positions[i]);
                     rock_positions[i].x;
@@ -621,25 +622,34 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
         });
 }
 
-void physics::initSounds(bool meme_mode) {
-    duck_sound = LoadSound("../assets/audio/duck.wav");
-    dudum_sound = LoadSound("../assets/audio/dudum.wav");
+void physics::initSounds(bool meme) {
+    duck_duck_sound = LoadSound("../assets/audio/duck.wav");
     mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
     shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
     gameover_sound = LoadSound("../assets/audio/gameover.wav");
-    default_jump_sound = LoadSound("../assets/audio/jump.wav");
     pickup_sound = LoadSound("../assets/audio/pickup.wav");
-    fart_sound = LoadSound("../assets/audio/fart.wav");
     boom_sound = LoadSound("../assets/audio/boom.wav");
+    startup_sound = LoadSound("../assets/audio/cool_sound.mp3");
 
-    if (meme_mode) {
+    if (meme) {
+        meme_mode = true;
         terrain_collision_sound = LoadSound("../assets/audio/error.wav");
         rock_collision_sound = LoadSound("../assets/audio/pipe.wav");
+        duck_sound = LoadSound("../assets/audio/fart.wav");
+        player_hit_sound = LoadSound("../assets/audio/dudum.wav");
+        jump_sound = LoadSound("../assets/audio/jump.wav");
     } else {
-        terrain_collision_sound = LoadSound("../assets/audio/error.wav");
-        rock_collision_sound = LoadSound("../assets/audio/pipe.wav");
+        terrain_collision_sound =
+            LoadSound("../assets/audio/proper_rock_smash.mp3");
+        rock_collision_sound =
+            LoadSound("../assets/audio/proper_rock_smash.wav");
+        duck_sound = LoadSound("../assets/audio/proper_duck.wav");
+        player_hit_sound = LoadSound("../assets/audio/oof.wav");
+        jump_sound = LoadSound("../assets/audio/proper_jump.wav");
     }
 }
+
+void physics::playPickupSound() { PlaySound(pickup_sound); }
 
 float math::linearInterpolation(float x, Position left, Position right) {
     return ((x - left.x) * right.y + (right.x - x) * left.y) /
