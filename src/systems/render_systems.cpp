@@ -394,14 +394,12 @@ void generateChunkMesh(const flecs::world &world) {
 
 // init
 
-void initStartScreen(const flecs::world &world){
+void initStartScreen(const flecs::world &world) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);
-    InitAudioDevice();   
+    InitAudioDevice();
 }
 
 void initRenderSystem(const flecs::world &world) {
-
-    
 
     // setup custom phases
     StartRender =

@@ -57,12 +57,12 @@ int main(int argc, char *argv[]) {
 
     graphics::initStartScreen(world);
 
-    while(!IsKeyPressed(KEY_ENTER)){
+    while (!IsKeyPressed(KEY_ENTER)) {
         BeginDrawing();
         {
             ClearBackground(BLACK);
             DrawText("Surviving Sarntal", 500, 350, 70, WHITE);
-            DrawText("Press Enter to start", 450, 500,70, WHITE);
+            DrawText("Press Enter to start", 450, 500, 70, WHITE);
         }
         EndDrawing();
     }
@@ -102,7 +102,7 @@ void mainLoop(flecs::world &world) {
                 is_Paused = !is_Paused;
             }
             if (!is_Paused) {
-                std::cout<<"HELLOOO"<<std::endl;
+                std::cout << "HELLOOO" << std::endl;
                 float dt = GetFrameTime();
                 std::cout << "Frame Rate:" << 1 / dt << std::endl;
                 world.progress(dt);
@@ -116,10 +116,7 @@ void mainLoop(flecs::world &world) {
                 }
                 EndDrawing();
             }
+        } else {
         }
-        else{
-        
-        }
- 
     }
 }
