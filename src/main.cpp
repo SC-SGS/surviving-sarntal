@@ -8,6 +8,7 @@
 #include "systems/render_systems.h"
 #include "utils/game_constants.h"
 #include "utils/kinect_variables.h"
+#include <SDL2/SDL.h>
 #include <chrono>
 #include <flecs.h>
 #include <iostream>
@@ -24,6 +25,11 @@ bool kinect_mode;
 bool kinect_init;
 
 int main(int argc, char *argv[]) {
+    if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
+        std::cerr << "SDL initialization error: " << SDL_GetError()
+                  << std::endl;
+    }
+
     using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 

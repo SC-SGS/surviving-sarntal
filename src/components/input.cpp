@@ -279,12 +279,6 @@ void rumbleThread(SDL_GameController *controller, int strength, int duration) {
 }
 
 void InputEntity::rumble(int strength, int duration) const {
-    /*if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
-        std::cerr << "SDL initialization error: " << SDL_GetError()
-                  << std::endl;
-        return;
-    }
-
     SDL_GameController *controller = SDL_GameControllerOpen(getGamepadId());
 
     if (!controller) {
@@ -298,7 +292,7 @@ void InputEntity::rumble(int strength, int duration) const {
 
     // Detach the thread to allow it to run independently
     rumbleThreadObj.detach();
-*/
+
     // Continue with other tasks or return immediately without blocking
 }
 
