@@ -2,9 +2,10 @@
 #include "particle_state.h"
 #include "raylib.h"
 
-Inventory::Inventory(size_t slot_count) : selected_slot(0), slots(slot_count) {}
+Inventory::Inventory(size_t slot_count)
+    : selected_slot(0), slots(slot_count, ItemSlot{ItemClass::NO_ITEM}) {}
 
-Inventory::Inventory() : Inventory(5) {}
+Inventory::Inventory() : Inventory(3) {}
 
 size_t Inventory::getSlotCount() const { return slots.size(); }
 
@@ -17,7 +18,7 @@ void Inventory::drop() {
 }
 
 void Inventory::consume() {
-    if (getSelectedItem() != -1)
+    if (getSelectedItem() != ItemClass::NO_ITEM)
         setItem(selected_slot, ItemClass::Items::NO_ITEM);
 }
 
@@ -29,7 +30,7 @@ ItemClass::Items Inventory::getItem(size_t slot) const {
     return slots[slot].item_type;
 }
 
-int Inventory::getSelectedItem() { return slots[selected_slot].item_type; }
+size_t Inventory::getSelectedSlot() const { return selected_slot; }
 
 void Inventory::switchItem(int offset) {
     selected_slot = (selected_slot + offset + getSlotCount()) % getSlotCount();
@@ -40,7 +41,7 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
     for (auto i : it) {
         auto player = it.entity(i);
 
-        if (input_entities[i].getAxis(Axis::ITEM_SWITCH) != 0) {
+        if (input_entities[i].getAxis(Axis::ITEM_SWITCH) != 0.) {
             inventory_entities[i].switchItem(
                 (int)input_entities[i].getAxis(Axis::ITEM_SWITCH));
         }
@@ -62,11 +63,14 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
             if (item_type.drop_on_use)
                 inventory_entities[i].drop();
         }
-        if (input_entities[i].getEvent(ITEM_PICK)) {
-            std::cout << "Picking up item: " << it.entity(i).has<CanCollect>()
-                      << std::endl;
-            if (player.has<CanCollect>()) {
-                auto collectible = it.entity(i).get<CanCollect>()->item_entity;
+        if (player.has<CanCollect>()) {
+            auto collectible = it.entity(i).get<CanCollect>()->item_entity;
+            if (input_entities[i].getEvent(ITEM_PICK) ||
+                (ITEM_CLASSES[collectible.get<Item>()->item_id].auto_collect &&
+                 it.entity(i).get<CanCollect>()->distance <
+                     0.1 * HIKER_ITEM_COLLECTION_RANGE)) {
+                std::cout << "Picking up item: "
+                          << it.entity(i).has<CanCollect>() << std::endl;
 
                 auto item = ITEM_CLASSES[collectible.get<Item>()->item_id];
                 if (item.use_on_pickup)
@@ -103,6 +107,9 @@ void Inventory::checkCanCollect(flecs::iter it, Position *positions,
                 }
             });
     }
+}
+ItemClass::Items Inventory::getSelectedItem() const {
+    return getItem(getSelectedSlot());
 }
 
 void ItemClass::useKaiserschmarrn(const flecs::world &world,
