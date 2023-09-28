@@ -8,6 +8,8 @@
 using namespace physics;
 using namespace math;
 
+AppInfo *app_info;
+
 physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     float_type x_min = p.x - r.value;
     float_type x_max = p.x + r.value;
@@ -67,6 +69,11 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         if (closest_vertex.distance > r[i].value) {
             continue;
         }
+
+        if (app_info->playerAlive && velocities[i].length() > 200.) {
+            PlaySound(error_sound);
+        }
+
         auto normal_vector = getNormal(closest_vertex.index, positions[i], m);
         velocities[i] = (Velocity)velocities[i].reflectOnNormal(normal_vector);
 
@@ -118,7 +125,6 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
             c.width = radius * 2.0f;
             c.height = radius * 2.0f;
         });
-    ;
 }
 
 void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
@@ -173,6 +179,10 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
             if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
                            radius[j])) {
+                if (!IsSoundPlaying(pipe_sound) && app_info->playerAlive) {
+                    PlaySound(pipe_sound);
+                }
+
                 rockCollision(positions[i], positions[j], velocities[i],
                               velocities[j], radius[i], radius[j],
                               it.delta_time(), rot[i].angular_velocity,
@@ -424,6 +434,7 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
         });
     } else if (player_movements[0].current_state == PlayerMovement::DUCKED &&
                !input_entities->getEvent(Event::DUCK)) {
+        PlaySound(fart_sound);
         player_movements[0].current_state =
             PlayerMovement::MovementState::MOVING;
         heights[0].h = HIKER_HEIGHT;
@@ -552,7 +563,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
-                    PlaySound(duck_sound);
+                    PlaySound(dudum_sound);
 
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
@@ -579,11 +590,13 @@ void physics::initSounds() {
     duck_sound = LoadSound("../assets/audio/duck.wav");
     dudum_sound = LoadSound("../assets/audio/dudum.wav");
     mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
-    error_sound = LoadSound("../assets/audio/error.mp3");
+    error_sound = LoadSound("../assets/audio/error.wav");
     shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
     gameover_sound = LoadSound("../assets/audio/gameover.wav");
     jump_sound = LoadSound("../assets/audio/jump.wav");
     pickup_sound = LoadSound("../assets/audio/pickup.wav");
+    pipe_sound = LoadSound("../assets/audio/pipe.wav");
+    fart_sound = LoadSound("../assets/audio/fart.wav");
 }
 
 float math::linearInterpolation(float x, Position left, Position right) {
@@ -593,6 +606,8 @@ float math::linearInterpolation(float x, Position left, Position right) {
 
 void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
     if (!app_info->playerAlive && !app_info->playedDeadSound) {
+        StopSound(pipe_sound);
+        StopSound(error_sound);
         PlaySound(gameover_sound);
         app_info->playedDeadSound = true;
     }
@@ -605,6 +620,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
         .with<Rock>()
         .multi_threaded(true)
         .iter(updateRockState);
+
+    app_info = world.get_mut<AppInfo>();
 
     world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);

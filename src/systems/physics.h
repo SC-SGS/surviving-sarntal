@@ -21,6 +21,8 @@ static Sound shutdown_sound;
 static Sound gameover_sound;
 static Sound jump_sound;
 static Sound pickup_sound;
+static Sound pipe_sound;
+static Sound fart_sound;
 
 void initSounds();
 

@@ -15,9 +15,6 @@
 
 namespace graphics {
 
-// Audio
-Music ambient_audio;
-
 // Background
 Texture2D gradient_texture_background;
 Texture2D background_tex;
