@@ -38,12 +38,13 @@ else ()
     list(FILTER SRC EXCLUDE REGEX "main.cpp|kinect_handler.h|kinect_handler.cpp")
 endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
-add_library(surviving-sarntal-library ${SRC})
+add_library(surviving-sarntal-library ${SRC}
+        src/systems/rockSpawnStuff.h)
 #now all those files get made into one library callled surviving-sarntal-library
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
-target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
+target_compile_features(surviving-sarntal-library PUBLIC cxx_std_20)
 
 target_clangformat_setup(surviving-sarntal-library)
 

@@ -5,7 +5,9 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
+#include "utils/kinect_variables.h"
 #include "utils/game_constants.h"
+#include "components/inventory.h"
 #include <chrono>
 #include <flecs.h>
 #include <iostream>
@@ -19,23 +21,31 @@ void mainLoop(flecs::world &world);
 
 bool kinect_mode;
 
+bool kinect_init;
+
 int main() {
     using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
     kinect_mode = false;
+    kinect_init = false;
 
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
     kinect_mode = true;
     std::thread kinect_thread(initKinect);
-    std::this_thread::sleep_for(10s);
+    while (!kinect_init) {
+        std::cout << "Waiting for kinect synchronization" << std::endl;
+        std::this_thread::sleep_for(5s);
+    }
+
 #endif
 
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
+    world.set<Inventory>({});
     world.set<Mountain>({});
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);

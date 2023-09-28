@@ -1,4 +1,5 @@
 #pragma once
+#include "../utils/game_constants.h"
 
 struct Player {};
 
