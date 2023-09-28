@@ -20,9 +20,16 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
 void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
     // TODO rename and/or combine with checkPlayerIsHit
-    if (position[0].x < killBar->x) {
+    float distance = position[0].x - killBar->x;
+    if (distance < RUMBLE_ZONE){
+    auto input_entity = iter.entity(0).get<InputEntity>();
+    input_entity->rumble(65535, 1000);                
+    }
+    if (distance < 0) {
         std::cout << "Player Dead" << std::endl;
         iter.world().get_mut<AppInfo>()->playerAlive = false;
+        auto input_entity = iter.entity(0).get<InputEntity>();
+        input_entity->rumble(65535, 3000);   
     }
 }
 
@@ -251,7 +258,7 @@ void initGameLogic(flecs::world &world) {
 
     world.entity()
         .add<Player>()
-        .set<Position>({200., physics::getYPosFromX(world, 200.)})
+        .set<Position>({PLAYER_SPAWN_OFFSET, physics::getYPosFromX(world, PLAYER_SPAWN_OFFSET)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
