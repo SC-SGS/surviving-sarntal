@@ -5,4 +5,5 @@ struct AppInfo {
     bool playerAlive = true;
     bool playedDeadSound = false;
     int score{0};
+    int coin_score{0};
 };
