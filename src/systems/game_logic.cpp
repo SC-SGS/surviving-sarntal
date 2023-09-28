@@ -23,6 +23,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
         iter.world().get_mut<AppInfo>()->playerAlive = false;
+        iter.entity(0).destruct();
     }
 }
 
@@ -226,8 +227,8 @@ void spawnItems(flecs::iter it) {
                                     .get_mut<graphics::Camera2DComponent>()
                                     ->target.x +
                                 (float)graphics::SCREEN_WIDTH / 2;
-        auto position =
-            Position{x_position, physics::getYPosFromX(it.world(), x_position)};
+        auto position = Position{
+            x_position, physics::getYPosFromX(it.world(), x_position, 0)};
         position.y += ITEM_BASE_HEIGHT + (ITEM_MAX_HEIGHT - ITEM_BASE_HEIGHT) *
                                              ((float)std::rand() / RAND_MAX);
         item_spawn_time =
@@ -257,9 +258,9 @@ void initGameLogic(flecs::world &world) {
 
     world.entity()
         .add<Player>()
-        .set<Position>({200., physics::getYPosFromX(world, 200.)})
+        .set<Position>({200., physics::getYPosFromX(world, 200., HIKER_HEIGHT)})
         .set<Velocity>({0., 0.})
-        .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
+        .set<PlayerMovement>({PlayerMovement::MovementState::MOVING,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
@@ -267,6 +268,8 @@ void initGameLogic(flecs::world &world) {
         .set<Health>({HIKER_MAX_HEALTH})
         .set<InteractionRadius>({HIKER_ITEM_COLLECTION_RANGE})
         .set<Inventory>(Inventory{INVENTORY_SLOTS})
+        .set<graphics::RectangleShapeRenderComponent>(
+            {HIKER_WIDTH, HIKER_HEIGHT})
         .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
@@ -274,7 +277,7 @@ void initGameLogic(flecs::world &world) {
             c.resourceHandle =
                 world.get_mut<graphics::Resources>()->textures.load(
                     "../assets/texture/player_walk.png");
-            c.width = HIKER_HEIGHT; // TODO?
+            c.width = HIKER_WIDTH; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
             c.animation_speed = 20;
