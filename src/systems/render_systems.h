@@ -13,6 +13,7 @@ constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
 
 // to be called once at app startup
+void initStartScreen(const flecs::world &world);
 void initRenderSystem(const flecs::world &world);
 
 // prepares resources, call before render*

@@ -28,6 +28,8 @@ int main(int argc, char *argv[]) {
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
+
+    world.set<InputEntity>(InputEntity{});
     kinect_mode = false;
     kinect_init = false;
 
@@ -52,6 +54,18 @@ int main(int argc, char *argv[]) {
 
     world.set<Inventory>({7});
     world.set<Mountain>({});
+
+    graphics::initStartScreen(world);
+
+    while(!IsKeyPressed(KEY_ENTER)){
+        BeginDrawing();
+        {
+            ClearBackground(BLACK);
+            DrawText("Surviving Sarntal", 500, 350, 70, WHITE);
+            DrawText("Press Enter to start", 450, 500,70, WHITE);
+        }
+        EndDrawing();
+    }
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);
     graphics::prepareMenuResources(world);
@@ -80,9 +94,32 @@ void mainLoop(flecs::world &world) {
     SetTargetFPS(1000);
 
     auto app_info = world.get<AppInfo>();
+    bool is_Paused = false;
 
     while (app_info->isRunning) {
-        float dt = GetFrameTime();
-        world.progress(dt);
+        if (app_info->playerAlive) {
+            if (world.get<InputEntity>()->getEvent(Event::PAUSE)) {
+                is_Paused = !is_Paused;
+            }
+            if (!is_Paused) {
+                std::cout<<"HELLOOO"<<std::endl;
+                float dt = GetFrameTime();
+                std::cout << "Frame Rate:" << 1 / dt << std::endl;
+                world.progress(dt);
+            } else {
+                BeginDrawing();
+                {
+                    ClearBackground(WHITE);
+                    DrawText("Game Paused", 600, 450, 70, BLACK);
+                    DrawText("Press Backspace to continue!!", 350, 550, 70,
+                             BLACK);
+                }
+                EndDrawing();
+            }
+        }
+        else{
+        
+        }
+ 
     }
 }
