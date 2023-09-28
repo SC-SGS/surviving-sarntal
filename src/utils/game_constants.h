@@ -11,8 +11,8 @@ constexpr int SCREEN_HEIGHT = 900;
 /**
  * Player size
  */
-constexpr float_type HIKER_HEIGHT = 50.f;
-constexpr float_type HIKER_WIDTH = 15.f;
+constexpr float_type HIKER_HEIGHT = 100.f;
+constexpr float_type HIKER_WIDTH = 30.f;
 constexpr float_type DUCKED_HIKER_HEIGHT = 25.f;
 constexpr float_type DUCKED_HIKER_WIDTH = 10.f;
 

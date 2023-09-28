@@ -277,6 +277,7 @@ void initGameLogic(flecs::world &world) {
             c.width = HIKER_HEIGHT; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
+            c.animation_speed = 20;
             c.numFrames = 4;
         });
 

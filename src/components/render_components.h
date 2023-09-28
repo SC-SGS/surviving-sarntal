@@ -47,6 +47,7 @@ struct AnimatedBillboardComponent {
     HANDLE resourceHandle;
     HANDLE current_frame;
     int numFrames;
+    int animation_speed = 1;
 };
 
 typedef Camera2D Camera2DComponent;
