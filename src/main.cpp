@@ -1,3 +1,4 @@
+#include "components/inventory.h"
 #include "components/mountain.h"
 #include "components/particle_state.h"
 #include "raylib.h"
@@ -5,6 +6,7 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
+#include "utils/game_constants.h"
 #include "utils/kinect_variables.h"
 #include <chrono>
 #include <flecs.h>
@@ -29,6 +31,11 @@ int main() {
     kinect_mode = false;
     kinect_init = false;
 
+    constexpr std::hash<std::string> hasher{};
+
+    auto hash = hasher("path");
+    auto hash2 = hasher("path");
+
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
     kinect_mode = true;
@@ -43,6 +50,7 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
+    world.set<Inventory>({7});
     world.set<Mountain>({});
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);

@@ -14,6 +14,13 @@ struct PhysicSystems {
 namespace physics {
 
 static Sound duck_sound;
+static Sound dudum_sound;
+static Sound mepmep_sound;
+static Sound error_sound;
+static Sound shutdown_sound;
+static Sound gameover_sound;
+static Sound jump_sound;
+static Sound pickup_sound;
 
 void initSounds();
 
