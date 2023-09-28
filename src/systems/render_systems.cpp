@@ -27,6 +27,8 @@ Texture2D foreground_tex;
 Texture2D killbar_tex;
 int killbar_current_frame;
 Texture2D player_dead_tex;
+Texture2D helicopter_tex;
+float helicopter_x = 0.0f;
 
 // Initialize the scrolling speed
 float scrolling_back = 0.0f;
@@ -435,6 +437,7 @@ void prepareGameResources(const flecs::world &world) {
     killbar_tex = LoadTexture("../assets/texture/killbar.png");
  
     player_dead_tex = LoadTexture("../assets/texture/hiker_killed.png");
+    helicopter_tex = LoadTexture("../assets/texture/helicopter.png");
 
     ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
     PlayMusicStream(ambient_audio);
@@ -713,7 +716,7 @@ void renderSystem(const flecs::iter &iter) {
                                 // flip texture direction
                                 // TODO
                             }
-                            if (PlayerMovement::IDLE ==
+                            if (PlayerMovement::NEUTRAL ==
                                 e.get<PlayerMovement>()->current_state) {
                                 b.current_frame = 0;
                             }
@@ -841,6 +844,23 @@ void renderSystem(const flecs::iter &iter) {
                                 Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
                                  Vector2{0.0f, 0.0f}, 0.0, WHITE);
 
+
+
+               if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                   // helicopter
+                   Rectangle source_rec_heli = {
+                       0.0, 0.0f, (float)helicopter_tex.width,
+                       (float)
+                           helicopter_tex.height}; // part of the texture used
+                   DrawBillboardPro(debug_camera3D, helicopter_tex,
+                                    source_rec_heli,
+                       Vector3{debug_camera3D.position.x -SCREEN_WIDTH/2 + helicopter_x, 0.0,
+                               debug_camera3D.position.z + SCREEN_HEIGHT / 3},
+                                    Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                                    Vector2{0.0f, 0.0f}, 0.0, WHITE);
+                   helicopter_x += 2.0;
+
+               }
             }
             EndMode3D();
         }
@@ -945,6 +965,7 @@ void destroy() {
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);
     UnloadTexture(player_dead_tex);
+    UnloadTexture(helicopter_tex);
     UnloadTexture(killbar_tex);
 
     CloseAudioDevice();
