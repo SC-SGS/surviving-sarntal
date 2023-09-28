@@ -44,7 +44,7 @@ add_library(surviving-sarntal-library ${SRC}
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
-target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
+target_compile_features(surviving-sarntal-library PUBLIC cxx_std_20)
 
 target_clangformat_setup(surviving-sarntal-library)
 
