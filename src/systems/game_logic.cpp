@@ -20,10 +20,16 @@ void moveKillBar(flecs::iter it, KillBar *killBar) {
 void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     // TODO multiplayer
     // TODO rename and/or combine with checkPlayerIsHit
-    if (position[0].x < killBar->x) {
+    float distance = position[0].x - killBar->x;
+    if (distance < RUMBLE_ZONE) {
+        auto input_entity = iter.entity(0).get<InputEntity>();
+        input_entity->rumble(65535, 1000);
+    }
+    if (distance < 0) {
         std::cout << "Player Dead" << std::endl;
         iter.world().get_mut<AppInfo>()->playerAlive = false;
-        iter.entity(0).destruct();
+        auto input_entity = iter.entity(0).get<InputEntity>();
+        input_entity->rumble(65535, 3000);
     }
 }
 
@@ -92,8 +98,10 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
         std::cout << "Position killbar: " << killBar->x
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
-        mountain->generateNewChunk();
-        graphics::generateChunkMesh(it.world());
+        if (it.world().get<AppInfo>()->playerAlive) {
+            mountain->generateNewChunk();
+            graphics::generateChunkMesh(it.world());
+        }
         // flecs::entity e = it.world().entity("tmp_event");
         // it.world()
         //     .event<graphics::GenChunkEvent>()
@@ -200,6 +208,32 @@ void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
     // std::cout << "Score: " << appInfo->score << std::endl;
 }
 
+void spawnExplosion(flecs::world &world, Position pos) {
+    world.entity().set<Position>({pos}).set<graphics::LifeTime>({10}).set(
+        [&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/explosion.png");
+            c.width = 200; // TODO?
+            c.height = 200;
+            c.current_frame = 0;
+            c.animation_speed = 1;
+            c.numFrames = 25;
+        });
+}
+
+void removeSFX(flecs::iter it, graphics::LifeTime *lifetime) {
+    for (auto i : it) {
+        lifetime[i].time -= it.delta_time();
+        if (lifetime[i].time < 0) {
+            it.entity(i).destruct();
+        }
+    }
+}
+
 // debug function
 // void countRocks(flecs::iter it, Rock* rocks){
 //     int acc{0};
@@ -255,10 +289,12 @@ void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
 
     auto player_0_input = InputEntity();
-
+    // spawnExplosion(world);
     world.entity()
         .add<Player>()
-        .set<Position>({200., physics::getYPosFromX(world, 200., HIKER_HEIGHT)})
+        .set<Position>(
+            {PLAYER_SPAWN_OFFSET,
+             physics::getYPosFromX(world, PLAYER_SPAWN_OFFSET, HIKER_HEIGHT)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::MOVING,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
@@ -280,9 +316,12 @@ void initGameLogic(flecs::world &world) {
             c.width = HIKER_WIDTH; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
-            c.animation_speed = 20;
+            c.animation_speed = 1;
             c.numFrames = 4;
         });
+    //.set<graphics::RectangleShapeRenderComponent>({
+    //    HIKER_WIDTH,HIKER_HEIGHT
+    //});
 
     auto can_collect_system = world.system<Position, InteractionRadius>()
                                   .kind(flecs::PreUpdate)
@@ -292,6 +331,8 @@ void initGameLogic(flecs::world &world) {
         .kind(flecs::PreUpdate)
         .iter(Inventory::updateInventory)
         .depends_on(can_collect_system);
+
+    world.system<graphics::LifeTime>().kind(flecs::PreUpdate).iter(removeSFX);
 
     world.set<KillBar>({0.});
 
