@@ -14,7 +14,9 @@
 float item_spawn_time = 0;
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
-    killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
+    if (it.world().get<AppInfo>()->playerAlive) {
+        killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
+    }
 }
 
 void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
@@ -26,7 +28,6 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
         input_entity->rumble(65535, 1000);
     }
     if (distance < 0) {
-        std::cout << "Player Dead" << std::endl;
         iter.world().get_mut<AppInfo>()->playerAlive = false;
         auto input_entity = iter.entity(0).get<InputEntity>();
         input_entity->rumble(65535, 3000);
@@ -95,9 +96,6 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
                                         CHUNK_DESTROY_BUFFER_CONSTANT) {
         // leftest_point_of_mountain =
         // mountain->getVertex(mountain->getIndexIntervalOfEntireMountain().start_index).x;
-        std::cout << "Position killbar: " << killBar->x
-                  << " left point mountain: " << leftest_point_of_mountain
-                  << std::endl;
         if (it.world().get<AppInfo>()->playerAlive) {
             mountain->generateNewChunk();
             graphics::generateChunkMesh(it.world());

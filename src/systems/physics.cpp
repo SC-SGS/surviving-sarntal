@@ -278,13 +278,14 @@ void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
                                    PlayerMovement *player_movements,
                                    InputEntity *input_entities, Height *heights,
                                    Width *widths) {
-
-    checkJumpEvent(it, velocities, player_movements, input_entities);
-    checkDuckEvent(it, velocities, player_movements, input_entities, heights,
-                   widths);
-    checkXMovement(velocities, player_movements, input_entities);
-    checkAerialState(it, velocities, player_movements, input_entities);
-    checkDirection(velocities, player_movements, input_entities);
+    if (app_info->playerAlive) {
+        checkJumpEvent(it, velocities, player_movements, input_entities);
+        checkDuckEvent(it, velocities, player_movements, input_entities,
+                       heights, widths);
+        checkXMovement(velocities, player_movements, input_entities);
+        checkAerialState(it, velocities, player_movements, input_entities);
+        checkDirection(velocities, player_movements, input_entities);
+    }
 }
 
 void physics::updatePlayerPosition(flecs::iter it, Position *positions,
@@ -611,7 +612,6 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     is_hit = false;
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
-                        std::cout << "Player unalive" << std::endl;
                         rock_it.world().get_mut<AppInfo>()->playerAlive = false;
                         auto input_entity =
                             player_it.entity(0).get<InputEntity>();

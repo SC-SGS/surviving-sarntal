@@ -8,6 +8,7 @@
 #include "systems/render_systems.h"
 #include "utils/game_constants.h"
 #include "utils/kinect_variables.h"
+#include <SDL2/SDL.h>
 #include <chrono>
 #include <flecs.h>
 #include <iostream>
@@ -24,10 +25,17 @@ bool kinect_mode;
 bool kinect_init;
 
 int main(int argc, char *argv[]) {
+    if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
+        std::cerr << "SDL initialization error: " << SDL_GetError()
+                  << std::endl;
+    }
+
     using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
+
+    world.set<InputEntity>(InputEntity{});
     kinect_mode = false;
     kinect_init = false;
 
@@ -51,6 +59,18 @@ int main(int argc, char *argv[]) {
     world.import <InputSystems>();
 
     world.set<Mountain>({});
+
+    graphics::initStartScreen(world);
+
+    while (!IsKeyPressed(KEY_ENTER)) {
+        BeginDrawing();
+        {
+            ClearBackground(BLACK);
+            DrawText("Surviving Sarntal", 500, 350, 70, WHITE);
+            DrawText("Press Enter to start", 450, 500, 70, WHITE);
+        }
+        EndDrawing();
+    }
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);
     graphics::prepareMenuResources(world);
@@ -81,9 +101,30 @@ void mainLoop(flecs::world &world) {
     SetTargetFPS(1000);
 
     auto app_info = world.get<AppInfo>();
+    bool is_Paused = false;
 
+    auto ie = world.get<InputEntity>();
     while (app_info->isRunning) {
-        float dt = GetFrameTime();
-        world.progress(dt);
+        if (app_info->playerAlive) {
+            if (ie->getEvent(Event::PAUSE)) {
+                is_Paused = !is_Paused;
+            }
+            if (!is_Paused) {
+                float dt = GetFrameTime();
+                world.progress(dt);
+            } else {
+                BeginDrawing();
+                {
+                    ClearBackground(WHITE);
+                    DrawText("Game Paused", 600, 450, 70, BLACK);
+                    DrawText("Press Backspace to continue!!", 350, 550, 70,
+                             BLACK);
+                }
+                EndDrawing();
+            }
+        } else {
+            float dt = GetFrameTime();
+            world.progress(dt);
+        }
     }
 }
