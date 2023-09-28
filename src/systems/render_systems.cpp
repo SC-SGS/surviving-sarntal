@@ -816,11 +816,11 @@ void renderSystem(const flecs::iter &iter) {
                     rectangle_q =
                         world.filter<Position, RectangleShapeRenderComponent>();
 
-                rectangle_q.each(
+                /*rectangle_q.each(
                     [&](Position &p, RectangleShapeRenderComponent &s) {
                         DrawCubeWires({p.x, -0.5, p.y - s.height / 2}, s.width,
                                       1.0, s.height, RED);
-                    });
+                    });*/
 
                 // killbar
 

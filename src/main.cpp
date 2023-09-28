@@ -97,14 +97,14 @@ void mainLoop(flecs::world &world) {
     auto app_info = world.get<AppInfo>();
     bool is_Paused = false;
 
+    auto ie = world.get<InputEntity>();
     while (app_info->isRunning) {
         if (app_info->playerAlive) {
-            if (world.get<InputEntity>()->getEvent(Event::PAUSE)) {
+            if (ie->getEvent(Event::PAUSE)) {
                 is_Paused = !is_Paused;
             }
             if (!is_Paused) {
                 float dt = GetFrameTime();
-                std::cout << "Frame Rate:" << 1 / dt << std::endl;
                 world.progress(dt);
             } else {
                 BeginDrawing();
@@ -117,6 +117,8 @@ void mainLoop(flecs::world &world) {
                 EndDrawing();
             }
         } else {
+            float dt = GetFrameTime();
+            world.progress(dt);
         }
     }
 }
