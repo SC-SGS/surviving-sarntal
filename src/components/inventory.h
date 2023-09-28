@@ -40,7 +40,7 @@ struct ItemClass {
 // define item types here
 const std::vector<ItemClass> ITEM_CLASSES{
     {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png",
-     "../assets/audio/kaiserschmarrn.mp3", false, true, true,
+     "../assets/audio/kaiserschmarrn.mp3", false, false, true,
      ItemClass::useKaiserschmarrn},
     {"Coin", "../assets/texture/raylib_256x256.png", "../assets/audio/coin.mp3",
      false, true, true, ItemClass::useCoin},
@@ -84,7 +84,6 @@ class Inventory {
     void pickup(ItemClass::Items item_type);
     void drop();
 
-    void consume();
     void setItem(size_t slot, ItemClass::Items item_type);
     ItemClass::Items getItem(size_t slot) const;
     ItemClass::Items getSelectedItem() const;

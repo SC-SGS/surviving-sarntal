@@ -815,12 +815,12 @@ void renderHUD(const flecs::iter &iter) {
         const int item_boxes_offsett = 20; // from the screen
         const int item_boxes_spacing = 20; // between the boxes
 
-        auto inv = iter.world().get_mut<Inventory>();
+        auto inv = iter.world().filter<Player>().first().get_mut<Inventory>();
 
         // inv->getSlotCount()
         for (int i = 0; i < inv->getSlotCount(); i++) {
 
-            auto selected = inv->getSelectedItem();
+            auto selected = inv->getSelectedSlot();
             auto item = inv->getItem(i);
             // item.
 
@@ -841,7 +841,6 @@ void renderHUD(const flecs::iter &iter) {
                 HANDLE handle =
                     iter.world().get_mut<Resources>()->textures.load(
                         ITEM_CLASSES[item].texture);
-                // std::cout << "item: " << handle << std::endl;
                 if (handle != NULL_HANDLE) {
                     auto tex =
                         iter.world().get_mut<Resources>()->textures.get(handle);
@@ -856,7 +855,6 @@ void renderHUD(const flecs::iter &iter) {
                                     .height = (float)item_boxes_size},
                                    {0, 0}, 0, WHITE);
                 }
-
             } else {
                 // std::cout << "item: no item" << std::endl;
             }

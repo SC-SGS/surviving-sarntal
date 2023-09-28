@@ -17,11 +17,6 @@ void Inventory::drop() {
     slots[selected_slot].item_type = ItemClass::Items::NO_ITEM;
 }
 
-void Inventory::consume() {
-    if (getSelectedItem() != ItemClass::NO_ITEM)
-        setItem(selected_slot, ItemClass::Items::NO_ITEM);
-}
-
 void Inventory::setItem(size_t slot, ItemClass::Items item_type) {
     slots[slot].item_type = item_type;
 }
@@ -68,14 +63,14 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
             if (input_entities[i].getEvent(ITEM_PICK) ||
                 (ITEM_CLASSES[collectible.get<Item>()->item_id].auto_collect &&
                  it.entity(i).get<CanCollect>()->distance <
-                     0.1 * HIKER_ITEM_COLLECTION_RANGE)) {
+                     0.3 * HIKER_ITEM_COLLECTION_RANGE)) {
                 std::cout << "Picking up item: "
                           << it.entity(i).has<CanCollect>() << std::endl;
 
                 auto item = ITEM_CLASSES[collectible.get<Item>()->item_id];
                 if (item.use_on_pickup)
                     item.use(it.world(), player);
-                else if (inventory_entities[i].getSelectedItem() !=
+                else if (inventory_entities[i].getSelectedItem() ==
                          ItemClass::Items::NO_ITEM)
                     inventory_entities[i].pickup(
                         collectible.get<Item>()->item_id);
