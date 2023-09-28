@@ -326,6 +326,8 @@ void generateChunkMesh(const flecs::world &world) {
                 translate.m5 = scale;
                 translate.m10 = scale;
 
+                auto rotation = MatrixRotate(Vector3(0, 0, 1), 45.0f * (PI / 180));
+                translate = MatrixMultiply(rotation, translate);
                 if (grass_transforms.size() >= MAX_INSTANCES) { // TODO improve?
                     grass_transforms[grass_insert_index] = translate;
                 } else {
@@ -847,7 +849,7 @@ void renderHUD(const flecs::iter &iter) {
             if (item != ItemClass::NO_ITEM) {
                 HANDLE handle = iter.world().get_mut<Resources>()->textures.load(
                     ITEM_CLASSES[item].texture);
-                std::cout << "item: " << handle << std::endl;
+                //std::cout << "item: " << handle << std::endl;
                 if (handle != NULL_HANDLE) {
                     auto tex = iter.world().get_mut<Resources>()->textures.get(handle);
                     DrawTexturePro(tex, {.x = 0, .y = 0, .width = (float)tex.width, .height = (float)tex.height},
@@ -859,12 +861,12 @@ void renderHUD(const flecs::iter &iter) {
                 }
             
             } else {
-                std::cout << "item: no item" << std::endl;
+                //std::cout << "item: no item" << std::endl;
             }
 
         
         }
-            std::cout << "---- " << std::endl;
+            //std::cout << "---- " << std::endl;
 
     }
 
