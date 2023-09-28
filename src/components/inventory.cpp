@@ -133,7 +133,7 @@ void ItemClass::useKaiserschmarrn(const flecs::world &world,
 }
 
 void ItemClass::useCoin(const flecs::world &world, flecs::entity &player) {
-    world.get_mut<AppInfo>()->score += COIN_SCORE;
+    world.get_mut<AppInfo>()->coin_score += COIN_SCORE;
     std::cout << "used coin" << std::endl;
 }
 
