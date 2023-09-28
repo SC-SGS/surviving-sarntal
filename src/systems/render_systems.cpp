@@ -406,6 +406,10 @@ void initRenderSystem(const flecs::world &world) {
 
     // add the hud system
     world.system().kind(EndRender).iter(endRender);
+    auto inv = world.get_mut<Inventory>();
+    inv->setItem(0, ItemClass::KAISERSCHMARRN);
+    inv->setItem(1, ItemClass::KAISERSCHMARRN);
+    inv->setItem(3, ItemClass::KAISERSCHMARRN);
 }
 
 // prepare
@@ -943,13 +947,56 @@ void renderHUD(const flecs::iter &iter) {
 
     DrawFPS(0, 0);
     {
-        const int item_boxes_size = 50;
-        const int item_boxes_offsett = 50;
+        const int item_boxes_size = 80;
+        const int item_boxes_offsett = 20; // from the screen
+        const int item_boxes_spacing = 20; // between the boxes
 
         auto inv = iter.world().get_mut<Inventory>();
 
-        DrawRectangle(20, SCREEN_HEIGHT - 20 - item_boxes_size, item_boxes_size,
-                          item_boxes_size, BROWN);
+        //inv->getSlotCount()
+        for (int i = 0; i < inv->getSlotCount(); i++) {
+
+            auto selected = inv->getSelectedItem();
+            auto item = inv->getItem(i);
+            //item.
+
+            const int item_box_x =
+                item_boxes_offsett + i * (item_boxes_spacing + item_boxes_size);
+
+                        const int item_box_y =
+                SCREEN_HEIGHT - item_boxes_offsett - item_boxes_size;
+            if (i == selected) {
+                DrawRectangle(item_box_x, item_box_y, item_boxes_size,
+                              item_boxes_size, GREEN);
+            } else {
+                DrawRectangle(item_box_x, item_box_y,
+                              item_boxes_size,
+                                  item_boxes_size, BROWN);
+            
+            }
+
+            if (item != ItemClass::NO_ITEM) {
+                HANDLE handle = iter.world().get_mut<Resources>()->textures.load(
+                    ITEM_CLASSES[item].texture);
+                std::cout << "item: " << handle << std::endl;
+                if (handle != NULL_HANDLE) {
+                    auto tex = iter.world().get_mut<Resources>()->textures.get(handle);
+                    DrawTexturePro(tex, {.x = 0, .y = 0, .width = (float)tex.width, .height = (float)tex.height},
+                                   {.x = (float)item_box_x,
+                                    .y = (float)item_box_y,
+                                    .width = (float)item_boxes_size,
+                                    .height = (float)item_boxes_size},
+                                   {0,0},0, WHITE);
+                }
+            
+            } else {
+                std::cout << "item: no item" << std::endl;
+            }
+
+        
+        }
+            std::cout << "---- " << std::endl;
+
     }
 
 }

@@ -4,7 +4,7 @@
 
 Inventory::Inventory(size_t slot_count) : selected_slot(0), slots(slot_count) {}
 
-Inventory::Inventory() : Inventory(0) {}
+Inventory::Inventory() : Inventory(5) {}
 
 size_t Inventory::getSlotCount() const { return slots.size(); }
 

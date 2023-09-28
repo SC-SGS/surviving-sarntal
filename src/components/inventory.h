@@ -75,7 +75,7 @@ class Inventory {
     size_t selected_slot = 0;
 
   public:
-    explicit Inventory(size_t slot_count);
+    Inventory(size_t slot_count);
     Inventory();
 
     size_t getSlotCount() const;

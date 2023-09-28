@@ -31,6 +31,12 @@ int main() {
     kinect_mode = false;
     kinect_init = false;
 
+
+    constexpr std::hash<std::string> hasher{};
+
+    auto hash = hasher("path");
+    auto hash2 = hasher("path");
+
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
     kinect_mode = true;
@@ -45,7 +51,7 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
-    world.set<Inventory>({});
+    world.set<Inventory>({7});
     world.set<Mountain>({});
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);
