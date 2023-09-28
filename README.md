@@ -6,11 +6,10 @@ This is the game "Surviving Sarntal" students from Uni Stuttgart, FAU und TUM cr
 ## How to install and run TODO
 In order to run the game do the following in the terminal. The game is developed for Linux and was also tested on Windows.
 
-`mkdir build` 
 
-`cd build`
+`cmake . -B cmake-build-debug`
 
-`cmake ..`
+`cd cmake-build-debug`
 
 `make`
 
@@ -54,6 +53,16 @@ Movement is mapped to the left joystick (left and right, jumping can be done by 
 If the player dies, the game can be restarted by pressing „start“ on the center of the gamepad.
 
 ### Kinect
+To build the Kinect version of this game the following commands have to be executed:  
+
+`cmake . -B cmake-build-debug-kinect -DKINECT=1`
+
+`cd cmake-build-debug-kinect`
+
+`make`
+
+`./suviving_sarntal`
+
 
 After executing the kinect supporting version of the game, the user has to do some movements, such that the kinect interface identifies him as the player.
 Once there is a lock on the playing user, the ingame character movement to the right is initiated by stepping forward (to the right). Stepping to the initial position prompts the ingame character to stop, stepping back is bound to moving backwards (to the left). Jumping can be done by jumping in front of the kinect, ducking by crouching down.
