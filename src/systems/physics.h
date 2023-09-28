@@ -188,7 +188,8 @@ float getSpeedFactor(float slope);
 void updatePlayerVelocity(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements,
-                          InputEntity *input_entities, Height *heights);
+                          InputEntity *input_entities, Height *heights,
+                          Width *widths);
 
 /**
  * Checks whether jump has been pressed and whether the player is able to jump
@@ -211,8 +212,10 @@ void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
  * @param player_movements
  * @param input_entities
  */
-void checkDuckEvent(Velocity *velocities, PlayerMovement *player_movements,
-                    InputEntity *input_entities, Height *heights);
+void checkDuckEvent(flecs::iter it, Velocity *velocities,
+                    PlayerMovement *player_movements,
+                    InputEntity *input_entities, Height *heights,
+                    Width *widths);
 
 /**
  * Changes the horizontal speed of the hiker based on input.
@@ -267,7 +270,7 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
  * @param x
  * @return the y coordinate
  */
-float getYPosFromX(const flecs::world &world, float x);
+float getYPosFromX(const flecs::world &world, float x, float offset);
 
 void explodeRock(const flecs::world &world, flecs::entity rock,
                  const int number_of_rocks);

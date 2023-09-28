@@ -19,7 +19,7 @@ constexpr float_type DUCKED_HIKER_WIDTH = 10.f;
 /**
  * Player movement speed constants.
  */
-constexpr float_type DUCK_SPEED_FACTOR = .5f;
+constexpr float_type DUCK_SPEED_FACTOR = .35f;
 constexpr float_type NORMAL_SPEED = 500.f;
 constexpr float_type JUMP_VELOCITY_CONSTANT = 500.f;
 constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = .6f;
