@@ -256,7 +256,7 @@ void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
                                    InputEntity *input_entities, Height *heights,
                                    Width *widths) {
 
-    checkJumpEvent(velocities, player_movements, input_entities);
+    checkJumpEvent(it, velocities, player_movements, input_entities);
     checkDuckEvent(it, velocities, player_movements, input_entities, heights,
                    widths);
     checkXMovement(velocities, player_movements, input_entities);
@@ -281,6 +281,18 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
             player_movements[0].current_state =
                 PlayerMovement::MovementState::MOVING;
             player_movements[0].can_jump_again = true;
+            it.entity(0).remove<graphics::BillboardComponent>();
+            it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/player_walk.png");
+                c.width = HIKER_WIDTH; // TODO?
+                c.height = HIKER_HEIGHT;
+                c.current_frame = 0;
+                c.numFrames = 4;});
         }
     } else if (player_movements[0].current_direction !=
                PlayerMovement::Direction::NEUTRAL) {
@@ -325,7 +337,7 @@ float physics::getSpeedFactor(float slope) {
     }
 }
 
-void physics::checkJumpEvent(Velocity *velocities,
+void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
@@ -346,6 +358,17 @@ void physics::checkJumpEvent(Velocity *velocities,
             }
             player_movements[0].current_state =
                 PlayerMovement::MovementState::IN_AIR;
+            it.entity(0).remove<graphics::AnimatedBillboardComponent>();
+            it.entity(0).set([&](graphics::BillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/hiker_jump.png");
+                c.width = HIKER_WIDTH; // TODO?
+                c.height = HIKER_HEIGHT;
+            });
         }
     }
 }
@@ -366,7 +389,17 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
             ->height = DUCKED_HIKER_HEIGHT;
         it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
             DUCKED_HIKER_WIDTH;
-
+        it.entity(0).remove<graphics::AnimatedBillboardComponent>();
+        it.entity(0).set([&](graphics::BillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+            c.resourceHandle =
+                it.world().get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/hiker_duck.png");
+            c.width = DUCKED_HIKER_WIDTH; // TODO?
+            c.height = DUCKED_HIKER_HEIGHT;
+        });
     } else if (player_movements[0].current_state == PlayerMovement::DUCKED &&
                !input_entities->getEvent(Event::DUCK)) {
         player_movements[0].current_state =
@@ -378,8 +411,19 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
             ->height = HIKER_HEIGHT;
         it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
             HIKER_WIDTH;
-        it.entity(0).get_mut<graphics::AnimatedBillboardComponent>()->resourceHandle = world.get_mut<graphics::Resources>()->textures.load(
-            "../assets/texture/player_walk.png");
+        it.entity(0).remove<graphics::BillboardComponent>();
+        it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+            c.resourceHandle =
+                it.world().get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/player_walk.png");
+            c.width = HIKER_WIDTH; // TODO?
+            c.height = HIKER_HEIGHT;
+            c.current_frame = 0;
+            c.numFrames = 4;
+        });
     }
 }
 

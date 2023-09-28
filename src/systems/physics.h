@@ -204,7 +204,8 @@ void updatePlayerVelocity(flecs::iter it, Position *positions,
  * @param player_movements
  * @param input_entities
  */
-void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
+void checkJumpEvent(flecs::iter it, Velocity *velocities,
+                    PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**

@@ -277,7 +277,7 @@ void initGameLogic(flecs::world &world) {
             c.resourceHandle =
                 world.get_mut<graphics::Resources>()->textures.load(
                     "../assets/texture/player_walk.png");
-            c.width = HIKER_HEIGHT; // TODO?
+            c.width = HIKER_WIDTH; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
             c.numFrames = 4;
