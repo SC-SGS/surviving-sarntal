@@ -23,6 +23,7 @@ constexpr float_type DUCK_SPEED_FACTOR = .5f;
 constexpr float_type NORMAL_SPEED = 500.f;
 constexpr float_type JUMP_VELOCITY_CONSTANT = 500.f;
 constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = .6f;
+constexpr float_type KNOCKBACKCONST = 0.0001f;
 // Movement on a slope TODO these need to be fine-tuned!!!
 // Speed constants
 constexpr float_type MIN_SPEED_NEG_SLOPE = .6f;

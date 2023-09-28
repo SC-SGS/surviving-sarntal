@@ -29,3 +29,9 @@ struct Health {
 struct KillBar {
     float_type x;
 };
+
+struct IsHit {
+    float_type radius_rock;
+    float_type velocity_rock;
+    int counting_variable;
+};
