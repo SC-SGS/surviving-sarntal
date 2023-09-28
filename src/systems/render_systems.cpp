@@ -1,4 +1,5 @@
 #include "render_systems.h"
+#include "../components/inventory.h"
 #include "../components/mountain.h"
 #include "../components/particle_state.h"
 #include "../components/player.h"
@@ -7,9 +8,9 @@
 #include "raymath.h"
 #include "rlgl.h"
 #include <iostream>
-#include "../components/inventory.h"
 
 #define RAYGUI_IMPLEMENTATION
+#include "physics.h"
 #include "raygui.h"
 
 namespace graphics {
@@ -38,7 +39,7 @@ Camera2D debug_camera;
 Camera3D debug_camera3D;
 
 // Mountain
-const int NUM_CHUNKS = 1000;
+const int NUM_CHUNKS = 64;
 int next_mountain_replace = 0;
 std::array<Model, NUM_CHUNKS> mountain_model;
 
@@ -63,7 +64,6 @@ flecs::entity OnInterface;
 flecs::entity EndRender;
 
 /*helpers*/
-
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradient_texture_background); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -112,16 +112,14 @@ void handleWindow(flecs::world &world) {
 void renderBackground(flecs::world &world, float cameraX, float cameraY) {
     DrawTexture(gradient_texture_background, 0, 0, WHITE);
 
-
     scrolling_mid -= 0.25f;
     scrolling_fore -= 0.5f;
 
-
-   
-    float mid_scale = 4.0f; // scale of texture
+    float mid_scale = 4.0f;  // scale of texture
     float fore_scale = 4.0f; // scale of texture
     float offset_x = 0;
-    float mid_offset_y = SCREEN_HEIGHT - midground_tex.height*mid_scale; // align lower border
+    float mid_offset_y =
+        SCREEN_HEIGHT - midground_tex.height * mid_scale; // align lower border
     float fore_offset_y = SCREEN_HEIGHT - foreground_tex.height *
                                               fore_scale; // align lower border
 
@@ -130,33 +128,31 @@ void renderBackground(flecs::world &world, float cameraX, float cameraY) {
     if (scrolling_fore <= -foreground_tex.width * fore_scale)
         scrolling_fore = 0;
 
-
     // Draw midground image three times
-    DrawTextureEx(midground_tex, {scrolling_mid, mid_offset_y}, 0.0f,
-                  mid_scale, WHITE);
-    DrawTextureEx(midground_tex,
-        {midground_tex.width * mid_scale + scrolling_mid, mid_offset_y},
-                  0.0f, mid_scale, WHITE);
-    DrawTextureEx(midground_tex,
+    DrawTextureEx(midground_tex, {scrolling_mid, mid_offset_y}, 0.0f, mid_scale,
+                  WHITE);
+    DrawTextureEx(
+        midground_tex,
+        {midground_tex.width * mid_scale + scrolling_mid, mid_offset_y}, 0.0f,
+        mid_scale, WHITE);
+    DrawTextureEx(
+        midground_tex,
         {midground_tex.width * mid_scale * 2 + scrolling_mid, mid_offset_y},
-                  0.0f, mid_scale, WHITE);
-
-    
+        0.0f, mid_scale, WHITE);
 
     // Draw foreground image three times
     DrawTextureEx(foreground_tex, {offset_x + scrolling_fore, fore_offset_y},
-                  0.0f,
-                  fore_scale,
-                  WHITE);
-    DrawTextureEx(foreground_tex,
+                  0.0f, fore_scale, WHITE);
+    DrawTextureEx(
+        foreground_tex,
         {offset_x + foreground_tex.width * fore_scale + scrolling_fore,
          fore_offset_y},
-                  0.0f, fore_scale, WHITE);
-    DrawTextureEx(foreground_tex,
+        0.0f, fore_scale, WHITE);
+    DrawTextureEx(
+        foreground_tex,
         {offset_x + foreground_tex.width * fore_scale * 2 + scrolling_fore,
          fore_offset_y},
-                  0.0f, fore_scale,
-                  WHITE);
+        0.0f, fore_scale, WHITE);
 }
 
 Vector3 computeNormal(Vector3 p1, Vector3 p2, Vector3 p3) {
@@ -330,6 +326,9 @@ void generateChunkMesh(const flecs::world &world) {
                 translate.m5 = scale;
                 translate.m10 = scale;
 
+                auto rotation =
+                    MatrixRotate(Vector3(0, 0, 1), 45.0f * (PI / 180));
+                translate = MatrixMultiply(rotation, translate);
                 if (grass_transforms.size() >= MAX_INSTANCES) { // TODO improve?
                     grass_transforms[grass_insert_index] = translate;
                 } else {
@@ -429,7 +428,7 @@ void prepareGameResources(const flecs::world &world) {
     world.system().kind(OnInterface).iter(renderHUD);
 
     // resources
-    //background_tex = LoadTexture("../assets/layers/sky.png");
+    // background_tex = LoadTexture("../assets/layers/sky.png");
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
     
@@ -608,7 +607,6 @@ void renderSystem(const flecs::iter &iter) {
         SetShaderValue(grass_shader, grass_shader.locs[SHADER_LOC_VECTOR_VIEW],
                        cameraPos, SHADER_UNIFORM_VEC3);
 
-
         if (use_debug_camera) {
 
             static float rotZ = 0;
@@ -699,15 +697,12 @@ void renderSystem(const flecs::iter &iter) {
                 flecs::filter<Position, AnimatedBillboardComponent> q =
                     world.filter<Position, AnimatedBillboardComponent>();
 
-                q.each([&](flecs::entity e, Position &p, AnimatedBillboardComponent &b) {
+                q.each([&](flecs::entity e, Position &p,
+                           AnimatedBillboardComponent &b) {
                     if (b.resourceHandle != NULL_HANDLE) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
 
-                        if (current_frame % b.animation_speed == 0) {
-                            b.current_frame++;
-                            b.current_frame = b.current_frame % b.numFrames;
-                        }
                         int width = texture.width / b.numFrames;
                         int height_offset = 0;
                         int depth_offset = 0;
@@ -731,20 +726,42 @@ void renderSystem(const flecs::iter &iter) {
                             //    // jump texture
                             //    //texture = player_jump_tex;
                             //}
+
+                            if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                                // dead texture
+                                texture = player_dead_tex;
+                                width = texture.width;
+                                b.current_frame = 0;
+                                height_offset = -b.height / 2;
+                                depth_offset = -20;
+                            }
                         }
-                        if (!iter.world().get_mut<AppInfo>()->playerAlive) {
-                            // dead texture
-                            texture = player_dead_tex;
-                            width = texture.width;
-                            b.current_frame = 0;
-                            height_offset = -b.height / 2;
-                            depth_offset = -20;
-                        }
+                        
                         Rectangle sourceRec = {
                             (float)b.current_frame * (float)texture.width /
                                 b.numFrames,
                             0.0, width,
                             (float)texture.height}; // part of the texture used
+
+                        Rectangle destRec = {
+                            p.x, p.y, static_cast<float>(b.width),
+                            static_cast<float>(
+                                b.height)}; // where to draw texture
+
+                        // if (current_frame % b.animation_speed == 0) {
+                        //     b.current_frame++;
+                        //     b.current_frame = b.current_frame % b.numFrames;
+                        // }
+
+                        b.time_passed += iter.delta_time();
+
+                        if (b.time_passed >
+                            (static_cast<float>(b.animation_speed) /
+                             static_cast<float>(b.numFrames))) {
+                            b.time_passed = 0;
+                            b.current_frame++;
+                            b.current_frame = b.current_frame % b.numFrames;
+                        }
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
                                          Vector3{p.x + b.billPositionStatic.x,
@@ -807,7 +824,7 @@ void renderSystem(const flecs::iter &iter) {
                     mountain->getRelevantMountainSection(killbar->x, killbar->x)
                         .start_index).y;
 
-                int animation_speed = 10;
+                int animation_speed = 20;
                 if (current_frame % animation_speed == 0) {
                     killbar_current_frame++;
                     killbar_current_frame = killbar_current_frame % 4;
@@ -842,8 +859,7 @@ void renderHUD(const flecs::iter &iter) {
     int healthbar_height = SCREEN_HEIGHT / 30;
     DrawRectangle(20, 20, healthbar_width, healthbar_height, WHITE);
     int offset = 2;
-    DrawRectangle(20 + offset, 20 + offset,
-                  healthbar_width - 2 * offset,
+    DrawRectangle(20 + offset, 20 + offset, healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GRAY);
     DrawRectangle(20 + offset, 20 + offset,
                   player_health * healthbar_width - 2 * offset,
@@ -864,15 +880,56 @@ void renderHUD(const flecs::iter &iter) {
 
     DrawFPS(0, 0);
     {
-        const int item_boxes_size = 50;
-        const int item_boxes_offsett = 50;
+        const int item_boxes_size = 80;
+        const int item_boxes_offsett = 20; // from the screen
+        const int item_boxes_spacing = 20; // between the boxes
 
-        auto inv = iter.world().get_mut<Inventory>();
+        auto inv = iter.world().filter<Player>().first().get_mut<Inventory>();
 
-        DrawRectangle(20, SCREEN_HEIGHT - 20 - item_boxes_size, item_boxes_size,
-                          item_boxes_size, BROWN);
+        // inv->getSlotCount()
+        for (int i = 0; i < inv->getSlotCount(); i++) {
+
+            auto selected = inv->getSelectedSlot();
+            auto item = inv->getItem(i);
+            // item.
+
+            const int item_box_x =
+                item_boxes_offsett + i * (item_boxes_spacing + item_boxes_size);
+
+            const int item_box_y =
+                SCREEN_HEIGHT - item_boxes_offsett - item_boxes_size;
+            if (i == selected) {
+                DrawRectangle(item_box_x, item_box_y, item_boxes_size,
+                              item_boxes_size, GREEN);
+            } else {
+                DrawRectangle(item_box_x, item_box_y, item_boxes_size,
+                              item_boxes_size, BROWN);
+            }
+
+            if (item != ItemClass::NO_ITEM) {
+                HANDLE handle =
+                    iter.world().get_mut<Resources>()->textures.load(
+                        ITEM_CLASSES[item].texture);
+                if (handle != NULL_HANDLE) {
+                    auto tex =
+                        iter.world().get_mut<Resources>()->textures.get(handle);
+                    DrawTexturePro(tex,
+                                   {.x = 0,
+                                    .y = 0,
+                                    .width = (float)tex.width,
+                                    .height = (float)tex.height},
+                                   {.x = (float)item_box_x,
+                                    .y = (float)item_box_y,
+                                    .width = (float)item_boxes_size,
+                                    .height = (float)item_boxes_size},
+                                   {0, 0}, 0, WHITE);
+                }
+            } else {
+                // std::cout << "item: no item" << std::endl;
+            }
+        }
+        // std::cout << "---- " << std::endl;
     }
-
 }
 
 void renderMenu(const flecs::iter &iter) {

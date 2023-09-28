@@ -3,6 +3,8 @@
 #include "flecs.h"
 #include <cmath>
 #include <iostream>
+#include <thread>
+#include "game_logic.h"
 
 using namespace physics;
 using namespace math;
@@ -325,6 +327,8 @@ void physics::checkJumpEvent(Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
+        PlaySound(jump_sound);
+
         float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
@@ -470,6 +474,33 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
+                    PlaySound(duck_sound);
+
+
+                    //spawnExplosion(rock_it.world(), rock_positions[i]);
+                    rock_positions[i].x;
+
+                    rock_it.world()
+                        .entity()
+                        .set<Position>({rock_positions[i]})
+                        .set<graphics::LifeTime>({1})
+                        .set([&](graphics::AnimatedBillboardComponent &c) {
+                            c = {0};
+                            c.billUp = {0.0f, 0.0f, 1.0f};
+                            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+                            c.resourceHandle =
+                                rock_it.world()
+                                    .get_mut<graphics::Resources>()
+                                    ->textures.load(
+                                        "../assets/texture/explosion.png");
+                            c.width = 200; // TODO?
+                            c.height = 200;
+                            c.current_frame = 0;
+                            c.animation_speed = 1;
+                            c.numFrames = 25;
+                        });
+
+
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
@@ -488,9 +519,27 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
         });
 }
 
+void physics::initSounds() {
+    duck_sound = LoadSound("../assets/audio/duck.wav");
+    dudum_sound = LoadSound("../assets/audio/dudum.wav");
+    mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
+    error_sound = LoadSound("../assets/audio/error.mp3");
+    shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
+    gameover_sound = LoadSound("../assets/audio/gameover.wav");
+    jump_sound = LoadSound("../assets/audio/jump.wav");
+    pickup_sound = LoadSound("../assets/audio/pickup.wav");
+}
+
 float math::linearInterpolation(float x, Position left, Position right) {
     return ((x - left.x) * right.y + (right.x - x) * left.y) /
            (right.x - left.x);
+}
+
+void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
+    if (!app_info->playerAlive && !app_info->playedDeadSound) {
+        PlaySound(gameover_sound);
+        app_info->playedDeadSound = true;
+    }
 }
 
 PhysicSystems::PhysicSystems(flecs::world &world) {
@@ -516,6 +565,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
                 Width>()
         .with<Player>()
         .iter(updatePlayerState);
+
+    world.system<AppInfo>().term_at(1).singleton().iter(playDeadSoundSystem);
 
     // for (int i = 0; i < 20; i++) {
     //     Position p{300.f + 200.f, 25.f * (float)i};

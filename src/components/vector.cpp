@@ -55,5 +55,5 @@ float_type Vector::length() const { return this->distanceTo({0., 0.}); }
 
 Vector Vector::reflectOnNormal(const Vector &normal) const {
     float_type normal_velocity = std::abs(*this * normal);
-    return *this + normal * normal_velocity * 2.;
+    return *this + normal * normal_velocity * (1. + ROCK_TERRAIN_DAMPING);
 }
