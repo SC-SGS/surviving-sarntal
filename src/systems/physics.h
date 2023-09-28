@@ -13,19 +13,22 @@ struct PhysicSystems {
 
 namespace physics {
 
-static Sound duck_sound;
-static Sound dudum_sound;
+static Sound duck_duck_sound;
+static Sound player_hit_sound;
 static Sound mepmep_sound;
 static Sound shutdown_sound;
 static Sound gameover_sound;
-static Sound default_jump_sound;
+static Sound jump_sound;
 static Sound pickup_sound;
-static Sound fart_sound;
+static Sound duck_sound;
 static Sound boom_sound;
 static Sound rock_collision_sound;
 static Sound terrain_collision_sound;
+static Sound startup_sound;
 
 void initSounds(bool meme_mode);
+
+void playPickupSound();
 
 struct Vertex {
     std::size_t index;
@@ -279,7 +282,7 @@ void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
  * @param widths of the player
  */
 void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
-                      Velocity *velocities);
+                      Velocity *rock_velocities);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position

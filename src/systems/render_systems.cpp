@@ -21,6 +21,12 @@ Texture2D background_tex;
 Texture2D midground_tex;
 Texture2D foreground_tex;
 
+Texture2D killbar_tex;
+int killbar_current_frame;
+Texture2D player_dead_tex;
+Texture2D helicopter_tex;
+float helicopter_x = 0.0f;
+
 // Initialize the scrolling speed
 float scrolling_back = 0.0f;
 float scrolling_mid = 0.0f;
@@ -32,7 +38,7 @@ Camera2D debug_camera;
 Camera3D debug_camera3D;
 
 // Mountain
-const int NUM_CHUNKS = 1000;
+const int NUM_CHUNKS = 64;
 int next_mountain_replace = 0;
 std::array<Model, NUM_CHUNKS> mountain_model;
 
@@ -57,7 +63,6 @@ flecs::entity OnInterface;
 flecs::entity EndRender;
 
 /*helpers*/
-
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradient_texture_background); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -430,6 +435,11 @@ void prepareGameResources(const flecs::world &world) {
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
 
+    killbar_tex = LoadTexture("../assets/texture/killbar.png");
+
+    player_dead_tex = LoadTexture("../assets/texture/hiker_killed.png");
+    helicopter_tex = LoadTexture("../assets/texture/helicopter.png");
+
     ambient_audio = LoadMusicStream("../assets/audio/background_music.mp3");
     PlayMusicStream(ambient_audio);
 
@@ -572,6 +582,9 @@ void startRender(const flecs::iter &iter) {
 void endRender(const flecs::iter &iter) {
     EndDrawing();
 
+    if (!iter.world().get<AppInfo>()->playerAlive)
+        StopMusicStream(ambient_audio);
+
     // std::cout << "### end render ----------------" << std::endl;
 }
 
@@ -697,41 +710,77 @@ void renderSystem(const flecs::iter &iter) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
 
-                        // if (e.has<PlayerMovement>()) {
-                        //     auto direction =
-                        //         e.get<PlayerMovement>()->current_direction;
-                        //     if (direction == PlayerMovement::Direction::LEFT)
-                        //     {
-                        //         // flip texture direction
-                        //         // TODO
-                        //     }
-                        // }
+                        int width = texture.width / b.numFrames;
+                        int height_offset = 0;
+                        int depth_offset = 0;
+                        if (e.has<PlayerMovement>()) {
+                            auto direction =
+                                e.get<PlayerMovement>()->current_direction;
+                            if (direction == PlayerMovement::Direction::LEFT) {
+                                // flip texture direction
+                                // TODO
+                            }
+                            if (PlayerMovement::NEUTRAL ==
+                                e.get<PlayerMovement>()->current_state) {
+                                b.current_frame = 0;
+                            }
+                            //}else if (PlayerMovement::DUCKED ==
+                            //    e.get<PlayerMovement>()->current_state) {
+                            //    // ducked texture
+                            //    //texture = player_duck_tex;
+                            //} else if (PlayerMovement::IN_AIR ==
+                            //           e.get<PlayerMovement>()->current_state)
+                            //           {
+                            //    // jump texture
+                            //    //texture = player_jump_tex;
+                            //}
+
+                            if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                                // dead texture
+                                texture = player_dead_tex;
+                                width = texture.width;
+                                b.current_frame = 0;
+                                height_offset = -b.height / 2;
+                                depth_offset = -20;
+                            }
+                        }
 
                         Rectangle sourceRec = {
                             (float)b.current_frame * (float)texture.width /
                                 b.numFrames,
-                            0.0, (float)texture.width / b.numFrames,
+                            0.0, width,
                             (float)texture.height}; // part of the texture used
 
                         Rectangle destRec = {
                             p.x, p.y, static_cast<float>(b.width),
                             static_cast<float>(
                                 b.height)}; // where to draw texture
-                        ;
 
-                        if (current_frame % b.animation_speed == 0) {
+                        // if (current_frame % b.animation_speed == 0) {
+                        //     b.current_frame++;
+                        //     b.current_frame = b.current_frame % b.numFrames;
+                        // }
+
+                        b.time_passed += iter.delta_time();
+
+                        if (b.time_passed >
+                            (static_cast<float>(b.animation_speed) /
+                             static_cast<float>(b.numFrames))) {
+                            b.time_passed = 0;
                             b.current_frame++;
                             b.current_frame = b.current_frame % b.numFrames;
                         }
 
-                        DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x + b.billPositionStatic.x,
-                                                 0.0f + b.billPositionStatic.y,
-                                                 p.y + b.billPositionStatic.z},
-                                         b.billUp,
-                                         Vector2{static_cast<float>(b.width),
-                                                 static_cast<float>(b.height)},
-                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                        DrawBillboardPro(
+                            debug_camera3D, texture, sourceRec,
+                            Vector3{
+                                p.x + b.billPositionStatic.x,
+                                0.0f + b.billPositionStatic.y + depth_offset,
+                                p.y + b.billPositionStatic.z + height_offset},
+                            b.billUp,
+                            Vector2{static_cast<float>(b.width),
+                                    static_cast<float>(b.height)},
+                            Vector2{0.0f, 0.0f}, 0.0f, WHITE);
                     }
                 });
 
@@ -771,8 +820,52 @@ void renderSystem(const flecs::iter &iter) {
                                       1.0, s.height, RED);
                     });
 
+                // killbar
+
                 auto killbar = world.get<KillBar>();
-                DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
+                // DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
+
+                auto killbar_y =
+                    mountain
+                        ->getVertex(mountain
+                                        ->getRelevantMountainSection(killbar->x,
+                                                                     killbar->x)
+                                        .start_index)
+                        .y;
+
+                int animation_speed = 20;
+                if (current_frame % animation_speed == 0) {
+                    killbar_current_frame++;
+                    killbar_current_frame = killbar_current_frame % 4;
+                }
+                Rectangle sourceRec = {
+                    killbar_current_frame * (float)killbar_tex.width / 4.0f,
+                    0.0f, (float)killbar_tex.width / 4.0f,
+                    (float)killbar_tex.height}; // part of the texture used
+
+                float size = 100;
+                DrawBillboardPro(
+                    debug_camera3D, killbar_tex, sourceRec,
+                    Vector3{killbar->x - size / 2, 0.0, killbar_y + size / 4},
+                    Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                    Vector2{0.0f, 0.0f}, 0.0, WHITE);
+
+                if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                    // helicopter
+                    Rectangle source_rec_heli = {
+                        0.0, 0.0f, (float)helicopter_tex.width,
+                        (float)
+                            helicopter_tex.height}; // part of the texture used
+                    DrawBillboardPro(
+                        debug_camera3D, helicopter_tex, source_rec_heli,
+                        Vector3{debug_camera3D.position.x - SCREEN_WIDTH / 2 +
+                                    helicopter_x,
+                                0.0,
+                                debug_camera3D.position.z + SCREEN_HEIGHT / 3},
+                        Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                        Vector2{0.0f, 0.0f}, 0.0, WHITE);
+                    helicopter_x += 2.0;
+                }
             }
             EndMode3D();
         }
@@ -797,7 +890,8 @@ void renderHUD(const flecs::iter &iter) {
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
 
-    int score = iter.world().get_mut<AppInfo>()->score;
+    int score = iter.world().get<AppInfo>()->score +
+                iter.world().get<AppInfo>()->coin_score;
     // score
     DrawText(TextFormat("Score: %d", score), SCREEN_WIDTH * 5 / 6, 50, 40,
              BLACK);
@@ -816,12 +910,12 @@ void renderHUD(const flecs::iter &iter) {
         const int item_boxes_offsett = 20; // from the screen
         const int item_boxes_spacing = 20; // between the boxes
 
-        auto inv = iter.world().get_mut<Inventory>();
+        auto inv = iter.world().filter<Player>().first().get_mut<Inventory>();
 
         // inv->getSlotCount()
         for (int i = 0; i < inv->getSlotCount(); i++) {
 
-            auto selected = inv->getSelectedItem();
+            auto selected = inv->getSelectedSlot();
             auto item = inv->getItem(i);
             // item.
 
@@ -842,7 +936,6 @@ void renderHUD(const flecs::iter &iter) {
                 HANDLE handle =
                     iter.world().get_mut<Resources>()->textures.load(
                         ITEM_CLASSES[item].texture);
-                // std::cout << "item: " << handle << std::endl;
                 if (handle != NULL_HANDLE) {
                     auto tex =
                         iter.world().get_mut<Resources>()->textures.get(handle);
@@ -857,7 +950,6 @@ void renderHUD(const flecs::iter &iter) {
                                     .height = (float)item_boxes_size},
                                    {0, 0}, 0, WHITE);
                 }
-
             } else {
                 // std::cout << "item: no item" << std::endl;
             }
@@ -878,6 +970,10 @@ void destroy() {
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);
+    UnloadTexture(player_dead_tex);
+    UnloadTexture(helicopter_tex);
+    UnloadTexture(killbar_tex);
+
     CloseAudioDevice();
     CloseWindow();
 }

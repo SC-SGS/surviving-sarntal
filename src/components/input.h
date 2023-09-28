@@ -268,6 +268,13 @@ class InputEntity {
     double getAxis(Axis axis) const;
 
     /**
+     * provide feedback via rumble
+     * @param strength
+     * @param duration
+     */
+    void rumble(int strength, int duration) const;
+
+    /**
      * checks that the selected device is still available
      */
     void updateDevices();

@@ -21,13 +21,14 @@ project(surviving-sarntal)
 add_library(raygui INTERFACE)
 target_include_directories(raygui INTERFACE libs/raygui)
 
-
 FetchContent_Declare(flecs URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/flecs-3.2.7.tar.gz)
 FetchContent_MakeAvailable(flecs)
 FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.tar.gz)
 FetchContent_MakeAvailable(raylib)
 FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-1.14.0.tar.gz)
 FetchContent_MakeAvailable(googletest)
+#FetchContent_Declare(SDL2 URL libs/SDL/SDL2-2.28.3.tar.gz)
+#FetchContent_MakeAvailable(SDL2)
 
 include_directories(libs/NITE/Include /usr/include/ni)
 
@@ -64,6 +65,7 @@ endif ()
 
 
 #link some libraries to the surviving-sarntal-library that we are defining atm
+target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 #link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
 
