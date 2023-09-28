@@ -415,10 +415,6 @@ void initRenderSystem(const flecs::world &world) {
 
     // add the hud system
     world.system().kind(EndRender).iter(endRender);
-    auto inv = world.get_mut<Inventory>();
-    inv->setItem(0, ItemClass::KAISERSCHMARRN);
-    inv->setItem(1, ItemClass::KAISERSCHMARRN);
-    inv->setItem(3, ItemClass::KAISERSCHMARRN);
 }
 
 // prepare
