@@ -6,6 +6,9 @@
 
 namespace graphics {
 
+// Audio
+static Music ambient_audio;
+
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 constexpr bool DEBUG = true;
 
