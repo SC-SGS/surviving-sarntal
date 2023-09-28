@@ -288,7 +288,7 @@ void InputEntity::rumble(int strength, int duration) const {
     SDL_GameController *controller = SDL_GameControllerOpen(getGamepadId());
 
     if (!controller) {
-        std::cerr << "No game controller found!" << std::endl;
+        //std::cerr << "No game controller found!" << std::endl;
         SDL_Quit();
         return;
     }
