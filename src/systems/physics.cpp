@@ -472,8 +472,9 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 if (is_hit) {
                     int rock_dmg =
                         (std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
-                            (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
-                        1) * (1 + rock_velocities[i].length()/VELOCITY_CAP);
+                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
+                         1) *
+                        (1 + rock_velocities[i].length() / VELOCITY_CAP);
                     std::cout << rock_dmg << std::endl;
                     auto input_entity = player_it.entity(0).get<InputEntity>();
                     input_entity->rumble(std::min(rock_dmg * 4000, 65535), 300);
@@ -484,8 +485,9 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
                         rock_it.world().get_mut<AppInfo>()->playerAlive = false;
-                        auto input_entity = player_it.entity(0).get<InputEntity>();
-                        input_entity->rumble(65535, 3000);   
+                        auto input_entity =
+                            player_it.entity(0).get<InputEntity>();
+                        input_entity->rumble(65535, 3000);
                     }
                 }
             }
@@ -508,7 +510,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
 
-    world.system<Position, Radius, Velocity>().with<Rock>().iter(checkPlayerIsHit);
+    world.system<Position, Radius, Velocity>().with<Rock>().iter(
+        checkPlayerIsHit);
 
     world.system<Position, Velocity, Radius, Mountain, Rotation>()
         .term_at(4)

@@ -1,11 +1,11 @@
 #include "input.h"
 
 #include "../utils/kinect_variables.h"
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <SDL2/SDL.h>
 #include <thread>
 
 #include "kinect_handler.h"
@@ -261,9 +261,10 @@ InputEntity::InputType InputEntity::getInputType() const {
     return current_input_type;
 }
 
-void rumbleThread(SDL_GameController* controller, int strength, int duration) {
+void rumbleThread(SDL_GameController *controller, int strength, int duration) {
     // Set rumble intensity for both motors (left and right)
-    SDL_GameControllerRumble(controller, strength, strength, duration); // Values range from 0 to 65535
+    SDL_GameControllerRumble(controller, strength, strength,
+                             duration); // Values range from 0 to 65535
 
     // Sleep for the specified duration
     std::this_thread::sleep_for(std::chrono::milliseconds(duration));
@@ -274,11 +275,12 @@ void rumbleThread(SDL_GameController* controller, int strength, int duration) {
 
 void InputEntity::rumble(int strength, int duration) const {
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
-        std::cerr << "SDL initialization error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL initialization error: " << SDL_GetError()
+                  << std::endl;
         return;
     }
 
-    SDL_GameController* controller = SDL_GameControllerOpen(getGamepadId());
+    SDL_GameController *controller = SDL_GameControllerOpen(getGamepadId());
 
     if (!controller) {
         std::cerr << "No game controller found!" << std::endl;
