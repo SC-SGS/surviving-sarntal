@@ -42,8 +42,8 @@ const std::vector<ItemClass> ITEM_CLASSES{
     {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png",
      "../assets/audio/kaiserschmarrn.wav", false, false, true,
      ItemClass::useKaiserschmarrn},
-    {"Coin", "../assets/texture/raylib_256x256.png", "../assets/audio/coin.wav",
-     false, true, true, ItemClass::useCoin},
+    {"Coin", "../assets/texture/coin.png", "../assets/audio/coin.wav", false,
+     true, true, ItemClass::useCoin},
     {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.wav", true,
      false, true, ItemClass::useDuck}};
 
