@@ -35,7 +35,7 @@ Camera2D debug_camera;
 Camera3D debug_camera3D;
 
 // Mountain
-const int NUM_CHUNKS = 1000;
+const int NUM_CHUNKS = 64;
 int next_mountain_replace = 0;
 std::array<Model, NUM_CHUNKS> mountain_model;
 

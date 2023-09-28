@@ -91,8 +91,10 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
         std::cout << "Position killbar: " << killBar->x
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
-        mountain->generateNewChunk();
-        graphics::generateChunkMesh(it.world());
+        if (it.world().get<AppInfo>()->playerAlive) {
+            mountain->generateNewChunk();
+            graphics::generateChunkMesh(it.world());
+        }
         // flecs::entity e = it.world().entity("tmp_event");
         // it.world()
         //     .event<graphics::GenChunkEvent>()
