@@ -13,6 +13,10 @@ struct PhysicSystems {
 
 namespace physics {
 
+static Sound duck_sound;
+
+void initSounds();
+
 struct Vertex {
     std::size_t index;
     float distance;
