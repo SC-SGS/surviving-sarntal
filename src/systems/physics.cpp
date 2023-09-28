@@ -326,6 +326,8 @@ void physics::checkJumpEvent(Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
+        PlaySound(jump_sound);
+
         float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
@@ -493,11 +495,25 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
 
 void physics::initSounds() {
     duck_sound = LoadSound("../assets/audio/duck.wav");
+    dudum_sound = LoadSound("../assets/audio/dudum.wav");
+    mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
+    error_sound = LoadSound("../assets/audio/error.mp3");
+    shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
+    gameover_sound = LoadSound("../assets/audio/gameover.wav");
+    jump_sound = LoadSound("../assets/audio/jump.wav");
+    pickup_sound = LoadSound("../assets/audio/pickup.wav");
 }
 
 float math::linearInterpolation(float x, Position left, Position right) {
     return ((x - left.x) * right.y + (right.x - x) * left.y) /
            (right.x - left.x);
+}
+
+void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
+    if (!app_info->playerAlive && !app_info->playedDeadSound) {
+        PlaySound(gameover_sound);
+        app_info->playedDeadSound = true;
+    }
 }
 
 PhysicSystems::PhysicSystems(flecs::world &world) {
@@ -523,6 +539,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
                 Width>()
         .with<Player>()
         .iter(updatePlayerState);
+
+    world.system<AppInfo>().term_at(1).singleton().iter(playDeadSoundSystem);
 
     // for (int i = 0; i < 20; i++) {
     //     Position p{300.f + 200.f, 25.f * (float)i};
