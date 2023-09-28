@@ -103,7 +103,6 @@ void mainLoop(flecs::world &world) {
                 is_Paused = !is_Paused;
             }
             if (!is_Paused) {
-                std::cout << "HELLOOO" << std::endl;
                 float dt = GetFrameTime();
                 std::cout << "Frame Rate:" << 1 / dt << std::endl;
                 world.progress(dt);
