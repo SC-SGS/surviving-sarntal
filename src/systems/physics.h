@@ -169,6 +169,9 @@ void updatePlayerPosition(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements);
 
+void knockbackPlayer(flecs::iter it, Position *positions,
+                     PlayerMovement *player_movements, float_type knockback);
+
 /**
  * Modular function that returns the speed factor on a slope.
  * Can be changed to an arbitrary function, changing the player movement
@@ -272,7 +275,8 @@ void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
  * @param heights of the player
  * @param widths of the player
  */
-void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii);
+void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
+                      Velocity *velocities);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position
