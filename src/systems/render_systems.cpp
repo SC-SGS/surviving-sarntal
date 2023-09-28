@@ -323,8 +323,12 @@ void generateChunkMesh(const flecs::world &world) {
                 translate.m5 = scale;
                 translate.m10 = scale;
 
-                auto rotation =
-                    MatrixRotate(Vector3(0, 0, 1), 45.0f * (PI / 180));
+                Vector3 vector3;
+                vector3.x = 0;
+                vector3.y = 0;
+                vector3.z = 1;
+
+                auto rotation = MatrixRotate(vector3, 45.0f * (PI / 180));
                 translate = MatrixMultiply(rotation, translate);
                 if (grass_transforms.size() >= MAX_INSTANCES) { // TODO improve?
                     grass_transforms[grass_insert_index] = translate;
