@@ -1,5 +1,6 @@
 #include "game_logic.h"
 #include "../components/input.h"
+#include "../components/inventory.h"
 #include "../components/mountain.h"
 #include "../components/player.h"
 #include "../components/render_components.h"
@@ -9,6 +10,8 @@
 #include "render_systems.h"
 #include "rockSpawnStuff.h"
 #include <cmath>
+
+float item_spawn_time = 0;
 
 void moveKillBar(flecs::iter it, KillBar *killBar) {
     killBar->x += it.delta_time() * KILL_BAR_VELOCITY;
@@ -205,8 +208,52 @@ void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
 //     std::cout<<"rock count: " << acc << std::endl;
 // }
 
+// generate a random variable that follows the geometric distribution with p =
+// 1/2^p_exp
+int randGeometric(int p_exp) {
+    int rand = RAND_MAX;
+    for (int i = 0; i < p_exp; ++i) {
+        rand = rand & std::rand();
+    }
+    return std::floor(std::log(RAND_MAX) - std::log(rand));
+}
+
+void spawnItems(flecs::iter it) {
+    if ((GetTime() - item_spawn_time) > 0) {
+        auto type = (ItemClass::Items)(rand() % ItemClass::Items::ITEM_COUNT);
+        float_type x_position = it.world()
+                                    .lookup("Camera")
+                                    .get_mut<graphics::Camera2DComponent>()
+                                    ->target.x +
+                                (float)graphics::SCREEN_WIDTH / 2;
+        auto position =
+            Position{x_position, physics::getYPosFromX(it.world(), x_position)};
+        position.y += ITEM_BASE_HEIGHT + (ITEM_MAX_HEIGHT - ITEM_BASE_HEIGHT) *
+                                             ((float)std::rand() / RAND_MAX);
+        item_spawn_time =
+            GetTime() + 3. + (.125 / ITEMS_PER_SECOND * randGeometric(3));
+
+        std::cout << "spawning " << ITEM_CLASSES[type].name << " at "
+                  << position.x << "," << position.y << " " << std::endl;
+        it.world()
+            .entity()
+            .set<Position>(position)
+            .set<Item>({type})
+            .set<graphics::BillboardComponent>(
+                {.billUp = {0.0f, 0.0f, 1.0f},
+                 .billPositionStatic = {0.0f, 0.0f, 0.0f},
+                 .width = 50,
+                 .height = 50,
+                 .resourceHandle =
+                     it.world().get_mut<graphics::Resources>()->textures.load(
+                         ITEM_CLASSES[type].texture)});
+    }
+}
+
 void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
+
+    auto player_0_input = InputEntity();
 
     world.entity()
         .add<Player>()
@@ -214,14 +261,12 @@ void initGameLogic(flecs::world &world) {
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
-        .set<graphics::RectangleShapeRenderComponent>({
-            HIKER_WIDTH,
-            HIKER_HEIGHT,
-        })
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
-        .set<InputEntity>({})
-        .set<Health>({100})
+        .set<InputEntity>(player_0_input)
+        .set<Health>({HIKER_MAX_HEALTH})
+        .set<InteractionRadius>({HIKER_ITEM_COLLECTION_RANGE})
+        .set<Inventory>(Inventory{INVENTORY_SLOTS})
         .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
@@ -234,6 +279,16 @@ void initGameLogic(flecs::world &world) {
             c.current_frame = 0;
             c.numFrames = 4;
         });
+
+    auto can_collect_system = world.system<Position, InteractionRadius>()
+                                  .kind(flecs::PreUpdate)
+                                  .iter(Inventory::checkCanCollect);
+
+    world.system<InputEntity, Inventory>()
+        .kind(flecs::PreUpdate)
+        .iter(Inventory::updateInventory)
+        .depends_on(can_collect_system);
+
     world.set<KillBar>({0.});
 
     world.system<KillBar>().term_at(1).singleton().iter(moveKillBar);
@@ -243,6 +298,8 @@ void initGameLogic(flecs::world &world) {
         .term_at(2)
         .singleton()
         .iter(checkPlayerAlive);
+
+    world.system<Position>().with<Item>().iter(physics::checkRockInScope);
 
     world.system<Mountain, KillBar>()
         .term_at(1)
@@ -265,6 +322,7 @@ void initGameLogic(flecs::world &world) {
         .singleton()
         .iter(updateScore);
 
+    world.system<>().iter(spawnItems);
     world.set<rockSpawnStuff::SpawnData>({});
     world.system<Mountain, rockSpawnStuff::SpawnData>()
         .term_at(1)
