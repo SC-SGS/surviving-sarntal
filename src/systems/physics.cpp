@@ -342,7 +342,6 @@ void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
-        PlaySound(jump_sound);
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
             return;
@@ -353,6 +352,7 @@ void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
         }
         if (player_movements[0].last_jump < 1.5 &&
             player_movements[0].can_jump_again) {
+            PlaySound(jump_sound);
             velocities[0].y = JUMP_VELOCITY_CONSTANT;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
