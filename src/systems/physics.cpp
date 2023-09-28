@@ -349,7 +349,6 @@ void physics::checkJumpEvent(Velocity *velocities,
     }
 }
 
-// TODO not ducking anymore
 void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities, Height *heights,
@@ -378,6 +377,8 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
             ->height = HIKER_HEIGHT;
         it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
             HIKER_WIDTH;
+        it.entity(0).get_mut<graphics::AnimatedBillboardComponent>()->resourceHandle = world.get_mut<graphics::Resources>()->textures.load(
+            "../assets/texture/player_walk.png");
     }
 }
 
