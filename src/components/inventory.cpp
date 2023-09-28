@@ -73,6 +73,8 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
                 std::cout << "Picking up item: "
                           << it.entity(i).has<CanCollect>() << std::endl;
 
+                physics::playPickupSound();
+
                 auto item = ITEM_CLASSES[collectible.get<Item>()->item_id];
                 if (item.use_on_pickup)
                     item.use(it.world(), player);
@@ -128,5 +130,5 @@ void ItemClass::useCoin(const flecs::world &world, flecs::entity &player) {
 
 void ItemClass::useDuck(const flecs::world &world, flecs::entity &player) {
     std::cout << "used duck" << std::endl;
-    PlaySound(physics::duck_sound);
+    PlaySound(physics::duck_duck_sound);
 }

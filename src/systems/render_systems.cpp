@@ -572,6 +572,9 @@ void startRender(const flecs::iter &iter) {
 void endRender(const flecs::iter &iter) {
     EndDrawing();
 
+    if (!iter.world().get<AppInfo>()->playerAlive)
+        StopMusicStream(ambient_audio);
+
     // std::cout << "### end render ----------------" << std::endl;
 }
 
