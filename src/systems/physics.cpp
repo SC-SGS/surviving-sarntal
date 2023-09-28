@@ -3,6 +3,7 @@
 #include "flecs.h"
 #include <cmath>
 #include <iostream>
+#include <thread>
 
 using namespace physics;
 using namespace math;
@@ -470,6 +471,8 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
+                    PlaySound(duck_sound);
+
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
@@ -486,6 +489,10 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 }
             }
         });
+}
+
+void physics::initSounds() {
+    duck_sound = LoadSound("../assets/audio/duck.wav");
 }
 
 float math::linearInterpolation(float x, Position left, Position right) {
