@@ -114,7 +114,8 @@ void XN_CALLBACK_TYPE calibrationCompleted(xn::SkeletonCapability &skeleton,
         XnUInt16 n_users = 10;
         g_user_generator.GetUsers(a_users, n_users);
         for (int i = 0; i < n_users; ++i)
-            g_user_generator.GetPoseDetectionCap().StopPoseDetection(a_users[i]);
+            g_user_generator.GetPoseDetectionCap().StopPoseDetection(
+                a_users[i]);
     }
 }
 
@@ -151,7 +152,8 @@ void glutDisplay() {
 
         XnFloat scaled_z = std::max(
             -1.0f,
-            std::min(1.0f, -(torso_data.position.position.Z - initial_z) / 700));
+            std::min(1.0f,
+                     -(torso_data.position.position.Z - initial_z) / 700));
         // printf("%6.1f    (%6.1f)\n", scaled_z,
         // jointData.position.position.Z);
         horizontal_axis = scaled_z;
@@ -162,7 +164,8 @@ void glutDisplay() {
         } else {
             do_kinect_jump = false;
         }
-        if (head_data.position.position.Y < initial_head_y - 200 - 10 * scaled_z) {
+        if (head_data.position.position.Y <
+            initial_head_y - 200 - 10 * scaled_z) {
             do_kinect_duck = true;
         } else {
             do_kinect_duck = false;
@@ -189,7 +192,7 @@ void glutDisplay() {
 //-----------------------------------------------------------------------------
 
 void XN_CALLBACK_TYPE mainSliderOnValueChange(XnFloat xValue, XnFloat yValue,
-                                               void *cxt) {
+                                              void *cxt) {
     printf("fValue %6.2f %6.2f\n", xValue * 2.0f - 1.0f, yValue * 2.0f - 1.0f);
     float scaled_x_value = xValue * 2.0f - 1.0f;
     float scaled_y_value = yValue * 2.0f - 1.0f;
@@ -279,11 +282,12 @@ int initKinect() {
         context.StartGeneratingAll();
 
         // Register session callbacks
-        p_session_generator->RegisterSession(nullptr, &sessionStart, &sessionEnd,
-                                           &sessionProgress);
+        p_session_generator->RegisterSession(nullptr, &sessionStart,
+                                             &sessionEnd, &sessionProgress);
 
         g_p_main_slider2_d = new XnVSelectableSlider2D(3, 3);
-        g_p_main_slider2_d->RegisterValueChange(nullptr, &mainSliderOnValueChange);
+        g_p_main_slider2_d->RegisterValueChange(nullptr,
+                                                &mainSliderOnValueChange);
         g_p_main_slider2_d->SetValueChangeOnOffAxis(true);
 
         // Create the flow manager and connect to point tracker
@@ -302,10 +306,10 @@ int initKinect() {
         rc = context.StartGeneratingAll();
         CHECK_RC(rc, "StartGenerating");
 
-        XnCallbackHandle h_user_c_bs, h_calibration_start_cb, h_calibration_complete_cb,
-            h_pose_c_bs;
+        XnCallbackHandle h_user_c_bs, h_calibration_start_cb,
+            h_calibration_complete_cb, h_pose_c_bs;
         g_user_generator.RegisterUserCallbacks(newUser, lostUser, nullptr,
-                                              h_user_c_bs);
+                                               h_user_c_bs);
         rc = g_user_generator.GetSkeletonCap().RegisterToCalibrationStart(
             calibrationStarted, nullptr, h_calibration_start_cb);
         CHECK_RC(rc, "Register to calibration start");
