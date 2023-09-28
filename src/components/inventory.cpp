@@ -2,6 +2,9 @@
 #include "particle_state.h"
 #include "raylib.h"
 
+std::vector<Sound> ITEM_SOUNDS;
+
+
 Inventory::Inventory(size_t slot_count)
     : selected_slot(0), slots(slot_count, ItemSlot{ItemClass::NO_ITEM}) {}
 
@@ -51,10 +54,9 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
                 ItemClass::Items::NO_ITEM) {
             auto item_type =
                 ITEM_CLASSES[inventory_entities[i].getSelectedItem()];
-            auto audio = LoadMusicStream(item_type.audio.c_str());
-            PlayMusicStream(audio);
+            useItem(inventory_entities[i].getSelectedItem(), it.world(),
+                    player);
 
-            item_type.use(it.world(), player);
             if (item_type.drop_on_use)
                 inventory_entities[i].drop();
         }
@@ -69,11 +71,15 @@ void Inventory::updateInventory(flecs::iter it, InputEntity *input_entities,
 
                 auto item = ITEM_CLASSES[collectible.get<Item>()->item_id];
                 if (item.use_on_pickup)
-                    item.use(it.world(), player);
-                else if (inventory_entities[i].getSelectedItem() ==
-                         ItemClass::Items::NO_ITEM)
+                    useItem(collectible.get<Item>()->item_id, it.world(),
+                            player);
+                else {
+                    if (inventory_entities[i].getSelectedItem() !=
+                        ItemClass::Items::NO_ITEM)
+                        inventory_entities[i].drop();
                     inventory_entities[i].pickup(
                         collectible.get<Item>()->item_id);
+                }
 
                 collectible.destruct();
             }
@@ -90,7 +96,7 @@ void Inventory::checkCanCollect(flecs::iter it, Position *positions,
             [&](flecs::iter iter, Position *item_positions, Item *items) {
                 for (auto j : iter) {
                     auto collectible_entity = iter.entity(j);
-                    auto new_dist = (item_positions[j] - positions[i]).length();
+                    auto new_dist = item_positions[j].distanceTo(positions[i]);
                     if (new_dist < radii[i].radius) {
                         if (!collector_entity.has<CanCollect>() ||
                             new_dist <
@@ -105,6 +111,17 @@ void Inventory::checkCanCollect(flecs::iter it, Position *positions,
 }
 ItemClass::Items Inventory::getSelectedItem() const {
     return getItem(getSelectedSlot());
+}
+void Inventory::useItem(ItemClass::Items item_type, const flecs::world &world,
+                        flecs::entity &player) {
+    PlaySound(ITEM_SOUNDS[item_type]);
+
+    ITEM_CLASSES[item_type].use(world, player);
+}
+
+void Inventory::initItems() {
+    for (const auto & i : ITEM_CLASSES)
+        ITEM_SOUNDS.push_back(LoadSound(i.audio.c_str()));
 }
 
 void ItemClass::useKaiserschmarrn(const flecs::world &world,
