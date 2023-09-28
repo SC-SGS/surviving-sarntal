@@ -14,7 +14,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 struct ItemClass {
     std::string name;
     std::string texture;

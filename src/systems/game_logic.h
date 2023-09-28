@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flecs.h"
 #include "../components/vector.h"
+#include "flecs.h"
 
 void initGameLogic(flecs::world &);
 

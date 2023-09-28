@@ -1,11 +1,11 @@
 #include "physics.h"
 #include "../components/render_components.h"
 #include "flecs.h"
+#include "game_logic.h"
 #include "render_systems.h"
 #include <cmath>
 #include <iostream>
 #include <thread>
-#include "game_logic.h"
 
 using namespace physics;
 using namespace math;
@@ -181,7 +181,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
             if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
                            radius[j])) {
-                if (!IsSoundPlaying(rock_collision_sound) && app_info->playerAlive) {
+                if (!IsSoundPlaying(rock_collision_sound) &&
+                    app_info->playerAlive) {
                     PlaySound(rock_collision_sound);
                 }
 
@@ -571,8 +572,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 if (is_hit) {
                     PlaySound(dudum_sound);
 
-
-                    //spawnExplosion(rock_it.world(), rock_positions[i]);
+                    // spawnExplosion(rock_it.world(), rock_positions[i]);
                     rock_positions[i].x;
 
                     rock_it.world()
@@ -594,7 +594,6 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                             c.animation_speed = 1;
                             c.numFrames = 25;
                         });
-
 
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /

@@ -5,7 +5,6 @@
 
 std::vector<Sound> ITEM_SOUNDS;
 
-
 Inventory::Inventory(size_t slot_count)
     : selected_slot(0), slots(slot_count, ItemSlot{ItemClass::NO_ITEM}) {}
 
@@ -121,7 +120,7 @@ void Inventory::useItem(ItemClass::Items item_type, const flecs::world &world,
 }
 
 void Inventory::initItems() {
-    for (const auto & i : ITEM_CLASSES)
+    for (const auto &i : ITEM_CLASSES)
         ITEM_SOUNDS.push_back(LoadSound(i.audio.c_str()));
 }
 

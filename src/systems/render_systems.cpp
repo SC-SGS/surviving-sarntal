@@ -434,9 +434,9 @@ void prepareGameResources(const flecs::world &world) {
     // background_tex = LoadTexture("../assets/layers/sky.png");
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
-    
+
     killbar_tex = LoadTexture("../assets/texture/killbar.png");
- 
+
     player_dead_tex = LoadTexture("../assets/texture/hiker_killed.png");
     helicopter_tex = LoadTexture("../assets/texture/helicopter.png");
 
@@ -726,7 +726,8 @@ void renderSystem(const flecs::iter &iter) {
                             //    // ducked texture
                             //    //texture = player_duck_tex;
                             //} else if (PlayerMovement::IN_AIR ==
-                            //           e.get<PlayerMovement>()->current_state) {
+                            //           e.get<PlayerMovement>()->current_state)
+                            //           {
                             //    // jump texture
                             //    //texture = player_jump_tex;
                             //}
@@ -740,7 +741,7 @@ void renderSystem(const flecs::iter &iter) {
                                 depth_offset = -20;
                             }
                         }
-                        
+
                         Rectangle sourceRec = {
                             (float)b.current_frame * (float)texture.width /
                                 b.numFrames,
@@ -767,15 +768,16 @@ void renderSystem(const flecs::iter &iter) {
                             b.current_frame = b.current_frame % b.numFrames;
                         }
 
-                        DrawBillboardPro(debug_camera3D, texture, sourceRec,
-                                         Vector3{p.x + b.billPositionStatic.x,
-                                            0.0f + b.billPositionStatic.y + depth_offset,
-                                                 p.y + b.billPositionStatic.z +
-                                                     height_offset},
-                                         b.billUp,
-                                         Vector2{static_cast<float>(b.width),
-                                                 static_cast<float>(b.height)},
-                                         Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+                        DrawBillboardPro(
+                            debug_camera3D, texture, sourceRec,
+                            Vector3{
+                                p.x + b.billPositionStatic.x,
+                                0.0f + b.billPositionStatic.y + depth_offset,
+                                p.y + b.billPositionStatic.z + height_offset},
+                            b.billUp,
+                            Vector2{static_cast<float>(b.width),
+                                    static_cast<float>(b.height)},
+                            Vector2{0.0f, 0.0f}, 0.0f, WHITE);
                     }
                 });
 
@@ -815,18 +817,18 @@ void renderSystem(const flecs::iter &iter) {
                                       1.0, s.height, RED);
                     });
 
-
-
-
-
-                //killbar
+                // killbar
 
                 auto killbar = world.get<KillBar>();
-                //DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
+                // DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
 
-                auto killbar_y = mountain->getVertex(
-                    mountain->getRelevantMountainSection(killbar->x, killbar->x)
-                        .start_index).y;
+                auto killbar_y =
+                    mountain
+                        ->getVertex(mountain
+                                        ->getRelevantMountainSection(killbar->x,
+                                                                     killbar->x)
+                                        .start_index)
+                        .y;
 
                 int animation_speed = 20;
                 if (current_frame % animation_speed == 0) {
@@ -835,33 +837,32 @@ void renderSystem(const flecs::iter &iter) {
                 }
                 Rectangle sourceRec = {
                     killbar_current_frame * (float)killbar_tex.width / 4.0f,
-                    0.0f,
-                    (float)killbar_tex.width/4.0f,
+                    0.0f, (float)killbar_tex.width / 4.0f,
                     (float)killbar_tex.height}; // part of the texture used
 
-               float size = 100;
-               DrawBillboardPro(debug_camera3D, killbar_tex, sourceRec,
-                   Vector3{killbar->x - size/2, 0.0, killbar_y + size / 4},
-                                Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
-                                 Vector2{0.0f, 0.0f}, 0.0, WHITE);
+                float size = 100;
+                DrawBillboardPro(
+                    debug_camera3D, killbar_tex, sourceRec,
+                    Vector3{killbar->x - size / 2, 0.0, killbar_y + size / 4},
+                    Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                    Vector2{0.0f, 0.0f}, 0.0, WHITE);
 
-
-
-               if (!iter.world().get_mut<AppInfo>()->playerAlive) {
-                   // helicopter
-                   Rectangle source_rec_heli = {
-                       0.0, 0.0f, (float)helicopter_tex.width,
-                       (float)
-                           helicopter_tex.height}; // part of the texture used
-                   DrawBillboardPro(debug_camera3D, helicopter_tex,
-                                    source_rec_heli,
-                       Vector3{debug_camera3D.position.x -SCREEN_WIDTH/2 + helicopter_x, 0.0,
-                               debug_camera3D.position.z + SCREEN_HEIGHT / 3},
-                                    Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
-                                    Vector2{0.0f, 0.0f}, 0.0, WHITE);
-                   helicopter_x += 2.0;
-
-               }
+                if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                    // helicopter
+                    Rectangle source_rec_heli = {
+                        0.0, 0.0f, (float)helicopter_tex.width,
+                        (float)
+                            helicopter_tex.height}; // part of the texture used
+                    DrawBillboardPro(
+                        debug_camera3D, helicopter_tex, source_rec_heli,
+                        Vector3{debug_camera3D.position.x - SCREEN_WIDTH / 2 +
+                                    helicopter_x,
+                                0.0,
+                                debug_camera3D.position.z + SCREEN_HEIGHT / 3},
+                        Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                        Vector2{0.0f, 0.0f}, 0.0, WHITE);
+                    helicopter_x += 2.0;
+                }
             }
             EndMode3D();
         }
