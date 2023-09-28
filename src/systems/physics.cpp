@@ -273,15 +273,15 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                                    Velocity *velocities,
                                    PlayerMovement *player_movements) {
     float_type knockback = 0;
-    if (it.entity(0).has<IsHit>()){
+    if (it.entity(0).has<IsHit>()) {
         float_type radius = it.entity(0).get<IsHit>()->radius_rock;
         float_type velocity_rock = it.entity(0).get<IsHit>()->velocity_rock;
-        knockback = velocity_rock *  KNOCKBACKCONST * radius;
+        knockback = velocity_rock * KNOCKBACKCONST * radius;
         std::cout << "hit: " << knockback << std::endl;
         int counter = it.entity(0).get_mut<IsHit>()->counting_variable;
         counter++;
         it.entity(0).set<IsHit>({radius, velocity_rock, counter});
-        if (counter >= 50){
+        if (counter >= 50) {
             it.entity(0).remove<IsHit>();
         }
     }
@@ -289,8 +289,8 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
     float height = it.entity(0).get<Height>()->h;
     if (player_movements[0].current_state ==
         PlayerMovement::MovementState::IN_AIR) {
-        positions[0].x += knockback +
-            AIR_MOVEMENT_SPEED_FACTOR * velocities[0].x * it.delta_time();
+        positions[0].x += knockback + AIR_MOVEMENT_SPEED_FACTOR *
+                                          velocities[0].x * it.delta_time();
         auto terrain_y = getYPosFromX(it.world(), positions[0].x, height);
         auto air_y = positions[0].y + velocities[0].y * it.delta_time();
         if (air_y > terrain_y) {
@@ -326,7 +326,8 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
         float speed_factor = getSpeedFactor(slope);
         positions[0].x = (it.delta_time() *
                           std::abs(velocities[0].x * speed_factor) / length) *
-                             direction.x + knockback + positions[0].x;
+                             direction.x +
+                         knockback + positions[0].x;
         positions[0].y = getYPosFromX(it.world(), positions[0].x, height);
     } else {
         positions[0].x += knockback;
@@ -560,7 +561,8 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     std::cout << rock_dmg << std::endl;
                     healths[0].hp -= rock_dmg;
                     rock_it.entity(i).destruct();
-                    player_it.entity(0).set<IsHit>({radii[i].value, rock_velocities[i].x, 0});
+                    player_it.entity(0).set<IsHit>(
+                        {radii[i].value, rock_velocities[i].x, 0});
                     is_hit = false;
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
@@ -607,7 +609,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
     world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
         rockRockInteractions);
 
-    world.system<Position, Radius, Velocity>().with<Rock>().iter(checkPlayerIsHit);
+    world.system<Position, Radius, Velocity>().with<Rock>().iter(
+        checkPlayerIsHit);
 
     world.system<Position, Velocity, Radius, Mountain, Rotation>()
         .term_at(4)
