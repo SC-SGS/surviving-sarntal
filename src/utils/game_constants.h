@@ -58,7 +58,7 @@ constexpr float_type MAX_ROCK_SIZE = 25.f;
  * Rock speeds
  */
 constexpr float_type VELOCITY_CAP = 1200.;
-constexpr float_type GAMMA = 0.5f;
+constexpr float_type GAMMA = 50.f;
 constexpr float_type MAX_ANGULAR_VELOCITY = 1000.f;
 
 /**
@@ -86,7 +86,7 @@ constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
  */
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
-constexpr float_type ROCK_TERRAIN_DAMPING = 0.75f;
+constexpr float_type ROCK_TERRAIN_DAMPING = 0.8f;
 
 extern bool kinect_mode;
 
