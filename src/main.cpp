@@ -1,3 +1,4 @@
+#include "components/inventory.h"
 #include "components/mountain.h"
 #include "components/particle_state.h"
 #include "raylib.h"
@@ -5,9 +6,8 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
-#include "utils/kinect_variables.h"
 #include "utils/game_constants.h"
-#include "components/inventory.h"
+#include "utils/kinect_variables.h"
 #include <chrono>
 #include <flecs.h>
 #include <iostream>
@@ -30,7 +30,6 @@ int main() {
     flecs::world world;
     kinect_mode = false;
     kinect_init = false;
-
 
     constexpr std::hash<std::string> hasher{};
 
