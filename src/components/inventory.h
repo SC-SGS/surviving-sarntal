@@ -18,6 +18,7 @@ struct ItemClass {
     std::string name;
     std::string texture;
     std::string audio;
+    bool auto_collect;
     bool use_on_pickup;
     bool drop_on_use;
     void (*use)(const flecs::world &world, flecs::entity &player);
@@ -39,12 +40,12 @@ struct ItemClass {
 // define item types here
 const std::vector<ItemClass> ITEM_CLASSES{
     {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png",
-     "../assets/audio/kaiserschmarrn.mp3", true, true,
+     "../assets/audio/kaiserschmarrn.mp3", false, false, true,
      ItemClass::useKaiserschmarrn},
     {"Coin", "../assets/texture/raylib_256x256.png", "../assets/audio/coin.mp3",
-     true, true, ItemClass::useCoin},
-    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.mp3", false,
-     true, ItemClass::useDuck}};
+     false, true, true, ItemClass::useCoin},
+    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.mp3", true,
+     false, true, ItemClass::useDuck}};
 
 struct Item {
     ItemClass::Items item_id;
@@ -83,10 +84,11 @@ class Inventory {
     void pickup(ItemClass::Items item_type);
     void drop();
 
-    void consume();
     void setItem(size_t slot, ItemClass::Items item_type);
     ItemClass::Items getItem(size_t slot) const;
-    int getSelectedItem();
+    ItemClass::Items getSelectedItem() const;
+
+    size_t getSelectedSlot() const;
 
     /**
      * switches the selected slot by the given offset (+i to switch i slots
