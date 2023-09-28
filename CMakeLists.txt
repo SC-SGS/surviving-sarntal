@@ -39,12 +39,13 @@ else ()
 endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC}
-        src/systems/rockSpawnStuff.h)
+        src/systems/rockSpawnStuff.h
+        src/systems/rockSpawnStuff.cpp)
 #now all those files get made into one library callled surviving-sarntal-library
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
-target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
+target_compile_features(surviving-sarntal-library PUBLIC cxx_std_20)
 
 target_clangformat_setup(surviving-sarntal-library)
 

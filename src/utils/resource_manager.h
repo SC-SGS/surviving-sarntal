@@ -11,7 +11,7 @@
 
 namespace graphics {
 
-typedef int HANDLE;
+typedef size_t HANDLE;
 constexpr HANDLE NULL_HANDLE = -1;
 
 constexpr std::hash<std::string> hasher{};
@@ -25,7 +25,7 @@ template <typename T> class ResourceManager {
      */
     HANDLE load(const std::string &path) {
         // Create a unique hash for this resource
-        HANDLE hash = hasher(path);
+        auto hash = hasher(path);
 
         // check if resource was already loaded before
         auto it = res.find(hash);
@@ -35,7 +35,9 @@ template <typename T> class ResourceManager {
             return hash;
         } else {
             // not found, create new
-            return load(LoadTexture(path.c_str()));
+
+            res.insert({hash, LoadTexture(path.c_str())});
+            return hash;
         }
     }
 

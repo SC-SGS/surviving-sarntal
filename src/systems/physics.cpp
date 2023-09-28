@@ -3,6 +3,7 @@
 #include "flecs.h"
 #include <cmath>
 #include <iostream>
+#include <thread>
 
 using namespace physics;
 using namespace math;
@@ -81,7 +82,9 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
-        rot->angular_velocity += 200 * GAMMA * velocity_parallel / m;
+        rot->angular_velocity +=
+            GAMMA * (velocity_parallel - rot->angular_velocity * r[i].value) /
+            m;
         if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
             rot->angular_velocity = MAX_ANGULAR_VELOCITY;
         }
@@ -138,10 +141,13 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
           (distance_sq * total_mass + EPSILON);
 
     Vector normal_vector = {p2.y - p1.y, p1.x - p2.x};
-    ang_vel1 += GAMMA * std::abs((normal_vector * v1)) * (ang_vel2 - ang_vel1) /
-                (2 * m1);
-    ang_vel2 += GAMMA * std::abs((normal_vector * v2)) * (ang_vel1 - ang_vel2) /
-                (2 * m2);
+    float_type relative_surface_velocity =
+        ang_vel2 * R2.value - ang_vel1 * R1.value;
+
+    ang_vel1 += GAMMA * std::abs((normal_vector * v1)) *
+                relative_surface_velocity / (2 * m1);
+    ang_vel2 -= GAMMA * std::abs((normal_vector * v2)) *
+                relative_surface_velocity / (2 * m2);
     if (ang_vel1 >= MAX_ANGULAR_VELOCITY) {
         ang_vel1 = MAX_ANGULAR_VELOCITY;
     }
@@ -245,18 +251,19 @@ void physics::updatePlayerState(flecs::iter it, Position *positions,
                                 Width *widths) {
 
     updatePlayerVelocity(it, positions, velocities, player_movements,
-                         input_entities, heights);
+                         input_entities, heights, widths);
     updatePlayerPosition(it, positions, velocities, player_movements);
 }
 
 void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
                                    Velocity *velocities,
                                    PlayerMovement *player_movements,
-                                   InputEntity *input_entities,
-                                   Height *heights) {
+                                   InputEntity *input_entities, Height *heights,
+                                   Width *widths) {
 
-    checkJumpEvent(velocities, player_movements, input_entities);
-    checkDuckEvent(velocities, player_movements, input_entities, heights);
+    checkJumpEvent(it, velocities, player_movements, input_entities);
+    checkDuckEvent(it, velocities, player_movements, input_entities, heights,
+                   widths);
     checkXMovement(velocities, player_movements, input_entities);
     checkAerialState(it, velocities, player_movements, input_entities);
     checkDirection(velocities, player_movements, input_entities);
@@ -279,11 +286,12 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
         }
     }
 
+    float height = it.entity(0).get<Height>()->h;
     if (player_movements[0].current_state ==
         PlayerMovement::MovementState::IN_AIR) {
         positions[0].x += knockback +
             AIR_MOVEMENT_SPEED_FACTOR * velocities[0].x * it.delta_time();
-        auto terrain_y = getYPosFromX(it.world(), positions[0].x);
+        auto terrain_y = getYPosFromX(it.world(), positions[0].x, height);
         auto air_y = positions[0].y + velocities[0].y * it.delta_time();
         if (air_y > terrain_y) {
             positions[0].y = air_y;
@@ -292,10 +300,24 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
             player_movements[0].current_state =
                 PlayerMovement::MovementState::MOVING;
             player_movements[0].can_jump_again = true;
+            it.entity(0).remove<graphics::BillboardComponent>();
+            it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/player_walk.png");
+                c.width = HIKER_WIDTH; // TODO?
+                c.height = HIKER_HEIGHT;
+                c.current_frame = 0;
+                c.numFrames = 4;
+            });
         }
-    } else if (player_movements[0].current_state != PlayerMovement::IDLE) {
+    } else if (player_movements[0].current_direction !=
+               PlayerMovement::Direction::NEUTRAL) {
         auto next_x_pos = velocities[0].x * it.delta_time() + positions[0].x;
-        auto next_y_pos = getYPosFromX(it.world(), next_x_pos);
+        auto next_y_pos = getYPosFromX(it.world(), next_x_pos, height);
         Vector direction = {next_x_pos - positions[0].x,
                             next_y_pos - positions[0].y};
         float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) +
@@ -305,10 +327,10 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
         positions[0].x = (it.delta_time() *
                           std::abs(velocities[0].x * speed_factor) / length) *
                              direction.x + knockback + positions[0].x;
-        positions[0].y = getYPosFromX(it.world(), positions[0].x);
+        positions[0].y = getYPosFromX(it.world(), positions[0].x, height);
     } else {
         positions[0].x += knockback;
-        positions[0].y = getYPosFromX(it.world(), positions[0].x);
+        positions[0].y = getYPosFromX(it.world(), positions[0].x, height);
     }
     if (positions[0].x >
         it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
@@ -335,14 +357,13 @@ float physics::getSpeedFactor(float slope) {
     }
 }
 
-void physics::checkJumpEvent(Velocity *velocities,
+void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
-        float factor = 1;
         if (player_movements[0].current_state ==
             PlayerMovement::MovementState::DUCKED) {
-            factor = DUCK_SPEED_FACTOR;
+            return;
         }
         if (player_movements[0].current_state !=
             PlayerMovement::MovementState::IN_AIR) {
@@ -350,28 +371,80 @@ void physics::checkJumpEvent(Velocity *velocities,
         }
         if (player_movements[0].last_jump < 1.5 &&
             player_movements[0].can_jump_again) {
-            velocities[0].y = JUMP_VELOCITY_CONSTANT * factor;
+            PlaySound(jump_sound);
+            velocities[0].y = JUMP_VELOCITY_CONSTANT;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
                 player_movements[0].can_jump_again = false;
             }
             player_movements[0].current_state =
                 PlayerMovement::MovementState::IN_AIR;
+            it.entity(0).remove<graphics::AnimatedBillboardComponent>();
+            it.entity(0).set([&](graphics::BillboardComponent &c) {
+                c = {0};
+                c.billUp = {0.0f, 0.0f, 1.0f};
+                c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+                c.resourceHandle =
+                    it.world().get_mut<graphics::Resources>()->textures.load(
+                        "../assets/texture/hiker_jump.png");
+                c.width = HIKER_WIDTH; // TODO?
+                c.height = HIKER_HEIGHT;
+            });
         }
     }
 }
 
-// TODO not ducking anymore
-void physics::checkDuckEvent(Velocity *velocities,
+void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
                              PlayerMovement *player_movements,
-                             InputEntity *input_entities, Height *heights) {
+                             InputEntity *input_entities, Height *heights,
+                             Width *widths) {
     if (input_entities->getEvent(Event::DUCK) &&
-        player_movements[0].current_state !=
-            PlayerMovement::MovementState::IN_AIR) {
-        velocities[0].x *= DUCK_SPEED_FACTOR;
+        player_movements[0].current_state ==
+            PlayerMovement::MovementState::MOVING) {
         player_movements[0].current_state =
             PlayerMovement::MovementState::DUCKED;
-        // heights[0].h = HIKER_HEIGHT/2;
+        heights[0].h = DUCKED_HIKER_HEIGHT;
+        widths[0].w = DUCKED_HIKER_WIDTH;
+        it.entity(0)
+            .get_mut<graphics::RectangleShapeRenderComponent>()
+            ->height = DUCKED_HIKER_HEIGHT;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
+            DUCKED_HIKER_WIDTH;
+        it.entity(0).remove<graphics::AnimatedBillboardComponent>();
+        it.entity(0).set([&](graphics::BillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+            c.resourceHandle =
+                it.world().get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/hiker_duck.png");
+            c.width = DUCKED_HIKER_WIDTH; // TODO?
+            c.height = DUCKED_HIKER_HEIGHT;
+        });
+    } else if (player_movements[0].current_state == PlayerMovement::DUCKED &&
+               !input_entities->getEvent(Event::DUCK)) {
+        player_movements[0].current_state =
+            PlayerMovement::MovementState::MOVING;
+        heights[0].h = HIKER_HEIGHT;
+        widths[0].w = HIKER_WIDTH;
+        it.entity(0)
+            .get_mut<graphics::RectangleShapeRenderComponent>()
+            ->height = HIKER_HEIGHT;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
+            HIKER_WIDTH;
+        it.entity(0).remove<graphics::BillboardComponent>();
+        it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
+            c.resourceHandle =
+                it.world().get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/player_walk.png");
+            c.width = HIKER_WIDTH; // TODO?
+            c.height = HIKER_HEIGHT;
+            c.current_frame = 0;
+            c.numFrames = 4;
+        });
     }
 }
 
@@ -379,17 +452,13 @@ void physics::checkXMovement(Velocity *velocities,
                              PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     double x_factor = input_entities->getAxis(Axis::MOVEMENT_X);
-    if (player_movements[0].current_state !=
-        PlayerMovement::MovementState::IN_AIR) {
-        if (x_factor == 0) {
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::IDLE;
-        } else {
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::MOVING;
-        }
+    float_type speed = NORMAL_SPEED;
+    if (player_movements[0].current_state ==
+        PlayerMovement::MovementState::DUCKED) {
+        speed *= DUCK_SPEED_FACTOR;
     }
-    velocities[0].x = NORMAL_SPEED * (float_type)x_factor;
+
+    velocities[0].x = speed * (float_type)x_factor;
 }
 
 void physics::checkAerialState(flecs::iter it, Velocity *velocities,
@@ -416,7 +485,7 @@ void physics::checkDirection(Velocity *velocities,
     }
 }
 
-float physics::getYPosFromX(const flecs::world &world, float x) {
+float physics::getYPosFromX(const flecs::world &world, float x, float offset) {
     auto mountain = world.get_mut<Mountain>();
     auto interval = Mountain::getRelevantMountainSection(x, x);
     std::size_t closest_indices[] = {interval.start_index, interval.end_index};
@@ -443,9 +512,7 @@ float physics::getYPosFromX(const flecs::world &world, float x) {
     auto vertex_left = mountain->getVertex(closest_indices[0]);
     auto vertex_right = mountain->getVertex(closest_indices[1]);
 
-    // TODO offset might be a game constant and not necessarily equal to
-    // HIKER_HEIGHT
-    return linearInterpolation(x, vertex_left, vertex_right) + HIKER_HEIGHT;
+    return linearInterpolation(x, vertex_left, vertex_right) + offset;
 }
 
 void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
@@ -484,6 +551,8 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                     }
                 }
                 if (is_hit) {
+                    PlaySound(duck_sound);
+
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
@@ -497,15 +566,34 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
                         rock_it.world().get_mut<AppInfo>()->playerAlive = false;
+                        player_it.entity(0).destruct();
                     }
                 }
             }
         });
 }
 
+void physics::initSounds() {
+    duck_sound = LoadSound("../assets/audio/duck.wav");
+    dudum_sound = LoadSound("../assets/audio/dudum.wav");
+    mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
+    error_sound = LoadSound("../assets/audio/error.mp3");
+    shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
+    gameover_sound = LoadSound("../assets/audio/gameover.wav");
+    jump_sound = LoadSound("../assets/audio/jump.wav");
+    pickup_sound = LoadSound("../assets/audio/pickup.wav");
+}
+
 float math::linearInterpolation(float x, Position left, Position right) {
     return ((x - left.x) * right.y + (right.x - x) * left.y) /
            (right.x - left.x);
+}
+
+void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
+    if (!app_info->playerAlive && !app_info->playedDeadSound) {
+        PlaySound(gameover_sound);
+        app_info->playedDeadSound = true;
+    }
 }
 
 PhysicSystems::PhysicSystems(flecs::world &world) {
@@ -531,6 +619,8 @@ PhysicSystems::PhysicSystems(flecs::world &world) {
                 Width>()
         .with<Player>()
         .iter(updatePlayerState);
+
+    world.system<AppInfo>().term_at(1).singleton().iter(playDeadSoundSystem);
 
     // for (int i = 0; i < 20; i++) {
     //     Position p{300.f + 200.f, 25.f * (float)i};

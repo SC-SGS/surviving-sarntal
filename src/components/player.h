@@ -13,7 +13,7 @@ struct Width {
 
 class PlayerMovement {
   public:
-    enum MovementState { MOVING, DUCKED, IN_AIR, IDLE };
+    enum MovementState { MOVING, DUCKED, IN_AIR };
     enum Direction { LEFT, RIGHT, NEUTRAL };
 
     MovementState current_state;
