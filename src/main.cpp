@@ -52,7 +52,6 @@ int main(int argc, char *argv[]) {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
-    world.set<Inventory>({7});
     world.set<Mountain>({});
 
     graphics::initStartScreen(world);
@@ -69,6 +68,8 @@ int main(int argc, char *argv[]) {
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);
     graphics::prepareMenuResources(world);
+
+    Inventory::initItems();
 
     initGameLogic(world);
 
