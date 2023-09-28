@@ -292,8 +292,9 @@ void initGameLogic(flecs::world &world) {
     // spawnExplosion(world);
     world.entity()
         .add<Player>()
-        .set<Position>({PLAYER_SPAWN_OFFSET,
-                        physics::getYPosFromX(world, PLAYER_SPAWN_OFFSET)})
+        .set<Position>(
+            {PLAYER_SPAWN_OFFSET,
+             physics::getYPosFromX(world, PLAYER_SPAWN_OFFSET, HIKER_HEIGHT)})
         .set<Velocity>({0., 0.})
         .set<PlayerMovement>({PlayerMovement::MovementState::MOVING,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
