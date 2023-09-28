@@ -23,6 +23,7 @@ void checkPlayerAlive(flecs::iter iter, Position *position, KillBar *killBar) {
     if (position[0].x < killBar->x) {
         std::cout << "Player Dead" << std::endl;
         iter.world().get_mut<AppInfo>()->playerAlive = false;
+        iter.entity(0).destruct();
     }
 }
 
