@@ -3,7 +3,7 @@
 ## Project description
 This is the game "Surviving Sarntal" students from Uni Stuttgart, FAU und TUM created in Ferienakademie 2023. The project is written in C++.
 
-## How to install and run TODO
+## How to install and run
 In order to run the game do the following in the terminal. The game is developed for Linux and was also tested on Windows.
 
 
@@ -18,7 +18,7 @@ In order to run the game do the following in the terminal. The game is developed
 ## The Game Logic
 
 The goal of the game is to get the most amount of scores by surviving for a long time in sarntal. 
-You can **die** by losing all your health points or if the hikers that follow from the left you catch up. 
+You can die by losing all your health points or if the hikers that follow from the left you catch up. 
 
 From the right side rocks are falling down the mountain, which also bounce on the mountain. 
 In a very physically correct way they bounce on the mountain.
@@ -29,6 +29,9 @@ There are also items that can help you.
 - Duck: It makes a fun noise 
 - Knife: It helps you avoid the falling rocks 
 - Coin: Add points to the score
+
+You can pick the items up, and they will be shown in the inventory. From there you can choose the item you want to use. 
+
 
 ## How to control the game
 
