@@ -9,6 +9,7 @@
 #include <iostream>
 
 #define RAYGUI_IMPLEMENTATION
+#include "physics.h"
 #include "raygui.h"
 
 namespace graphics {
