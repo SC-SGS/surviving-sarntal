@@ -13,24 +13,24 @@
 #define SAMPLE_XML_FILE "../../../Data/Sample-Tracking.xml"
 #define SAMPLE_XML_FILE_LOCAL "Sample-User.xml"
 
-XnVSelectableSlider2D *g_pMainSlider2D;
-XnVFlowRouter *g_pMainFlowRouter;
+XnVSelectableSlider2D *g_p_main_slider2_d;
+XnVFlowRouter *g_p_main_flow_router;
 xn::Context context;
 bool just_jumped = false;
 
-xn::DepthGenerator g_DepthGenerator;
-xn::UserGenerator g_UserGenerator;
+xn::DepthGenerator g_depth_generator;
+xn::UserGenerator g_user_generator;
 
-XnUserID g_nPlayer = 0;
-XnBool g_bCalibrated = FALSE;
+XnUserID g_n_player = 0;
+XnBool g_b_calibrated = FALSE;
 
-xn::ScriptNode scriptNode;
-XnVSessionGenerator *pSessionGenerator;
+xn::ScriptNode script_node;
+XnVSessionGenerator *p_session_generator;
 
 XnFloat initial_y = 0.0;
 XnFloat initial_z = 0.0;
 
-XnBool g_bPause = false;
+XnBool g_b_pause = false;
 
 bool use_hand = false;
 
@@ -38,119 +38,119 @@ bool use_hand = false;
 // Callbacks for kinect body
 //-----------------------------------------------------------------------------
 
-XnBool AssignPlayer(XnUserID user) {
-    if (g_nPlayer != 0)
+XnBool assignPlayer(XnUserID user) {
+    if (g_n_player != 0)
         return FALSE;
 
     XnPoint3D com;
-    g_UserGenerator.GetCoM(user, com);
+    g_user_generator.GetCoM(user, com);
     if (com.Z == 0)
         return FALSE;
 
     printf("Matching for existing calibration\n");
-    g_UserGenerator.GetSkeletonCap().LoadCalibrationData(user, 0);
-    g_UserGenerator.GetSkeletonCap().StartTracking(user);
-    g_nPlayer = user;
+    g_user_generator.GetSkeletonCap().LoadCalibrationData(user, 0);
+    g_user_generator.GetSkeletonCap().StartTracking(user);
+    g_n_player = user;
     return TRUE;
 }
 
-void XN_CALLBACK_TYPE NewUser(xn::UserGenerator &generator, XnUserID user,
+void XN_CALLBACK_TYPE newUser(xn::UserGenerator &generator, XnUserID user,
                               void *pCookie) {
-    if (!g_bCalibrated) // check on player0 is enough
+    if (!g_b_calibrated) // check on player0 is enough
     {
         generator.GetSkeletonCap().StartTracking(user);
         return;
     }
 
-    AssignPlayer(user);
+    assignPlayer(user);
 }
 
-void FindPlayer() {
-    if (g_nPlayer != 0) {
+void findPlayer() {
+    if (g_n_player != 0) {
         return;
     }
-    XnUserID aUsers[20];
-    XnUInt16 nUsers = 20;
-    g_UserGenerator.GetUsers(aUsers, nUsers);
+    XnUserID a_users[20];
+    XnUInt16 n_users = 20;
+    g_user_generator.GetUsers(a_users, n_users);
 
-    for (int i = 0; i < nUsers; ++i) {
-        if (AssignPlayer(aUsers[i]))
+    for (int i = 0; i < n_users; ++i) {
+        if (assignPlayer(a_users[i]))
             return;
     }
 }
 
-void LostPlayer() {
-    g_nPlayer = 0;
-    FindPlayer();
+void lostPlayer() {
+    g_n_player = 0;
+    findPlayer();
 }
 
-void XN_CALLBACK_TYPE LostUser(xn::UserGenerator &generator, XnUserID user,
+void XN_CALLBACK_TYPE lostUser(xn::UserGenerator &generator, XnUserID user,
                                void *pCookie) {
     printf("Lost user %d\n", user);
-    if (g_nPlayer == user) {
-        LostPlayer();
+    if (g_n_player == user) {
+        lostPlayer();
     }
 }
 
-void XN_CALLBACK_TYPE CalibrationStarted(xn::SkeletonCapability &skeleton,
+void XN_CALLBACK_TYPE calibrationStarted(xn::SkeletonCapability &skeleton,
                                          XnUserID user, void *cxt) {}
 
-void XN_CALLBACK_TYPE CalibrationCompleted(xn::SkeletonCapability &skeleton,
+void XN_CALLBACK_TYPE calibrationCompleted(xn::SkeletonCapability &skeleton,
                                            XnUserID user,
                                            XnCalibrationStatus eStatus,
                                            void *cxt) {
     printf("User found! You can start playing :) \n");
     kinect_init = true;
     if (eStatus == XN_CALIBRATION_STATUS_OK) {
-        if (!g_bCalibrated) {
-            g_UserGenerator.GetSkeletonCap().SaveCalibrationData(user, 0);
-            g_nPlayer = user;
-            g_UserGenerator.GetSkeletonCap().StartTracking(user);
-            g_bCalibrated = TRUE;
+        if (!g_b_calibrated) {
+            g_user_generator.GetSkeletonCap().SaveCalibrationData(user, 0);
+            g_n_player = user;
+            g_user_generator.GetSkeletonCap().StartTracking(user);
+            g_b_calibrated = TRUE;
         }
 
-        XnUserID aUsers[10];
-        XnUInt16 nUsers = 10;
-        g_UserGenerator.GetUsers(aUsers, nUsers);
-        for (int i = 0; i < nUsers; ++i)
-            g_UserGenerator.GetPoseDetectionCap().StopPoseDetection(aUsers[i]);
+        XnUserID a_users[10];
+        XnUInt16 n_users = 10;
+        g_user_generator.GetUsers(a_users, n_users);
+        for (int i = 0; i < n_users; ++i)
+            g_user_generator.GetPoseDetectionCap().StopPoseDetection(a_users[i]);
     }
 }
 
 // this function is called each frame
-void glutDisplay(void) {
-    xn::SceneMetaData sceneMD;
-    xn::DepthMetaData depthMD;
-    g_DepthGenerator.GetMetaData(depthMD);
+void glutDisplay() {
+    xn::SceneMetaData scene_md;
+    xn::DepthMetaData depth_md;
+    g_depth_generator.GetMetaData(depth_md);
 
-    if (!g_bPause) {
+    if (!g_b_pause) {
         // Read next available data
-        context.WaitOneUpdateAll(g_DepthGenerator);
+        context.WaitOneUpdateAll(g_depth_generator);
     }
 
-    if (g_nPlayer != 0) {
+    if (g_n_player != 0) {
         XnPoint3D com;
-        g_UserGenerator.GetCoM(g_nPlayer, com);
+        g_user_generator.GetCoM(g_n_player, com);
         if (com.Z == 0) {
-            g_nPlayer = 0;
-            FindPlayer();
+            g_n_player = 0;
+            findPlayer();
         }
 
-        XnSkeletonJointTransformation jointData;
-        g_UserGenerator.GetSkeletonCap().GetSkeletonJoint(
-            g_nPlayer, XN_SKEL_TORSO, jointData);
+        XnSkeletonJointTransformation joint_data;
+        g_user_generator.GetSkeletonCap().GetSkeletonJoint(
+            g_n_player, XN_SKEL_TORSO, joint_data);
         if (initial_y == 0.0) {
-            initial_y = jointData.position.position.Y;
-            initial_z = jointData.position.position.Z;
+            initial_y = joint_data.position.position.Y;
+            initial_z = joint_data.position.position.Z;
         }
 
         XnFloat scaled_z = std::max(
             -1.0f,
-            std::min(1.0f, -(jointData.position.position.Z - initial_z) / 700));
+            std::min(1.0f, -(joint_data.position.position.Z - initial_z) / 700));
         // printf("%6.1f    (%6.1f)\n", scaled_z,
         // jointData.position.position.Z);
         horizontal_axis = scaled_z;
-        if (jointData.position.position.Y > initial_y + 80 + 10 * scaled_z) {
+        if (joint_data.position.position.Y > initial_y + 80 + 10 * scaled_z) {
             do_kinect_jump = true;
             // printf("JUMP %6.1f (init %6.1f)\n",
             // jointData.position.position.Y, initial_y);
@@ -178,7 +178,7 @@ void glutDisplay(void) {
 // Callbacks for kinect hand
 //-----------------------------------------------------------------------------
 
-void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
+void XN_CALLBACK_TYPE mainSliderOnValueChange(XnFloat xValue, XnFloat yValue,
                                                void *cxt) {
     printf("fValue %6.2f %6.2f\n", xValue * 2.0f - 1.0f, yValue * 2.0f - 1.0f);
     float scaled_x_value = xValue * 2.0f - 1.0f;
@@ -196,21 +196,21 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(XnFloat xValue, XnFloat yValue,
 }
 
 // Callback for when the focus is in progress
-void XN_CALLBACK_TYPE SessionProgress(const XnChar *strFocus,
+void XN_CALLBACK_TYPE sessionProgress(const XnChar *strFocus,
                                       const XnPoint3D &ptFocusPoint,
                                       XnFloat fProgress, void *UserCxt) {}
 
 // callback for session start
-void XN_CALLBACK_TYPE SessionStart(const XnPoint3D &ptFocusPoint,
+void XN_CALLBACK_TYPE sessionStart(const XnPoint3D &ptFocusPoint,
                                    void *UserCxt) {
-    g_pMainFlowRouter->SetActive(g_pMainSlider2D);
+    g_p_main_flow_router->SetActive(g_p_main_slider2_d);
     printf("Player was found! The game starts soon...");
     kinect_init = true;
 }
 // Callback for session end
-void XN_CALLBACK_TYPE SessionEnd(void *UserCxt) {
+void XN_CALLBACK_TYPE sessionEnd(void *UserCxt) {
     printf("Session ended. Please perform focus gesture to start session\n");
-    g_pMainFlowRouter->SetActive(NULL);
+    g_p_main_flow_router->SetActive(nullptr);
 }
 
 XnBool fileExists(const char *fn) {
@@ -222,7 +222,7 @@ XnBool fileExists(const char *fn) {
 int initKinect() {
 
     // Create context
-    const char *fn = NULL;
+    const char *fn = nullptr;
     if (fileExists(SAMPLE_XML_FILE))
         fn = SAMPLE_XML_FILE;
     else if (fileExists(SAMPLE_XML_FILE_LOCAL))
@@ -232,17 +232,17 @@ int initKinect() {
                SAMPLE_XML_FILE_LOCAL);
         return XN_STATUS_ERROR;
     }
-    XnStatus rc = context.InitFromXmlFile(fn, scriptNode);
+    XnStatus rc = context.InitFromXmlFile(fn, script_node);
     if (rc != XN_STATUS_OK) {
         printf("Couldn't initialize: %s\n", xnGetStatusString(rc));
         return 1;
     }
-    rc = context.FindExistingNode(XN_NODE_TYPE_DEPTH, g_DepthGenerator);
+    rc = context.FindExistingNode(XN_NODE_TYPE_DEPTH, g_depth_generator);
     CHECK_RC(rc, "Find depth generator");
-    rc = context.FindExistingNode(XN_NODE_TYPE_USER, g_UserGenerator);
+    rc = context.FindExistingNode(XN_NODE_TYPE_USER, g_user_generator);
     CHECK_RC(rc, "Find user generator");
-    if (!g_UserGenerator.IsCapabilitySupported(XN_CAPABILITY_SKELETON) ||
-        !g_UserGenerator.IsCapabilitySupported(XN_CAPABILITY_POSE_DETECTION)) {
+    if (!g_user_generator.IsCapabilitySupported(XN_CAPABILITY_SKELETON) ||
+        !g_user_generator.IsCapabilitySupported(XN_CAPABILITY_POSE_DETECTION)) {
         printf("User generator doesn't support either skeleton or pose "
                "detection.\n");
         return XN_STATUS_ERROR;
@@ -250,13 +250,13 @@ int initKinect() {
 
     if (use_hand) {
         // Create the Session Manager
-        pSessionGenerator = new XnVSessionManager();
-        rc = ((XnVSessionManager *)pSessionGenerator)
+        p_session_generator = new XnVSessionManager();
+        rc = ((XnVSessionManager *)p_session_generator)
                  ->Initialize(&context, "Click", "RaiseHand");
         if (rc != XN_STATUS_OK) {
             printf("Session Manager couldn't initialize: %s\n",
                    xnGetStatusString(rc));
-            delete pSessionGenerator;
+            delete p_session_generator;
             return 1;
         }
 
@@ -264,38 +264,38 @@ int initKinect() {
         context.StartGeneratingAll();
 
         // Register session callbacks
-        pSessionGenerator->RegisterSession(NULL, &SessionStart, &SessionEnd,
-                                           &SessionProgress);
+        p_session_generator->RegisterSession(nullptr, &sessionStart, &sessionEnd,
+                                           &sessionProgress);
 
-        g_pMainSlider2D = new XnVSelectableSlider2D(3, 3);
-        g_pMainSlider2D->RegisterValueChange(NULL, &MainSlider_OnValueChange);
-        g_pMainSlider2D->SetValueChangeOnOffAxis(true);
+        g_p_main_slider2_d = new XnVSelectableSlider2D(3, 3);
+        g_p_main_slider2_d->RegisterValueChange(nullptr, &mainSliderOnValueChange);
+        g_p_main_slider2_d->SetValueChangeOnOffAxis(true);
 
         // Create the flow manager and connect to point tracker
-        g_pMainFlowRouter = new XnVFlowRouter;
-        pSessionGenerator->AddListener(g_pMainFlowRouter);
+        g_p_main_flow_router = new XnVFlowRouter;
+        p_session_generator->AddListener(g_p_main_flow_router);
 
         // Main loop
         while (!xnOSWasKeyboardHit()) {
             context.WaitAnyUpdateAll();
-            ((XnVSessionManager *)pSessionGenerator)->Update(&context);
+            ((XnVSessionManager *)p_session_generator)->Update(&context);
         }
     } else {
-        g_UserGenerator.GetSkeletonCap().SetSkeletonProfile(
+        g_user_generator.GetSkeletonCap().SetSkeletonProfile(
             XN_SKEL_PROFILE_UPPER);
 
         rc = context.StartGeneratingAll();
         CHECK_RC(rc, "StartGenerating");
 
-        XnCallbackHandle hUserCBs, hCalibrationStartCB, hCalibrationCompleteCB,
-            hPoseCBs;
-        g_UserGenerator.RegisterUserCallbacks(NewUser, LostUser, NULL,
-                                              hUserCBs);
-        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationStart(
-            CalibrationStarted, NULL, hCalibrationStartCB);
+        XnCallbackHandle h_user_c_bs, h_calibration_start_cb, h_calibration_complete_cb,
+            h_pose_c_bs;
+        g_user_generator.RegisterUserCallbacks(newUser, lostUser, nullptr,
+                                              h_user_c_bs);
+        rc = g_user_generator.GetSkeletonCap().RegisterToCalibrationStart(
+            calibrationStarted, nullptr, h_calibration_start_cb);
         CHECK_RC(rc, "Register to calibration start");
-        rc = g_UserGenerator.GetSkeletonCap().RegisterToCalibrationComplete(
-            CalibrationCompleted, NULL, hCalibrationCompleteCB);
+        rc = g_user_generator.GetSkeletonCap().RegisterToCalibrationComplete(
+            calibrationCompleted, nullptr, h_calibration_complete_cb);
         CHECK_RC(rc, "Register to calibration complete");
 
         while (TRUE) {
@@ -303,9 +303,9 @@ int initKinect() {
         }
     }
 
-    delete pSessionGenerator;
-    delete g_pMainSlider2D;
-    delete g_pMainFlowRouter;
+    delete p_session_generator;
+    delete g_p_main_slider2_d;
+    delete g_p_main_flow_router;
 
     return 0;
 }
