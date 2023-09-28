@@ -23,7 +23,7 @@ bool kinect_mode;
 
 bool kinect_init;
 
-int main() {
+int main(int argc, char *argv[]) {
     using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
@@ -58,7 +58,14 @@ int main() {
 
     initGameLogic(world);
 
-    physics::initSounds();
+    bool meme_mode = false;
+    if (argc >= 2) {
+        std::string music_mode = argv[1];
+        if (music_mode == "meme") {
+            meme_mode = true;
+        }
+    }
+    physics::initSounds(meme_mode);
 
     world.set<AppInfo>({});
 

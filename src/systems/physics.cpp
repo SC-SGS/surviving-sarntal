@@ -1,6 +1,7 @@
 #include "physics.h"
 #include "../components/render_components.h"
 #include "flecs.h"
+#include "render_systems.h"
 #include <cmath>
 #include <iostream>
 #include <thread>
@@ -71,7 +72,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         }
 
         if (app_info->playerAlive && velocities[i].length() > 200.) {
-            PlaySound(error_sound);
+            PlaySound(terrain_collision_sound);
         }
 
         auto normal_vector = getNormal(closest_vertex.index, positions[i], m);
@@ -179,8 +180,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
             if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
                            radius[j])) {
-                if (!IsSoundPlaying(pipe_sound) && app_info->playerAlive) {
-                    PlaySound(pipe_sound);
+                if (!IsSoundPlaying(rock_collision_sound) && app_info->playerAlive) {
+                    PlaySound(rock_collision_sound);
                 }
 
                 rockCollision(positions[i], positions[j], velocities[i],
@@ -225,6 +226,10 @@ void physics::updateRockPosition(flecs::iter it, Position *positions,
 
 void physics::explodeRock(const flecs::world &world, flecs::entity rock,
                           const int number_of_rocks) {
+    if (app_info->playerAlive) {
+        PlaySound(boom_sound);
+    }
+
     auto position = *rock.get<Position>();
     auto velocity = *rock.get<Velocity>();
     auto radius = rock.get<Radius>()->value;
@@ -382,7 +387,7 @@ void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
         }
         if (player_movements[0].last_jump < 1.5 &&
             player_movements[0].can_jump_again) {
-            PlaySound(jump_sound);
+            PlaySound(default_jump_sound);
             velocities[0].y = JUMP_VELOCITY_CONSTANT;
             if (player_movements[0].current_state ==
                 PlayerMovement::MovementState::IN_AIR) {
@@ -586,17 +591,24 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
         });
 }
 
-void physics::initSounds() {
+void physics::initSounds(bool meme_mode) {
     duck_sound = LoadSound("../assets/audio/duck.wav");
     dudum_sound = LoadSound("../assets/audio/dudum.wav");
     mepmep_sound = LoadSound("../assets/audio/mepmep.wav");
-    error_sound = LoadSound("../assets/audio/error.wav");
     shutdown_sound = LoadSound("../assets/audio/shutdown.wav");
     gameover_sound = LoadSound("../assets/audio/gameover.wav");
-    jump_sound = LoadSound("../assets/audio/jump.wav");
+    default_jump_sound = LoadSound("../assets/audio/jump.wav");
     pickup_sound = LoadSound("../assets/audio/pickup.wav");
-    pipe_sound = LoadSound("../assets/audio/pipe.wav");
     fart_sound = LoadSound("../assets/audio/fart.wav");
+    boom_sound = LoadSound("../assets/audio/boom.wav");
+
+    if (meme_mode) {
+        terrain_collision_sound = LoadSound("../assets/audio/error.wav");
+        rock_collision_sound = LoadSound("../assets/audio/pipe.wav");
+    } else {
+        terrain_collision_sound = LoadSound("../assets/audio/error.wav");
+        rock_collision_sound = LoadSound("../assets/audio/pipe.wav");
+    }
 }
 
 float math::linearInterpolation(float x, Position left, Position right) {
@@ -606,8 +618,8 @@ float math::linearInterpolation(float x, Position left, Position right) {
 
 void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
     if (!app_info->playerAlive && !app_info->playedDeadSound) {
-        StopSound(pipe_sound);
-        StopSound(error_sound);
+        StopSound(rock_collision_sound);
+        StopSound(terrain_collision_sound);
         PlaySound(gameover_sound);
         app_info->playedDeadSound = true;
     }
