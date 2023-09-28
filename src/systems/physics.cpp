@@ -1,6 +1,7 @@
 #include "physics.h"
 #include "../components/render_components.h"
 #include "flecs.h"
+#include "game_logic.h"
 #include "render_systems.h"
 #include <cmath>
 #include <iostream>
@@ -180,7 +181,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
             if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
                            radius[j])) {
-                if (!IsSoundPlaying(rock_collision_sound) && app_info->playerAlive) {
+                if (!IsSoundPlaying(rock_collision_sound) &&
+                    app_info->playerAlive) {
                     PlaySound(rock_collision_sound);
                 }
 
@@ -570,6 +572,29 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 if (is_hit) {
                     PlaySound(dudum_sound);
 
+                    // spawnExplosion(rock_it.world(), rock_positions[i]);
+                    rock_positions[i].x;
+
+                    rock_it.world()
+                        .entity()
+                        .set<Position>({rock_positions[i]})
+                        .set<graphics::LifeTime>({1})
+                        .set([&](graphics::AnimatedBillboardComponent &c) {
+                            c = {0};
+                            c.billUp = {0.0f, 0.0f, 1.0f};
+                            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+                            c.resourceHandle =
+                                rock_it.world()
+                                    .get_mut<graphics::Resources>()
+                                    ->textures.load(
+                                        "../assets/texture/explosion.png");
+                            c.width = 200; // TODO?
+                            c.height = 200;
+                            c.current_frame = 0;
+                            c.animation_speed = 1;
+                            c.numFrames = 25;
+                        });
+
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
@@ -584,7 +609,7 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                         // TODO end animation or sth.
                         std::cout << "Player unalive" << std::endl;
                         rock_it.world().get_mut<AppInfo>()->playerAlive = false;
-                        player_it.entity(0).destruct();
+                        // player_it.entity(0).destruct();
                     }
                 }
             }
