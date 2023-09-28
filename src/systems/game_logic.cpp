@@ -103,27 +103,28 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
     }
 }
 
-void spawnRocks(flecs::iter it, Mountain *mountain) {
+void spawnRocks(flecs::iter it, Mountain *mountain,
+                rockSpawnStuff::SpawnData *spawnData) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
 
     auto gameTime = GetTime();
-    RockSpawnPhase rockSpawnPhase =
+    rockSpawnStuff::RockSpawnPhase rockSpawnPhase =
         rockSpawnStuff::determineRockSpawnPhase(gameTime);
     float time_between_rockspawns =
         rockSpawnStuff::rockSpawnTimeFromPhase(rockSpawnPhase);
 
-    if (gameTime > rockSpawnStuff::rock_spawn_time + time_between_rockspawns) {
-        rockSpawnStuff::rock_spawn_time =
-            rockSpawnStuff::rock_spawn_time + time_between_rockspawns;
+    if (gameTime > spawnData->rock_spawn_time + time_between_rockspawns) {
+        spawnData->rock_spawn_time =
+            spawnData->rock_spawn_time + time_between_rockspawns;
 
         // compute spawn Basepoint
         // offset on x-axis by -300 to spawn visible on screen
-        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 100.;
+        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 400.;
 
         const float spawn_x_coord = camera->target.x +
-                                    ((float)graphics::SCREEN_WIDTH) / 2 -
-                                    200.; //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
+                                    ((float)graphics::SCREEN_WIDTH) / 2 +
+                                    100; //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
         Position spawnBasepoint = mountain->getVertex(
             mountain->getRelevantMountainSection(spawn_x_coord, spawn_x_coord)
                 .start_index);
@@ -131,7 +132,7 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
         spawnBasepoint.y += 350.;
 
         int num_rocks_to_spawn =
-            rockSpawnStuff::computeNumRocksToSpawn(rockSpawnPhase);
+            rockSpawnStuff::computeNumRocksToSpawn(rockSpawnPhase, spawnData);
         const std::vector<Position> offsets_additional_rocks{
             {0., 0.},
             {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.},
@@ -142,6 +143,10 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
             float radius =
                 ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
+            constexpr float CONST_VEL_COMPONENT{-300.};
+            float random_vel_component{
+                ((((float)std::rand()) / RAND_MAX) - 0.5f) * 200.f};
+
             std::cout << "rock spawned" << std::endl;
             auto rock_entity =
                 it.world()
@@ -149,7 +154,8 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                     .set<Position>(
                         {spawnBasepoint.x + offsets_additional_rocks[i].x,
                          spawnBasepoint.y + offsets_additional_rocks[i].y})
-                    .set<Velocity>({-200., 0})
+                    .set<Velocity>(
+                        {CONST_VEL_COMPONENT + random_vel_component, 0})
                     .set<Radius>({radius})
                     .set<Rotation>({0, 0})
                     .add<Rock>()
@@ -167,10 +173,10 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                         c.height = radius * 2.0f;
                     });
 
-            if (rockSpawnPhase == explosiveBatches) {
-                rockSpawnStuff::explosive_rock_modulo_count++;
-                if (rockSpawnStuff::explosive_rock_modulo_count >= 10) {
-                    rockSpawnStuff::explosive_rock_modulo_count = 0;
+            if (rockSpawnPhase == rockSpawnStuff::explosiveBatches) {
+                spawnData->explosive_rock_modulo_count++;
+                if (spawnData->explosive_rock_modulo_count >= 10) {
+                    spawnData->explosive_rock_modulo_count = 0;
                     rock_entity.add<Exploding>();
                 }
             }
@@ -318,5 +324,11 @@ void initGameLogic(flecs::world &world) {
         .iter(updateScore);
 
     world.system<>().iter(spawnItems);
-    world.system<Mountain>().term_at(1).singleton().iter(spawnRocks);
+    world.set<rockSpawnStuff::SpawnData>({});
+    world.system<Mountain, rockSpawnStuff::SpawnData>()
+        .term_at(1)
+        .singleton()
+        .term_at(2)
+        .singleton()
+        .iter(spawnRocks);
 }

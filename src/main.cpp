@@ -59,6 +59,8 @@ int main() {
 
     initGameLogic(world);
 
+    physics::initSounds();
+
     world.set<AppInfo>({});
 
     mainLoop(world);
