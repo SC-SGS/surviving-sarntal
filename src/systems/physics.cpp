@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <thread>
+#include "game_logic.h"
 
 using namespace physics;
 using namespace math;
@@ -474,6 +475,31 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                 }
                 if (is_hit) {
                     PlaySound(duck_sound);
+
+
+                    //spawnExplosion(rock_it.world(), rock_positions[i]);
+                    rock_positions[i].x;
+
+                    rock_it.world()
+                        .entity()
+                        .set<Position>({rock_positions[i]})
+                        .set<graphics::LifeTime>({1})
+                        .set([&](graphics::AnimatedBillboardComponent &c) {
+                            c = {0};
+                            c.billUp = {0.0f, 0.0f, 1.0f};
+                            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+                            c.resourceHandle =
+                                rock_it.world()
+                                    .get_mut<graphics::Resources>()
+                                    ->textures.load(
+                                        "../assets/texture/explosion.png");
+                            c.width = 200; // TODO?
+                            c.height = 200;
+                            c.current_frame = 0;
+                            c.animation_speed = 1;
+                            c.numFrames = 25;
+                        });
+
 
                     int rock_dmg =
                         std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /

@@ -201,6 +201,32 @@ void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
     // std::cout << "Score: " << appInfo->score << std::endl;
 }
 
+void spawnExplosion(flecs::world &world, Position pos) {
+    world.entity().set<Position>({pos}).set<graphics::LifeTime>({10}).set(
+        [&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/explosion.png");
+            c.width = 200; // TODO?
+            c.height = 200;
+            c.current_frame = 0;
+            c.animation_speed = 1;
+            c.numFrames = 25;
+        });
+}
+
+void removeSFX(flecs::iter it, graphics::LifeTime *lifetime) {
+    for (auto i : it) {
+        lifetime[i].time -= it.delta_time();
+        if (lifetime[i].time < 0) {
+            it.entity(i).destruct();
+        }
+    }
+}
+
 // debug function
 // void countRocks(flecs::iter it, Rock* rocks){
 //     int acc{0};
@@ -256,7 +282,7 @@ void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
 
     auto player_0_input = InputEntity();
-
+    // spawnExplosion(world);
     world.entity()
         .add<Player>()
         .set<Position>({200., physics::getYPosFromX(world, 200.)})
@@ -279,7 +305,7 @@ void initGameLogic(flecs::world &world) {
             c.width = HIKER_HEIGHT; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
-            c.animation_speed = 20;
+            c.animation_speed = 5;
             c.numFrames = 4;
         });
 
@@ -291,6 +317,8 @@ void initGameLogic(flecs::world &world) {
         .kind(flecs::PreUpdate)
         .iter(Inventory::updateInventory)
         .depends_on(can_collect_system);
+
+    world.system<graphics::LifeTime>().kind(flecs::PreUpdate).iter(removeSFX);
 
     world.set<KillBar>({0.});
 

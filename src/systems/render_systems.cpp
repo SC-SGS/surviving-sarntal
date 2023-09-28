@@ -60,7 +60,6 @@ flecs::entity OnInterface;
 flecs::entity EndRender;
 
 /*helpers*/
-
 void regenerateGradientTexture(int screenW, int screenH) {
     UnloadTexture(gradient_texture_background); // TODO necessary?
     Image verticalGradient = GenImageGradientV(screenW, screenH, BLUE, WHITE);
@@ -716,9 +715,18 @@ void renderSystem(const flecs::iter &iter) {
                             p.x, p.y, static_cast<float>(b.width),
                             static_cast<float>(
                                 b.height)}; // where to draw texture
-                        ;
 
-                        if (current_frame % b.animation_speed == 0) {
+                        // if (current_frame % b.animation_speed == 0) {
+                        //     b.current_frame++;
+                        //     b.current_frame = b.current_frame % b.numFrames;
+                        // }
+
+                        b.time_passed += iter.delta_time();
+
+                        if (b.time_passed >
+                            (static_cast<float>(b.animation_speed) /
+                             static_cast<float>(b.numFrames))) {
+                            b.time_passed = 0;
                             b.current_frame++;
                             b.current_frame = b.current_frame % b.numFrames;
                         }
