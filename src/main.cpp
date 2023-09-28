@@ -6,6 +6,7 @@
 #include "systems/physics.h"
 #include "systems/render_systems.h"
 #include "utils/game_constants.h"
+#include "components/inventory.h"
 #include <chrono>
 #include <flecs.h>
 #include <iostream>
@@ -36,6 +37,7 @@ int main() {
     world.import <PhysicSystems>();
     world.import <InputSystems>();
 
+    world.set<Inventory>({});
     world.set<Mountain>({});
     graphics::initRenderSystem(world);
     graphics::prepareGameResources(world);

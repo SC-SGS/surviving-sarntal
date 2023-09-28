@@ -8,6 +8,7 @@
 #include "rlgl.h"
 #include <filesystem>
 #include <iostream>
+#include "../components/inventory.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -942,6 +943,16 @@ void renderHUD(const flecs::iter &iter) {
     }
 
     DrawFPS(0, 0);
+    {
+        const int item_boxes_size = 50;
+        const int item_boxes_offsett = 50;
+
+        auto inv = iter.world().get_mut<Inventory>();
+
+        DrawRectangle(20, SCREEN_HEIGHT - 20 - item_boxes_size, item_boxes_size,
+                          item_boxes_size, BROWN);
+    }
+
 }
 
 void renderMenu(const flecs::iter &iter) {
