@@ -797,7 +797,8 @@ void renderHUD(const flecs::iter &iter) {
                   player_health * healthbar_width - 2 * offset,
                   healthbar_height - 2 * offset, GREEN);
 
-    int score = iter.world().get<AppInfo>()->score + iter.world().get<AppInfo>()->coin_score;
+    int score = iter.world().get<AppInfo>()->score +
+                iter.world().get<AppInfo>()->coin_score;
     // score
     DrawText(TextFormat("Score: %d", score), SCREEN_WIDTH * 5 / 6, 50, 40,
              BLACK);
