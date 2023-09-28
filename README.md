@@ -28,7 +28,7 @@ There are also items that can help you.
 - Kaiserschmarrn:  you gain health points after eating the delicious Kaiserschmarrn
 - Duck: It makes a fun noise 
 - Knife: It helps you avoid the falling rocks 
-- Coin?
+- Coin: Add points to the score
 
 ## How to control the game
 
@@ -65,4 +65,6 @@ To build the Kinect version of this game the following commands have to be execu
 
 
 After executing the kinect supporting version of the game, the user has to do some movements, such that the kinect interface identifies him as the player.
-Once there is a lock on the playing user, the ingame character movement to the right is initiated by stepping forward (to the right). Stepping to the initial position prompts the ingame character to stop, stepping back is bound to moving backwards (to the left). Jumping can be done by jumping in front of the kinect, ducking by crouching down.
+Once there is a lock on the playing user, the ingame character movement to the right is initiated by stepping forward (to the right).
+Stepping to the initial position prompts the ingame character to stop, stepping back is bound to moving backwards (to the left).
+Jumping can be done by jumping in front of the kinect, ducking by crouching down.
