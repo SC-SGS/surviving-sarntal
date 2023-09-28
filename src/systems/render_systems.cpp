@@ -6,7 +6,6 @@
 #include "flecs.h"
 #include "raymath.h"
 #include "rlgl.h"
-#include <filesystem>
 #include <iostream>
 #include "../components/inventory.h"
 

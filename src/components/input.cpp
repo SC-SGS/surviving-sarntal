@@ -1,6 +1,6 @@
 #include "input.h"
 
-#include "../utils/game_constants.h"
+#include "../utils/kinect_variables.h"
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -33,14 +33,11 @@ bool isGamepad(int raylib_id) {
  * gets the number of valid gamepads that can be accessed via raylib
  * @return
  */
-int InputEntity::getGamepadCount() const {
+int InputEntity::getGamepadCount() {
     int found_gamepads = 0;
     for (int i = 0; i < MAX_GAMEPADS; ++i) {
-        if (isGamepad(i)) {
-            if (found_gamepads == gamepad_num)
-                return i;
+        if (isGamepad(i))
             found_gamepads++;
-        }
     }
     return found_gamepads;
 }
@@ -115,18 +112,18 @@ double InputEntity::getVirtualAxis(VirtualAxis axis) const {
 
 int InputEntity::getGamepadId() const { return gamepad_id_raylib; }
 
-InputEntity::InputEntity() : InputEntity(InputType::GAMEPAD, 0) {}
-
 bool InputEntity::getEvent(Event event) const {
     bool active = false;
 
-    if (current_input_type == GAMEPAD && hasGamepad()) {
+    if (current_input_type == DISABLED) {
+        return active;
+    } else if (current_input_type == GAMEPAD && hasGamepad()) {
         auto gamepad_action_iter = GAMEPAD_KEY_MAP.find(event);
         if (gamepad_action_iter != GAMEPAD_KEY_MAP.end()) {
             auto gamepad_action = gamepad_action_iter->second;
             active = getGamepadEvent(gamepad_action);
         }
-    } else if (current_input_type == KINECT) {
+    } else if (current_input_type == KINECT && hasKinect()) {
         active = do_kinect_jump;
     } else if (current_input_type == MOUSE_KEYBOARD) {
         auto keyboard_action_iter = KEYBOARD_KEY_MAP.find(event);
@@ -160,7 +157,9 @@ bool InputEntity::useVirtualAxis(VirtualAxis axis) const {
 double InputEntity::getAxis(Axis axis) const {
     double value = 0;
 
-    if (current_input_type == GAMEPAD && hasGamepad()) {
+    if (current_input_type == DISABLED) {
+        return value;
+    } else if (current_input_type == GAMEPAD && hasGamepad()) {
         auto gamepad_axis_iter = GAMEPAD_AXIS_MAP.find(axis);
         if (gamepad_axis_iter != GAMEPAD_AXIS_MAP.end()) {
             auto gamepad_axis = gamepad_axis_iter->second;
@@ -187,19 +186,18 @@ double InputEntity::getAxis(Axis axis) const {
 void InputEntity::updateDevices() {
     // if something must be updated each frame
 
-    // use kinect if connected
-    if (kinect_mode) {
-        current_input_type = KINECT;
-        return;
-    }
-    // update gamepad id
     gamepad_id_raylib = findRaylibId(gamepad_num);
 
-    // use gamepad if present, keyboard otherwise
-    if (gamepad_id_raylib != NO_GAMEPAD_ID) {
-        current_input_type = GAMEPAD;
-    } else {
-        current_input_type = MOUSE_KEYBOARD;
+    if (auto_select_device) {
+        if (hasKinect() && hasGamepad()) {
+            // current_input_type = KINECTPAD;
+        } else if (hasGamepad()) {
+            current_input_type = GAMEPAD;
+        } else if (hasKinect()) {
+            current_input_type = KINECT;
+        } else {
+            current_input_type = MOUSE_KEYBOARD;
+        }
     }
 }
 
@@ -227,16 +225,19 @@ std::string InputEntity::getInputInfo() const {
     return input_info.str();
 }
 
-bool InputEntity::hasGamepad() const {
-    return current_input_type == InputType::GAMEPAD &&
-           getGamepadId() != NO_GAMEPAD_ID;
-}
+bool InputEntity::hasGamepad() const { return getGamepadId() != NO_GAMEPAD_ID; }
 void InputEntity::setInputType(InputEntity::InputType type, int _gamepad_num) {
     current_input_type = type;
     gamepad_num = _gamepad_num;
     gamepad_id_raylib = findRaylibId(_gamepad_num);
 }
+
+InputEntity::InputEntity() {
+    auto_select_device = true;
+    setInputType(MOUSE_KEYBOARD, 0);
+}
 InputEntity::InputEntity(InputEntity::InputType input_type, int _gamepad_num) {
+    auto_select_device = false;
     setInputType(input_type, _gamepad_num);
 }
 
@@ -254,3 +255,9 @@ bool InputEntity::getMouseEvent(ButtonEvent event) {
         return false;
     }
 }
+InputEntity::InputType InputEntity::getInputType() const {
+    return current_input_type;
+}
+
+bool InputEntity::hasKinect() const { return kinect_mode; }
+int InputEntity::getDeviceNum() const { return gamepad_num; }
