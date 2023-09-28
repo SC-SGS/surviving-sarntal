@@ -82,9 +82,9 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
-        rot->angular_velocity += GAMMA *
-                                 (velocity_parallel -
-                                  rot->angular_velocity * r[i].value) / m;
+        rot->angular_velocity +=
+            GAMMA * (velocity_parallel - rot->angular_velocity * r[i].value) /
+            m;
         if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
             rot->angular_velocity = MAX_ANGULAR_VELOCITY;
         }
@@ -146,8 +146,8 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
 
     ang_vel1 += GAMMA * std::abs((normal_vector * v1)) *
                 relative_surface_velocity / (2 * m1);
-    ang_vel2 -= GAMMA * std::abs((normal_vector * v2))
-                * relative_surface_velocity / (2 * m2);
+    ang_vel2 -= GAMMA * std::abs((normal_vector * v2)) *
+                relative_surface_velocity / (2 * m2);
     if (ang_vel1 >= MAX_ANGULAR_VELOCITY) {
         ang_vel1 = MAX_ANGULAR_VELOCITY;
     }

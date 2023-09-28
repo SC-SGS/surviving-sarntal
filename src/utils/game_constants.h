@@ -58,7 +58,7 @@ constexpr float_type MAX_ROCK_SIZE = 25.f;
  * Rock speeds
  */
 constexpr float_type VELOCITY_CAP = 1200.;
-constexpr float_type GAMMA = 200.f;
+constexpr float_type GAMMA = 50.f;
 constexpr float_type MAX_ANGULAR_VELOCITY = 1000.f;
 
 /**
