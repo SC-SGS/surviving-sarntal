@@ -180,7 +180,8 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
             if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
                            radius[j])) {
-                if (!IsSoundPlaying(rock_collision_sound) && app_info->playerAlive) {
+                if (!IsSoundPlaying(rock_collision_sound) &&
+                    app_info->playerAlive) {
                     PlaySound(rock_collision_sound);
                 }
 
