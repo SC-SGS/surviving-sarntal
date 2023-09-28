@@ -279,7 +279,7 @@ void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
  * @param widths of the player
  */
 void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
-                      Velocity *velocities);
+                      Velocity *rock_velocities);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position
