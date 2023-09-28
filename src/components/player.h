@@ -13,7 +13,7 @@ struct Width {
 
 class PlayerMovement {
   public:
-    enum MovementState { MOVING, DUCKED, IN_AIR, IDLE };
+    enum MovementState { MOVING, DUCKED, IN_AIR };
     enum Direction { LEFT, RIGHT, NEUTRAL };
 
     MovementState current_state;
@@ -28,4 +28,10 @@ struct Health {
 
 struct KillBar {
     float_type x;
+};
+
+struct IsHit {
+    float_type radius_rock;
+    float_type velocity_rock;
+    int counting_variable;
 };

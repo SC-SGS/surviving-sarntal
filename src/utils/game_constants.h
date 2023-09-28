@@ -11,18 +11,19 @@ constexpr int SCREEN_HEIGHT = 900;
 /**
  * Player size
  */
-constexpr float_type HIKER_HEIGHT = 100.f;
-constexpr float_type HIKER_WIDTH = 30.f;
-constexpr float_type DUCKED_HIKER_HEIGHT = 25.f;
-constexpr float_type DUCKED_HIKER_WIDTH = 10.f;
+constexpr float_type HIKER_HEIGHT = 90.6f;
+constexpr float_type HIKER_WIDTH = 60.f; // 41.1f
+constexpr float_type DUCKED_HIKER_HEIGHT = 65.9f;
+constexpr float_type DUCKED_HIKER_WIDTH = 70.f; // 47.4f;
 
 /**
  * Player movement speed constants.
  */
-constexpr float_type DUCK_SPEED_FACTOR = .5f;
+constexpr float_type DUCK_SPEED_FACTOR = .35f;
 constexpr float_type NORMAL_SPEED = 500.f;
 constexpr float_type JUMP_VELOCITY_CONSTANT = 500.f;
 constexpr float_type AIR_MOVEMENT_SPEED_FACTOR = .6f;
+constexpr float_type KNOCKBACKCONST = 0.0001f;
 // Movement on a slope TODO these need to be fine-tuned!!!
 // Speed constants
 constexpr float_type MIN_SPEED_NEG_SLOPE = .6f;
@@ -58,7 +59,7 @@ constexpr float_type MAX_ROCK_SIZE = 25.f;
  * Rock speeds
  */
 constexpr float_type VELOCITY_CAP = 1200.;
-constexpr float_type GAMMA = 0.5f;
+constexpr float_type GAMMA = 50.f;
 constexpr float_type MAX_ANGULAR_VELOCITY = 1000.f;
 
 /**
@@ -86,7 +87,7 @@ constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
  */
 constexpr float_type GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr float_type EPSILON = 1e-3f;
-constexpr float_type ROCK_TERRAIN_DAMPING = 0.75f;
+constexpr float_type ROCK_TERRAIN_DAMPING = 0.8f;
 
 extern bool kinect_mode;
 

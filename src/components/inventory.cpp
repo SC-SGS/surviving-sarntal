@@ -1,4 +1,5 @@
 #include "inventory.h"
+#include "../systems/physics.h"
 #include "particle_state.h"
 #include "raylib.h"
 
@@ -139,4 +140,5 @@ void ItemClass::useCoin(const flecs::world &world, flecs::entity &player) {
 
 void ItemClass::useDuck(const flecs::world &world, flecs::entity &player) {
     std::cout << "used duck" << std::endl;
+    PlaySound(physics::duck_sound);
 }
