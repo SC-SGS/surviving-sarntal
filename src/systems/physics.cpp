@@ -649,9 +649,7 @@ void physics::initSounds(bool meme) {
     }
 }
 
-void physics::playPickupSound() {
-    PlaySound(pickup_sound);
-}
+void physics::playPickupSound() { PlaySound(pickup_sound); }
 
 float math::linearInterpolation(float x, Position left, Position right) {
     return ((x - left.x) * right.y + (right.x - x) * left.y) /
