@@ -23,6 +23,10 @@ Texture2D background_tex;
 Texture2D midground_tex;
 Texture2D foreground_tex;
 
+Texture2D killbar_tex;
+int killbar_current_frame;
+Texture2D player_dead_tex;
+
 // Initialize the scrolling speed
 float scrolling_back = 0.0f;
 float scrolling_mid = 0.0f;
@@ -428,6 +432,10 @@ void prepareGameResources(const flecs::world &world) {
     //background_tex = LoadTexture("../assets/layers/sky.png");
     midground_tex = LoadTexture("../assets/layers/glacial_mountains.png");
     foreground_tex = LoadTexture("../assets/layers/clouds_mg_1.png");
+    
+    killbar_tex = LoadTexture("../assets/texture/killbar.png");
+ 
+    player_dead_tex = LoadTexture("../assets/texture/hiker_killed.png");
 
     ambient_audio = LoadMusicStream("../assets/audio/sandstorm.mp3");
     PlayMusicStream(ambient_audio);
@@ -696,37 +704,53 @@ void renderSystem(const flecs::iter &iter) {
                         auto texture = world.get_mut<Resources>()->textures.get(
                             b.resourceHandle);
 
-                        //if (e.has<PlayerMovement>()) {
-                        //    auto direction =
-                        //        e.get<PlayerMovement>()->current_direction;
-                        //    if (direction == PlayerMovement::Direction::LEFT) {
-                        //        // flip texture direction
-                        //        // TODO
-                        //    }
-                        //}
-
-                        Rectangle sourceRec = {
-                            (float)b.current_frame * (float)texture.width /
-                                b.numFrames,
-                            0.0, (float)texture.width / b.numFrames,
-                            (float)texture.height}; // part of the texture used
-
-                        Rectangle destRec = {
-                            p.x, p.y, static_cast<float>(b.width),
-                            static_cast<float>(
-                                b.height)}; // where to draw texture
-                        ;
-
-                        
                         if (current_frame % b.animation_speed == 0) {
                             b.current_frame++;
                             b.current_frame = b.current_frame % b.numFrames;
                         }
+                        int width = texture.width / b.numFrames;
+                        int height_offset = 0;
+                        int depth_offset = 0;
+                        if (e.has<PlayerMovement>()) {
+                            auto direction =
+                                e.get<PlayerMovement>()->current_direction;
+                            if (direction == PlayerMovement::Direction::LEFT) {
+                                // flip texture direction
+                                // TODO
+                            }
+                            if (PlayerMovement::IDLE ==
+                                e.get<PlayerMovement>()->current_state) {
+                                b.current_frame = 0;
+                            }
+                            //}else if (PlayerMovement::DUCKED ==
+                            //    e.get<PlayerMovement>()->current_state) {
+                            //    // ducked texture
+                            //    //texture = player_duck_tex;
+                            //} else if (PlayerMovement::IN_AIR ==
+                            //           e.get<PlayerMovement>()->current_state) {
+                            //    // jump texture
+                            //    //texture = player_jump_tex;
+                            //}
+                        }
+                        if (!iter.world().get_mut<AppInfo>()->playerAlive) {
+                            // dead texture
+                            texture = player_dead_tex;
+                            width = texture.width;
+                            b.current_frame = 0;
+                            height_offset = -b.height / 2;
+                            depth_offset = -20;
+                        }
+                        Rectangle sourceRec = {
+                            (float)b.current_frame * (float)texture.width /
+                                b.numFrames,
+                            0.0, width,
+                            (float)texture.height}; // part of the texture used
 
                         DrawBillboardPro(debug_camera3D, texture, sourceRec,
                                          Vector3{p.x + b.billPositionStatic.x,
-                                                 0.0f + b.billPositionStatic.y,
-                                                 p.y + b.billPositionStatic.z},
+                                            0.0f + b.billPositionStatic.y + depth_offset,
+                                                 p.y + b.billPositionStatic.z +
+                                                     height_offset},
                                          b.billUp,
                                          Vector2{static_cast<float>(b.width),
                                                  static_cast<float>(b.height)},
@@ -770,8 +794,36 @@ void renderSystem(const flecs::iter &iter) {
                                       1.0, s.height, RED);
                     });
 
+
+
+
+
+                //killbar
+
                 auto killbar = world.get<KillBar>();
-                DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
+                //DrawCube({killbar->x, 0, 0}, 20.0, 20.0, 2000.0, RED);
+
+                auto killbar_y = mountain->getVertex(
+                    mountain->getRelevantMountainSection(killbar->x, killbar->x)
+                        .start_index).y;
+
+                int animation_speed = 10;
+                if (current_frame % animation_speed == 0) {
+                    killbar_current_frame++;
+                    killbar_current_frame = killbar_current_frame % 4;
+                }
+                Rectangle sourceRec = {
+                    killbar_current_frame * (float)killbar_tex.width / 4.0f,
+                    0.0f,
+                    (float)killbar_tex.width/4.0f,
+                    (float)killbar_tex.height}; // part of the texture used
+
+               float size = 100;
+               DrawBillboardPro(debug_camera3D, killbar_tex, sourceRec,
+                   Vector3{killbar->x - size/2, 0.0, killbar_y + size / 4},
+                                Vector3{0.0, 0.0, 1.0}, Vector2{size, size},
+                                 Vector2{0.0f, 0.0f}, 0.0, WHITE);
+
             }
             EndMode3D();
         }
@@ -835,6 +887,9 @@ void destroy() {
     UnloadTexture(background_tex);
     UnloadTexture(midground_tex);
     UnloadTexture(foreground_tex);
+    UnloadTexture(player_dead_tex);
+    UnloadTexture(killbar_tex);
+
     CloseAudioDevice();
     CloseWindow();
 }
