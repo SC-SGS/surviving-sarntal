@@ -292,7 +292,8 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                 c.width = HIKER_WIDTH; // TODO?
                 c.height = HIKER_HEIGHT;
                 c.current_frame = 0;
-                c.numFrames = 4;});
+                c.numFrames = 4;
+            });
         }
     } else if (player_movements[0].current_direction !=
                PlayerMovement::Direction::NEUTRAL) {
