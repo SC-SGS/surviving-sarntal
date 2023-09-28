@@ -308,9 +308,9 @@ void initGameLogic(flecs::world &world) {
             c.animation_speed = 1;
             c.numFrames = 4;
         });
-        /*.set<graphics::RectangleShapeRenderComponent>({
-            HIKER_WIDTH,HIKER_HEIGHT
-        });*/
+        //.set<graphics::RectangleShapeRenderComponent>({
+        //    HIKER_WIDTH,HIKER_HEIGHT
+        //});
 
     auto can_collect_system = world.system<Position, InteractionRadius>()
                                   .kind(flecs::PreUpdate)
