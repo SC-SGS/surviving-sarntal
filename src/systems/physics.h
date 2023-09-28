@@ -13,6 +13,20 @@ struct PhysicSystems {
 
 namespace physics {
 
+static Sound duck_sound;
+static Sound dudum_sound;
+static Sound mepmep_sound;
+static Sound shutdown_sound;
+static Sound gameover_sound;
+static Sound default_jump_sound;
+static Sound pickup_sound;
+static Sound fart_sound;
+static Sound boom_sound;
+static Sound rock_collision_sound;
+static Sound terrain_collision_sound;
+
+void initSounds(bool meme_mode);
+
 struct Vertex {
     std::size_t index;
     float distance;
@@ -158,6 +172,9 @@ void updatePlayerPosition(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements);
 
+void knockbackPlayer(flecs::iter it, Position *positions,
+                     PlayerMovement *player_movements, float_type knockback);
+
 /**
  * Modular function that returns the speed factor on a slope.
  * Can be changed to an arbitrary function, changing the player movement
@@ -188,7 +205,8 @@ float getSpeedFactor(float slope);
 void updatePlayerVelocity(flecs::iter it, Position *positions,
                           Velocity *velocities,
                           PlayerMovement *player_movements,
-                          InputEntity *input_entities, Height *heights);
+                          InputEntity *input_entities, Height *heights,
+                          Width *widths);
 
 /**
  * Checks whether jump has been pressed and whether the player is able to jump
@@ -199,7 +217,8 @@ void updatePlayerVelocity(flecs::iter it, Position *positions,
  * @param player_movements
  * @param input_entities
  */
-void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
+void checkJumpEvent(flecs::iter it, Velocity *velocities,
+                    PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**
@@ -211,8 +230,10 @@ void checkJumpEvent(Velocity *velocities, PlayerMovement *player_movements,
  * @param player_movements
  * @param input_entities
  */
-void checkDuckEvent(Velocity *velocities, PlayerMovement *player_movements,
-                    InputEntity *input_entities, Height *heights);
+void checkDuckEvent(flecs::iter it, Velocity *velocities,
+                    PlayerMovement *player_movements,
+                    InputEntity *input_entities, Height *heights,
+                    Width *widths);
 
 /**
  * Changes the horizontal speed of the hiker based on input.
@@ -268,7 +289,7 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
  * @param x
  * @return the y coordinate
  */
-float getYPosFromX(const flecs::world &world, float x);
+float getYPosFromX(const flecs::world &world, float x, float offset);
 
 void explodeRock(const flecs::world &world, flecs::entity rock,
                  const int number_of_rocks);

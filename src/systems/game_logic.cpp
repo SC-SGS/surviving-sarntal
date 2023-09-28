@@ -98,8 +98,10 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
         std::cout << "Position killbar: " << killBar->x
                   << " left point mountain: " << leftest_point_of_mountain
                   << std::endl;
-        mountain->generateNewChunk();
-        graphics::generateChunkMesh(it.world());
+        if (it.world().get<AppInfo>()->playerAlive) {
+            mountain->generateNewChunk();
+            graphics::generateChunkMesh(it.world());
+        }
         // flecs::entity e = it.world().entity("tmp_event");
         // it.world()
         //     .event<graphics::GenChunkEvent>()
@@ -110,27 +112,28 @@ void chunkSystem(flecs::iter it, Mountain *mountain, KillBar *killBar) {
     }
 }
 
-void spawnRocks(flecs::iter it, Mountain *mountain) {
+void spawnRocks(flecs::iter it, Mountain *mountain,
+                rockSpawnStuff::SpawnData *spawnData) {
     auto camera =
         it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
 
     auto gameTime = GetTime();
-    RockSpawnPhase rockSpawnPhase =
+    rockSpawnStuff::RockSpawnPhase rockSpawnPhase =
         rockSpawnStuff::determineRockSpawnPhase(gameTime);
     float time_between_rockspawns =
         rockSpawnStuff::rockSpawnTimeFromPhase(rockSpawnPhase);
 
-    if (gameTime > rockSpawnStuff::rock_spawn_time + time_between_rockspawns) {
-        rockSpawnStuff::rock_spawn_time =
-            rockSpawnStuff::rock_spawn_time + time_between_rockspawns;
+    if (gameTime > spawnData->rock_spawn_time + time_between_rockspawns) {
+        spawnData->rock_spawn_time =
+            spawnData->rock_spawn_time + time_between_rockspawns;
 
         // compute spawn Basepoint
         // offset on x-axis by -300 to spawn visible on screen
-        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 100.;
+        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 400.;
 
         const float spawn_x_coord = camera->target.x +
-                                    ((float)graphics::SCREEN_WIDTH) / 2 -
-                                    200.; //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
+                                    ((float)graphics::SCREEN_WIDTH) / 2 +
+                                    100; //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
         Position spawnBasepoint = mountain->getVertex(
             mountain->getRelevantMountainSection(spawn_x_coord, spawn_x_coord)
                 .start_index);
@@ -138,7 +141,7 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
         spawnBasepoint.y += 350.;
 
         int num_rocks_to_spawn =
-            rockSpawnStuff::computeNumRocksToSpawn(rockSpawnPhase);
+            rockSpawnStuff::computeNumRocksToSpawn(rockSpawnPhase, spawnData);
         const std::vector<Position> offsets_additional_rocks{
             {0., 0.},
             {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.},
@@ -149,6 +152,10 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
             float radius =
                 ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
+            constexpr float CONST_VEL_COMPONENT{-300.};
+            float random_vel_component{
+                ((((float)std::rand()) / RAND_MAX) - 0.5f) * 200.f};
+
             std::cout << "rock spawned" << std::endl;
             auto rock_entity =
                 it.world()
@@ -156,7 +163,8 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                     .set<Position>(
                         {spawnBasepoint.x + offsets_additional_rocks[i].x,
                          spawnBasepoint.y + offsets_additional_rocks[i].y})
-                    .set<Velocity>({-200., 0})
+                    .set<Velocity>(
+                        {CONST_VEL_COMPONENT + random_vel_component, 0})
                     .set<Radius>({radius})
                     .set<Rotation>({0, 0})
                     .add<Rock>()
@@ -174,10 +182,10 @@ void spawnRocks(flecs::iter it, Mountain *mountain) {
                         c.height = radius * 2.0f;
                     });
 
-            if (rockSpawnPhase == explosiveBatches) {
-                rockSpawnStuff::explosive_rock_modulo_count++;
-                if (rockSpawnStuff::explosive_rock_modulo_count >= 10) {
-                    rockSpawnStuff::explosive_rock_modulo_count = 0;
+            if (rockSpawnPhase == rockSpawnStuff::explosiveBatches) {
+                spawnData->explosive_rock_modulo_count++;
+                if (spawnData->explosive_rock_modulo_count >= 10) {
+                    spawnData->explosive_rock_modulo_count = 0;
                     rock_entity.add<Exploding>();
                 }
             }
@@ -198,6 +206,32 @@ void mountainLoadChunks(const flecs::world &world) {
 void updateScore(flecs::iter it, Position *position, AppInfo *appInfo) {
     appInfo->score = std::max(appInfo->score, (int)position[0].x);
     // std::cout << "Score: " << appInfo->score << std::endl;
+}
+
+void spawnExplosion(flecs::world &world, Position pos) {
+    world.entity().set<Position>({pos}).set<graphics::LifeTime>({10}).set(
+        [&](graphics::AnimatedBillboardComponent &c) {
+            c = {0};
+            c.billUp = {0.0f, 0.0f, 1.0f};
+            c.billPositionStatic = {0.0f, 0.0f, 0.0};
+            c.resourceHandle =
+                world.get_mut<graphics::Resources>()->textures.load(
+                    "../assets/texture/explosion.png");
+            c.width = 200; // TODO?
+            c.height = 200;
+            c.current_frame = 0;
+            c.animation_speed = 1;
+            c.numFrames = 25;
+        });
+}
+
+void removeSFX(flecs::iter it, graphics::LifeTime *lifetime) {
+    for (auto i : it) {
+        lifetime[i].time -= it.delta_time();
+        if (lifetime[i].time < 0) {
+            it.entity(i).destruct();
+        }
+    }
 }
 
 // debug function
@@ -227,8 +261,8 @@ void spawnItems(flecs::iter it) {
                                     .get_mut<graphics::Camera2DComponent>()
                                     ->target.x +
                                 (float)graphics::SCREEN_WIDTH / 2;
-        auto position =
-            Position{x_position, physics::getYPosFromX(it.world(), x_position)};
+        auto position = Position{
+            x_position, physics::getYPosFromX(it.world(), x_position, 0)};
         position.y += ITEM_BASE_HEIGHT + (ITEM_MAX_HEIGHT - ITEM_BASE_HEIGHT) *
                                              ((float)std::rand() / RAND_MAX);
         item_spawn_time =
@@ -255,13 +289,13 @@ void initGameLogic(flecs::world &world) {
     mountainLoadChunks(world);
 
     auto player_0_input = InputEntity();
-
+    // spawnExplosion(world);
     world.entity()
         .add<Player>()
         .set<Position>({PLAYER_SPAWN_OFFSET,
                         physics::getYPosFromX(world, PLAYER_SPAWN_OFFSET)})
         .set<Velocity>({0., 0.})
-        .set<PlayerMovement>({PlayerMovement::MovementState::IDLE,
+        .set<PlayerMovement>({PlayerMovement::MovementState::MOVING,
                               PlayerMovement::Direction::NEUTRAL, true, 0})
         .set<Height>({HIKER_HEIGHT})
         .set<Width>({HIKER_WIDTH})
@@ -269,6 +303,8 @@ void initGameLogic(flecs::world &world) {
         .set<Health>({HIKER_MAX_HEALTH})
         .set<InteractionRadius>({HIKER_ITEM_COLLECTION_RANGE})
         .set<Inventory>(Inventory{INVENTORY_SLOTS})
+        .set<graphics::RectangleShapeRenderComponent>(
+            {HIKER_WIDTH, HIKER_HEIGHT})
         .set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
@@ -276,11 +312,15 @@ void initGameLogic(flecs::world &world) {
             c.resourceHandle =
                 world.get_mut<graphics::Resources>()->textures.load(
                     "../assets/texture/player_walk.png");
-            c.width = HIKER_HEIGHT; // TODO?
+            c.width = HIKER_WIDTH; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
+            c.animation_speed = 1;
             c.numFrames = 4;
         });
+    //.set<graphics::RectangleShapeRenderComponent>({
+    //    HIKER_WIDTH,HIKER_HEIGHT
+    //});
 
     auto can_collect_system = world.system<Position, InteractionRadius>()
                                   .kind(flecs::PreUpdate)
@@ -290,6 +330,8 @@ void initGameLogic(flecs::world &world) {
         .kind(flecs::PreUpdate)
         .iter(Inventory::updateInventory)
         .depends_on(can_collect_system);
+
+    world.system<graphics::LifeTime>().kind(flecs::PreUpdate).iter(removeSFX);
 
     world.set<KillBar>({0.});
 
@@ -325,5 +367,11 @@ void initGameLogic(flecs::world &world) {
         .iter(updateScore);
 
     world.system<>().iter(spawnItems);
-    world.system<Mountain>().term_at(1).singleton().iter(spawnRocks);
+    world.set<rockSpawnStuff::SpawnData>({});
+    world.system<Mountain, rockSpawnStuff::SpawnData>()
+        .term_at(1)
+        .singleton()
+        .term_at(2)
+        .singleton()
+        .iter(spawnRocks);
 }

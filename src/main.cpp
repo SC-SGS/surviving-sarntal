@@ -1,3 +1,4 @@
+#include "components/inventory.h"
 #include "components/mountain.h"
 #include "components/particle_state.h"
 #include "raylib.h"
@@ -5,6 +6,7 @@
 #include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
+#include "utils/game_constants.h"
 #include "utils/kinect_variables.h"
 #include <chrono>
 #include <flecs.h>
@@ -21,13 +23,18 @@ bool kinect_mode;
 
 bool kinect_init;
 
-int main() {
+int main(int argc, char *argv[]) {
     using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
     kinect_mode = false;
     kinect_init = false;
+
+    constexpr std::hash<std::string> hasher{};
+
+    auto hash = hasher("path");
+    auto hash2 = hasher("path");
 
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
@@ -48,7 +55,18 @@ int main() {
     graphics::prepareGameResources(world);
     graphics::prepareMenuResources(world);
 
+    Inventory::initItems();
+
     initGameLogic(world);
+
+    bool meme_mode = false;
+    if (argc >= 2) {
+        std::string music_mode = argv[1];
+        if (music_mode == "meme") {
+            meme_mode = true;
+        }
+    }
+    physics::initSounds(meme_mode);
 
     world.set<AppInfo>({});
 
