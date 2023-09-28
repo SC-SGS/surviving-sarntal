@@ -68,14 +68,6 @@ constexpr float_type ROCK_TIME_PERIOD_DIFFICULT = 1;
 constexpr float_type ROCK_TIME_PERIOD_MEDIUM = 5.;
 constexpr float_type ROCK_TIME_PERIOD_EASY = 2;
 
-enum RockSpawnPhase {
-    veryBeginning,
-    irregularRocks,
-    regularRocks,
-    rockBatches,
-    explosiveBatches
-};
-
 struct RockSpawnParameters {
     int num_rocks_to_spawn;
     float time_between_rockspawns;
