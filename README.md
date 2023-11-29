@@ -24,7 +24,7 @@ From the right side rocks are falling down the mountain, which also bounce on th
 In a very physically correct way they bounce on the mountain.
 You loose health points if you are hit by rocks. If the rock is bigger you lose more health points. 
 
-There are also items that can help you. 
+There are also items that can help you:
 - Kaiserschmarrn:  you gain health points after eating the delicious Kaiserschmarrn
 - Duck: It makes a fun noise 
 - Knife: It helps you avoid the falling rocks 
@@ -39,21 +39,22 @@ There are three options to control the game. Either via Keyboard, Gamepad or Kin
 
 ### Keyboard
 
-You can pause and continue the game by pressing BACKSPACE.
+You can pause and continue the game by pressing BACKSPACE. In the following table you can see how to certain actions ate controlled by the keyboard.
 
-| Action            | Key         |
-|-------------------|-------------|
-| Move to the right | Press D     |
-| Move to the left  | Press A     |
-| Jump              | Press SPACE |
-| Duck              | Press SHIFT |
-
+| Action                                    | Key                                  |
+|-------------------------------------------|--------------------------------------|
+| Move to the right                         | Press D                              |
+| Move to the left                          | Press A                              |
+| Jump                                      | Press SPACE                          |
+| Duck                                      | Press SHIFT                          |
+| Switch between the items in the inventory | Press M (move right) / N (move left) |
+| Use the selected item                     | ?                                    | 
 
 ### Gamepad
 After executing the game for the first time, press ENTER to start the gameplay.
-Pausing and Unpausing the game can be done by pressing the central „start“ button.
+Pausing and Unpausing the game can be done by pressing the central "start“ button.
 Movement is mapped to the left joystick (left and right, jumping can be done by pressing „A“. Ducking is mapped to L1 (left upper shoulder button).
-If the player dies, the game can be restarted by pressing „start“ on the center of the gamepad.
+If the player dies, the game can be restarted by pressing "start“ in the center of the gamepad.
 
 ### Kinect
 To build the Kinect version of this game the following commands have to be executed:  
@@ -70,4 +71,4 @@ To build the Kinect version of this game the following commands have to be execu
 After executing the kinect supporting version of the game, the user has to do some movements, such that the kinect interface identifies him as the player.
 Once there is a lock on the playing user, the ingame character movement to the right is initiated by stepping forward (to the right).
 Stepping to the initial position prompts the ingame character to stop, stepping back is bound to moving backwards (to the left).
-Jumping can be done by jumping in front of the kinect, ducking by crouching down.
+Jumping can be done by jumping in front of the kinect, ducking by crouching down. It is not possible to select between different items in the kinect mode, because the control would be too complicated.
