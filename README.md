@@ -41,25 +41,11 @@ There are three options to control the game. Either via Keyboard, Gamepad or Kin
 
 ![keyboard](./images/keyboard_scheme_final.png)
 
-You can pause and continue the game by pressing BACKSPACE. In the following table you can see how to certain actions ate controlled by the keyboard.
-
-| Action                                    | Key                                  |
-|-------------------------------------------|--------------------------------------|
-| Move to the right                         | Press D                              |
-| Move to the left                          | Press A                              |
-| Jump                                      | Press SPACE                          |
-| Duck                                      | Press SHIFT                          |
-| Switch between the items in the inventory | Press M (move right) / N (move left) |
-| Use the selected item                     | ?                                    | 
 
 ### Gamepad
 
 ![gamepad](./images/gamepad_scheme_final.png)
 
-After executing the game for the first time, press ENTER to start the gameplay.
-Pausing and Unpausing the game can be done by pressing the central "start“ button.
-Movement is mapped to the left joystick (left and right, jumping can be done by pressing „A“. Ducking is mapped to L1 (left upper shoulder button).
-If the player dies, the game can be restarted by pressing "start“ in the center of the gamepad.
 
 ### Kinect
 To build the Kinect version of this game the following commands have to be executed:  
