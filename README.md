@@ -39,6 +39,8 @@ There are three options to control the game. Either via Keyboard, Gamepad or Kin
 
 ### Keyboard
 
+![keyboard](./images/keyboard_scheme_final.png)
+
 You can pause and continue the game by pressing BACKSPACE. In the following table you can see how to certain actions ate controlled by the keyboard.
 
 | Action                                    | Key                                  |
@@ -51,6 +53,9 @@ You can pause and continue the game by pressing BACKSPACE. In the following tabl
 | Use the selected item                     | ?                                    | 
 
 ### Gamepad
+
+![gamepad](./images/gamepad_scheme_final.png)
+
 After executing the game for the first time, press ENTER to start the gameplay.
 Pausing and Unpausing the game can be done by pressing the central "start“ button.
 Movement is mapped to the left joystick (left and right, jumping can be done by pressing „A“. Ducking is mapped to L1 (left upper shoulder button).
