@@ -1,3 +1,8 @@
-cmake-build-debug*
+cmake-build*
 .idea
-build
+/build
+/build_kinect
+.vs
+out/
+.cache
+kinect/
