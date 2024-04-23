@@ -1,0 +1,143 @@
+make: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/Build'
+make -C ../NiViewer
+make -C ../NiSimpleRead
+make -C ../NiCRead
+make -C ../UserTracker.java
+make -C ../NiHandTracker
+make -C ../NiAudioSample
+make -C ../NiUserSelection
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiViewer'
+make -C ../NiUserTracker
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleRead'
+make -C ../NiConvertXToONI
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/UserTracker.java'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiCRead'
+make -C ../NiSkeletonBenchmark
+make -C ../NiSimpleSkeleton
+make -C ../NiBackRecorder
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiAudioSample'
+make -C ../NiSampleModule
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiHandTracker'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiUserTracker'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiUserSelection'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiConvertXToONI'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSampleModule'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleSkeleton'
+make -C ../NiSimpleCreate
+make -C ../NiSimpleViewer
+make -C ../SimpleViewer.java
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSkeletonBenchmark'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiBackRecorder'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleViewer'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleCreate'
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/NiAudioSample.d x64-Debug/NiAudioSample.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiAudioSample.o NiAudioSample.cpp
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/Keyboard.d x64-Debug/Keyboard.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Keyboard.o Keyboard.cpp
+javac -cp ../Bin/x64-Debug/org.OpenNI.jar:/usr/share/java/org.OpenNI.jar -d x64-Debug ./org/OpenNI/Samples/UserTracker/*.java
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/NiSimpleRead.d x64-Debug/NiSimpleRead.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiSimpleRead.o NiSimpleRead.cpp
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/SimpleViewer.java'
+g++ -MD -MP -MT "./x64-Debug/SampleDepth.d x64-Debug/SampleDepth.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -fPIC -fvisibility=hidden -o x64-Debug/SampleDepth.o SampleDepth.cpp
+g++ -MD -MP -MT "./x64-Debug/NiSkeletonBenchmark.d x64-Debug/NiSkeletonBenchmark.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiSkeletonBenchmark.o NiSkeletonBenchmark.cpp
+g++ -MD -MP -MT "./x64-Debug/NiSimpleViewer.d x64-Debug/NiSimpleViewer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiSimpleViewer.o NiSimpleViewer.cpp
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/NiSimpleViewer.d x64-Debug/NiSimpleViewer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/NiSimpleViewer.o NiSimpleViewer.cpp
+g++ -MD -MP -MT "./x64-Debug/NiCRead.d x64-Debug/NiCRead.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiCRead.o NiCRead.c
+mkdir -p x64-Debug
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/opengles.d x64-Debug/opengles.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/opengles.o opengles.cpp
+g++ -MD -MP -MT "./x64-Debug/NiSimpleCreate.d x64-Debug/NiSimpleCreate.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiSimpleCreate.o NiSimpleCreate.cpp
+g++ -MD -MP -MT "./x64-Debug/NiConvertXToONI.d x64-Debug/NiConvertXToONI.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiConvertXToONI.o NiConvertXToONI.cpp
+g++ -MD -MP -MT "./x64-Debug/main.d x64-Debug/main.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/main.o main.cpp
+g++ -MD -MP -MT "./x64-Debug/SampleManager.d x64-Debug/SampleManager.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/SampleManager.o SampleManager.cpp
+g++ -MD -MP -MT "./x64-Debug/NiSimpleSkeleton.d x64-Debug/NiSimpleSkeleton.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiSimpleSkeleton.o NiSimpleSkeleton.cpp
+mkdir -p x64-Debug
+javac -cp ../Bin/x64-Debug/org.OpenNI.jar:/usr/share/java/org.OpenNI.jar -d x64-Debug ./org/OpenNI/Samples/SimpleViewer/*.java
+g++ -MD -MP -MT "./x64-Debug/SceneDrawer.d x64-Debug/SceneDrawer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/SceneDrawer.o SceneDrawer.cpp
+g++ -MD -MP -MT "./x64-Debug/MouseInput.d x64-Debug/MouseInput.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/MouseInput.o MouseInput.cpp
+g++ -o ../Bin/x64-Debug/Sample-NiCRead ./x64-Debug/NiCRead.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -MD -MP -MT "./x64-Debug/Statistics.d x64-Debug/Statistics.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Statistics.o Statistics.cpp
+g++ -o ../Bin/x64-Debug/Sample-NiSimpleSkeleton ./x64-Debug/NiSimpleSkeleton.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiCRead'
+g++ -MD -MP -MT "./x64-Debug/Audio.d x64-Debug/Audio.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Audio.o Audio.cpp
+g++ -o ../Bin/x64-Debug/Sample-NiAudioSample ./x64-Debug/NiAudioSample.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -o ../Bin/x64-Debug/Sample-NiSimpleCreate ./x64-Debug/NiSimpleCreate.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -o ../Bin/x64-Debug/Sample-NiSimpleRead ./x64-Debug/NiSimpleRead.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -o ../Bin/x64-Debug/NiSkeletonBenchmark ./x64-Debug/NiSkeletonBenchmark.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -o ../Bin/x64-Debug/Sample-NiConvertXToONI ./x64-Debug/NiConvertXToONI.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -MD -MP -MT "./x64-Debug/NiHandViewer.d x64-Debug/NiHandViewer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/NiHandViewer.o NiHandViewer.cpp
+g++ -MD -MP -MT "./x64-Debug/ExportedSampleDepth.d x64-Debug/ExportedSampleDepth.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -fPIC -fvisibility=hidden -o x64-Debug/ExportedSampleDepth.o ExportedSampleDepth.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleSkeleton'
+g++ -MD -MP -MT "./x64-Debug/NiHandTracker.d x64-Debug/NiHandTracker.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/NiHandTracker.o NiHandTracker.cpp
+g++ -MD -MP -MT "./x64-Debug/UserSelector.d x64-Debug/UserSelector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/UserSelector.o UserSelector.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleRead'
+g++ -MD -MP -MT "./x64-Debug/main.d x64-Debug/main.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/main.o main.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiAudioSample'
+make -C ../SimpleRead.java
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/SimpleRead.java'
+g++ -o ../Bin/x64-Debug/Sample-NiBackRecorder ./x64-Debug/main.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+mkdir -p x64-Debug
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleCreate'
+make -C ../NiRecordSynthetic
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiRecordSynthetic'
+g++ -o ../Bin/x64-Debug/Sample-NiSimpleViewer ./x64-Debug/NiSimpleViewer.o -L../../Lib -L../Bin/x64-Debug -lglut -lGL -lOpenNI
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiConvertXToONI'
+g++ -MD -MP -MT "./x64-Debug/Registration.d x64-Debug/Registration.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -fPIC -fvisibility=hidden -o x64-Debug/Registration.o Registration.cpp
+javac -cp ../Bin/x64-Debug/org.OpenNI.jar:/usr/share/java/org.OpenNI.jar -d x64-Debug ./org/OpenNI/Samples/SimpleRead/*.java
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSkeletonBenchmark'
+g++ -MD -MP -MT "./x64-Debug/DefaultTrackingInitializer.d x64-Debug/DefaultTrackingInitializer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/DefaultTrackingInitializer.o DefaultTrackingInitializer.cpp
+mkdir -p x64-Debug
+g++ -MD -MP -MT "./x64-Debug/NiRecordSynthetic.d x64-Debug/NiRecordSynthetic.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/NiRecordSynthetic.o NiRecordSynthetic.cpp
+g++ -MD -MP -MT "./x64-Debug/Capture.d x64-Debug/Capture.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Capture.o Capture.cpp
+g++ -MD -MP -MT "./x64-Debug/Device.d x64-Debug/Device.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Device.o Device.cpp
+g++ -MD -MP -MT "./x64-Debug/main.d x64-Debug/main.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/main.o main.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiBackRecorder'
+g++ -MD -MP -MT "./x64-Debug/Menu.d x64-Debug/Menu.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Menu.o Menu.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSimpleViewer'
+g++ -MD -MP -MT "./x64-Debug/Draw.d x64-Debug/Draw.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/Draw.o Draw.cpp
+g++ -MD -MP -MT "./x64-Debug/NiViewer.d x64-Debug/NiViewer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni -I./  -o x64-Debug/NiViewer.o NiViewer.cpp
+g++ -MD -MP -MT "./x64-Debug/PoseUserSelector.d x64-Debug/PoseUserSelector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/PoseUserSelector.o PoseUserSelector.cpp
+g++ -MD -MP -MT "./x64-Debug/opengles.d x64-Debug/opengles.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/opengles.o opengles.cpp
+g++ -MD -MP -MT "./x64-Debug/ExitPoseDetector.d x64-Debug/ExitPoseDetector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/ExitPoseDetector.o ExitPoseDetector.cpp
+g++ -MD -MP -MT "./x64-Debug/SinglePoseUserSelector.d x64-Debug/SinglePoseUserSelector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/SinglePoseUserSelector.o SinglePoseUserSelector.cpp
+g++ -MD -MP -MT "./x64-Debug/TrackingInitializer.d x64-Debug/TrackingInitializer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/TrackingInitializer.o TrackingInitializer.cpp
+g++ -o ../Bin/x64-Debug/Sample-NiRecordSynthetic ./x64-Debug/NiRecordSynthetic.o -L../../Lib -L../Bin/x64-Debug -lOpenNI
+g++ -o ../Bin/x64-Debug/Sample-NiHandTracker ./x64-Debug/NiSimpleViewer.o ./x64-Debug/NiHandViewer.o ./x64-Debug/NiHandTracker.o ./x64-Debug/main.o -L../../Lib -L../Bin/x64-Debug -lglut -lGL -lOpenNI
+g++ -MD -MP -MT "./x64-Debug/SceneDrawer.d x64-Debug/SceneDrawer.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/SceneDrawer.o SceneDrawer.cpp
+g++ -MD -MP -MT "./x64-Debug/UserTracker.d x64-Debug/UserTracker.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/UserTracker.o UserTracker.cpp
+g++ -MD -MP -MT "./x64-Debug/PoseToggleUserSelector.d x64-Debug/PoseToggleUserSelector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/PoseToggleUserSelector.o PoseToggleUserSelector.cpp
+g++ -o ../Bin/x64-Debug/Sample-NiUserTracker ./x64-Debug/opengles.o ./x64-Debug/SceneDrawer.o ./x64-Debug/main.o -L../../Lib -L../Bin/x64-Debug -lglut -lGL -lOpenNI
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiHandTracker'
+g++ -MD -MP -MT "./x64-Debug/main.d x64-Debug/main.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/main.o main.cpp
+g++ -MD -MP -MT "./x64-Debug/ClosestUserSelector.d x64-Debug/ClosestUserSelector.o" -c -msse3 -O0 -g -I../../Include -I/usr/include/ni  -o x64-Debug/ClosestUserSelector.o ClosestUserSelector.cpp
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiRecordSynthetic'
+g++ -o ../Bin/x64-Debug/libSample-NiSampleModule.so ./x64-Debug/SampleDepth.o ./x64-Debug/ExportedSampleDepth.o ./x64-Debug/Registration.o -L../../Lib -L../Bin/x64-Debug -lOpenNI -Wl,--no-undefined -shared
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiUserTracker'
+( echo "Main-Class: org.OpenNI.Samples.SimpleViewer.SimpleViewerApplication"; echo "Class-Path:  ../Bin/x64-Debug/org.OpenNI.jar /usr/share/java/org.OpenNI.jar"; ) > Manifest.txt
+jar -cfm ../Bin/x64-Debug/org.OpenNI.Samples.SimpleViewer.jar Manifest.txt -C x64-Debug .
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiSampleModule'
+( echo "Main-Class: org.OpenNI.Samples.UserTracker.UserTrackerApplication"; echo "Class-Path:  ../Bin/x64-Debug/org.OpenNI.jar /usr/share/java/org.OpenNI.jar"; ) > Manifest.txt
+jar -cfm ../Bin/x64-Debug/org.OpenNI.Samples.UserTracker.jar Manifest.txt -C x64-Debug .
+g++ -o ../Bin/x64-Debug/Sample-NiUserSelection ./x64-Debug/SampleManager.o ./x64-Debug/UserSelector.o ./x64-Debug/DefaultTrackingInitializer.o ./x64-Debug/PoseUserSelector.o ./x64-Debug/opengles.o ./x64-Debug/ExitPoseDetector.o ./x64-Debug/SinglePoseUserSelector.o ./x64-Debug/TrackingInitializer.o ./x64-Debug/SceneDrawer.o ./x64-Debug/UserTracker.o ./x64-Debug/PoseToggleUserSelector.o ./x64-Debug/main.o ./x64-Debug/ClosestUserSelector.o -L../../Lib -L../Bin/x64-Debug -lglut -lGL -lOpenNI
+echo java -jar org.OpenNI.Samples.SimpleViewer.jar > ../Bin/x64-Debug/org.OpenNI.Samples.SimpleViewer; chmod +x ../Bin/x64-Debug/org.OpenNI.Samples.SimpleViewer
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiUserSelection'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/SimpleViewer.java'
+echo java -jar org.OpenNI.Samples.UserTracker.jar > ../Bin/x64-Debug/org.OpenNI.Samples.UserTracker; chmod +x ../Bin/x64-Debug/org.OpenNI.Samples.UserTracker
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/UserTracker.java'
+( echo "Main-Class: org.OpenNI.Samples.SimpleRead.SimpleRead"; echo "Class-Path:  ../Bin/x64-Debug/org.OpenNI.jar /usr/share/java/org.OpenNI.jar"; ) > Manifest.txt
+jar -cfm ../Bin/x64-Debug/org.OpenNI.Samples.SimpleRead.jar Manifest.txt -C x64-Debug .
+echo java -jar org.OpenNI.Samples.SimpleRead.jar > ../Bin/x64-Debug/org.OpenNI.Samples.SimpleRead; chmod +x ../Bin/x64-Debug/org.OpenNI.Samples.SimpleRead
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/SimpleRead.java'
+g++ -o ../Bin/x64-Debug/NiViewer ./x64-Debug/Keyboard.o ./x64-Debug/MouseInput.o ./x64-Debug/Statistics.o ./x64-Debug/Audio.o ./x64-Debug/Capture.o ./x64-Debug/Device.o ./x64-Debug/Menu.o ./x64-Debug/Draw.o ./x64-Debug/NiViewer.o -L../../Lib -L../Bin/x64-Debug -lglut -lGL -lOpenNI
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/NiViewer'
+make: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Redist/OpenNI-Bin-Dev-Linux-x64-v1.5.4.0/Samples/Build'
