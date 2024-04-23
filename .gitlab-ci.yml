@@ -20,6 +20,7 @@ stages:          # List of stages for jobs, and their order of execution
   - validate
   - build
   - test
+  - run-exe
 
 
 clang-format-validate:
@@ -31,8 +32,9 @@ build-job:       # This job runs in the build stage, which runs first.
   stage: build
   artifacts:
     untracked: true
+    expire_in: 1 hour
   script:
-    - cmake -S . -B cmake-build-debug
+    - cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
     - cmake --build cmake-build-debug
 
 test-job:
@@ -44,6 +46,18 @@ test-job:
   artifacts:
     paths:
       - cmake-build-debug/surviving-sarntal
+    expire_in: 1 hour
+
+run-exe:
+  stage: run-exe
+  script:
+    - ./run_check.sh
+  dependencies:
+    - build-job
+  artifacts:
+    paths:
+      - cmake-build-debug/surviving-sarntal
+    expire_in: 1 hour
 
 
 #unit-test-job:   # This job runs in the test stage.

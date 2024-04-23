@@ -1,18 +1,130 @@
-#include "entities/mountain.h"
+#include "components/inventory.h"
+#include "components/mountain.h"
+#include "components/particle_state.h"
+#include "raylib.h"
+#include "systems/game_logic.h"
+#include "systems/input_systems.h"
 #include "systems/physics.h"
 #include "systems/render_systems.h"
+#include "utils/game_constants.h"
+#include "utils/kinect_variables.h"
+#include <SDL2/SDL.h>
+#include <chrono>
 #include <flecs.h>
 #include <iostream>
 
-int main() {
+#ifdef kinect
+#include "components/kinect_handler.h"
+#include <thread>
+#endif
+
+void mainLoop(flecs::world &world);
+
+bool kinect_mode;
+
+bool kinect_init;
+
+int main(int argc, char *argv[]) {
+    if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
+        std::cerr << "SDL initialization error: " << SDL_GetError()
+                  << std::endl;
+    }
+
+    using namespace std::chrono_literals;
     std::cout << "surviving sarntal" << std::endl;
 
     flecs::world world;
 
-    world.import <RenderSystems>();
+    world.set<InputEntity>(InputEntity{});
+    kinect_mode = false;
+    kinect_init = false;
+
+    constexpr std::hash<std::string> hasher{};
+
+    auto hash = hasher("path");
+    auto hash2 = hasher("path");
+
+#ifdef kinect
+    std::cout << "Kinect is active" << std::endl;
+    kinect_mode = true;
+    std::thread kinect_thread(initKinect);
+    while (!kinect_init) {
+        std::cout << "Waiting for kinect synchronization" << std::endl;
+        std::this_thread::sleep_for(5s);
+    }
+
+#endif
+
     world.import <PhysicSystems>();
+    world.import <InputSystems>();
 
     world.set<Mountain>({});
 
-    main_loop(world);
+    graphics::initStartScreen(world);
+
+    while (!IsKeyPressed(KEY_ENTER)) {
+        BeginDrawing();
+        {
+            ClearBackground(BLACK);
+            DrawText("Surviving Sarntal", 500, 350, 70, WHITE);
+            DrawText("Press Enter to start", 450, 500, 70, WHITE);
+        }
+        EndDrawing();
+    }
+    graphics::initRenderSystem(world);
+    graphics::prepareGameResources(world);
+    graphics::prepareMenuResources(world);
+
+    Inventory::initItems();
+
+    initGameLogic(world);
+
+    bool meme_mode = false;
+    if (argc >= 2) {
+        std::string music_mode = argv[1];
+        if (music_mode == "meme") {
+            meme_mode = true;
+        }
+    }
+    physics::initSounds(meme_mode);
+
+    world.set<AppInfo>({});
+
+    mainLoop(world);
+
+    graphics::destroy();
+}
+
+void mainLoop(flecs::world &world) {
+    world.progress(0);
+
+    SetTargetFPS(1000);
+
+    auto app_info = world.get<AppInfo>();
+    bool is_Paused = false;
+
+    auto ie = world.get<InputEntity>();
+    while (app_info->isRunning) {
+        if (app_info->playerAlive) {
+            if (ie->getEvent(Event::PAUSE)) {
+                is_Paused = !is_Paused;
+            }
+            if (!is_Paused) {
+                float dt = GetFrameTime();
+                world.progress(dt);
+            } else {
+                BeginDrawing();
+                {
+                    ClearBackground(WHITE);
+                    DrawText("Game Paused", 600, 450, 70, BLACK);
+                    DrawText("Press Backspace to continue!!", 350, 550, 70,
+                             BLACK);
+                }
+                EndDrawing();
+            }
+        } else {
+            float dt = GetFrameTime();
+            world.progress(dt);
+        }
+    }
 }

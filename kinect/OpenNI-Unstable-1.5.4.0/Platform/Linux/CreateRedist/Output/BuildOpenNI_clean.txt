@@ -1,0 +1,152 @@
+make: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build'
+make -C OpenNI clean
+make -C Modules/nimCodecs clean
+make -C Modules/nimMockNodes clean
+make -C Modules/nimRecorder clean
+make -C Utils/niReg clean
+make -C Utils/niLicense clean
+make -C Wrappers/OpenNI.jni clean
+make -C Wrappers/OpenNI.java clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/OpenNI'
+make -C Samples/NiSimpleRead clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimCodecs'
+make -C Samples/NiBackRecorder clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimMockNodes'
+make -C Samples/NiConvertXToONI clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimRecorder'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Utils/niReg'
+make -C Samples/NiRecordSynthetic clean
+make -C Samples/NiSampleModule clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Utils/niLicense'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Wrappers/OpenNI.jni'
+make -C Samples/NiSimpleCreate clean
+make -C Samples/NiCRead clean
+make -C Samples/NiAudioSample clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiConvertXToONI'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiBackRecorder'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Wrappers/OpenNI.java'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleRead'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiAudioSample'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiCRead'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiRecordSynthetic'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleCreate'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSampleModule'
+rm -rf ../../../Bin/x64-Release/org.OpenNI.jar
+rm -rf 
+rm -rf x64-Release
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Wrappers/OpenNI.java'
+make -C Samples/NiSimpleSkeleton clean
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleSkeleton'
+rm -rf ../../../Bin/x64-Release/niReg
+rm -rf ../../../Bin/x64-Release/Sample-NiBackRecorder
+rm -rf ../../../Bin/x64-Release/Sample-NiAudioSample
+rm -rf ../../../Bin/x64-Release/libSample-NiSampleModule.so
+rm -rf ../../../Bin/x64-Release/Sample-NiConvertXToONI
+rm -rf ../../../Bin/x64-Release/niLicense
+rm -rf ../../../Bin/x64-Release/Sample-NiCRead
+rm -rf ../../../Bin/x64-Release/Sample-NiSimpleSkeleton
+rm -rf ../../../Bin/x64-Release/libnimMockNodes.so
+rm -rf ../../../Bin/x64-Release/Sample-NiRecordSynthetic
+rm -rf ./x64-Release/SampleDepth.o ./x64-Release/ExportedSampleDepth.o ./x64-Release/Registration.o
+rm -rf ./x64-Release/NiSimpleSkeleton.o
+rm -rf ./x64-Release/SampleDepth.d ./x64-Release/ExportedSampleDepth.d ./x64-Release/Registration.d
+rm -rf ./x64-Release/niReg.o
+rm -rf ./x64-Release/NiSimpleSkeleton.d
+rm -rf ../../../Bin/x64-Release/Sample-NiSimpleRead
+rm -rf ../../../Bin/x64-Release/Sample-NiSimpleCreate
+rm -rf ../../../Bin/x64-Release/libOpenNI.jni.so
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSampleModule'
+rm -rf ./x64-Release/org_OpenNI_NativeMethods.o ./x64-Release/OpenNI.jni.o
+rm -rf ./x64-Release/niLicense.o
+rm -rf ./x64-Release/niReg.d
+rm -rf ./x64-Release/NiSimpleCreate.o
+rm -rf ./x64-Release/main.o
+rm -rf ./x64-Release/NiRecordSynthetic.o
+rm -rf ./x64-Release/ExportedMockNodes.o ./x64-Release/MockAudioGenerator.o ./x64-Release/MockDevice.o ./x64-Release/MockImageGenerator.o ./x64-Release/nimMockNodes.o ./x64-Release/MockIRGenerator.o ./x64-Release/MockDepthGenerator.o ./x64-Release/MockGenerator.o ./x64-Release/MockProductionNode.o ./x64-Release/MockMapGenerator.o
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleSkeleton'
+rm -rf ../../../Bin/x64-Release/libnimRecorder.so
+rm -rf ./x64-Release/main.d
+rm -rf ./x64-Release/niLicense.d
+rm -rf ./x64-Release/NiSimpleRead.o
+rm -rf ./x64-Release/NiSimpleCreate.d
+rm -rf ./x64-Release/NiRecordSynthetic.d
+rm -rf ./x64-Release/NiCRead.o
+rm -rf ./x64-Release/org_OpenNI_NativeMethods.d ./x64-Release/OpenNI.jni.d
+rm -rf ./x64-Release/NiAudioSample.o
+rm -rf ./x64-Release/NiCRead.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Utils/niLicense'
+rm -rf ./x64-Release/NiConvertXToONI.o
+rm -rf ./x64-Release/NiSimpleRead.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiRecordSynthetic'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiBackRecorder'
+rm -rf ./x64-Release/NiConvertXToONI.d
+make -C Samples/NiViewer clean
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Wrappers/OpenNI.jni'
+rm -rf ./x64-Release/NiAudioSample.d
+rm -rf ./x64-Release/RecorderNode.o ./x64-Release/nimRecorder.o ./x64-Release/ExportedPlayer.o ./x64-Release/ExportedRecorder.o ./x64-Release/PlayerNode.o ./x64-Release/DataRecords.o
+make -C Samples/NiSimpleViewer clean
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Utils/niReg'
+rm -rf ./x64-Release/ExportedMockNodes.d ./x64-Release/MockAudioGenerator.d ./x64-Release/MockDevice.d ./x64-Release/MockImageGenerator.d ./x64-Release/nimMockNodes.d ./x64-Release/MockIRGenerator.d ./x64-Release/MockDepthGenerator.d ./x64-Release/MockGenerator.d ./x64-Release/MockProductionNode.d ./x64-Release/MockMapGenerator.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleRead'
+rm -rf ./x64-Release/RecorderNode.d ./x64-Release/nimRecorder.d ./x64-Release/ExportedPlayer.d ./x64-Release/ExportedRecorder.d ./x64-Release/PlayerNode.d ./x64-Release/DataRecords.d
+make -C Samples/NiUserTracker clean
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleCreate'
+make -C Samples/NiUserSelection clean
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiConvertXToONI'
+make -C Samples/NiHandTracker clean
+make -C Samples/SimpleRead.java clean
+make -C Samples/SimpleViewer.java clean
+make -C Samples/UserTracker.java clean
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimMockNodes'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiViewer'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleViewer'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiCRead'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/UserTracker.java'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/SimpleRead.java'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/SimpleViewer.java'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiHandTracker'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiUserSelection'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiAudioSample'
+make[1]: Entering directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiUserTracker'
+rm -rf ../../../Bin/x64-Release/org.OpenNI.Samples.SimpleViewer.jar
+rm -rf ../../../Bin/x64-Release/org.OpenNI.Samples.SimpleRead.jar
+rm -rf Manifest.txt
+rm -rf Manifest.txt
+rm -rf x64-Release
+rm -rf ../../../Bin/x64-Release/org.OpenNI.Samples.UserTracker.jar
+rm -rf x64-Release
+rm -rf Manifest.txt
+rm -rf x64-Release
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimRecorder'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/SimpleViewer.java'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/UserTracker.java'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/SimpleRead.java'
+rm -rf ../../../Bin/x64-Release/Sample-NiHandTracker
+rm -rf ./x64-Release/NiSimpleViewer.o ./x64-Release/NiHandViewer.o ./x64-Release/NiHandTracker.o ./x64-Release/main.o
+rm -rf ./x64-Release/NiSimpleViewer.d ./x64-Release/NiHandViewer.d ./x64-Release/NiHandTracker.d ./x64-Release/main.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiHandTracker'
+rm -rf ../../../Bin/x64-Release/libnimCodecs.so
+rm -rf ./x64-Release/XnUncompressedCodec.o ./x64-Release/Xn16zEmbTablesCodec.o ./x64-Release/XnCodecs.o ./x64-Release/XnJpegCodec.o ./x64-Release/XnStreamCompression.o ./x64-Release/XnCodec.o ./x64-Release/Xn16zCodec.o ./x64-Release/Xn8zCodec.o ./x64-Release/ExportedCodec.o ./x64-Release/jcdctmgr.o ./x64-Release/jidctfst.o ./x64-Release/jfdctint.o ./x64-Release/jccolor.o ./x64-Release/jdsample.o ./x64-Release/jdatasrc.o ./x64-Release/jdmainct.o ./x64-Release/jfdctflt.o ./x64-Release/jidctred.o ./x64-Release/jdtrans.o ./x64-Release/jdhuff.o ./x64-Release/jcparam.o ./x64-Release/jutils.o ./x64-Release/jidctflt.o ./x64-Release/jccoefct.o ./x64-Release/jcinit.o ./x64-Release/jchuff.o ./x64-Release/jcmainct.o ./x64-Release/jdapimin.o ./x64-Release/jcprepct.o ./x64-Release/jdmaster.o ./x64-Release/jdphuff.o ./x64-Release/jidctint.o ./x64-Release/jmemmgr.o ./x64-Release/jdcolor.o ./x64-Release/jdmerge.o ./x64-Release/jquant1.o ./x64-Release/jctrans.o ./x64-Release/jcmarker.o ./x64-Release/jcmaster.o ./x64-Release/jfdctfst.o ./x64-Release/jquant2.o ./x64-Release/jcomapi.o ./x64-Release/jdapistd.o ./x64-Release/jdpostct.o ./x64-Release/jcapimin.o ./x64-Release/jcphuff.o ./x64-Release/jmemnobs.o ./x64-Release/jdinput.o ./x64-Release/jerror.o ./x64-Release/jdatadst.o ./x64-Release/jddctmgr.o ./x64-Release/jdmarker.o ./x64-Release/jdcoefct.o ./x64-Release/jcsample.o ./x64-Release/jcapistd.o
+rm -rf ./x64-Release/XnUncompressedCodec.d ./x64-Release/Xn16zEmbTablesCodec.d ./x64-Release/XnCodecs.d ./x64-Release/XnJpegCodec.d ./x64-Release/XnStreamCompression.d ./x64-Release/XnCodec.d ./x64-Release/Xn16zCodec.d ./x64-Release/Xn8zCodec.d ./x64-Release/ExportedCodec.d ./x64-Release/jcdctmgr.d ./x64-Release/jidctfst.d ./x64-Release/jfdctint.d ./x64-Release/jccolor.d ./x64-Release/jdsample.d ./x64-Release/jdatasrc.d ./x64-Release/jdmainct.d ./x64-Release/jfdctflt.d ./x64-Release/jidctred.d ./x64-Release/jdtrans.d ./x64-Release/jdhuff.d ./x64-Release/jcparam.d ./x64-Release/jutils.d ./x64-Release/jidctflt.d ./x64-Release/jccoefct.d ./x64-Release/jcinit.d ./x64-Release/jchuff.d ./x64-Release/jcmainct.d ./x64-Release/jdapimin.d ./x64-Release/jcprepct.d ./x64-Release/jdmaster.d ./x64-Release/jdphuff.d ./x64-Release/jidctint.d ./x64-Release/jmemmgr.d ./x64-Release/jdcolor.d ./x64-Release/jdmerge.d ./x64-Release/jquant1.d ./x64-Release/jctrans.d ./x64-Release/jcmarker.d ./x64-Release/jcmaster.d ./x64-Release/jfdctfst.d ./x64-Release/jquant2.d ./x64-Release/jcomapi.d ./x64-Release/jdapistd.d ./x64-Release/jdpostct.d ./x64-Release/jcapimin.d ./x64-Release/jcphuff.d ./x64-Release/jmemnobs.d ./x64-Release/jdinput.d ./x64-Release/jerror.d ./x64-Release/jdatadst.d ./x64-Release/jddctmgr.d ./x64-Release/jdmarker.d ./x64-Release/jdcoefct.d ./x64-Release/jcsample.d ./x64-Release/jcapistd.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Modules/nimCodecs'
+rm -rf ../../../Bin/x64-Release/Sample-NiSimpleViewer
+rm -rf ./x64-Release/NiSimpleViewer.o
+rm -rf ./x64-Release/NiSimpleViewer.d
+rm -rf ../../../Bin/x64-Release/NiViewer
+rm -rf ./x64-Release/Keyboard.o ./x64-Release/MouseInput.o ./x64-Release/Statistics.o ./x64-Release/Audio.o ./x64-Release/Capture.o ./x64-Release/Device.o ./x64-Release/Menu.o ./x64-Release/Draw.o ./x64-Release/NiViewer.o
+rm -rf ./x64-Release/Keyboard.d ./x64-Release/MouseInput.d ./x64-Release/Statistics.d ./x64-Release/Audio.d ./x64-Release/Capture.d ./x64-Release/Device.d ./x64-Release/Menu.d ./x64-Release/Draw.d ./x64-Release/NiViewer.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiSimpleViewer'
+rm -rf ../../../Bin/x64-Release/Sample-NiUserSelection
+rm -rf ./x64-Release/SampleManager.o ./x64-Release/UserSelector.o ./x64-Release/DefaultTrackingInitializer.o ./x64-Release/PoseUserSelector.o ./x64-Release/opengles.o ./x64-Release/ExitPoseDetector.o ./x64-Release/SinglePoseUserSelector.o ./x64-Release/TrackingInitializer.o ./x64-Release/SceneDrawer.o ./x64-Release/UserTracker.o ./x64-Release/PoseToggleUserSelector.o ./x64-Release/main.o ./x64-Release/ClosestUserSelector.o
+rm -rf ./x64-Release/SampleManager.d ./x64-Release/UserSelector.d ./x64-Release/DefaultTrackingInitializer.d ./x64-Release/PoseUserSelector.d ./x64-Release/opengles.d ./x64-Release/ExitPoseDetector.d ./x64-Release/SinglePoseUserSelector.d ./x64-Release/TrackingInitializer.d ./x64-Release/SceneDrawer.d ./x64-Release/UserTracker.d ./x64-Release/PoseToggleUserSelector.d ./x64-Release/main.d ./x64-Release/ClosestUserSelector.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiViewer'
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiUserSelection'
+rm -rf ../../../Bin/x64-Release/Sample-NiUserTracker
+rm -rf ./x64-Release/opengles.o ./x64-Release/SceneDrawer.o ./x64-Release/main.o
+rm -rf ./x64-Release/opengles.d ./x64-Release/SceneDrawer.d ./x64-Release/main.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/Samples/NiUserTracker'
+rm -rf ../../Bin/x64-Release/libOpenNI.so
+rm -rf ./x64-Release/XnFPSCalculator.o ./x64-Release/XnTypeManager.o ./x64-Release/XnLogFileWriter.o ./x64-Release/XnUSB.o ./x64-Release/XnLogConsoleWriter.o ./x64-Release/XnLicensing.o ./x64-Release/XnBaseNode.o ./x64-Release/XnEnumerationErrors.o ./x64-Release/XnDumpFileWriter.o ./x64-Release/XnLog.o ./x64-Release/XnRecorderImpl.o ./x64-Release/XnExportedNodes.o ./x64-Release/XnQueries.o ./x64-Release/XnModuleLoader.o ./x64-Release/XnXml.o ./x64-Release/XnUtils.o ./x64-Release/openNI.o ./x64-Release/XnProfiling.o ./x64-Release/XnScheduler.o ./x64-Release/XnPlayerImpl.o ./x64-Release/XnOSMemoryProfiling.o ./x64-Release/XnXmlScriptNodeExporter.o ./x64-Release/XnOS.o ./x64-Release/XnNodeWatcher.o ./x64-Release/XnXmlScriptNode.o ./x64-Release/XnMockNotifier.o ./x64-Release/XnNodeManager.o ./x64-Release/XnStatusRegister.o ./x64-Release/XnOpenNI.o ./x64-Release/XnDump.o ./x64-Release/LinuxProcesses.o ./x64-Release/LinuxINI.o ./x64-Release/LinuxUSBDevice.o ./x64-Release/LinuxStrings.o ./x64-Release/LinuxCriticalSections.o ./x64-Release/LinuxMutex.o ./x64-Release/LinuxPosixEvents.o ./x64-Release/LinuxMemory.o ./x64-Release/LinuxThreads.o ./x64-Release/LinuxSharedLibs.o ./x64-Release/LinuxSharedMemory.o ./x64-Release/LinuxSysVNamedEvents.o ./x64-Release/LinuxNetwork.o ./x64-Release/LinuxKeyboard.o ./x64-Release/LinuxEvents.o ./x64-Release/XnUSBLinux.o ./x64-Release/LinuxDebug.o ./x64-Release/LinuxFiles.o ./x64-Release/LinuxPosixNamedEvents.o ./x64-Release/LinuxTime.o ./x64-Release/tinystr.o ./x64-Release/tinyxmlerror.o ./x64-Release/tinyxml.o ./x64-Release/tinyxmlparser.o
+rm -rf ./x64-Release/XnFPSCalculator.d ./x64-Release/XnTypeManager.d ./x64-Release/XnLogFileWriter.d ./x64-Release/XnUSB.d ./x64-Release/XnLogConsoleWriter.d ./x64-Release/XnLicensing.d ./x64-Release/XnBaseNode.d ./x64-Release/XnEnumerationErrors.d ./x64-Release/XnDumpFileWriter.d ./x64-Release/XnLog.d ./x64-Release/XnRecorderImpl.d ./x64-Release/XnExportedNodes.d ./x64-Release/XnQueries.d ./x64-Release/XnModuleLoader.d ./x64-Release/XnXml.d ./x64-Release/XnUtils.d ./x64-Release/openNI.d ./x64-Release/XnProfiling.d ./x64-Release/XnScheduler.d ./x64-Release/XnPlayerImpl.d ./x64-Release/XnOSMemoryProfiling.d ./x64-Release/XnXmlScriptNodeExporter.d ./x64-Release/XnOS.d ./x64-Release/XnNodeWatcher.d ./x64-Release/XnXmlScriptNode.d ./x64-Release/XnMockNotifier.d ./x64-Release/XnNodeManager.d ./x64-Release/XnStatusRegister.d ./x64-Release/XnOpenNI.d ./x64-Release/XnDump.d ./x64-Release/LinuxProcesses.d ./x64-Release/LinuxINI.d ./x64-Release/LinuxUSBDevice.d ./x64-Release/LinuxStrings.d ./x64-Release/LinuxCriticalSections.d ./x64-Release/LinuxMutex.d ./x64-Release/LinuxPosixEvents.d ./x64-Release/LinuxMemory.d ./x64-Release/LinuxThreads.d ./x64-Release/LinuxSharedLibs.d ./x64-Release/LinuxSharedMemory.d ./x64-Release/LinuxSysVNamedEvents.d ./x64-Release/LinuxNetwork.d ./x64-Release/LinuxKeyboard.d ./x64-Release/LinuxEvents.d ./x64-Release/XnUSBLinux.d ./x64-Release/LinuxDebug.d ./x64-Release/LinuxFiles.d ./x64-Release/LinuxPosixNamedEvents.d ./x64-Release/LinuxTime.d ./x64-Release/tinystr.d ./x64-Release/tinyxmlerror.d ./x64-Release/tinyxml.d ./x64-Release/tinyxmlparser.d
+make[1]: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build/OpenNI'
+make: Leaving directory '/home/fa/software/OpenNI-Unstable-1.5.4.0/Platform/Linux/Build'
