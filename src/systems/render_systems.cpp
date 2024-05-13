@@ -750,7 +750,7 @@ void renderSystem(const flecs::iter &iter) {
                         Rectangle sourceRec = {
                             (float)b.current_frame * (float)texture.width /
                                 b.numFrames,
-                            0.0, width,
+                            0.0, static_cast<float>(width),
                             (float)texture.height}; // part of the texture used
 
                         Rectangle destRec = {
