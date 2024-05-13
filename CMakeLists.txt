@@ -75,6 +75,8 @@ file(GLOB_RECURSE TEST_SRC "test/*.cpp" "test/*.h")
 add_executable(
         main_test
         ${TEST_SRC}
+        src/game_logic/start_screen.h
+        src/game_logic/start_screen.cpp
 )
 target_include_directories(main_test PUBLIC ".")
 target_link_libraries(
