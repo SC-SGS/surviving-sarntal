@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
-  cmake_policy(SET CMP0135 NEW)
+    cmake_policy(SET CMP0135 NEW)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
@@ -31,6 +31,10 @@ FetchContent_MakeAvailable(googletest)
 #FetchContent_MakeAvailable(SDL2)
 
 include_directories(libs/NITE/Include /usr/include/ni)
+# Check if the operating system is macOS
+if(APPLE)
+    include_directories(/opt/homebrew/Cellar/sdl2/2.30.2/include)
+endif()
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
 if (KINECT)
@@ -41,7 +45,16 @@ endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC}
         src/systems/rockSpawnStuff.h
-        src/systems/rockSpawnStuff.cpp)
+        src/systems/rockSpawnStuff.cpp
+        src/entities/HikerMovement.h
+        src/entities/HikerMovement.cpp
+        src/entities/Inventory.h
+        src/entities/Inventory.cpp
+        src/entities/World.h
+        src/entities/World.cpp
+        src/entities/RenderInformation.h
+        src/entities/RenderedEntity.h
+        src/entities/RenderedEntity.cpp)
 #now all those files get made into one library callled surviving-sarntal-library
 add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
@@ -65,7 +78,14 @@ endif ()
 
 
 #link some libraries to the surviving-sarntal-library that we are defining atm
-target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
+# Check if the operating system is macOS
+if(APPLE)
+    # Link the library with absolute path on macOS
+    target_link_libraries(surviving-sarntal-library PUBLIC /opt/homebrew/Cellar/sdl2/2.30.2/lib/libSDL2.dylib)
+else()
+    # Link the library by its name on other operating systems
+    target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
+endif()
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 #link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
 
@@ -77,6 +97,15 @@ add_executable(
         ${TEST_SRC}
         src/game_logic/start_screen.h
         src/game_logic/start_screen.cpp
+        src/entities/Hiker.h
+        src/entities/Rock.cpp
+        src/entities/Rock.h
+        src/entities/Monster.cpp
+        src/entities/Monster.h
+        src/entities/Item.cpp
+        src/entities/Item.h
+        src/entities/Mountain.cpp
+        src/entities/Mountain.h
 )
 target_include_directories(main_test PUBLIC ".")
 target_link_libraries(
@@ -87,8 +116,8 @@ target_link_libraries(
 #use surviving-sarntal-library for tests aswell. this way all the src-files only have to be compiled once instead of compiling it for the main executable and the tests
 
 set_target_properties(
-    surviving-sarntal PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+        surviving-sarntal PROPERTIES
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 include(GoogleTest)
 gtest_discover_tests(main_test)
