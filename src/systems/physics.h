@@ -225,7 +225,7 @@ void checkJumpEvent(flecs::iter it, Velocity *velocities,
                     InputEntity *input_entities);
 
 /**
- * Checks whether the duck key is pressed and changes speed and state
+ * Checks whether the duck trigger is pressed and changes speed and state
  * accordingly. Hiker is slower and
  * TODO hitbox is smaller.
  *
