@@ -65,13 +65,13 @@ int findRaylibId(int gamepad_num) {
 
 bool InputEntity::getGamepadEvent(ButtonEvent event) const {
     switch (event.keyPressType) {
-    case PRESSED:
+    case TRIGGER_PRESSED:
         return IsGamepadButtonPressed(getGamepadId(), event.key);
-    case RELEASED:
+    case TRIGGER_RELEASED:
         return IsGamepadButtonReleased(getGamepadId(), event.key);
-    case DOWN:
+    case TRIGGER_DOWN:
         return IsGamepadButtonDown(getGamepadId(), event.key);
-    case UP:
+    case TRIGGER_UP:
         return IsGamepadButtonUp(getGamepadId(), event.key);
     default:
         return false;
@@ -80,13 +80,13 @@ bool InputEntity::getGamepadEvent(ButtonEvent event) const {
 
 bool InputEntity::getKeyboardEvent(ButtonEvent event) {
     switch (event.keyPressType) {
-    case PRESSED:
+    case TRIGGER_PRESSED:
         return IsKeyPressed(event.key);
-    case RELEASED:
+    case TRIGGER_RELEASED:
         return IsKeyReleased(event.key);
-    case DOWN:
+    case TRIGGER_DOWN:
         return IsKeyDown(event.key);
-    case UP:
+    case TRIGGER_UP:
         return IsKeyUp(event.key);
     default:
         return false;
@@ -250,13 +250,13 @@ InputEntity::InputEntity(InputEntity::InputType input_type, int _gamepad_num) {
 
 bool InputEntity::getMouseEvent(ButtonEvent event) {
     switch (event.keyPressType) {
-    case PRESSED:
+    case TRIGGER_PRESSED:
         return IsMouseButtonPressed(event.key);
-    case RELEASED:
+    case TRIGGER_RELEASED:
         return IsMouseButtonReleased(event.key);
-    case DOWN:
+    case TRIGGER_DOWN:
         return IsMouseButtonDown(event.key);
-    case UP:
+    case TRIGGER_UP:
         return IsMouseButtonUp(event.key);
     default:
         return false;
