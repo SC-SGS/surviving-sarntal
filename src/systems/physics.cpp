@@ -19,8 +19,7 @@ physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
     auto interval = Mountain::getRelevantMountainSection(x_min, x_max);
 
     auto closest_index = interval.start_index;
-    float_type closest_distance =
-        m->getVertex(interval.start_index).distanceTo(p);
+    float_type closest_distance = m->getVertex(interval.start_index).distanceTo(p);
 
     for (auto j = interval.start_index; j < interval.end_index; j++) {
         auto mountain_vertex = m->getVertex(j);
@@ -37,10 +36,8 @@ physics::Vertex physics::getClosestVertex(Position p, Radius r, Mountain *m) {
 
 Vector physics::getNormal(std::size_t idx, Position rock_pos, Mountain *m) {
     // determine closer vertex
-    Position vertex_other =
-        m->getVertex((idx - 1) % Mountain::NUMBER_OF_VERTICES);
-    Position vertex_right =
-        m->getVertex((idx + 1) % Mountain::NUMBER_OF_VERTICES);
+    Position vertex_other = m->getVertex((idx - 1) % Mountain::NUMBER_OF_VERTICES);
+    Position vertex_right = m->getVertex((idx + 1) % Mountain::NUMBER_OF_VERTICES);
     if (rock_pos.distanceTo(vertex_other) > rock_pos.distanceTo(vertex_right)) {
         // else already correct
         vertex_other = vertex_right;
@@ -63,8 +60,7 @@ bool physics::isCollided(Position p1, Position p2, Radius r1, Radius r2) {
     return (p1.distanceTo(p2) <= r1.value + r2.value);
 }
 
-void physics::terrainCollision(flecs::iter it, Position *positions,
-                               Velocity *velocities, Radius *r, Mountain *m,
+void physics::terrainCollision(flecs::iter it, Position *positions, Velocity *velocities, Radius *r, Mountain *m,
                                Rotation *rot) {
     for (auto i : it) {
         auto closest_vertex = getClosestVertex(positions[i], r[i], m);
@@ -84,17 +80,14 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
         float_type position_normal = positions[i] * normal_vector;
         float_type velocity_normal = velocities[i] * normal_vector;
 
-        float_type terrain_exit_time =
-            (r[i].value + vertex_normal - position_normal) / velocity_normal;
+        float_type terrain_exit_time = (r[i].value + vertex_normal - position_normal) / velocity_normal;
 
         positions[i] += velocities[i] * terrain_exit_time + EPSILON;
 
         auto m = r[i].value * r[i].value;
         Vector parallel_vector = {-normal_vector.y, normal_vector.x};
         auto velocity_parallel = velocities[i] * parallel_vector;
-        rot->angular_velocity +=
-            GAMMA * (velocity_parallel - rot->angular_velocity * r[i].value) /
-            m;
+        rot->angular_velocity += GAMMA * (velocity_parallel - rot->angular_velocity * r[i].value) / m;
         if (rot->angular_velocity >= MAX_ANGULAR_VELOCITY) {
             rot->angular_velocity = MAX_ANGULAR_VELOCITY;
         }
@@ -109,8 +102,7 @@ void physics::terrainCollision(flecs::iter it, Position *positions,
     }
 }
 
-void physics::makeRock(const flecs::world &world, Position p, Velocity v,
-                       float_type radius) {
+void physics::makeRock(const flecs::world &world, Position p, Velocity v, float_type radius) {
     world.entity()
         .set<Position>(p)
         .set<Velocity>(v)
@@ -122,18 +114,14 @@ void physics::makeRock(const flecs::world &world, Position p, Velocity v,
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {-radius / 2, 0.0f, -radius / 2};
-            c.resourceHandle =
-                world.get_mut<graphics::Resources>()->textures.load(
-                    "../assets/texture/stone.png");
+            c.resourceHandle = world.get_mut<graphics::Resources>()->textures.load("../assets/texture/stone.png");
             c.width = radius * 2.0f;
             c.height = radius * 2.0f;
         });
 }
 
-void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
-                            Velocity &v2, const Radius R1, const Radius R2,
-                            float_type dt, float_type &ang_vel1,
-                            float_type &ang_offset1, float_type &ang_vel2,
+void physics::rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2, const Radius R1, const Radius R2,
+                            float_type dt, float_type &ang_vel1, float_type &ang_offset1, float_type &ang_vel2,
                             float_type &ang_offset2) {
     float_type m1 = R1.value * R1.value;
     float_type m2 = R2.value * R2.value;
@@ -144,19 +132,14 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
 
     // Velocity Update
     float_type total_mass = m1 + m2;
-    v1 -= pos_diff_vector * 2 * m2 * (vel_diff_vector * pos_diff_vector) /
-          (distance_sq * total_mass + EPSILON);
-    v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) /
-          (distance_sq * total_mass + EPSILON);
+    v1 -= pos_diff_vector * 2 * m2 * (vel_diff_vector * pos_diff_vector) / (distance_sq * total_mass + EPSILON);
+    v2 += pos_diff_vector * 2 * m1 * (vel_diff_vector * pos_diff_vector) / (distance_sq * total_mass + EPSILON);
 
     Vector normal_vector = {p2.y - p1.y, p1.x - p2.x};
-    float_type relative_surface_velocity =
-        ang_vel2 * R2.value - ang_vel1 * R1.value;
+    float_type relative_surface_velocity = ang_vel2 * R2.value - ang_vel1 * R1.value;
 
-    ang_vel1 += GAMMA * std::abs((normal_vector * v1)) *
-                relative_surface_velocity / (2 * m1);
-    ang_vel2 -= GAMMA * std::abs((normal_vector * v2)) *
-                relative_surface_velocity / (2 * m2);
+    ang_vel1 += GAMMA * std::abs((normal_vector * v1)) * relative_surface_velocity / (2 * m1);
+    ang_vel2 -= GAMMA * std::abs((normal_vector * v2)) * relative_surface_velocity / (2 * m2);
     if (ang_vel1 >= MAX_ANGULAR_VELOCITY) {
         ang_vel1 = MAX_ANGULAR_VELOCITY;
     }
@@ -173,24 +156,19 @@ void physics::rockCollision(Position &p1, Position &p2, Velocity &v1,
     ang_offset2 += dt * ang_vel2;
 }
 
-void physics::rockRockInteractions(flecs::iter it, Position *positions,
-                                   Velocity *velocities, Radius *radius,
+void physics::rockRockInteractions(flecs::iter it, Position *positions, Velocity *velocities, Radius *radius,
                                    Rotation *rot) {
     for (int i = 0; i < it.count(); i++) {
         for (int j = i + 1; j < it.count(); j++) {
             auto next_pos1 = positions[i] + velocities[i] * it.delta_time();
             auto next_pos2 = positions[j] + velocities[j] * it.delta_time();
-            if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i],
-                           radius[j])) {
-                if (!IsSoundPlaying(rock_collision_sound) &&
-                    app_info->playerAlive) {
+            if (isCollided((Position)next_pos1, (Position)next_pos2, radius[i], radius[j])) {
+                if (!IsSoundPlaying(rock_collision_sound) && app_info->playerAlive) {
                     PlaySound(rock_collision_sound);
                 }
 
-                rockCollision(positions[i], positions[j], velocities[i],
-                              velocities[j], radius[i], radius[j],
-                              it.delta_time(), rot[i].angular_velocity,
-                              rot[i].angular_offset, rot[j].angular_velocity,
+                rockCollision(positions[i], positions[j], velocities[i], velocities[j], radius[i], radius[j],
+                              it.delta_time(), rot[i].angular_velocity, rot[i].angular_offset, rot[j].angular_velocity,
                               rot[j].angular_offset); // TODO: Optimization?
 
                 if (it.entity(i).has<Exploding>()) {
@@ -202,8 +180,7 @@ void physics::rockRockInteractions(flecs::iter it, Position *positions,
     }
 }
 
-void physics::updateRockState(flecs::iter it, Position *positions,
-                              Velocity *velocities, Rotation *rot) {
+void physics::updateRockState(flecs::iter it, Position *positions, Velocity *velocities, Rotation *rot) {
     updateRockVelocity(it, velocities);
     updateRockPosition(it, positions, velocities, rot);
     checkRockInScope(it, positions);
@@ -213,22 +190,19 @@ void physics::updateRockVelocity(flecs::iter it, Velocity *velocities) {
     for (auto i : it) {
         velocities[i].y += GRAVITATIONAL_CONSTANT * it.delta_time();
         if (velocities[i].length() > VELOCITY_CAP) {
-            velocities[i] = (Velocity)(velocities[i] * VELOCITY_CAP /
-                                       velocities[i].length());
+            velocities[i] = (Velocity)(velocities[i] * VELOCITY_CAP / velocities[i].length());
         }
     }
 }
 
-void physics::updateRockPosition(flecs::iter it, Position *positions,
-                                 Velocity *velocities, Rotation *rot) {
+void physics::updateRockPosition(flecs::iter it, Position *positions, Velocity *velocities, Rotation *rot) {
     for (auto i : it) {
         positions[i] += velocities[i] * it.delta_time();
         rot[i].angular_offset += rot[i].angular_velocity * it.delta_time();
     }
 }
 
-void physics::explodeRock(const flecs::world &world, flecs::entity rock,
-                          const int number_of_rocks) {
+void physics::explodeRock(const flecs::world &world, flecs::entity rock, const int number_of_rocks) {
     if (app_info->playerAlive) {
         PlaySound(boom_sound);
     }
@@ -244,8 +218,7 @@ void physics::explodeRock(const flecs::world &world, flecs::entity rock,
     Position delta_direction, p;
     Velocity v;
     for (int i = 0; i < number_of_rocks; i++) {
-        delta_direction =
-            Position{std::sin(delta_angle * i), std::cos(delta_angle * i)};
+        delta_direction = Position{std::sin(delta_angle * i), std::cos(delta_angle * i)};
         p = (Position)(position + delta_direction * radius);
         v = (Velocity)(velocity + delta_direction * 10);
         makeRock(world, p, v, new_r);
@@ -253,8 +226,7 @@ void physics::explodeRock(const flecs::world &world, flecs::entity rock,
 }
 
 void physics::checkRockInScope(flecs::iter it, Position *positions) {
-    auto rock_kill_bar =
-        it.world().get_mut<KillBar>()->x + ROCK_KILL_BAR_OFFSET;
+    auto rock_kill_bar = it.world().get_mut<KillBar>()->x + ROCK_KILL_BAR_OFFSET;
     for (auto i : it) {
         if (positions[i].x < rock_kill_bar) {
             it.entity(i).destruct();
@@ -262,34 +234,27 @@ void physics::checkRockInScope(flecs::iter it, Position *positions) {
     }
 }
 
-void physics::updatePlayerState(flecs::iter it, Position *positions,
-                                Velocity *velocities,
-                                PlayerMovement *player_movements,
-                                InputEntity *input_entities, Height *heights,
+void physics::updatePlayerState(flecs::iter it, Position *positions, Velocity *velocities,
+                                PlayerMovement *player_movements, InputEntity *input_entities, Height *heights,
                                 Width *widths) {
 
-    updatePlayerVelocity(it, positions, velocities, player_movements,
-                         input_entities, heights, widths);
+    updatePlayerVelocity(it, positions, velocities, player_movements, input_entities, heights, widths);
     updatePlayerPosition(it, positions, velocities, player_movements);
 }
 
-void physics::updatePlayerVelocity(flecs::iter it, Position *positions,
-                                   Velocity *velocities,
-                                   PlayerMovement *player_movements,
-                                   InputEntity *input_entities, Height *heights,
+void physics::updatePlayerVelocity(flecs::iter it, Position *positions, Velocity *velocities,
+                                   PlayerMovement *player_movements, InputEntity *input_entities, Height *heights,
                                    Width *widths) {
     if (app_info->playerAlive) {
         checkJumpEvent(it, velocities, player_movements, input_entities);
-        checkDuckEvent(it, velocities, player_movements, input_entities,
-                       heights, widths);
+        checkDuckEvent(it, velocities, player_movements, input_entities, heights, widths);
         checkXMovement(velocities, player_movements, input_entities);
         checkAerialState(it, velocities, player_movements, input_entities);
         checkDirection(velocities, player_movements, input_entities);
     }
 }
 
-void physics::updatePlayerPosition(flecs::iter it, Position *positions,
-                                   Velocity *velocities,
+void physics::updatePlayerPosition(flecs::iter it, Position *positions, Velocity *velocities,
                                    PlayerMovement *player_movements) {
     float_type knockback = 0;
     if (it.entity(0).has<IsHit>()) {
@@ -306,18 +271,15 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
     }
 
     float height = it.entity(0).get<Height>()->h;
-    if (player_movements[0].current_state ==
-        PlayerMovement::MovementState::IN_AIR) {
-        positions[0].x += knockback + AIR_MOVEMENT_SPEED_FACTOR *
-                                          velocities[0].x * it.delta_time();
+    if (player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
+        positions[0].x += knockback + AIR_MOVEMENT_SPEED_FACTOR * velocities[0].x * it.delta_time();
         auto terrain_y = getYPosFromX(it.world(), positions[0].x, height);
         auto air_y = positions[0].y + velocities[0].y * it.delta_time();
         if (air_y > terrain_y) {
             positions[0].y = air_y;
         } else {
             positions[0].y = terrain_y;
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::MOVING;
+            player_movements[0].current_state = PlayerMovement::MovementState::MOVING;
             player_movements[0].can_jump_again = true;
             it.entity(0).remove<graphics::BillboardComponent>();
             it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
@@ -325,37 +287,29 @@ void physics::updatePlayerPosition(flecs::iter it, Position *positions,
                 c.billUp = {0.0f, 0.0f, 1.0f};
                 c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
                 c.resourceHandle =
-                    it.world().get_mut<graphics::Resources>()->textures.load(
-                        "../assets/texture/player_walk.png");
+                    it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/player_walk.png");
                 c.width = HIKER_WIDTH; // TODO?
                 c.height = HIKER_HEIGHT;
                 c.current_frame = 0;
                 c.numFrames = 4;
             });
         }
-    } else if (player_movements[0].current_direction !=
-               PlayerMovement::Direction::NEUTRAL) {
+    } else if (player_movements[0].current_direction != PlayerMovement::Direction::NEUTRAL) {
         auto next_x_pos = velocities[0].x * it.delta_time() + positions[0].x;
         auto next_y_pos = getYPosFromX(it.world(), next_x_pos, height);
-        Vector direction = {next_x_pos - positions[0].x,
-                            next_y_pos - positions[0].y};
-        float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) +
-                                 std::pow(next_y_pos - positions[0].y, 2));
+        Vector direction = {next_x_pos - positions[0].x, next_y_pos - positions[0].y};
+        float length = std::sqrt(std::pow(next_x_pos - positions[0].x, 2) + std::pow(next_y_pos - positions[0].y, 2));
         float slope = direction.y / direction.x;
         float speed_factor = getSpeedFactor(slope);
-        positions[0].x = (it.delta_time() *
-                          std::abs(velocities[0].x * speed_factor) / length) *
-                             direction.x +
+        positions[0].x = (it.delta_time() * std::abs(velocities[0].x * speed_factor) / length) * direction.x +
                          knockback + positions[0].x;
         positions[0].y = getYPosFromX(it.world(), positions[0].x, height);
     } else {
         positions[0].x += knockback;
         positions[0].y = getYPosFromX(it.world(), positions[0].x, height);
     }
-    if (positions[0].x >
-        it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
-        positions[0].x =
-            it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET;
+    if (positions[0].x > it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET) {
+        positions[0].x = it.world().get<KillBar>()->x + PLAYER_RIGHT_BARRIER_OFFSET;
     }
 }
 
@@ -363,50 +317,40 @@ float physics::getSpeedFactor(float slope) {
     if (slope <= SLOWEST_NEG_SLOPE) {
         return MIN_SPEED_NEG_SLOPE;
     } else if (slope <= FASTEST_NEG_SCOPE) {
-        return linearInterpolation(slope,
-                                   {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
+        return linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
                                    {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
     } else if (slope <= 0) {
-        return linearInterpolation(
-            slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+        return linearInterpolation(slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
     } else if (slope <= SLOWEST_POS_SCOPE) {
-        return linearInterpolation(slope, {0, 1},
-                                   {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+        return linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
     } else {
         return MIN_SPEED_POS_SCOPE;
     }
 }
 
-void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
-                             PlayerMovement *player_movements,
+void physics::checkJumpEvent(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements,
                              InputEntity *input_entities) {
     if (input_entities->getEvent(Event::JUMP)) {
-        if (player_movements[0].current_state ==
-            PlayerMovement::MovementState::DUCKED) {
+        if (player_movements[0].current_state == PlayerMovement::MovementState::DUCKED) {
             return;
         }
-        if (player_movements[0].current_state !=
-            PlayerMovement::MovementState::IN_AIR) {
+        if (player_movements[0].current_state != PlayerMovement::MovementState::IN_AIR) {
             player_movements[0].last_jump = 0;
         }
-        if (player_movements[0].last_jump < 1.5 &&
-            player_movements[0].can_jump_again) {
+        if (player_movements[0].last_jump < 1.5 && player_movements[0].can_jump_again) {
             PlaySound(jump_sound);
             velocities[0].y = JUMP_VELOCITY_CONSTANT;
-            if (player_movements[0].current_state ==
-                PlayerMovement::MovementState::IN_AIR) {
+            if (player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
                 player_movements[0].can_jump_again = false;
             }
-            player_movements[0].current_state =
-                PlayerMovement::MovementState::IN_AIR;
+            player_movements[0].current_state = PlayerMovement::MovementState::IN_AIR;
             it.entity(0).remove<graphics::AnimatedBillboardComponent>();
             it.entity(0).set([&](graphics::BillboardComponent &c) {
                 c = {0};
                 c.billUp = {0.0f, 0.0f, 1.0f};
                 c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
                 c.resourceHandle =
-                    it.world().get_mut<graphics::Resources>()->textures.load(
-                        "../assets/texture/hiker_jump.png");
+                    it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/hiker_jump.png");
                 c.width = HIKER_WIDTH; // TODO?
                 c.height = HIKER_HEIGHT;
             });
@@ -414,53 +358,39 @@ void physics::checkJumpEvent(flecs::iter it, Velocity *velocities,
     }
 }
 
-void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
-                             PlayerMovement *player_movements,
-                             InputEntity *input_entities, Height *heights,
-                             Width *widths) {
+void physics::checkDuckEvent(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements,
+                             InputEntity *input_entities, Height *heights, Width *widths) {
     if (input_entities->getEvent(Event::DUCK) &&
-        player_movements[0].current_state ==
-            PlayerMovement::MovementState::MOVING) {
-        player_movements[0].current_state =
-            PlayerMovement::MovementState::DUCKED;
+        player_movements[0].current_state == PlayerMovement::MovementState::MOVING) {
+        player_movements[0].current_state = PlayerMovement::MovementState::DUCKED;
         heights[0].h = DUCKED_HIKER_HEIGHT;
         widths[0].w = DUCKED_HIKER_WIDTH;
-        it.entity(0)
-            .get_mut<graphics::RectangleShapeRenderComponent>()
-            ->height = DUCKED_HIKER_HEIGHT;
-        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
-            DUCKED_HIKER_WIDTH;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->height = DUCKED_HIKER_HEIGHT;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width = DUCKED_HIKER_WIDTH;
         it.entity(0).remove<graphics::AnimatedBillboardComponent>();
         it.entity(0).set([&](graphics::BillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
             c.resourceHandle =
-                it.world().get_mut<graphics::Resources>()->textures.load(
-                    "../assets/texture/hiker_duck.png");
+                it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/hiker_duck.png");
             c.width = DUCKED_HIKER_WIDTH; // TODO?
             c.height = DUCKED_HIKER_HEIGHT;
         });
-    } else if (player_movements[0].current_state == PlayerMovement::DUCKED &&
-               !input_entities->getEvent(Event::DUCK)) {
+    } else if (player_movements[0].current_state == PlayerMovement::DUCKED && !input_entities->getEvent(Event::DUCK)) {
         PlaySound(duck_sound);
-        player_movements[0].current_state =
-            PlayerMovement::MovementState::MOVING;
+        player_movements[0].current_state = PlayerMovement::MovementState::MOVING;
         heights[0].h = HIKER_HEIGHT;
         widths[0].w = HIKER_WIDTH;
-        it.entity(0)
-            .get_mut<graphics::RectangleShapeRenderComponent>()
-            ->height = HIKER_HEIGHT;
-        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width =
-            HIKER_WIDTH;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->height = HIKER_HEIGHT;
+        it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width = HIKER_WIDTH;
         it.entity(0).remove<graphics::BillboardComponent>();
         it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
             c = {0};
             c.billUp = {0.0f, 0.0f, 1.0f};
             c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
             c.resourceHandle =
-                it.world().get_mut<graphics::Resources>()->textures.load(
-                    "../assets/texture/player_walk.png");
+                it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/player_walk.png");
             c.width = HIKER_WIDTH; // TODO?
             c.height = HIKER_HEIGHT;
             c.current_frame = 0;
@@ -469,40 +399,31 @@ void physics::checkDuckEvent(flecs::iter it, Velocity *velocities,
     }
 }
 
-void physics::checkXMovement(Velocity *velocities,
-                             PlayerMovement *player_movements,
-                             InputEntity *input_entities) {
+void physics::checkXMovement(Velocity *velocities, PlayerMovement *player_movements, InputEntity *input_entities) {
     double x_factor = input_entities->getAxis(Axis::MOVEMENT_X);
     float_type speed = NORMAL_SPEED;
-    if (player_movements[0].current_state ==
-        PlayerMovement::MovementState::DUCKED) {
+    if (player_movements[0].current_state == PlayerMovement::MovementState::DUCKED) {
         speed *= DUCK_SPEED_FACTOR;
     }
 
     velocities[0].x = speed * (float_type)x_factor;
 }
 
-void physics::checkAerialState(flecs::iter it, Velocity *velocities,
-                               PlayerMovement *player_movements,
+void physics::checkAerialState(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements,
                                InputEntity *input_entities) {
-    if (player_movements[0].current_state ==
-        PlayerMovement::MovementState::IN_AIR) {
+    if (player_movements[0].current_state == PlayerMovement::MovementState::IN_AIR) {
         player_movements[0].last_jump += it.delta_time();
         velocities[0].y += GRAVITATIONAL_CONSTANT * it.delta_time();
     }
 }
 
-void physics::checkDirection(Velocity *velocities,
-                             PlayerMovement *player_movements,
-                             InputEntity *input_entities) {
+void physics::checkDirection(Velocity *velocities, PlayerMovement *player_movements, InputEntity *input_entities) {
     if (velocities[0].x < 0) {
         player_movements[0].current_direction = PlayerMovement::Direction::LEFT;
     } else if (velocities[0].x > 0) {
-        player_movements[0].current_direction =
-            PlayerMovement::Direction::RIGHT;
+        player_movements[0].current_direction = PlayerMovement::Direction::RIGHT;
     } else {
-        player_movements[0].current_direction =
-            PlayerMovement::Direction::NEUTRAL;
+        player_movements[0].current_direction = PlayerMovement::Direction::NEUTRAL;
     }
 }
 
@@ -510,21 +431,17 @@ float physics::getYPosFromX(const flecs::world &world, float x, float offset) {
     auto mountain = world.get_mut<Mountain>();
     auto interval = Mountain::getRelevantMountainSection(x, x);
     std::size_t closest_indices[] = {interval.start_index, interval.end_index};
-    auto closest_left_distance =
-        std::abs(mountain->getVertex(interval.start_index).x - x);
-    auto closest_right_distance =
-        std::abs(mountain->getVertex(interval.end_index).x - x);
+    auto closest_left_distance = std::abs(mountain->getVertex(interval.start_index).x - x);
+    auto closest_right_distance = std::abs(mountain->getVertex(interval.end_index).x - x);
 
     for (auto j = interval.start_index; j < interval.end_index; j++) {
         auto mountain_vertex = mountain->getVertex(j);
         auto current_dist = mountain_vertex.x - x;
 
-        if (current_dist < 0 &&
-            std::abs(current_dist) < closest_left_distance) {
+        if (current_dist < 0 && std::abs(current_dist) < closest_left_distance) {
             closest_indices[0] = j;
             closest_left_distance = std::abs(current_dist);
-        } else if (current_dist > 0 &&
-                   std::abs(current_dist) < closest_right_distance) {
+        } else if (current_dist > 0 && std::abs(current_dist) < closest_right_distance) {
             closest_indices[1] = j;
             closest_right_distance = std::abs(current_dist);
         }
@@ -536,36 +453,27 @@ float physics::getYPosFromX(const flecs::world &world, float x, float offset) {
     return linearInterpolation(x, vertex_left, vertex_right) + offset;
 }
 
-void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
-                               Radius *radii, Velocity *rock_velocities) {
-    rock_it.world()
-        .filter_builder<Width, Height, Position, Health>()
-        .with<Player>()
-        .build()
-        .iter([&](flecs::iter player_it, Width *widths, Height *heights,
-                  Position *player_positions, Health *healths) {
+void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions, Radius *radii,
+                               Velocity *rock_velocities) {
+    rock_it.world().filter_builder<Width, Height, Position, Health>().with<Player>().build().iter(
+        [&](flecs::iter player_it, Width *widths, Height *heights, Position *player_positions, Health *healths) {
             auto w = widths[0].w;
             auto h = heights[0].h;
             auto player_position = player_positions[0];
             bool is_hit = false;
             for (auto i : rock_it) {
                 auto rock_position = rock_positions[i];
-                auto x_centre_distance =
-                    std::abs(player_position.x - rock_position.x);
-                auto y_centre_distance =
-                    std::abs(player_position.y - rock_position.y);
+                auto x_centre_distance = std::abs(player_position.x - rock_position.x);
+                auto y_centre_distance = std::abs(player_position.y - rock_position.y);
                 auto r = radii[i].value;
 
-                if (x_centre_distance > w / 2 + r ||
-                    y_centre_distance > h / 2 + r) {
-                } else if (x_centre_distance <= w / 2 ||
-                           y_centre_distance <= h / 2) {
+                if (x_centre_distance > w / 2 + r || y_centre_distance > h / 2 + r) {
+                } else if (x_centre_distance <= w / 2 || y_centre_distance <= h / 2) {
                     is_hit = true;
                 } else {
 
                     auto corner_distance_sq =
-                        std::pow(x_centre_distance - w / 2, 2) +
-                        std::pow(y_centre_distance - h / 2, 2);
+                        std::pow(x_centre_distance - w / 2, 2) + std::pow(y_centre_distance - h / 2, 2);
 
                     if (corner_distance_sq <= std::pow(r, 2)) {
                         is_hit = true;
@@ -585,11 +493,8 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                             c = {0};
                             c.billUp = {0.0f, 0.0f, 1.0f};
                             c.billPositionStatic = {0.0f, 0.0f, 0.0};
-                            c.resourceHandle =
-                                rock_it.world()
-                                    .get_mut<graphics::Resources>()
-                                    ->textures.load(
-                                        "../assets/texture/explosion.png");
+                            c.resourceHandle = rock_it.world().get_mut<graphics::Resources>()->textures.load(
+                                "../assets/texture/explosion.png");
                             c.width = 200; // TODO?
                             c.height = 200;
                             c.current_frame = 0;
@@ -598,23 +503,19 @@ void physics::checkPlayerIsHit(flecs::iter rock_it, Position *rock_positions,
                         });
 
                     int rock_dmg =
-                        (std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) /
-                             (MAX_ROCK_SIZE - MIN_ROCK_SIZE) +
-                         1) *
+                        (std::abs(49 * (radii[i].value - MIN_ROCK_SIZE)) / (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + 1) *
                         (1 + rock_velocities[i].length() / VELOCITY_CAP);
                     std::cout << rock_dmg << std::endl;
                     auto input_entity = player_it.entity(0).get<InputEntity>();
                     input_entity->rumble(std::min(rock_dmg * 4000, 65535), 300);
                     healths[0].hp -= rock_dmg;
                     rock_it.entity(i).destruct();
-                    player_it.entity(0).set<IsHit>(
-                        {radii[i].value, rock_velocities[i].x, 0});
+                    player_it.entity(0).set<IsHit>({radii[i].value, rock_velocities[i].x, 0});
                     is_hit = false;
                     if (healths[0].hp <= 0) {
                         // TODO end animation or sth.
                         rock_it.world().get_mut<AppInfo>()->playerAlive = false;
-                        auto input_entity =
-                            player_it.entity(0).get<InputEntity>();
+                        auto input_entity = player_it.entity(0).get<InputEntity>();
                         input_entity->rumble(65535, 3000);
                     }
                 }
@@ -639,10 +540,8 @@ void physics::initSounds(bool meme) {
         player_hit_sound = LoadSound("../assets/audio/dudum.wav");
         jump_sound = LoadSound("../assets/audio/jump.wav");
     } else {
-        terrain_collision_sound =
-            LoadSound("../assets/audio/proper_rock_smash.mp3");
-        rock_collision_sound =
-            LoadSound("../assets/audio/proper_rock_smash.wav");
+        terrain_collision_sound = LoadSound("../assets/audio/proper_rock_smash.mp3");
+        rock_collision_sound = LoadSound("../assets/audio/proper_rock_smash.wav");
         duck_sound = LoadSound("../assets/audio/proper_duck.wav");
         player_hit_sound = LoadSound("../assets/audio/oof.wav");
         jump_sound = LoadSound("../assets/audio/proper_jump.wav");
@@ -652,8 +551,7 @@ void physics::initSounds(bool meme) {
 void physics::playPickupSound() { PlaySound(pickup_sound); }
 
 float math::linearInterpolation(float x, Position left, Position right) {
-    return ((x - left.x) * right.y + (right.x - x) * left.y) /
-           (right.x - left.x);
+    return ((x - left.x) * right.y + (right.x - x) * left.y) / (right.x - left.x);
 }
 
 void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
@@ -668,29 +566,18 @@ void playDeadSoundSystem(flecs::iter, AppInfo *app_info) {
 PhysicSystems::PhysicSystems(flecs::world &world) {
     world.module<PhysicSystems>();
 
-    world.system<Position, Velocity, Rotation>()
-        .with<Rock>()
-        .multi_threaded(true)
-        .iter(updateRockState);
+    world.system<Position, Velocity, Rotation>().with<Rock>().multi_threaded(true).iter(updateRockState);
 
     app_info = world.get_mut<AppInfo>();
 
-    world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(
-        rockRockInteractions);
+    world.system<Position, Velocity, Radius, Rotation>().with<Rock>().iter(rockRockInteractions);
 
-    world.system<Position, Radius, Velocity>().with<Rock>().iter(
-        checkPlayerIsHit);
+    world.system<Position, Radius, Velocity>().with<Rock>().iter(checkPlayerIsHit);
 
-    world.system<Position, Velocity, Radius, Mountain, Rotation>()
-        .term_at(4)
-        .singleton()
-        .iter(terrainCollision);
+    world.system<Position, Velocity, Radius, Mountain, Rotation>().term_at(4).singleton().iter(terrainCollision);
 
-    world
-        .system<Position, Velocity, PlayerMovement, InputEntity, Height,
-                Width>()
-        .with<Player>()
-        .iter(updatePlayerState);
+    world.system<Position, Velocity, PlayerMovement, InputEntity, Height, Width>().with<Player>().iter(
+        updatePlayerState);
 
     world.system<AppInfo>().term_at(1).singleton().iter(playDeadSoundSystem);
 

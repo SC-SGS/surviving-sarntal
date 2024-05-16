@@ -45,10 +45,8 @@ constexpr int INVENTORY_SLOTS = 3;
 constexpr int KAISERSCHMARRN_HEALTH_RESTORATION = 30;
 constexpr int COIN_SCORE = 500;
 
-constexpr float_type ITEM_BASE_HEIGHT =
-    40.; // minimal height at which items are placed above the ground
-constexpr float_type ITEM_MAX_HEIGHT =
-    200.; // max height above the terrain where items are spawned
+constexpr float_type ITEM_BASE_HEIGHT = 40.; // minimal height at which items are placed above the ground
+constexpr float_type ITEM_MAX_HEIGHT = 200.; // max height above the terrain where items are spawned
 constexpr float_type ITEMS_PER_SECOND = .05;
 
 /**
@@ -81,8 +79,7 @@ struct RockSpawnParameters {
  */
 constexpr float_type KILL_BAR_VELOCITY = 100.;
 constexpr float_type ROCK_KILL_BAR_OFFSET = -(MAX_ROCK_SIZE + 50.f);
-constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET =
-    (graphics::SCREEN_WIDTH * 0.8);
+constexpr float_type PLAYER_RIGHT_BARRIER_OFFSET = (graphics::SCREEN_WIDTH * 0.8);
 constexpr float_type RUMBLE_ZONE = 200.f;
 
 /**

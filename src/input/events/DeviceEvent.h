@@ -15,9 +15,7 @@ struct DeviceEvent {
     int trigger;
     TriggerType triggerType;
 
-    bool operator<(const DeviceEvent &e) const {
-        return trigger < e.trigger || triggerType < e.triggerType;
-    }
+    bool operator<(const DeviceEvent &e) const { return trigger < e.trigger || triggerType < e.triggerType; }
 };
 
 #endif // SURVIVING_SARNTAL_DEVICEEVENT_H

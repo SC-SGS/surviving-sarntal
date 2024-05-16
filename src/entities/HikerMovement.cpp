@@ -6,19 +6,13 @@
 
 HikerMovement::HikerMovement() {}
 
-HikerMovement::MovementState HikerMovement::getState() const {
-    return current_state;
-}
+HikerMovement::MovementState HikerMovement::getState() const { return current_state; }
 
 void HikerMovement::setState(MovementState state) { current_state = state; }
 
-HikerMovement::Direction HikerMovement::getDirection() const {
-    return current_direction;
-}
+HikerMovement::Direction HikerMovement::getDirection() const { return current_direction; }
 
-void HikerMovement::setDirection(Direction direction) {
-    current_direction = direction;
-}
+void HikerMovement::setDirection(Direction direction) { current_direction = direction; }
 
 bool HikerMovement::canJumpAgain() const { return can_jump_again; }
 

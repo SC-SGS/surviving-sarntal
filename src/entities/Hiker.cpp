@@ -8,12 +8,11 @@
 #include "iostream"
 
 Hiker::Hiker()
-    : height(0), width(0), healthPoints(100), hikerMovement(), isHit(false),
-      hitInformation(), velocity(), isAlive(true) {}
+    : height(0), width(0), healthPoints(100), hikerMovement(), isHit(false), hitInformation(), velocity(),
+      isAlive(true) {}
 
 Hiker::Hiker(HikerMovement hikerMovement, Vector velocity)
-    : height(0.0f), width(0.0f), healthPoints(100),
-      hikerMovement(hikerMovement), isHit(false), hitInformation(),
+    : height(0.0f), width(0.0f), healthPoints(100), hikerMovement(hikerMovement), isHit(false), hitInformation(),
       velocity(velocity), isAlive(true) {}
 
 float Hiker::getHeight() const { return height; }
@@ -30,15 +29,11 @@ void Hiker::setHealthPoints(int hp) { healthPoints = hp; }
 
 HikerMovement Hiker::getHikerMovement() const { return hikerMovement; }
 
-void Hiker::setHikerMovement(const HikerMovement &movement) {
-    hikerMovement = movement;
-}
+void Hiker::setHikerMovement(const HikerMovement &movement) { hikerMovement = movement; }
 
 HitInformation Hiker::getHitInformation() const { return hitInformation; }
 
-void Hiker::setHitInformation(const struct HitInformation &hit) {
-    hitInformation = hit;
-}
+void Hiker::setHitInformation(const struct HitInformation &hit) { hitInformation = hit; }
 
 bool Hiker::getIsHit() const { return isHit; }
 

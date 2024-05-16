@@ -25,30 +25,24 @@ MountainClass::MountainClass() {
 
 void MountainClass::printTempDebugInfo() {
     IndexInterval test_interval{getRelevantMountainSection(10.2, 13.6)};
-    std::cout << "Mountain test indices: " << test_interval.start_index << ", "
-              << test_interval.end_index << std::endl;
-    std::cout << "left point coords: " << getVertex(test_interval.start_index).x
-              << ", " << getVertex(test_interval.start_index).y << std::endl;
-    std::cout << "right point coords: " << getVertex(test_interval.end_index).x
-              << ", " << getVertex(test_interval.end_index).y << std::endl;
+    std::cout << "Mountain test indices: " << test_interval.start_index << ", " << test_interval.end_index << std::endl;
+    std::cout << "left point coords: " << getVertex(test_interval.start_index).x << ", "
+              << getVertex(test_interval.start_index).y << std::endl;
+    std::cout << "right point coords: " << getVertex(test_interval.end_index).x << ", "
+              << getVertex(test_interval.end_index).y << std::endl;
 }
 
 Position MountainClass::getVertex(size_t index) {
     return landscape_fixpoints_circular_array[index % NUMBER_OF_VERTICES];
 }
 Position MountainClass::getVertex(int index) {
-    return landscape_fixpoints_circular_array[(index + NUMBER_OF_VERTICES) %
-                                              NUMBER_OF_VERTICES];
+    return landscape_fixpoints_circular_array[(index + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES];
 }
 
-IndexInterval MountainClass::getRelevantMountainSection(float_type min_x,
-                                                        float_type max_x) {
+IndexInterval MountainClass::getRelevantMountainSection(float_type min_x, float_type max_x) {
     IndexInterval returnvalue{};
-    returnvalue.start_index =
-        ((std::size_t)std::floor(min_x / SECTION_WIDTH)) % NUMBER_OF_VERTICES;
-    returnvalue.end_index =
-        ((std::size_t)(std::ceil(max_x / SECTION_WIDTH) + 1)) %
-        NUMBER_OF_VERTICES;
+    returnvalue.start_index = ((std::size_t)std::floor(min_x / SECTION_WIDTH)) % NUMBER_OF_VERTICES;
+    returnvalue.end_index = ((std::size_t)(std::ceil(max_x / SECTION_WIDTH) + 1)) % NUMBER_OF_VERTICES;
     if (returnvalue.end_index < returnvalue.start_index)
         returnvalue.end_index += NUMBER_OF_VERTICES;
 
@@ -65,27 +59,21 @@ IndexInterval MountainClass::getRelevantMountainSection(float_type min_x,
 void MountainClass::generateNewChunk() {
     std::cout << "Chunk generated" << std::endl;
     generateSlope();
-    generateTerrainRecursive(
-        start_of_circular_array,
-        start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 100);
-    start_of_circular_array =
-        (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
+    generateTerrainRecursive(start_of_circular_array, start_of_circular_array + NUM_SECTIONS_PER_CHUNK - 1, 100);
+    start_of_circular_array = (start_of_circular_array + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
 }
 
 void MountainClass::generateSlope() {
     int num_points_to_generate = NUM_SECTIONS_PER_CHUNK;
     const std::size_t ARRAY_SIZE = landscape_fixpoints_circular_array.size();
-    const std::size_t INDEX_RIGHTEST_VERTICE =
-        (start_of_circular_array + ARRAY_SIZE - 1) % ARRAY_SIZE;
+    const std::size_t INDEX_RIGHTEST_VERTICE = (start_of_circular_array + ARRAY_SIZE - 1) % ARRAY_SIZE;
 
     float_type current_x{getVertex(INDEX_RIGHTEST_VERTICE).x};
     float_type current_y{getVertex(INDEX_RIGHTEST_VERTICE).y};
     for (int i = 0; i < num_points_to_generate; i++) {
         current_x += SECTION_WIDTH;
         current_y += SECTION_WIDTH * SLOPE;
-        landscape_fixpoints_circular_array[(start_of_circular_array + i) %
-                                           ARRAY_SIZE] =
-            Position{current_x, current_y};
+        landscape_fixpoints_circular_array[(start_of_circular_array + i) % ARRAY_SIZE] = Position{current_x, current_y};
     }
 }
 
@@ -99,18 +87,15 @@ IndexInterval MountainClass::getIndexIntervalOfEntireMountain() const {
 IndexInterval MountainClass::getLatestChunk() const {
     IndexInterval returnvalue{};
     returnvalue.end_index = start_of_circular_array;
-    returnvalue.start_index = (start_of_circular_array -
-                               NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) %
-                              NUMBER_OF_VERTICES;
+    returnvalue.start_index =
+        (start_of_circular_array - NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES;
     if (returnvalue.start_index > returnvalue.end_index) {
         returnvalue.end_index += NUMBER_OF_VERTICES;
     }
     return returnvalue;
 }
 
-void MountainClass::generateTerrainRecursive(std::size_t leftIndex,
-                                             std::size_t rightIndex,
-                                             float_type displacement) {
+void MountainClass::generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float_type displacement) {
     // if(leftIndex + 1 >= rightIndex){
     //     interpolate(leftIndex, rightIndex);
     //     return;
@@ -130,17 +115,10 @@ void MountainClass::generateTerrainRecursive(std::size_t leftIndex,
 
     std::size_t mid_index = (leftIndex + rightIndex) / 2; // rounding down is
                                                           // fine
-    float_type change =
-        (distribution_used(random_engine) * 2 - 1) * displacement;
-    landscape_fixpoints_circular_array[(mid_index + NUMBER_OF_VERTICES) %
-                                       NUMBER_OF_VERTICES]
-        .y =
-        (landscape_fixpoints_circular_array[(leftIndex + NUMBER_OF_VERTICES) %
-                                            NUMBER_OF_VERTICES]
-             .y +
-         landscape_fixpoints_circular_array[(rightIndex + NUMBER_OF_VERTICES) %
-                                            NUMBER_OF_VERTICES]
-             .y) /
+    float_type change = (distribution_used(random_engine) * 2 - 1) * displacement;
+    landscape_fixpoints_circular_array[(mid_index + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y =
+        (landscape_fixpoints_circular_array[(leftIndex + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y +
+         landscape_fixpoints_circular_array[(rightIndex + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y) /
             2 +
         change;
     displacement = MountainClass::ROUGHNESS_TERRAIN * displacement;
@@ -153,7 +131,7 @@ void MountainClass::interpolate(std::size_t leftIndex, std::size_t rightIndex) {
     auto right_vert = getVertex(rightIndex);
     float_type m = (left_vert.y - right_vert.y) / (right_vert.x - left_vert.x);
     for (int i = 1; i < rightIndex - leftIndex; i++) {
-        landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES]
-            .y = static_cast<float_type>(i) * m + getVertex(leftIndex).y;
+        landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES].y =
+            static_cast<float_type>(i) * m + getVertex(leftIndex).y;
     }
 }
