@@ -31,21 +31,17 @@ struct ItemClass {
         ITEM_COUNT
     };
 
-    static void useKaiserschmarrn(const flecs::world &world,
-                                  flecs::entity &player);
+    static void useKaiserschmarrn(const flecs::world &world, flecs::entity &player);
     static void useCoin(const flecs::world &world, flecs::entity &player);
     static void useDuck(const flecs::world &world, flecs::entity &player);
 };
 
 // define item types here
 const std::vector<ItemClass> ITEM_CLASSES{
-    {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png",
-     "../assets/audio/kaiserschmarrn.wav", false, false, true,
+    {"Kaiserschmarrn", "../assets/texture/kaiserschmarrn.png", "../assets/audio/kaiserschmarrn.wav", false, false, true,
      ItemClass::useKaiserschmarrn},
-    {"Coin", "../assets/texture/coin.png", "../assets/audio/coin.wav", false,
-     true, true, ItemClass::useCoin},
-    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.wav", true,
-     false, true, ItemClass::useDuck}};
+    {"Coin", "../assets/texture/coin.png", "../assets/audio/coin.wav", false, true, true, ItemClass::useCoin},
+    {"Duck", "../assets/texture/duck.png", "../assets/audio/duck.wav", true, false, true, ItemClass::useDuck}};
 
 struct Item {
     ItemClass::Items item_id;
@@ -66,10 +62,8 @@ struct ItemSlot {
 
 class Inventory {
   public:
-    static void checkCanCollect(flecs::iter it, Position *positions,
-                                InteractionRadius *radii);
-    static void updateInventory(flecs::iter it, InputEntity *input_entities,
-                                Inventory *inventory_entities);
+    static void checkCanCollect(flecs::iter it, Position *positions, InteractionRadius *radii);
+    static void updateInventory(flecs::iter it, InputEntity *input_entities, Inventory *inventory_entities);
 
   private:
     std::vector<ItemSlot> slots;
@@ -84,8 +78,7 @@ class Inventory {
     size_t getSlotCount() const;
 
     void pickup(ItemClass::Items item_type);
-    static void useItem(ItemClass::Items item_type, const flecs::world &world,
-                        flecs::entity &player);
+    static void useItem(ItemClass::Items item_type, const flecs::world &world, flecs::entity &player);
     void drop();
 
     void setItem(size_t slot, ItemClass::Items item_type);

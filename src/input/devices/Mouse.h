@@ -18,8 +18,7 @@ class Mouse : public InputDevice {
     std::list<GameEvent> getGameEvents() override;
 
   private:
-    static const std::map<TriggerType, std::function<bool(int)>>
-        RAYLIB_MAPPINGS;
+    static const std::map<TriggerType, std::function<bool(int)>> RAYLIB_MAPPINGS;
 };
 
 #endif // SURVIVING_SARNTAL_MOUSE_H

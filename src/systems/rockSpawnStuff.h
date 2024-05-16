@@ -8,13 +8,7 @@ struct SpawnData {
     int explosive_rock_modulo_count{0};
 };
 
-enum RockSpawnPhase {
-    veryBeginning,
-    irregularRocks,
-    regularRocks,
-    rockBatches,
-    explosiveBatches
-};
+enum RockSpawnPhase { veryBeginning, irregularRocks, regularRocks, rockBatches, explosiveBatches };
 
 int computeNumRocksToSpawn(RockSpawnPhase rockSpawnPhase, SpawnData *spawnData);
 

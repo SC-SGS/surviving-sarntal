@@ -45,8 +45,7 @@ struct Vertex {
  * @param r radius, should be several times larger than section width in
  * mountain.h
  */
-void makeRock(const flecs::world &world, Position p, Velocity v,
-              float_type radius);
+void makeRock(const flecs::world &world, Position p, Velocity v, float_type radius);
 
 /**
  * Updates velocity and position of a rock.
@@ -55,14 +54,12 @@ void makeRock(const flecs::world &world, Position p, Velocity v,
  * @param positions
  * @param velocities
  */
-void updateRockState(flecs::iter it, Position *positions, Velocity *velocities,
-                     Rotation *rot);
+void updateRockState(flecs::iter it, Position *positions, Velocity *velocities, Rotation *rot);
 
 /**
  * Reset the rock to be outside of the terrain and reflect the velocity
  */
-void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities,
-                      Radius *r, Mountain *m, Rotation *rot);
+void terrainCollision(flecs::iter it, Position *positions, Velocity *velocities, Radius *r, Mountain *m, Rotation *rot);
 
 /**
  * Updates velocity of a rock.
@@ -81,8 +78,7 @@ void updateRockVelocity(flecs::iter it, Velocity *velocities);
  * @param positions
  * @param velocities
  */
-void updateRockPosition(flecs::iter it, Position *positions,
-                        Velocity *velocities, Rotation *rot);
+void updateRockPosition(flecs::iter it, Position *positions, Velocity *velocities, Rotation *rot);
 
 /**
  * Checks whether the rocks are in scope and deletes those that are not.
@@ -131,18 +127,14 @@ Vector getNormal(std::size_t idx, Position rock_pos, Mountain *m);
  * @param r1
  * @param r2
  */
-void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
-                   Radius r1, Radius r2, float dt, float_type &ang_vel1,
-                   float_type &ang_offset1, float_type &ang_vel2,
-                   float_type &ang_offset2);
+void rockCollision(Position &p1, Position &p2, Velocity &v1, Velocity &v2, Radius r1, Radius r2, float dt,
+                   float_type &ang_vel1, float_type &ang_offset1, float_type &ang_vel2, float_type &ang_offset2);
 
-void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2,
-                       Radius r1, Radius r2);
+void quickAndDirtyTest(Position &p1, Position &p2, Velocity &v1, Velocity &v2, Radius r1, Radius r2);
 
 bool isCollided(Position p1, Position p2, Radius r1, Radius r2);
 
-void rockRockInteractions(flecs::iter it, Position *positions,
-                          Velocity *velocities, Radius *radius, Rotation *rot);
+void rockRockInteractions(flecs::iter it, Position *positions, Velocity *velocities, Radius *radius, Rotation *rot);
 
 /**
  * Updates the state of a player by first updating velocity based on input
@@ -155,10 +147,8 @@ void rockRockInteractions(flecs::iter it, Position *positions,
  * @param player_movements
  * @param input_entities
  */
-void updatePlayerState(flecs::iter it, Position *positions,
-                       Velocity *velocities, PlayerMovement *player_movements,
-                       InputEntity *input_entities, Height *heights,
-                       Width *widths);
+void updatePlayerState(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements,
+                       InputEntity *input_entities, Height *heights, Width *widths);
 
 /**
  * Updates Player's Position based on velocity and current state.
@@ -171,12 +161,9 @@ void updatePlayerState(flecs::iter it, Position *positions,
  * @param velocities
  * @param player_movements
  */
-void updatePlayerPosition(flecs::iter it, Position *positions,
-                          Velocity *velocities,
-                          PlayerMovement *player_movements);
+void updatePlayerPosition(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements);
 
-void knockbackPlayer(flecs::iter it, Position *positions,
-                     PlayerMovement *player_movements, float_type knockback);
+void knockbackPlayer(flecs::iter it, Position *positions, PlayerMovement *player_movements, float_type knockback);
 
 /**
  * Modular function that returns the speed factor on a slope.
@@ -205,11 +192,8 @@ float getSpeedFactor(float slope);
  * @param player_movements
  * @param input_entities
  */
-void updatePlayerVelocity(flecs::iter it, Position *positions,
-                          Velocity *velocities,
-                          PlayerMovement *player_movements,
-                          InputEntity *input_entities, Height *heights,
-                          Width *widths);
+void updatePlayerVelocity(flecs::iter it, Position *positions, Velocity *velocities, PlayerMovement *player_movements,
+                          InputEntity *input_entities, Height *heights, Width *widths);
 
 /**
  * Checks whether jump has been pressed and whether the player is able to jump
@@ -220,8 +204,7 @@ void updatePlayerVelocity(flecs::iter it, Position *positions,
  * @param player_movements
  * @param input_entities
  */
-void checkJumpEvent(flecs::iter it, Velocity *velocities,
-                    PlayerMovement *player_movements,
+void checkJumpEvent(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements,
                     InputEntity *input_entities);
 
 /**
@@ -233,10 +216,8 @@ void checkJumpEvent(flecs::iter it, Velocity *velocities,
  * @param player_movements
  * @param input_entities
  */
-void checkDuckEvent(flecs::iter it, Velocity *velocities,
-                    PlayerMovement *player_movements,
-                    InputEntity *input_entities, Height *heights,
-                    Width *widths);
+void checkDuckEvent(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements, InputEntity *input_entities,
+                    Height *heights, Width *widths);
 
 /**
  * Changes the horizontal speed of the hiker based on input.
@@ -245,8 +226,7 @@ void checkDuckEvent(flecs::iter it, Velocity *velocities,
  * @param player_movements
  * @param input_entities
  */
-void checkXMovement(Velocity *velocities, PlayerMovement *player_movements,
-                    InputEntity *input_entities);
+void checkXMovement(Velocity *velocities, PlayerMovement *player_movements, InputEntity *input_entities);
 
 /**
  * Checks whether the player is in the air and tracks the time he has been
@@ -257,8 +237,7 @@ void checkXMovement(Velocity *velocities, PlayerMovement *player_movements,
  * @param player_movements
  * @param input_entities
  */
-void checkAerialState(flecs::iter it, Velocity *velocities,
-                      PlayerMovement *player_movements,
+void checkAerialState(flecs::iter it, Velocity *velocities, PlayerMovement *player_movements,
                       InputEntity *input_entities);
 
 /**
@@ -269,8 +248,7 @@ void checkAerialState(flecs::iter it, Velocity *velocities,
  * @param player_movements
  * @param input_entities
  */
-void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
-                    InputEntity *input_entities);
+void checkDirection(Velocity *velocities, PlayerMovement *player_movements, InputEntity *input_entities);
 
 /**
  * Checks whether a rock hits the player, making him unalive and stopping the
@@ -281,8 +259,7 @@ void checkDirection(Velocity *velocities, PlayerMovement *player_movements,
  * @param heights of the player
  * @param widths of the player
  */
-void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
-                      Velocity *rock_velocities);
+void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii, Velocity *rock_velocities);
 
 /**
  * Returns the exact y coordinate of the mountain at a given x position
@@ -294,8 +271,7 @@ void checkPlayerIsHit(flecs::iter it, Position *positions, Radius *radii,
  */
 float getYPosFromX(const flecs::world &world, float x, float offset);
 
-void explodeRock(const flecs::world &world, flecs::entity rock,
-                 const int number_of_rocks);
+void explodeRock(const flecs::world &world, flecs::entity rock, const int number_of_rocks);
 } // namespace physics
 
 namespace math {

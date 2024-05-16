@@ -11,13 +11,7 @@
 static constexpr int NO_GAMEPAD_ID = -1;
 
 // different input devices
-enum InputDevice {
-    DEVICE_KEYBOARD,
-    DEVICE_GAMEPAD,
-    DEVICE_MOUSE,
-    DEVICE_KINECT,
-    DEVICE_DISABLED
-};
+enum InputDevice { DEVICE_KEYBOARD, DEVICE_GAMEPAD, DEVICE_MOUSE, DEVICE_KINECT, DEVICE_DISABLED };
 
 // In game events
 enum Event {
@@ -46,12 +40,7 @@ enum Axis {
 
 // when an event should be triggered (in the frame that it was
 // pressed/released or always when a button is up/down
-enum TriggerType {
-    TRIGGER_PRESSED,
-    TRIGGER_RELEASED,
-    TRIGGER_DOWN,
-    TRIGGER_UP
-};
+enum TriggerType { TRIGGER_PRESSED, TRIGGER_RELEASED, TRIGGER_DOWN, TRIGGER_UP };
 
 // Hardware events (button presses on any input device)
 struct ButtonEvent {
@@ -70,19 +59,17 @@ struct VirtualAxis {
 // map containing strings with the english display names for the input
 // events
 const std::unordered_map<Event, std::string> EVENT_DISPLAY_NAMES{
-    {JUMP, "Jump"},           {DUCK, "Ducking"},
-    {ITEM_PICK, "Pick item"}, {ITEM_USE, "Use item"},
-    {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},
+    {JUMP, "Jump"},         {DUCK, "Ducking"},        {ITEM_PICK, "Pick item"},
+    {ITEM_USE, "Use item"}, {ITEM_DROP, "Drop item"}, {SPECIAL_ABILITY, "Special ability"},
     {PAUSE, "Pause"},
 };
 
 // map containing the english display names of the relevant axes
-const std::unordered_map<Axis, std::string> AXIS_DISPLAY_NAMES{
-    {MOVEMENT_X, "Movement X"},
-    {MOVEMENT_Y, "Movement Y"},
-    {SECONDARY_X, "Secondary X"},
-    {SECONDARY_Y, "Secondary Y"},
-    {ITEM_SWITCH, "Switch Item"}};
+const std::unordered_map<Axis, std::string> AXIS_DISPLAY_NAMES{{MOVEMENT_X, "Movement X"},
+                                                               {MOVEMENT_Y, "Movement Y"},
+                                                               {SECONDARY_X, "Secondary X"},
+                                                               {SECONDARY_Y, "Secondary Y"},
+                                                               {ITEM_SWITCH, "Switch Item"}};
 
 const std::unordered_map<Event, ButtonEvent> KEYBOARD_KEY_MAP{
     {JUMP, {DEVICE_KEYBOARD, KEY_SPACE, TRIGGER_PRESSED}},
@@ -96,41 +83,31 @@ const std::unordered_map<Event, ButtonEvent> KEYBOARD_KEY_MAP{
     {PAUSE, {DEVICE_KEYBOARD, KEY_BACKSPACE, TRIGGER_PRESSED}}};
 
 const std::unordered_map<Event, ButtonEvent> GAMEPAD_KEY_MAP{
-    {JUMP,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_DOWN, TRIGGER_PRESSED}}, // A
-    {DUCK,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, TRIGGER_DOWN}}, // R1
-    {ITEM_PICK,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT, TRIGGER_PRESSED}}, // B
-    {ITEM_USE,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_LEFT, TRIGGER_PRESSED}}, // X
-    {ITEM_DROP,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_UP, TRIGGER_PRESSED}}, // Y
-    {SPECIAL_ABILITY,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_2, TRIGGER_PRESSED}}, // R2
-    {PAUSE,
-     {DEVICE_GAMEPAD, GAMEPAD_BUTTON_MIDDLE_RIGHT, TRIGGER_PRESSED}}, // START
+    {JUMP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_DOWN, TRIGGER_PRESSED}},            // A
+    {DUCK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_1, TRIGGER_DOWN}},               // R1
+    {ITEM_PICK, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_RIGHT, TRIGGER_PRESSED}},      // B
+    {ITEM_USE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_LEFT, TRIGGER_PRESSED}},        // X
+    {ITEM_DROP, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_FACE_UP, TRIGGER_PRESSED}},         // Y
+    {SPECIAL_ABILITY, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_RIGHT_TRIGGER_2, TRIGGER_PRESSED}}, // R2
+    {PAUSE, {DEVICE_GAMEPAD, GAMEPAD_BUTTON_MIDDLE_RIGHT, TRIGGER_PRESSED}},              // START
 };
 
-const std::unordered_map<Axis, GamepadAxis> GAMEPAD_AXIS_MAP{
-    {MOVEMENT_X, {GAMEPAD_AXIS_LEFT_X}},
-    {MOVEMENT_Y, {GAMEPAD_AXIS_LEFT_Y}},
-    {SECONDARY_X, {GAMEPAD_AXIS_RIGHT_X}},
-    {SECONDARY_Y, {GAMEPAD_AXIS_RIGHT_Y}},
-    {ITEM_SWITCH, {GAMEPAD_AXIS_RIGHT_X}}};
+const std::unordered_map<Axis, GamepadAxis> GAMEPAD_AXIS_MAP{{MOVEMENT_X, {GAMEPAD_AXIS_LEFT_X}},
+                                                             {MOVEMENT_Y, {GAMEPAD_AXIS_LEFT_Y}},
+                                                             {SECONDARY_X, {GAMEPAD_AXIS_RIGHT_X}},
+                                                             {SECONDARY_Y, {GAMEPAD_AXIS_RIGHT_Y}},
+                                                             {ITEM_SWITCH, {GAMEPAD_AXIS_RIGHT_X}}};
 
 // a map that stores sources for virtual axes (axes derived from trigger
 // presses)
 const std::unordered_map<Axis, std::list<VirtualAxis>> VIRTUAL_AXIS_MAP{
     {
         ITEM_SWITCH,
-        {{{DEVICE_KEYBOARD, KEY_TAB, TRIGGER_PRESSED},
-          {DEVICE_DISABLED, KEY_N, TRIGGER_PRESSED}}},
+        {{{DEVICE_KEYBOARD, KEY_TAB, TRIGGER_PRESSED}, {DEVICE_DISABLED, KEY_N, TRIGGER_PRESSED}}},
     },
     {MOVEMENT_X,
      {
-         {{DEVICE_KEYBOARD, KEY_D, TRIGGER_DOWN},
-          {DEVICE_KEYBOARD, KEY_A, TRIGGER_DOWN}},
+         {{DEVICE_KEYBOARD, KEY_D, TRIGGER_DOWN}, {DEVICE_KEYBOARD, KEY_A, TRIGGER_DOWN}},
          {{DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_FACE_RIGHT, TRIGGER_DOWN},
           {DEVICE_GAMEPAD, GAMEPAD_BUTTON_LEFT_FACE_LEFT, TRIGGER_DOWN}},
      }},
