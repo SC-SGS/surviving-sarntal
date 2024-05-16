@@ -2,8 +2,7 @@
 
 namespace rockSpawnStuff {
 
-int computeNumRocksToSpawn(RockSpawnPhase rockSpawnPhase,
-                           SpawnData *spawnData) {
+int computeNumRocksToSpawn(RockSpawnPhase rockSpawnPhase, SpawnData *spawnData) {
     // determine num_rocks_to_spawn
     int num_rocks_to_spawn{1};
     if (rockSpawnPhase == rockBatches || rockSpawnPhase == explosiveBatches) {

@@ -150,12 +150,20 @@ readability-use-anyofallof,
 readability-identifier-naming'
 
 CheckOptions:
-  readability-identifier-naming.ClassMemberCase: CamelCase
-  readability-identifier-naming.VariableCase: lower_case
+  readability-identifier-naming.ClassCase: CamelCase
+  readability-identifier-naming.ClassMemberCase: camelBack
+  readability-identifier-naming.VariableCase: camelBack
   readability-identifier-naming.FunctionCase: camelBack
   readability-identifier-naming.MethodCase: camelBack
   readability-identifier-naming.EnumCase: CamelCase
+  readability-identifier-naming.EnumConstantCase: UPPER_CASE
   readability-identifier-naming.ConstantCase: UPPER_CASE
+  readability-identifier-length.MinimumVariableNameLength: 3
+  readability-identifier-length.MaximumVariableNameLength: 35
+  readability-function-cognitive-complexity.Threshold: 15
+  readability-function-size.LineThreshold: 30
+  readability-function-size.ParameterThreshold: 4
+  readability-function-size.NestingThreshold: 4
 
 #CheckOptions:
 #  - key: readability-identifier-naming.VariableCase

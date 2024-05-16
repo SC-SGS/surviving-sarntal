@@ -8,39 +8,27 @@ Vector::operator Position() const { return Position{x, y}; }
 
 Vector::operator Velocity() const { return Velocity{x, y}; }
 
-Velocity Vector::operator+(Vector const &other) const {
-    return {x + other.x, y + other.y};
-}
+Velocity Vector::operator+(Vector const &other) const { return {x + other.x, y + other.y}; }
 
 void Vector::operator+=(const Vector &other) {
     x += other.x;
     y += other.y;
 }
 
-Vector Vector::operator+(float_type other) const {
-    return {x + other, y + other};
-}
+Vector Vector::operator+(float_type other) const { return {x + other, y + other}; }
 
-Vector Vector::operator-(Vector const &other) const {
-    return {x - other.x, y - other.y};
-}
+Vector Vector::operator-(Vector const &other) const { return {x - other.x, y - other.y}; }
 
 void Vector::operator-=(const Vector &other) {
     x -= other.x;
     y -= other.y;
 }
 
-Vector Vector::operator*(float_type scalar) const {
-    return {x * scalar, y * scalar};
-}
+Vector Vector::operator*(float_type scalar) const { return {x * scalar, y * scalar}; }
 
-float_type Vector::operator*(Vector const &other) const {
-    return x * other.x + y * other.y;
-}
+float_type Vector::operator*(Vector const &other) const { return x * other.x + y * other.y; }
 
-Vector Vector::operator/(float_type scalar) const {
-    return {x / scalar, y / scalar};
-}
+Vector Vector::operator/(float_type scalar) const { return {x / scalar, y / scalar}; }
 
 void Vector::operator/=(float_type scalar) {
     x /= scalar;

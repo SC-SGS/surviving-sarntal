@@ -104,8 +104,7 @@ class MountainClass {
     IndexInterval getLatestChunk() const;
 
   private:
-    std::array<Position, NUMBER_OF_VERTICES>
-        landscape_fixpoints_circular_array{};
+    std::array<Position, NUMBER_OF_VERTICES> landscape_fixpoints_circular_array{};
     std::size_t start_of_circular_array{0};
 
     /** Generating a mountain using 2D Fractal Terrain Generation as described
@@ -118,8 +117,7 @@ class MountainClass {
      * @param displacement Constant defining how aggressive it should be
      * roughened
      */
-    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex,
-                                  float displacement);
+    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
 
     void generateSlope();
 

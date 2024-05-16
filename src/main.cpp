@@ -26,8 +26,7 @@ bool kinect_init;
 
 int main(int argc, char *argv[]) {
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
-        std::cerr << "SDL initialization error: " << SDL_GetError()
-                  << std::endl;
+        std::cerr << "SDL initialization error: " << SDL_GetError() << std::endl;
     }
 
     using namespace std::chrono_literals;
@@ -117,8 +116,7 @@ void mainLoop(flecs::world &world) {
                 {
                     ClearBackground(WHITE);
                     DrawText("Game Paused", 600, 450, 70, BLACK);
-                    DrawText("Press Backspace to continue!!", 350, 550, 70,
-                             BLACK);
+                    DrawText("Press Backspace to continue!!", 350, 550, 70, BLACK);
                 }
                 EndDrawing();
             }

@@ -43,18 +43,7 @@ else ()
     list(FILTER SRC EXCLUDE REGEX "main.cpp|kinect_handler.h|kinect_handler.cpp")
 endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
-add_library(surviving-sarntal-library ${SRC}
-        src/systems/rockSpawnStuff.h
-        src/systems/rockSpawnStuff.cpp
-        src/entities/HikerMovement.h
-        src/entities/HikerMovement.cpp
-        src/entities/Inventory.h
-        src/entities/Inventory.cpp
-        src/entities/World.h
-        src/entities/World.cpp
-        src/entities/RenderInformation.h
-        src/entities/RenderedEntity.h
-        src/entities/RenderedEntity.cpp)
+add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
 add_executable(surviving-sarntal src/main.cpp
         src/input/devices/Device.h)

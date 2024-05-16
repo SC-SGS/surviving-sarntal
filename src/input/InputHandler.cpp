@@ -42,6 +42,4 @@ InputHandler::InputHandler(Device device) {
     }
 }
 
-std::list<GameEvent> InputHandler::getEvents() {
-    return device->getGameEvents();
-}
+std::list<GameEvent> InputHandler::getEvents() { return device->getGameEvents(); }
