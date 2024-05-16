@@ -1,0 +1,16 @@
+//
+// Created by felix-roehr on 5/4/24.
+//
+
+#ifndef SURVIVING_SARNTAL_TRIGGERTYPE_H
+#define SURVIVING_SARNTAL_TRIGGERTYPE_H
+
+enum TriggerType {
+    TRIGGER_PRESSED,
+    TRIGGER_RELEASED,
+    TRIGGER_DOWN,
+    TRIGGER_UP,
+    TRIGGER_POSITION
+};
+
+#endif // SURVIVING_SARNTAL_TRIGGERTYPE_H
