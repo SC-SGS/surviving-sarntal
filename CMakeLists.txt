@@ -4,6 +4,8 @@ if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
 #set(CMAKE_CXX_CLANG_TIDY
@@ -45,8 +47,7 @@ endif ()
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
-add_executable(surviving-sarntal src/main.cpp
-        src/input/devices/Device.h)
+add_executable(surviving-sarntal src/main.cpp)
 #add main.cpp to surviving-sarntal executable
 
 target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
@@ -85,35 +86,6 @@ file(GLOB_RECURSE TEST_SRC "test/*.cpp" "test/*.h")
 add_executable(
         main_test
         ${TEST_SRC}
-        src/input/devices/Device.h
-        src/input/devices/InputDevice.cpp
-        src/input/devices/InputDevice.h
-        src/input/devices/Gamepad.cpp
-        src/input/devices/Gamepad.h
-        src/input/devices/Mouse.cpp
-        src/input/devices/Mouse.h
-        src/input/devices/Keyboard.cpp
-        src/input/devices/Keyboard.h
-        src/input/InputHandler.cpp
-        src/input/InputHandler.h
-        src/input/events/DeviceEvent.h
-        src/input/events/TriggerType.h
-        src/input/events/GameEvent.h
-        src/input/events/EventType.h
-        src/input/events/AxisModification.h
-        src/input/events/Axis.h
-        src/game_logic/start_screen.h
-        src/game_logic/start_screen.cpp
-        src/entities/Hiker.h
-        src/entities/Rock.cpp
-        src/entities/Rock.h
-        src/entities/Monster.cpp
-        src/entities/Monster.h
-        src/entities/Item.cpp
-        src/entities/Item.h
-        src/entities/Mountain.cpp
-        src/entities/Mountain.h
-        src/input/devices/Device.h
 )
 target_include_directories(main_test PUBLIC ".")
 target_link_libraries(
