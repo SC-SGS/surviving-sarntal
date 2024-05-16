@@ -100,9 +100,7 @@ template <typename T> class ResourceManager {
 
   protected:
     friend struct Resources;
-    void setOnFreeCallback(std::function<void(T)> callback) {
-        onFree = callback;
-    }
+    void setOnFreeCallback(std::function<void(T)> callback) { onFree = callback; }
 
   private:
     std::unordered_map<HANDLE, T> res;

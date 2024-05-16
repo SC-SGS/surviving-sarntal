@@ -93,9 +93,7 @@ bool InputEntity::getKeyboardEvent(ButtonEvent event) {
     }
 }
 
-double InputEntity::getGamepadAxis(GamepadAxis axis) const {
-    return GetGamepadAxisMovement(getGamepadId(), axis);
-}
+double InputEntity::getGamepadAxis(GamepadAxis axis) const { return GetGamepadAxisMovement(getGamepadId(), axis); }
 
 double InputEntity::getVirtualAxis(VirtualAxis axis) const {
     double value = 0;
@@ -146,16 +144,12 @@ bool InputEntity::getEvent(Event event) const {
 bool InputEntity::useVirtualAxis(VirtualAxis axis) const {
     switch (current_input_type) {
     case GAMEPAD:
-        return axis.positive.device == DEVICE_GAMEPAD ||
-               axis.negative.device == DEVICE_GAMEPAD;
+        return axis.positive.device == DEVICE_GAMEPAD || axis.negative.device == DEVICE_GAMEPAD;
     case KINECT:
-        return axis.positive.device == DEVICE_KINECT ||
-               axis.negative.device == DEVICE_KINECT;
+        return axis.positive.device == DEVICE_KINECT || axis.negative.device == DEVICE_KINECT;
     case MOUSE_KEYBOARD:
-        return axis.positive.device == DEVICE_KEYBOARD ||
-               axis.negative.device == DEVICE_KEYBOARD ||
-               axis.positive.device == DEVICE_MOUSE ||
-               axis.negative.device == DEVICE_MOUSE;
+        return axis.positive.device == DEVICE_KEYBOARD || axis.negative.device == DEVICE_KEYBOARD ||
+               axis.positive.device == DEVICE_MOUSE || axis.negative.device == DEVICE_MOUSE;
     default:
         return false;
     }
@@ -208,25 +202,19 @@ void InputEntity::updateDevices() {
     }
 }
 
-const std::string &InputEntity::getEventDisplayName(Event event) {
-    return EVENT_DISPLAY_NAMES.at(event);
-}
+const std::string &InputEntity::getEventDisplayName(Event event) { return EVENT_DISPLAY_NAMES.at(event); }
 
-const std::string &InputEntity::getAxisDisplayName(Axis axis) {
-    return AXIS_DISPLAY_NAMES.at(axis);
-}
+const std::string &InputEntity::getAxisDisplayName(Axis axis) { return AXIS_DISPLAY_NAMES.at(axis); }
 
 std::string InputEntity::getInputInfo() const {
     std::stringstream input_info;
 
     for (int i = 0; i < Event::EVENT_COUNT; ++i) {
-        input_info << getEventDisplayName((Event)i) << ": "
-                   << getEvent((Event)i) << std::endl;
+        input_info << getEventDisplayName((Event)i) << ": " << getEvent((Event)i) << std::endl;
     }
 
     for (int i = 0; i < Axis::AXIS_COUNT; ++i) {
-        input_info << getAxisDisplayName((Axis)i) << ": " << getAxis((Axis)i)
-                   << std::endl;
+        input_info << getAxisDisplayName((Axis)i) << ": " << getAxis((Axis)i) << std::endl;
     }
 
     return input_info.str();
@@ -262,9 +250,7 @@ bool InputEntity::getMouseEvent(ButtonEvent event) {
         return false;
     }
 }
-InputEntity::InputType InputEntity::getInputType() const {
-    return current_input_type;
-}
+InputEntity::InputType InputEntity::getInputType() const { return current_input_type; }
 
 void rumbleThread(SDL_GameController *controller, int strength, int duration) {
     // Set rumble intensity for both motors (left and right)

@@ -5,13 +5,10 @@
 #include "Item.h"
 #include <iostream>
 
-Item::Item(ItemType itemType, std::string name, std::string texture,
-           std::string audio, bool autoCollect, bool useOnPickup,
-           bool dropOnUse)
-    : itemID(itemType), name(name), texture(texture), audio(audio),
-      autoCollect(autoCollect), useOnPickup(useOnPickup), dropOnUse(dropOnUse) {
-
-}
+Item::Item(ItemType itemType, std::string name, std::string texture, std::string audio, bool autoCollect,
+           bool useOnPickup, bool dropOnUse)
+    : itemID(itemType), name(name), texture(texture), audio(audio), autoCollect(autoCollect), useOnPickup(useOnPickup),
+      dropOnUse(dropOnUse) {}
 
 void Item::useItem(ItemType itemType, Hiker &hiker) {
     switch (itemType) {
@@ -31,8 +28,7 @@ void Item::useItem(ItemType itemType, Hiker &hiker) {
 
 void Item::useKaiserschmarrn(Hiker &hiker) {
     int currentHealth = hiker.getHealthPoints();
-    hiker.setHealthPoints(std::min(
-        currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
+    hiker.setHealthPoints(std::min(currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
     std::cout << "used Kaiserschmarrn" << std::endl;
 }
 
