@@ -5,8 +5,8 @@
 #ifndef SURVIVING_SARNTAL_MONSTER_H
 #define SURVIVING_SARNTAL_MONSTER_H
 
+#include "../graphics/render_information/RenderInformation.h"
 #include "../utils/game_constants.h"
-#include "RenderInformation.h"
 #include "RenderedEntity.h"
 
 /**
@@ -15,7 +15,7 @@
  */
 class Monster : public RenderedEntity {
   public:
-    Monster();
+    explicit Monster(Vector position) : RenderedEntity(position) { this->position = position; }
 
     float_type getXPosition() const;
     void setXPosition(float_type x);
