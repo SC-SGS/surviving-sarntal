@@ -6,8 +6,8 @@
 #define SURVIVING_SARNTAL_HIKER_H
 
 #include "../components/vector.h"
+#include "../graphics/render_information/RenderInformation.h"
 #include "HikerMovement.h"
-#include "RenderInformation.h"
 #include "RenderedEntity.h"
 
 struct HitInformation {
@@ -25,10 +25,7 @@ struct HitInformation {
 class Hiker : public RenderedEntity {
 
   public:
-    Hiker();
-
-    Hiker(HikerMovement hikerMovement, Vector velocity);
-
+    explicit Hiker(Vector position);
     float getHeight() const;
     void setHeight(float h);
 
@@ -52,6 +49,8 @@ class Hiker : public RenderedEntity {
 
     bool getIsAlive() const;
     void setIsAlive(bool alive);
+
+    RenderInformation getRenderInformation() override;
 
   private:
     Vector velocity;
