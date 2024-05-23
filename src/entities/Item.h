@@ -22,9 +22,10 @@ enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK = 2 };
  */
 class Item : public RenderedEntity {
   public:
-    Item();
-    Item(ItemType itemType, std::string name, std::string texture, std::string audio, bool autoCollect,
-         bool useOnPickup, bool dropOnUse);
+    Item(Vector position, ItemType itemType, std::string name, std::string texture, std::string audio, bool autoCollect,
+         bool useOnPickup, bool dropOnUse)
+        : itemID(itemType), name(std::move(name)), texture(std::move(texture)), audio(std::move(audio)),
+          autoCollect(autoCollect), useOnPickup(useOnPickup), dropOnUse(dropOnUse), RenderedEntity(position) {}
 
     // world needs to be inserted as an argument
     static void useItem(ItemType itemType, Hiker &hiker);

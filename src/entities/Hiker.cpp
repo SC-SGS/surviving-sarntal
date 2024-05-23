@@ -7,13 +7,13 @@
 #include "../utils/game_constants.h"
 #include "iostream"
 
-Hiker::Hiker()
-    : height(0), width(0), healthPoints(100), hikerMovement(), isHit(false), hitInformation(), velocity(),
-      isAlive(true) {}
+Hiker::Hiker(Vector position)
+    : RenderedEntity(position), height(HIKER_HEIGHT), width(HIKER_WIDTH), healthPoints(HIKER_MAX_HEALTH),
+      hikerMovement(HikerMovement()), isHit(false), hitInformation(), velocity({0, 0}), isAlive(true) {}
 
-Hiker::Hiker(HikerMovement hikerMovement, Vector velocity)
-    : height(0.0f), width(0.0f), healthPoints(100), hikerMovement(hikerMovement), isHit(false), hitInformation(),
-      velocity(velocity), isAlive(true) {}
+RenderInformation Hiker::getRenderInformation() {
+    return RenderInformation{Vector2(position), width, height, {0, 0}, hikerMovement.getStateString()};
+}
 
 float Hiker::getHeight() const { return height; }
 
@@ -29,7 +29,23 @@ void Hiker::setHealthPoints(int hp) { healthPoints = hp; }
 
 HikerMovement Hiker::getHikerMovement() const { return hikerMovement; }
 
-void Hiker::setHikerMovement(const HikerMovement &movement) { hikerMovement = movement; }
+void Hiker::setHikerMovement(const HikerMovement &movement) {
+    switch (movement.getState()) {
+    case HikerMovement::MOVING:
+        height = HIKER_HEIGHT;
+        width = HIKER_WIDTH;
+        break;
+    case HikerMovement::DUCKED:
+        height = DUCKED_HIKER_HEIGHT;
+        width = DUCKED_HIKER_WIDTH;
+        break;
+    case HikerMovement::IN_AIR:
+        height = HIKER_HEIGHT;
+        width = HIKER_WIDTH;
+        break;
+    }
+    hikerMovement = movement;
+}
 
 HitInformation Hiker::getHitInformation() const { return hitInformation; }
 
