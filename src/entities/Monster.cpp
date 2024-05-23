@@ -4,8 +4,6 @@
 
 #include "Monster.h"
 
-Monster::Monster() = default;
-
 float_type Monster::getXPosition() const { return position.x; }
 
 void Monster::setXPosition(float_type x) { position.x = x; }

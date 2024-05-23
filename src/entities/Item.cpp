@@ -5,11 +5,6 @@
 #include "Item.h"
 #include <iostream>
 
-Item::Item(ItemType itemType, std::string name, std::string texture, std::string audio, bool autoCollect,
-           bool useOnPickup, bool dropOnUse)
-    : itemID(itemType), name(name), texture(texture), audio(audio), autoCollect(autoCollect), useOnPickup(useOnPickup),
-      dropOnUse(dropOnUse) {}
-
 void Item::useItem(ItemType itemType, Hiker &hiker) {
     switch (itemType) {
     case KAISERSCHMARRN:

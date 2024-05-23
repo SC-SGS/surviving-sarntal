@@ -5,15 +5,16 @@
 #ifndef SURVIVING_SARNTAL_RENDERINFORMATION_H
 #define SURVIVING_SARNTAL_RENDERINFORMATION_H
 
-#include "../utils/resource_manager.h"
+#include "../../components/vector.h"
+#include "../../utils/resource_manager.h"
 #include "raylib.h"
 
 struct RenderInformation {
-    Vector3 billUp;
-    Vector3 billPositionStatic;
-    int width;
-    int height;
-    graphics::HANDLE resourceHandle;
+    Vector2 position;
+    float width;
+    float height;
+    Rotation rotation;
+    std::string texture;
 };
 
 #endif // SURVIVING_SARNTAL_RENDERINFORMATION_H

@@ -6,18 +6,19 @@
 #define SURVIVING_SARNTAL_RENDEREDENTITY_H
 
 #include "../components/vector.h"
+#include "../graphics/render_information/RenderInformation.h"
 
 class RenderedEntity {
   public:
-    void setRenderInformation(RenderInformation &info);
-    RenderInformation getRenderInformation();
+    explicit RenderedEntity(Vector position);
+    virtual RenderInformation getRenderInformation();
 
     void setPosition(Vector &position);
     Vector getPosition();
 
   protected:
     RenderInformation renderInformation;
-    Vector position;
+    Vector position{};
 };
 
 #endif // SURVIVING_SARNTAL_RENDEREDENTITY_H

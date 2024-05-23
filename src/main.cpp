@@ -38,10 +38,10 @@ int main(int argc, char *argv[]) {
     kinect_mode = false;
     kinect_init = false;
 
-    constexpr std::hash<std::string> hasher{};
+    constexpr std::hash<std::string> HASHER{};
 
-    auto hash = hasher("path");
-    auto hash2 = hasher("path");
+    auto hash = HASHER("path");
+    auto hash2 = HASHER("path");
 
 #ifdef kinect
     std::cout << "Kinect is active" << std::endl;
@@ -78,14 +78,14 @@ int main(int argc, char *argv[]) {
 
     initGameLogic(world);
 
-    bool meme_mode = false;
+    bool memeMode = false;
     if (argc >= 2) {
-        std::string music_mode = argv[1];
-        if (music_mode == "meme") {
-            meme_mode = true;
+        std::string musicMode = argv[1];
+        if (musicMode == "meme") {
+            memeMode = true;
         }
     }
-    physics::initSounds(meme_mode);
+    physics::initSounds(memeMode);
 
     world.set<AppInfo>({});
 
@@ -99,16 +99,16 @@ void mainLoop(flecs::world &world) {
 
     SetTargetFPS(1000);
 
-    auto app_info = world.get<AppInfo>();
-    bool is_Paused = false;
+    auto appInfo = world.get<AppInfo>();
+    bool isPaused = false;
 
     auto ie = world.get<InputEntity>();
-    while (app_info->isRunning) {
-        if (app_info->playerAlive) {
+    while (appInfo->isRunning) {
+        if (appInfo->playerAlive) {
             if (ie->getEvent(Event::PAUSE)) {
-                is_Paused = !is_Paused;
+                isPaused = !isPaused;
             }
-            if (!is_Paused) {
+            if (!isPaused) {
                 float dt = GetFrameTime();
                 world.progress(dt);
             } else {
