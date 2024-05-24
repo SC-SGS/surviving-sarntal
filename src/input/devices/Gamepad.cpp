@@ -5,7 +5,7 @@
 #include "Gamepad.h"
 #include "raylib.h"
 
-Gamepad::Gamepad(int id) : id(id) {
+Gamepad::Gamepad(int id) : ID(id) {
     INPUT_MAPPINGS = {
         // Normal events
         {{GAMEPAD_BUTTON_RIGHT_FACE_DOWN, TRIGGER_PRESSED}, {JUMP, NO_AXIS, NO_MODIFICATION}},
@@ -44,11 +44,11 @@ std::list<GameEvent> Gamepad::getGameEvents() {
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
         if (deviceEvent.triggerType == TRIGGER_POSITION) {
-            float axisValue = Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(id, deviceEvent.trigger);
+            float axisValue = Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(ID, deviceEvent.trigger);
             GameEvent gameEvent = getGameEvent(deviceEvent);
             gameEvent.axisValue = axisValue;
             events.push_back(gameEvent);
-        } else if (Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(id, deviceEvent.trigger)) {
+        } else if (Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(ID, deviceEvent.trigger)) {
             events.push_back(getGameEvent(deviceEvent));
         }
     }
