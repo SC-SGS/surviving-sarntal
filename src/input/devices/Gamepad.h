@@ -17,7 +17,7 @@ class Gamepad : public InputDevice {
     ~Gamepad() override;
 
   protected:
-    const int id;
+    const int ID;
     std::list<GameEvent> getGameEvents() override;
 
   private:
