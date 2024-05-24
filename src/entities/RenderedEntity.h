@@ -8,16 +8,21 @@
 #include "../components/vector.h"
 #include "../graphics/render_information/RenderInformation.h"
 
+/**
+ * This class serves as a base class for rendered entities.
+ * Hiker, Item, Monster and Rock inherit from this class.
+ * Key features of a rendered item are position and necessary render information.
+ */
 class RenderedEntity {
   public:
     explicit RenderedEntity(Vector position);
+
     virtual RenderInformation getRenderInformation();
 
     void setPosition(Vector &position);
     Vector getPosition();
 
   protected:
-    RenderInformation renderInformation;
     Vector position{};
 };
 

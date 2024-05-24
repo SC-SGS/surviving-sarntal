@@ -6,13 +6,21 @@
 #define SURVIVING_SARNTAL_ITEM_H
 
 #include "../components/vector.h"
-#include "Hiker.h"
+#include "../graphics/render_information/RenderInformation.h"
+#include "RenderedEntity.h"
 #include "string"
 
 /**
  * Enum to specify the different types of items that occur in the game.
  */
-enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK = 2 };
+enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2 };
+
+struct ItemInformation {
+    std::string name;
+    bool autoCollect;
+    bool useOnPickup;
+    bool dropOnUse;
+};
 
 /**
  * This class represents an Item in the game. An item can be of type
@@ -22,26 +30,26 @@ enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK = 2 };
  */
 class Item : public RenderedEntity {
   public:
-    Item(Vector position, ItemType itemType, std::string name, std::string texture, std::string audio, bool autoCollect,
-         bool useOnPickup, bool dropOnUse)
-        : itemID(itemType), name(std::move(name)), texture(std::move(texture)), audio(std::move(audio)),
-          autoCollect(autoCollect), useOnPickup(useOnPickup), dropOnUse(dropOnUse), RenderedEntity(position) {}
+    Item(ItemType itemType, ItemInformation itemInformation, Vector position);
 
-    // world needs to be inserted as an argument
-    static void useItem(ItemType itemType, Hiker &hiker);
+    /**
+     * This method gets the information about an item based on the item type.
+     * @param itemType
+     * @return item information
+     */
+    static ItemInformation getItemInformation(ItemType itemType);
+
+    ItemType getItemType();
 
   private:
     ItemType itemID;
+    ItemInformation itemInformation;
     std::string name;
     std::string texture;
     std::string audio;
-    bool autoCollect;
-    bool useOnPickup;
-    bool dropOnUse;
-    static void useCoin();
-    static void useDuck();
-    static void useKaiserschmarrn(Hiker &hiker);
-    // float interactionRadius;
+    bool autoCollect{};
+    bool useOnPickup{};
+    bool dropOnUse{};
 };
 
 #endif // SURVIVING_SARNTAL_ITEM_H

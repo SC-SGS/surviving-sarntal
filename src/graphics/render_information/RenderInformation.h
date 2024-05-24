@@ -9,6 +9,10 @@
 #include "../../utils/resource_manager.h"
 #include "raylib.h"
 
+/**
+ * This struct contains all the information necessary for rendering an entity
+ * of our game world.
+ */
 struct RenderInformation {
     Vector2 position;
     float width;

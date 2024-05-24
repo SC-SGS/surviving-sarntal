@@ -12,16 +12,7 @@ size_t Inventory::getSlotCount() const { return slots.size(); }
 
 void Inventory::initItems() {}
 
-void Inventory::checkCanCollect() {}
-
-void Inventory::updateInventory() {}
-
 void Inventory::pickup(ItemType itemType) { slots[selectedSlot].itemType = itemType; }
-
-void Inventory::useItem(ItemType itemType, Hiker &hiker) {
-    // play sound
-    Item::useItem(itemType, hiker);
-}
 
 void Inventory::drop() { slots[selectedSlot].itemType = ItemType::NO_ITEM; }
 

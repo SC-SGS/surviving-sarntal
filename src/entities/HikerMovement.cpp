@@ -14,7 +14,7 @@ HikerMovement::HikerMovement() {
 
 HikerMovement::MovementState HikerMovement::getState() const { return current_state; }
 std::string HikerMovement::getStateString() const {
-    switch (current_state) { // TODO take from config see issue #30 
+    switch (current_state) { // TODO take from config see issue #30
     case MOVING:
         return "walk";
     case DUCKED:
