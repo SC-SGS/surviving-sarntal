@@ -24,12 +24,12 @@ MountainClass::MountainClass() {
 }
 
 void MountainClass::printTempDebugInfo() {
-    IndexInterval test_interval{getRelevantMountainSection(10.2, 13.6)};
-    std::cout << "Mountain test indices: " << test_interval.start_index << ", " << test_interval.end_index << std::endl;
-    std::cout << "left point coords: " << getVertex(test_interval.start_index).x << ", "
-              << getVertex(test_interval.start_index).y << std::endl;
-    std::cout << "right point coords: " << getVertex(test_interval.end_index).x << ", "
-              << getVertex(test_interval.end_index).y << std::endl;
+    IndexIntervalNew test_interval{getRelevantMountainSection(10.2, 13.6)};
+    std::cout << "Mountain test indices: " << test_interval.startIndex << ", " << test_interval.endIndex << std::endl;
+    std::cout << "left point coords: " << getVertex(test_interval.startIndex).x << ", "
+              << getVertex(test_interval.startIndex).y << std::endl;
+    std::cout << "right point coords: " << getVertex(test_interval.endIndex).x << ", "
+              << getVertex(test_interval.endIndex).y << std::endl;
 }
 
 Position MountainClass::getVertex(size_t index) {
@@ -39,19 +39,19 @@ Position MountainClass::getVertex(int index) {
     return landscape_fixpoints_circular_array[(index + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES];
 }
 
-IndexInterval MountainClass::getRelevantMountainSection(float_type min_x, float_type max_x) {
-    IndexInterval returnvalue{};
-    returnvalue.start_index = ((std::size_t)std::floor(min_x / SECTION_WIDTH)) % NUMBER_OF_VERTICES;
-    returnvalue.end_index = ((std::size_t)(std::ceil(max_x / SECTION_WIDTH) + 1)) % NUMBER_OF_VERTICES;
-    if (returnvalue.end_index < returnvalue.start_index)
-        returnvalue.end_index += NUMBER_OF_VERTICES;
+IndexIntervalNew MountainClass::getRelevantMountainSection(float_type min_x, float_type max_x) {
+    IndexIntervalNew returnvalue{};
+    returnvalue.startIndex = ((std::size_t)std::floor(min_x / SECTION_WIDTH)) % NUMBER_OF_VERTICES;
+    returnvalue.endIndex = ((std::size_t)(std::ceil(max_x / SECTION_WIDTH) + 1)) % NUMBER_OF_VERTICES;
+    if (returnvalue.endIndex < returnvalue.startIndex)
+        returnvalue.endIndex += NUMBER_OF_VERTICES;
 
     return returnvalue;
     /*float leftmost_x = getVertex(0).x;
     IndexInterval returnvalue;
-    returnvalue.start_index =
+    returnvalue.startIndex =
         (std::size_t)std::floor((min_x - leftmost_x) / SECTION_WIDTH);
-    returnvalue.end_index =
+    returnvalue.endIndex =
         (std::size_t)(std::ceil((max_x - leftmost_x) / SECTION_WIDTH) + 1);
     return returnvalue;*/
 }
@@ -77,20 +77,20 @@ void MountainClass::generateSlope() {
     }
 }
 
-IndexInterval MountainClass::getIndexIntervalOfEntireMountain() const {
-    IndexInterval returnvalue{};
-    returnvalue.start_index = start_of_circular_array;
-    returnvalue.end_index = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
+IndexIntervalNew MountainClass::getIndexIntervalOfEntireMountain() const {
+    IndexIntervalNew returnvalue{};
+    returnvalue.startIndex = start_of_circular_array;
+    returnvalue.endIndex = (start_of_circular_array - 1 + NUMBER_OF_VERTICES);
     return returnvalue;
 }
 
-IndexInterval MountainClass::getLatestChunk() const {
-    IndexInterval returnvalue{};
-    returnvalue.end_index = start_of_circular_array;
-    returnvalue.start_index =
+IndexIntervalNew MountainClass::getLatestChunk() const {
+    IndexIntervalNew returnvalue{};
+    returnvalue.endIndex = start_of_circular_array;
+    returnvalue.startIndex =
         (start_of_circular_array - NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES;
-    if (returnvalue.start_index > returnvalue.end_index) {
-        returnvalue.end_index += NUMBER_OF_VERTICES;
+    if (returnvalue.startIndex > returnvalue.endIndex) {
+        returnvalue.endIndex += NUMBER_OF_VERTICES;
     }
     return returnvalue;
 }

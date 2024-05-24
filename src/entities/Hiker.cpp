@@ -3,9 +3,11 @@
 //
 
 #include "Hiker.h"
+
 #include "../components/vector.h"
 #include "../utils/game_constants.h"
 #include "iostream"
+#include <utility>
 
 Hiker::Hiker(Vector position)
     : RenderedEntity(position), height(HIKER_HEIGHT), width(HIKER_WIDTH), healthPoints(HIKER_MAX_HEALTH),
@@ -53,7 +55,7 @@ void Hiker::setHitInformation(const struct HitInformation &hit) { hitInformation
 
 bool Hiker::getIsHit() const { return isHit; }
 
-void Hiker::setIsHit(bool isHitted) { isHit = isHitted; }
+void Hiker::setIsHit(bool isHit) { this->isHit = isHit; }
 
 Vector Hiker::getVelocity() const { return velocity; }
 

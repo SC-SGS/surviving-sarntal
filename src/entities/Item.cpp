@@ -4,29 +4,22 @@
 
 #include "Item.h"
 #include <iostream>
+#include <utility>
 
-void Item::useItem(ItemType itemType, Hiker &hiker) {
+Item::Item(ItemType itemType, ItemInformation itemInformation, Vector position)
+    : RenderedEntity(position), itemID(itemType), itemInformation(std::move(itemInformation)) {}
+
+ItemInformation Item::getItemInformation(ItemType itemType) {
     switch (itemType) {
     case KAISERSCHMARRN:
-        useKaiserschmarrn(hiker);
-        break;
+        return {"Kaiserschmarrn", false, false, true};
     case COIN:
-        useCoin();
-        break;
-    case DUCK:
-        useDuck();
-        break;
+        return {"Coin", false, true, true};
+    case DUCK_ITEM:
+        return {"Duck", true, false, true};
     default:
-        break;
+        return {"NoItem", false, false, false};
     }
 }
 
-void Item::useKaiserschmarrn(Hiker &hiker) {
-    int currentHealth = hiker.getHealthPoints();
-    hiker.setHealthPoints(std::min(currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
-    std::cout << "used Kaiserschmarrn" << std::endl;
-}
-
-// exact implementation missing
-void Item::useCoin() { std::cout << "used coin" << std::endl; }
-void Item::useDuck() { std::cout << "used duck" << std::endl; }
+ItemType Item::getItemType() { return this->itemID; }

@@ -15,7 +15,7 @@
  */
 class Monster : public RenderedEntity {
   public:
-    explicit Monster(Vector position) : RenderedEntity(position) { this->position = position; }
+    explicit Monster(Vector position);
 
     float_type getXPosition() const;
     void setXPosition(float_type x);

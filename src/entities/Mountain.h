@@ -2,12 +2,16 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "../components/mountain.h"
 #include "../components/vector.h"
 #include <array>
 #include <cmath>
 #include <random>
 #include <vector>
+
+struct IndexIntervalNew {
+    std::size_t startIndex;
+    std::size_t endIndex;
+};
 
 class MountainClass {
   public:
@@ -63,7 +67,7 @@ class MountainClass {
      * @return Returns start_index and end_index of the section from min_x to
      * max_x INCLUDING start_index and EXCLUDING end_index;
      */
-    static IndexInterval getRelevantMountainSection(float min_x, float max_x);
+    static IndexIntervalNew getRelevantMountainSection(float min_x, float max_x);
 
     /** Returns a position from a given index. The index should previously be
      * obtained via a seperate function of the mountain.
@@ -87,7 +91,7 @@ class MountainClass {
      * with the indices from 2 to 22
      * @return
      */
-    IndexInterval getIndexIntervalOfEntireMountain() const;
+    IndexIntervalNew getIndexIntervalOfEntireMountain() const;
 
     /**
      * @return Returns start_index and end_index of the latest generated
@@ -101,7 +105,7 @@ class MountainClass {
      * However, the points might be close enough together that this is not
      * necessary. (If this API sucks it can easily be changed)
      */
-    IndexInterval getLatestChunk() const;
+    IndexIntervalNew getLatestChunk() const;
 
   private:
     std::array<Position, NUMBER_OF_VERTICES> landscape_fixpoints_circular_array{};
