@@ -17,22 +17,13 @@ struct ItemSlot {
  * items.
  */
 class Inventory {
-  public:
-    // not clear yet what this method is doing
-    static void checkCanCollect();
-
-    // needs player, user input and inventory as input
-    /**
-     * @brief This method updates the inventory based on the user input.
-     */
-    static void updateInventory();
 
   private:
     std::vector<ItemSlot> slots;
     size_t selectedSlot = 0;
 
   public:
-    Inventory(size_t slotCount);
+    explicit Inventory(size_t slotCount);
     Inventory();
 
     static void initItems();
@@ -48,14 +39,6 @@ class Inventory {
      * @param itemType
      */
     void pickup(ItemType itemType);
-
-    /**
-     * @brief This method executes the usage of an item of a specified type.
-     * @param itemType
-     * @param hiker
-     */
-    // world has to be inserted as an argument as well
-    static void useItem(ItemType itemType, Hiker &hiker);
 
     /**
      * @brief This method clear the selected slot of the inventory.

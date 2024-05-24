@@ -4,10 +4,12 @@
 
 #include "RenderedEntity.h"
 
-RenderInformation RenderedEntity::getRenderInformation() { return renderInformation; }
-
-void RenderedEntity::setPosition(Vector &newPosition) { this->position = newPosition; }
-
-Vector RenderedEntity::getPosition() { return position; }
+#include "../graphics/render_information/RenderInformation.h"
+#include <utility>
 
 RenderedEntity::RenderedEntity(Vector position) { this->position = position; }
+
+RenderInformation RenderedEntity::getRenderInformation() { return {Vector2(position), 0, 0, {0, 0}, ""}; }
+
+void RenderedEntity::setPosition(Vector &position) { this->position = position; }
+Vector RenderedEntity::getPosition() { return position; }

@@ -10,6 +10,9 @@
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
 
+/**
+ * This struct contains information about a collision of a hiker with a rock.
+ */
 struct HitInformation {
     float radius_rock;
     float velocity_rock;
@@ -26,6 +29,7 @@ class Hiker : public RenderedEntity {
 
   public:
     explicit Hiker(Vector position);
+
     float getHeight() const;
     void setHeight(float h);
 
@@ -39,7 +43,7 @@ class Hiker : public RenderedEntity {
     void setHikerMovement(const HikerMovement &movement);
 
     bool getIsHit() const;
-    void setIsHit(bool isHitted);
+    void setIsHit(bool isHit);
 
     HitInformation getHitInformation() const;
     void setHitInformation(const HitInformation &hit);
@@ -53,14 +57,14 @@ class Hiker : public RenderedEntity {
     RenderInformation getRenderInformation() override;
 
   private:
-    Vector velocity;
-    float height;
-    float width;
-    int healthPoints;
+    Vector velocity{};
+    float height{};
+    float width{};
+    int healthPoints{};
     HikerMovement hikerMovement;
-    bool isHit;
-    HitInformation hitInformation;
-    bool isAlive;
+    bool isHit{};
+    HitInformation hitInformation{};
+    bool isAlive{};
 };
 
 #endif // SURVIVING_SARNTAL_HIKER_H
