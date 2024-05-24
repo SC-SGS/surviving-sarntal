@@ -4,6 +4,12 @@
 
 #include "Rock.h"
 
+#include "../components/vector.h"
+#include <utility>
+
+RockClass::RockClass(Vector velocity, Rotation rotation, float radius, Vector position)
+    : RenderedEntity(position), velocity(velocity), rotation(rotation), radius(radius) {}
+
 RenderInformation RockClass::getRenderInformation() {
     return RenderInformation{Vector2(position), radius, radius, rotation, "rock"};
 }
