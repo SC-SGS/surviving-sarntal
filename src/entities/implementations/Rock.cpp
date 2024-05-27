@@ -2,9 +2,9 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "Rock.h"
+#include "../Rock.h"
 
-#include "../components/vector.h"
+#include "../../components/vector.h"
 #include <utility>
 
 RockClass::RockClass(Vector velocity, Rotation rotation, float radius, Vector position)

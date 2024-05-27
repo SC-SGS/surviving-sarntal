@@ -14,9 +14,9 @@
  * This struct contains information about a collision of a hiker with a rock.
  */
 struct HitInformation {
-    float radius_rock;
-    float velocity_rock;
-    int counting_variable;
+    float radiusRock;
+    float velocityRock;
+    int countingVariable;
 };
 
 /**
@@ -29,7 +29,6 @@ class Hiker : public RenderedEntity {
 
   public:
     explicit Hiker(Vector position);
-
     float getHeight() const;
     void setHeight(float h);
 

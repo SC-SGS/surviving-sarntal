@@ -2,10 +2,9 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "Hiker.h"
-
-#include "../components/vector.h"
-#include "../utils/game_constants.h"
+#include "../Hiker.h"
+#include "../../components/vector.h"
+#include "../../utils/game_constants.h"
 #include "iostream"
 #include <utility>
 

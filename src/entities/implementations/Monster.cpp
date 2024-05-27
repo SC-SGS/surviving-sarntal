@@ -2,7 +2,7 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "Monster.h"
+#include "../Monster.h"
 Monster::Monster(Vector position) : RenderedEntity(position) {}
 
 float_type Monster::getXPosition() const { return position.x; }
