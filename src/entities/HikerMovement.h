@@ -24,16 +24,16 @@ class HikerMovement {
     void setState(MovementState state);
     Direction getDirection() const;
     void setDirection(Direction direction);
-    bool canJumpAgain() const;
+    bool getCanJumpAgain() const;
     void setCanJumpAgain(bool canJump);
     float getLastJump() const;
-    void setLastJump(float lastJump);
+    static void setLastJump(float lastJump);
 
   private:
-    MovementState current_state;
-    Direction current_direction;
-    bool can_jump_again{};
-    float last_jump{};
+    MovementState currentState;
+    Direction currentDirection;
+    bool canJumpAgain{};
+    float lastJump{};
 };
 
 #endif // SURVIVING_SARNTAL_HIKERMOVEMENT_H

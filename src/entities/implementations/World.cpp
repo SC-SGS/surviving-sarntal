@@ -1,12 +1,12 @@
 //
 // Created by Anietta Weckauff on 06.05.24.
 //
-#include "World.h"
-#include "Hiker.h"
+#include "../World.h"
+#include "../Hiker.h"
 
 // World::World() {}
 
-void World::initilizeWorld() {}
+void World::initializeWorld() {}
 
 void World::setHiker(Hiker &newHiker) { hiker = newHiker; }
 Hiker World::getHiker() const { return hiker; }

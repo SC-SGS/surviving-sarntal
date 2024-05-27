@@ -2,7 +2,7 @@
 // Created by Anietta Weckauff on 04.05.24.
 //
 
-#include "Inventory.h"
+#include "../Inventory.h"
 
 Inventory::Inventory(size_t slotCount) : slots(slotCount, ItemSlot{ItemType::NO_ITEM}), selectedSlot(0) {}
 
