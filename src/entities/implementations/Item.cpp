@@ -2,7 +2,7 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "Item.h"
+#include "../Item.h"
 #include <iostream>
 #include <utility>
 

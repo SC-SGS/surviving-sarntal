@@ -24,7 +24,7 @@ class World {
 
   public:
     World();
-    void initilizeWorld();
+    void initializeWorld();
 
     void setHiker(Hiker &newHiker);
     Hiker getHiker() const;

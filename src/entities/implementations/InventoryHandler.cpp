@@ -2,7 +2,7 @@
 // Created by Anietta Weckauff on 18.05.24.
 //
 
-#include "InventoryHandler.h"
+#include "../InventoryHandler.h"
 
 CollectableItem InventoryHandler::collectableItem = CollectableItem();
 

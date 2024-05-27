@@ -39,7 +39,7 @@ class MountainClass {
      */
     static constexpr float SLOPE{0.25};
 
-    /** value beween 0 and 1 (prefereably between 0.5 and 0.75)
+    /** value between 0 and 1 (preferably between 0.5 and 0.75)
      *
      */
     static constexpr float ROUGHNESS_TERRAIN{0.4};
@@ -62,22 +62,22 @@ class MountainClass {
      * Example: Your rock x-coords go from [3.1, 4.2]. You call this function
      * which returns [21,24]. This means that the relevant indices for you are
      * 21, 22 and 23 (You DON'T need 24.)
-     * @param min_x The leftmost x-coord relevant to you
-     * @param max_x The rightmost x-coord relevant to you
-     * @return Returns start_index and end_index of the section from min_x to
-     * max_x INCLUDING start_index and EXCLUDING end_index;
+     * @param minX The leftmost x-coord relevant to you
+     * @param maxX The rightmost x-coord relevant to you
+     * @return Returns start_index and end_index of the section from minX to
+     * maxX INCLUDING start_index and EXCLUDING end_index;
      */
-    static IndexIntervalNew getRelevantMountainSection(float min_x, float max_x);
+    static IndexIntervalNew getRelevantMountainSection(float minX, float maxX);
 
     /** Returns a position from a given index. The index should previously be
-     * obtained via a seperate function of the mountain.
+     * obtained via a separate function of the mountain.
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
     Position getVertex(size_t index);
 
     /** Returns a position from a given index. The index should previously be
-     * obtained via a seperate function of the mountain.
+     * obtained via a separate function of the mountain.
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
@@ -85,7 +85,7 @@ class MountainClass {
 
     /**
      * You can access all the points currently being held in the mountain
-     * datastructure via mountain.getVertice(a) with a in
+     * datastructures via mountain.getVertex(a) with a in
      * [indexInterval.start_index, indexInterval.end_index) example: the
      * indexInterval goes from 2 to 23. Now you need to access all the points
      * with the indices from 2 to 22
@@ -108,8 +108,8 @@ class MountainClass {
     IndexIntervalNew getLatestChunk() const;
 
   private:
-    std::array<Position, NUMBER_OF_VERTICES> landscape_fixpoints_circular_array{};
-    std::size_t start_of_circular_array{0};
+    std::array<Position, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
+    std::size_t startOfCircularArray{0};
 
     /** Generating a mountain using 2D Fractal Terrain Generation as described
      * in this blogpost:
@@ -126,4 +126,8 @@ class MountainClass {
     void generateSlope();
 
     void interpolate(std::size_t leftIndex, std::size_t rightIndex);
+
+    static float_type computeDisplacementChange(float_type displacement);
+
+    void updateMidpoint(std::size_t leftIndex, std::size_t rightIndex, std::size_t midIndex, float_type change);
 };
