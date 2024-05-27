@@ -2,9 +2,9 @@
 // Created by Anietta Weckauff on 07.05.24.
 //
 
-#include "RenderedEntity.h"
+#include "../RenderedEntity.h"
 
-#include "../graphics/render_information/RenderInformation.h"
+#include "../../graphics/render_information/RenderInformation.h"
 #include <utility>
 
 RenderedEntity::RenderedEntity(Vector position) { this->position = position; }
