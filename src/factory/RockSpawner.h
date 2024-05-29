@@ -24,7 +24,6 @@ enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCH
  */
 
 class RockSpawner {
-  private:
   public:
     /**
      * This method spawns rocks.
@@ -56,6 +55,8 @@ class RockSpawner {
      * @return rock spawn phase
      */
     static RockSpawnPhase determineRockSpawnPhase(double gameTime);
+
+    static SpawnData spawnData;
 };
 
 #endif // SURVIVING_SARNTAL_ROCKSPAWNER_H

@@ -2,31 +2,43 @@
 // Created by Anietta Weckauff on 06.05.24.
 //
 #include "../World.h"
-#include "../Hiker.h"
 
 // World::World() {}
 
-void World::initializeWorld() {}
+// TODO
+void World::initializeWorld() {
+    minX = 0.0;
+    maxX = graphics::SCREEN_WIDTH;
+}
+float World::getMaxX() const { return maxX; }
+void World::setMaxX(float maxX) { World::maxX = maxX; }
 
-void World::setHiker(Hiker &newHiker) { hiker = newHiker; }
-Hiker World::getHiker() const { return hiker; }
+void World::setHiker(const Hiker &newHiker) { hiker = newHiker; }
+Hiker &World::getHiker() { return hiker; }
 
 void World::setInventory(const Inventory &newInventory) { inventory = newInventory; }
-Inventory World::getInventory() const { return inventory; }
+Inventory &World::getInventory() { return inventory; }
 void World::setMonster(const Monster &newMonster) { monster = newMonster; }
-Monster World::getMonster() const { return monster; }
+Monster &World::getMonster() { return monster; }
 void World::setMountain(const MountainClass &newMountain) { mountain = newMountain; }
-MountainClass World::getMountain() const { return mountain; }
+MountainClass &World::getMountain() { return mountain; }
 
-void World::addRock(const RockClass &rock) { rocks.push_back(rock); }
-void World::setRocks(const std::list<RockClass> &newRocks) { rocks = newRocks; }
-std::list<RockClass> World::getRocks() const { return rocks; }
+bool World::isOutOfScope(RenderedEntity &entity) const {
+    return entity.getPosition().x < this->minX - MountainClass::CHUNK_WIDTH ||
+           entity.getPosition().x > this->maxX + MountainClass::CHUNK_WIDTH;
+}
+
+// TODO !!!
+std::list<Item> World::getNearbyItems() const { return {}; } // NOLINT(*-convert-member-functions-to-static)
+void World::addRock(RockClass *rock) { rocks.push_back(rock); }
+void World::setRocks(const std::list<RockClass *> &newRocks) { rocks = newRocks; }
+std::list<RockClass *> &World::getRocks() { return rocks; }
 
 void World::setItems(const std::list<Item> &items) { this->items = items; }
-std::list<Item> World::getItems() const { return items; }
+std::list<Item> &World::getItems() { return items; }
 void World::addItem(const Item &item) { items.push_back(item); }
 
-void World::useItem(ItemType itemType) const {
+void World::useItem(const ItemType itemType) {
     switch (itemType) {
     case KAISERSCHMARRN:
         useKaiserschmarrn();
@@ -42,21 +54,25 @@ void World::useItem(ItemType itemType) const {
     }
 }
 
-void World::useKaiserschmarrn() const {
-    Hiker hiker = this->getHiker();
-    int currentHealth = hiker.getHealthPoints();
-    hiker.setHealthPoints(std::min(currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
+void World::useKaiserschmarrn() {
+    // Hiker hiker = this->getHiker();
+    const int currentHealth = this->hiker.getHealthPoints();
+    this->hiker.setHealthPoints(std::min(currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
     std::cout << "used Kaiserschmarrn" << std::endl;
 }
 
 // TODO Game needs to be inserted as a parameter
-void World::useCoin() const {
-    Hiker hiker = this->getHiker();
-    // TODO update coin score of game
+void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
+    // Hiker hiker = this->getHiker();
+    //  TODO update coin score of game
     std::cout << "used coin" << std::endl;
 }
-void World::useDuck() const {
-    Hiker hiker = this->getHiker();
-    // TODO play sounds
+
+void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
+    // Hiker hiker = this->getHiker();
+    //  TODO play sounds
     std::cout << "used duck" << std::endl;
 }
+
+float World::getMinX() const { return minX; }
+void World::setMinX(float minX) { World::minX = minX; }

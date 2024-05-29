@@ -20,14 +20,13 @@ void InventoryHandler::checkCanCollect(World &world) {
     }
 }
 
-void InventoryHandler::updateInventory(GameEvent &gameEvent, World &world) {
-    EventType eventType = gameEvent.type;
-    Hiker hiker = world.getHiker();
+void InventoryHandler::updateInventory(const GameEvent &gameEvent, World &world) {
+    const EventType eventType = gameEvent.type;
     Inventory inventory = world.getInventory();
     switch (eventType) {
     case ITEM_USE:
         if (inventory.getSelectedItem() != ItemType::NO_ITEM) {
-            ItemType selectedItemType = inventory.getSelectedItem();
+            const ItemType selectedItemType = inventory.getSelectedItem();
             world.useItem(selectedItemType);
             if (Item::getItemInformation(selectedItemType).dropOnUse) {
                 inventory.drop();

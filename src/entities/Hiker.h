@@ -9,6 +9,7 @@
 #include "../graphics/render_information/RenderInformation.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
+#include <list>
 
 /**
  * This struct contains information about a collision of a hiker with a rock.

@@ -2,8 +2,8 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#ifndef SURVIVING_SARNTAL_ITEM_H
-#define SURVIVING_SARNTAL_ITEM_H
+#ifndef SURVIVING_SARNTAL_ITEM_HPP
+#define SURVIVING_SARNTAL_ITEM_HPP
 
 #include "../components/vector.h"
 #include "../graphics/render_information/RenderInformation.h"
@@ -34,14 +34,14 @@ class Item : public RenderedEntity {
 
     /**
      * This method gets the information about an item based on the item type.
-     * @param itemType
      * @return item information
      */
-    static ItemInformation getItemInformation(ItemType itemType);
+    static ItemInformation getItemInformation(ItemType type);
 
-    ItemType getItemType();
+    ItemType getItemType() const;
 
   private:
+    // TODO do we need getters for these? and why is the item type the item id?????????
     ItemType itemID;
     ItemInformation itemInformation;
     std::string name;
@@ -52,4 +52,4 @@ class Item : public RenderedEntity {
     bool dropOnUse{};
 };
 
-#endif // SURVIVING_SARNTAL_ITEM_H
+#endif // SURVIVING_SARNTAL_ITEM_HPP

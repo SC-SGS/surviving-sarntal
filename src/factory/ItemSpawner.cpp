@@ -2,7 +2,7 @@
 // Created by Anietta Weckauff on 14.05.24.
 //
 #include "ItemSpawner.h"
-#include "../entities/Item.h"
+#include "../entities/Item.hpp"
 #include <chrono>
 #include <ctime>
 
@@ -46,7 +46,7 @@ void ItemSpawner::spawnItems(World *world) {
 
         ItemInformation itemInformation = Item::getItemInformation(itemType);
 
-        Item newItem(itemType, itemInformation, position);
+        const Item newItem(itemType, itemInformation, position);
 
         world->addItem(newItem);
     }

@@ -17,7 +17,7 @@
  */
 class InputHandler {
   private:
-    static const int MAX_GAMEPADS = 8;
+    static const int maxGamepads = 8;
     InputDevice *device;
 
   public:
@@ -37,7 +37,7 @@ class InputHandler {
      *
      * @return list of events
      */
-    std::list<GameEvent> getEvents();
+    std::list<GameEvent> getEvents() const;
 };
 
 #endif // SURVIVING_SARNTAL_INPUTHANDLER_H

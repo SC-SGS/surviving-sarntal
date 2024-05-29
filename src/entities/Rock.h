@@ -9,14 +9,18 @@
 #include "../graphics/render_information/RenderInformation.h"
 
 #include "RenderedEntity.h"
+
 /**
  * This class represents a rock in the game. A rock is simulated by a certain point (position) with a radius
  * and the attributes velocity and rotation.
  */
+// TODO struct might be better for performance, is it called RockClass?
+// TODO what about destructors, as in the programming concept in c++?
 class RockClass : public RenderedEntity {
   public:
     RockClass(Vector velocity, Rotation rotation, float radius, Vector position);
 
+    // TODO why is there a constructor for a rock with just the position?
     explicit RockClass(Vector position) : RenderedEntity(position) { this->position = position; }
     RockClass(Vector position, Vector velocity, Rotation rotation, float radius) : RenderedEntity(position) {
         this->position = position;
@@ -24,8 +28,11 @@ class RockClass : public RenderedEntity {
         this->rotation = rotation;
         this->radius = radius;
     };
+
+    ~RockClass() = default;
+
     void setVelocity(Vector &newVelocity);
-    void setRotation(Rotation &newRotation);
+    void setRotation(const Rotation &newRotation);
 
     Vector getVelocity();
     Rotation getRotation();

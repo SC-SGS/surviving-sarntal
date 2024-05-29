@@ -4,7 +4,7 @@
 #include "MountainGenerator.h"
 
 void MountainGenerator::generateMountainChunk(World *world) {
-    float currentLeftEdgeScreen{world->getMonster().getXPosition()};
+    float currentLeftEdgeScreen{world->getMinX()};
     float leftestPointOfMountain{
         world->getMountain().getVertex(world->getMountain().getIndexIntervalOfEntireMountain().startIndex).x};
     constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{1.0};

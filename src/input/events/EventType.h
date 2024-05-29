@@ -7,7 +7,8 @@
 
 enum EventType {
     JUMP,
-    DUCK,
+    CROUCH,
+    UNCROUCH,
     ITEM_PICK,
     ITEM_USE,
     ITEM_DROP,
