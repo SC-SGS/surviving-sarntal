@@ -8,9 +8,9 @@
 #include "iostream"
 #include <utility>
 
-Hiker::Hiker(Vector position)
-    : RenderedEntity(position), height(HIKER_HEIGHT), width(HIKER_WIDTH), healthPoints(HIKER_MAX_HEALTH),
-      hikerMovement(HikerMovement()), isHit(false), hitInformation(), velocity({0, 0}), isAlive(true) {}
+Hiker::Hiker(const Vector position)
+    : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
+      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true) {}
 
 RenderInformation Hiker::getRenderInformation() {
     return RenderInformation{Vector2(position), width, height, {0, 0}, hikerMovement.getStateString()};
@@ -36,7 +36,7 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
         height = HIKER_HEIGHT;
         width = HIKER_WIDTH;
         break;
-    case HikerMovement::DUCKED:
+    case HikerMovement::CROUCHED:
         height = DUCKED_HIKER_HEIGHT;
         width = DUCKED_HIKER_WIDTH;
         break;

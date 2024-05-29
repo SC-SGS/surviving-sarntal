@@ -13,6 +13,7 @@ struct IndexIntervalNew {
     std::size_t endIndex;
 };
 
+// TODO this whole class needs to be reworked, which we do anyways later, and a lot of refactoring is necessary
 class MountainClass {
   public:
     /**
@@ -39,8 +40,8 @@ class MountainClass {
      */
     static constexpr float SLOPE{0.25};
 
-    /** value between 0 and 1 (preferably between 0.5 and 0.75)
-     *
+    /**
+     * value beween 0 and 1 (prefereably between 0.5 and 0.75)
      */
     static constexpr float ROUGHNESS_TERRAIN{0.4};
 
@@ -52,11 +53,6 @@ class MountainClass {
      * slope
      */
     void generateNewChunk();
-
-    /**
-     * Temporary helper function, do not touch
-     */
-    void printTempDebugInfo();
 
     /**
      * Example: Your rock x-coords go from [3.1, 4.2]. You call this function
@@ -74,14 +70,14 @@ class MountainClass {
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertex(size_t index);
+    Position getVertex(size_t index) const;
 
     /** Returns a position from a given index. The index should previously be
      * obtained via a separate function of the mountain.
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertex(int index);
+    Position getVertex(int index) const;
 
     /**
      * You can access all the points currently being held in the mountain
@@ -107,9 +103,34 @@ class MountainClass {
      */
     IndexIntervalNew getLatestChunk() const;
 
+    /**
+     * Returns the Y coordinate of the mountain at the given x coordinate.
+     *
+     * TODO there was an offset in this function in the original, because the hiker position was its center, now its his
+     * TODO feet
+     *
+     * @param x the x-Coordinate
+     * @return the y coordinate on top of the mountain
+     */
+    float getYPosFromX(float x) const;
+
+    /**
+     * Performs simple linear interpolation
+     *
+     * TODO depending on the mountain, this should become the evaluation of a spline function etc.
+     * TODO this function is used as a linInterpolator in one place so it shoudl probably go into a util class.
+     *
+     * @param x
+     * @param left
+     * @param right
+     * @return
+     */
+    static float linearInterpolation(float x, Position left, Position right);
+
   private:
     std::array<Position, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
     std::size_t startOfCircularArray{0};
+    // TODO why are these denominators so weird? they do not adhere to our guidelines!
 
     /** Generating a mountain using 2D Fractal Terrain Generation as described
      * in this blogpost:
@@ -125,9 +146,16 @@ class MountainClass {
 
     void generateSlope();
 
-    void interpolate(std::size_t leftIndex, std::size_t rightIndex);
+    // TODO Does this function really interpolate? What does it do, also ... it is unused
+    // void interpolate(std::size_t leftIndex, std::size_t rightIndex);
 
     static float_type computeDisplacementChange(float_type displacement);
 
     void updateMidpoint(std::size_t leftIndex, std::size_t rightIndex, std::size_t midIndex, float_type change);
+
+    /**
+     * Temporary helper function, do not touch
+     * TODO I Don't know what this does and whether we need it
+     */
+    void printTempDebugInfo() const;
 };

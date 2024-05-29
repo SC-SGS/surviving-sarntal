@@ -4,6 +4,8 @@
 
 #include "RockSpawner.h"
 
+SpawnData RockSpawner::spawnData = {0, 0, 0};
+
 void RockSpawner::spawnRocks(World *world, SpawnData *spawnData) {
     // TODO figure out camera stuff
     // auto camera =
@@ -25,14 +27,14 @@ void RockSpawner::spawnRocks(World *world, SpawnData *spawnData) {
         // ((float)graphics::SCREEN_WIDTH) / 2 + 100;
         // //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
 
-        const float SPAWN_X_COORD = 0;
+        const float spawnXCoord = 0;
         Position spawnBasepoint = world->getMountain().getVertex(
-            MountainClass::getRelevantMountainSection(SPAWN_X_COORD, SPAWN_X_COORD).startIndex);
+            MountainClass::getRelevantMountainSection(spawnXCoord, spawnXCoord).startIndex);
         // spawn rocks offset by constant amount above mountain
         spawnBasepoint.y += 350.;
 
         int numRocksToSpawn = computeNumRocksToSpawn(rockSpawnPhase, spawnData);
-        const std::vector<Position> OFFSETS_ADDITIONAL_ROCKS{
+        const std::vector<Position> offsetsAdditionalRocks{
             {0., 0.}, {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.}, {-MAX_ROCK_SIZE - 5., MAX_ROCK_SIZE * 2 + 10.}};
 
         for (int i{0}; i < numRocksToSpawn; i++) {
@@ -51,12 +53,12 @@ void RockSpawner::spawnRocks(World *world, SpawnData *spawnData) {
             Vector velocity = {CONST_VEL_COMPONENT + randomVelocityComponent, 0};
             Rotation rotation = {0.0f, 0.0f};
 
-            Vector position = {spawnBasepoint.x + OFFSETS_ADDITIONAL_ROCKS[i].x,
-                               spawnBasepoint.y + OFFSETS_ADDITIONAL_ROCKS[i].y};
+            Vector position = {spawnBasepoint.x + offsetsAdditionalRocks[i].x,
+                               spawnBasepoint.y + offsetsAdditionalRocks[i].y};
 
             RockClass newRock(velocity, rotation, radius, position);
 
-            world->addRock(newRock);
+            world->addRock(&newRock);
 
             if (rockSpawnPhase == EXPLOSIVE_BATCHES) {
                 spawnData->explosiveRockModuloCount++;
@@ -87,7 +89,7 @@ float RockSpawner::rockSpawnTimeFromPhase(RockSpawnPhase rockSpawnPhase) {
         return 5.;
     } else if (rockSpawnPhase == REGULAR_ROCKS) {
         return 3.;
-    } else { // rockSpawnPhase == rockBatches
+    } else { // rockSpawnPhase == ROCK_BATCHES
         return 4.;
     }
 }

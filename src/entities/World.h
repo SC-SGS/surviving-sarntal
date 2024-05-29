@@ -5,12 +5,14 @@
 #ifndef SURVIVING_SARNTAL_WORLD_H
 #define SURVIVING_SARNTAL_WORLD_H
 
+#include "../utils/game_constants.h"
 #include "Hiker.h"
-#include "Inventory.h"
-#include "Item.h"
+#include "Inventory.hpp"
+#include "Item.hpp"
 #include "Monster.h"
 #include "Mountain.h"
 #include "Rock.h"
+
 #include <iostream>
 #include <list>
 
@@ -20,35 +22,38 @@
  * This class serves the purpose to combine all the single entities into one structure.
  */
 
+// TODO Should be singleton (see Physics Engine for implementation details)
+// TODO I dislike that our getters are non-const. It makes the design kinda weird.
 class World {
 
   public:
-    World();
+    World() = delete;
     void initializeWorld();
+    // TODO it would be nice to have getters and mutable getters. There should be an immutable getter option (const).
 
-    void setHiker(Hiker &newHiker);
-    Hiker getHiker() const;
+    void setHiker(const Hiker &newHiker);
+    Hiker &getHiker();
 
     void setInventory(const Inventory &newInventory);
-    Inventory getInventory() const;
+    Inventory &getInventory();
 
     void setMonster(const Monster &newMonster);
-    Monster getMonster() const;
+    Monster &getMonster();
 
     void setMountain(const MountainClass &newMountain);
-    MountainClass getMountain() const;
+    MountainClass &getMountain();
 
-    void setRocks(const std::list<RockClass> &newRocks);
-    std::list<RockClass> getRocks() const;
+    void setRocks(const std::list<RockClass *> &newRocks);
+    std::list<RockClass *> &getRocks();
 
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
-    void addRock(const RockClass &rock);
+    void addRock(RockClass *rock);
 
     void setItems(const std::list<Item> &items);
-    std::list<Item> getItems() const;
+    std::list<Item> &getItems();
 
     /**
      * ´This method adds an item to the game by adding it to the list of items
@@ -61,19 +66,44 @@ class World {
      * game state.
      * @param itemType
      */
-    void useItem(ItemType itemType) const;
+    void useItem(ItemType itemType);
 
-    void useCoin() const;
-    void useDuck() const;
-    void useKaiserschmarrn() const;
+    void useCoin();
+    void useDuck();
+    void useKaiserschmarrn();
+
+    /**
+     * Returns a list of all items that are close enough to the hiker to be picked up
+     * TODO: implement
+     *
+     * @return list of nearby items
+     */
+    std::list<Item> getNearbyItems() const;
 
   private:
+    // TODO we need to make sure that these attributes are only saved here, i.e. there are only pointers everywhere else
     Hiker hiker;
+    // TODO why does the world have an inventory and not the hiker?
     Inventory inventory;
     Monster monster;
     MountainClass mountain;
-    std::list<RockClass> rocks;
+    float minX;
+
+  public:
+    float getMinX() const;
+    void setMinX(float minX);
+    float getMaxX() const;
+    void setMaxX(float maxX);
+
+    bool isOutOfScope(RenderedEntity &entity) const;
+
+  private:
+    float maxX;
+
+    std::list<RockClass *> rocks;
     std::list<Item> items;
+
+    // TODO spawn rock method and destruct rock method or at least add and remove from list
 };
 
 #endif // SURVIVING_SARNTAL_WORLD_H

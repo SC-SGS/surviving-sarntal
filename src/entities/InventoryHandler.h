@@ -31,7 +31,7 @@ class InventoryHandler {
      * @param gameEvent
      * @param hiker
      */
-    static void updateInventory(GameEvent &gameEvent, World &world);
+    static void updateInventory(const GameEvent &gameEvent, World &world);
 
   private:
     static CollectableItem collectableItem;

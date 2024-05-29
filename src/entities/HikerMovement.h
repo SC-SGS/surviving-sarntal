@@ -14,7 +14,7 @@
  */
 class HikerMovement {
   public:
-    enum MovementState { MOVING, DUCKED, IN_AIR };
+    enum MovementState { MOVING, CROUCHED, IN_AIR };
     enum Direction { LEFT, RIGHT, NEUTRAL };
 
     HikerMovement();
@@ -27,7 +27,7 @@ class HikerMovement {
     bool getCanJumpAgain() const;
     void setCanJumpAgain(bool canJump);
     float getLastJump() const;
-    static void setLastJump(float lastJump);
+    void setLastJump(float lastJump);
 
   private:
     MovementState currentState;
