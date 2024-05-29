@@ -13,20 +13,19 @@
 
 class MountainGenerator {
 
-  private:
   public:
     /**
      * Checks if a new chunk of the mountain needs to be generated and lets the
      * mountain generate a new chunk if needed.
      * @param world
      */
-    void generateMountainChunk(World *world);
+    static void generateMountainChunk(World *world);
 
     /**
      *
      * @param world
      */
-    void loadChunksOfMountain(World *world);
+    static void loadChunksOfMountain(World *world);
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAINGENERATOR_H

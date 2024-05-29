@@ -14,7 +14,7 @@ RenderInformation RockClass::getRenderInformation() {
     return RenderInformation{Vector2(position), radius, radius, rotation, "rock"};
 }
 
-void RockClass::setRotation(Rotation &newRotation) { rotation = newRotation; }
+void RockClass::setRotation(const Rotation &newRotation) { rotation = newRotation; }
 
 void RockClass::setVelocity(Vector &newVelocity) { velocity = newVelocity; }
 

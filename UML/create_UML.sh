@@ -10,9 +10,9 @@ cd ..
 
 #make uml files
 all_header_files="hpp2plantuml";
-for header_file in $(find . -regex "./src/.*.h";);
+for header_file in $(find . -regex "./src/.*\.h\(pp\)?";);
 do
-  hpp2plantuml -i ${header_file} -o UML/plant_UML/${header_file:6:-2}.puml
+  hpp2plantuml -i ${header_file} -o UML/plant_UML/${header_file:6}.puml
   all_header_files="${all_header_files} -i ${header_file}"
 done
 all_header_files="${all_header_files} -o UML/plant_UML/codebase.puml"

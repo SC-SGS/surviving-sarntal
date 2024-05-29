@@ -10,7 +10,7 @@
 
 InputHandler::InputHandler() {
     bool deviceSet = false;
-    for (int i = 0; i < MAX_GAMEPADS; i++) {
+    for (int i = 0; i < maxGamepads; i++) {
         if (IsGamepadAvailable(i) && !deviceSet) {
             this->device = new Gamepad(i);
             deviceSet = true;
@@ -24,7 +24,7 @@ InputHandler::InputHandler() {
 InputHandler::InputHandler(Device device) {
     switch (device) {
     case DEVICE_GAMEPAD:
-        for (int i = 0; i < MAX_GAMEPADS; i++) {
+        for (int i = 0; i < maxGamepads; i++) {
             if (IsGamepadAvailable(i)) {
                 this->device = new Gamepad(i);
             }
@@ -42,4 +42,4 @@ InputHandler::InputHandler(Device device) {
     }
 }
 
-std::list<GameEvent> InputHandler::getEvents() { return device->getGameEvents(); }
+std::list<GameEvent> InputHandler::getEvents() const { return device->getGameEvents(); }

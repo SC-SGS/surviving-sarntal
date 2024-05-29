@@ -2,11 +2,12 @@
 // Created by Anietta Weckauff on 04.05.24.
 //
 
-#ifndef SURVIVING_SARNTAL_INVENTORY_H
-#define SURVIVING_SARNTAL_INVENTORY_H
+#ifndef SURVIVING_SARNTAL_INVENTORY_HPP
+#define SURVIVING_SARNTAL_INVENTORY_HPP
 
-#include "Item.h"
+#include "Item.hpp"
 #include "string"
+#include "vector"
 
 struct ItemSlot {
     ItemType itemType = ItemType::NO_ITEM;
@@ -15,6 +16,8 @@ struct ItemSlot {
 /**
  * This class represents the inventory of a player. An inventory stores several
  * items.
+ * TODO we need to refactor the whole thing with the items. this is not loosely coupled and very weird an unintuitive
+ * TODO inventory should have a list of references to item objects
  */
 class Inventory {
 
@@ -79,4 +82,4 @@ class Inventory {
     void switchItem(int offset);
 };
 
-#endif // SURVIVING_SARNTAL_INVENTORY_H
+#endif // SURVIVING_SARNTAL_INVENTORY_HPP
