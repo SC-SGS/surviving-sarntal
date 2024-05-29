@@ -8,7 +8,8 @@
 Keyboard::Keyboard() {
     INPUT_MAPPINGS = {// Normal events
                       {{KEY_SPACE, TRIGGER_PRESSED}, {JUMP, NO_AXIS, 0}},
-                      {{KEY_LEFT_SHIFT, TRIGGER_DOWN}, {DUCK, NO_AXIS, 0}},
+                      {{KEY_LEFT_SHIFT, TRIGGER_DOWN}, {CROUCH, NO_AXIS, 0}},
+                      {{KEY_LEFT_SHIFT, TRIGGER_RELEASED}, {UNCROUCH, NO_AXIS, 0}},
                       {{KEY_Q, TRIGGER_PRESSED}, {ITEM_PICK, NO_AXIS, 0}},
                       {{KEY_E, TRIGGER_PRESSED}, {ITEM_USE, NO_AXIS, 0}},
                       {{KEY_F, TRIGGER_PRESSED}, {ITEM_DROP, NO_AXIS, 0}},

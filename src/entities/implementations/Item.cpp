@@ -2,15 +2,16 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "../Item.h"
+#include "../Item.hpp"
 #include <iostream>
 #include <utility>
 
-Item::Item(ItemType itemType, ItemInformation itemInformation, Vector position)
+// TODO why is item information always copied?
+Item::Item(const ItemType itemType, ItemInformation itemInformation, const Vector position)
     : RenderedEntity(position), itemID(itemType), itemInformation(std::move(itemInformation)) {}
 
-ItemInformation Item::getItemInformation(ItemType itemType) {
-    switch (itemType) {
+ItemInformation Item::getItemInformation(const ItemType type) {
+    switch (type) {
     case KAISERSCHMARRN:
         return {"Kaiserschmarrn", false, false, true};
     case COIN:
@@ -22,4 +23,4 @@ ItemInformation Item::getItemInformation(ItemType itemType) {
     }
 }
 
-ItemType Item::getItemType() { return this->itemID; }
+ItemType Item::getItemType() const { return this->itemID; }

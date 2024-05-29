@@ -10,7 +10,7 @@
 #include "EventType.h"
 
 /**
- * A game event has a type of event (e.g., DUCK or MOVEMENT_X). Optionally, game
+ * A game event has a type of event (e.g., CROUCH or MOVEMENT_X). Optionally, game
  * events also have an axis to be modified and a value that can be used to
  * modify the axis.
  */
@@ -18,6 +18,8 @@ struct GameEvent {
     EventType type;
     Axis axis;
     float axisValue;
+
+    bool operator<(const GameEvent &e) const { return type < e.type || axis < e.axis; }
 };
 
 #endif // SURVIVING_SARNTAL_GAMEEVENT_H
