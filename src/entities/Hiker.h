@@ -6,7 +6,7 @@
 #define SURVIVING_SARNTAL_HIKER_H
 
 #include "../components/vector.h"
-#include "../graphics/render_information/RenderInformation.h"
+#include "../output/graphics/render_information/RenderInformation.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
 #include <list>
@@ -31,13 +31,13 @@ class Hiker : public RenderedEntity {
   public:
     explicit Hiker(Vector position);
     float getHeight() const;
-    void setHeight(float h);
+    void setHeight(float height);
 
     float getWidth() const;
-    void setWidth(float w);
+    void setWidth(float width);
 
     int getHealthPoints() const;
-    void setHealthPoints(int hp);
+    void setHealthPoints(int healthPoints);
 
     HikerMovement getHikerMovement() const;
     void setHikerMovement(const HikerMovement &movement);

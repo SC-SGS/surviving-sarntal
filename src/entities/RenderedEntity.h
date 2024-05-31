@@ -7,7 +7,7 @@
 
 // TODO remove this include
 #include "../components/vector.h"
-#include "../graphics/render_information/RenderInformation.h"
+#include "../output/graphics/render_information/RenderInformation.h"
 
 /**
  * This class serves as a base class for rendered entities.

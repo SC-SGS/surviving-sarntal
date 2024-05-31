@@ -18,15 +18,15 @@ RenderInformation Hiker::getRenderInformation() {
 
 float Hiker::getHeight() const { return height; }
 
-void Hiker::setHeight(float h) { height = h; }
+void Hiker::setHeight(const float height) { this->height = height; }
 
 float Hiker::getWidth() const { return width; }
 
-void Hiker::setWidth(float w) { width = w; }
+void Hiker::setWidth(const float width) { this->width = width; }
 
 int Hiker::getHealthPoints() const { return healthPoints; }
 
-void Hiker::setHealthPoints(int hp) { healthPoints = hp; }
+void Hiker::setHealthPoints(const int healthPoints) { this->healthPoints = healthPoints; }
 
 HikerMovement Hiker::getHikerMovement() const { return hikerMovement; }
 

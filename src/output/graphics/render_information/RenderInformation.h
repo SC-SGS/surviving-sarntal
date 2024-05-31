@@ -5,8 +5,8 @@
 #ifndef SURVIVING_SARNTAL_RENDERINFORMATION_H
 #define SURVIVING_SARNTAL_RENDERINFORMATION_H
 
-#include "../../components/vector.h"
-#include "../../utils/resource_manager.h"
+#include "../../../components/vector.h"
+#include "../../../utils/resource_manager.h"
 #include "raylib.h"
 
 /**

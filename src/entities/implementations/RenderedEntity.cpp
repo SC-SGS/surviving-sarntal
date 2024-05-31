@@ -4,7 +4,7 @@
 
 #include "../RenderedEntity.h"
 
-#include "../../graphics/render_information/RenderInformation.h"
+#include "../../output/graphics/render_information/RenderInformation.h"
 #include <utility>
 
 RenderedEntity::RenderedEntity(Vector position) { this->position = position; }
