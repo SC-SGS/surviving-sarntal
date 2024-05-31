@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_MONSTER_H
 #define SURVIVING_SARNTAL_MONSTER_H
 
-#include "../graphics/render_information/RenderInformation.h"
+#include "../output/graphics/render_information/RenderInformation.h"
 #include "../utils/game_constants.h"
 #include "RenderedEntity.h"
 
@@ -18,7 +18,7 @@ class Monster : public RenderedEntity {
     explicit Monster(Vector position);
 
     float_type getXPosition() const;
-    void setXPosition(float_type x);
+    void setXPosition(float_type positionX);
 
     // what is the data type of delta time?
     void updateMonsterPosition();

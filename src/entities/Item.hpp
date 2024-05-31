@@ -6,7 +6,7 @@
 #define SURVIVING_SARNTAL_ITEM_HPP
 
 #include "../components/vector.h"
-#include "../graphics/render_information/RenderInformation.h"
+#include "../output/graphics/render_information/RenderInformation.h"
 #include "RenderedEntity.h"
 #include "string"
 
