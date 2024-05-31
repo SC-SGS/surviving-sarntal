@@ -5,11 +5,11 @@
 #ifndef SURVIVING_SARNTAL_RENDERER_H
 #define SURVIVING_SARNTAL_RENDERER_H
 
-#include "../entities/Hiker.h"
-#include "../entities/RenderedEntity.h"
-#include "../entities/Rock.h"
-#include "../utils/game_constants.h"
-#include "ResourceManager.h"
+#include "../../entities/Hiker.h"
+#include "../../entities/RenderedEntity.h"
+#include "../../entities/Rock.h"
+#include "../../utils/game_constants.h"
+#include "../ResourceManager.h"
 #include "raylib.h"
 #include "render_information/RenderInformation.h"
 

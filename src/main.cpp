@@ -1,6 +1,7 @@
 #include "components/inventory.h"
 #include "components/mountain.h"
 #include "components/particle_state.h"
+#include "output/audio/AudioService.hpp"
 #include "raylib.h"
 #include "systems/game_logic.h"
 #include "systems/input_systems.h"
@@ -18,7 +19,13 @@
 #include <thread>
 #endif
 
+// NOLINTBEGIN
+
 void mainLoop(flecs::world &world);
+
+void audioTest();
+
+void mainLoopAudioTest();
 
 bool kinect_mode;
 
@@ -126,3 +133,35 @@ void mainLoop(flecs::world &world) {
         }
     }
 }
+
+void audioTest() {
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+    InitWindow(screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
+    InitAudioDevice();
+    SetTargetFPS(60);
+    std::cout << "Running test " << std::endl;
+    mainLoopAudioTest();
+    CloseAudioDevice();
+    CloseWindow();
+}
+
+void mainLoopAudioTest() {
+    while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            AudioService::getInstance().playSound("oof");
+            std::cout << "Space was pressed" << std::endl;
+        }
+        if (IsKeyPressed(KEY_ENTER)) {
+            AudioService::getInstance().playSound("background_music2");
+            std::cout << "Enter was pressed" << std::endl;
+        }
+        BeginDrawing();
+        ClearBackground((Color){245, 245, 245, 255});
+        DrawText("Press SPACE to PLAY the oof sound!", 200, 180, 20, (Color){200, 200, 200, 255});
+        DrawText("Press ENTER to PLAY the background_music2 sound!", 200, 220, 20, (Color){200, 200, 200, 255});
+        EndDrawing();
+    }
+}
+
+// NOLINTEND

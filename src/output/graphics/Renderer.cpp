@@ -1,11 +1,11 @@
 #include "Renderer.h"
-#include "../entities/Hiker.h"
-#include "../entities/RenderedEntity.h"
-#include "../entities/Rock.h"
-#include "../utils/game_constants.h"
+#include "../../entities/Hiker.h"
+#include "../../entities/RenderedEntity.h"
+#include "../../entities/Rock.h"
+#include "../../utils/game_constants.h"
 #include "raylib.h"
 
-constexpr Vector3 UP = {0, 1, 0};
+constexpr Vector3 UP_DIR = {0, 1, 0};
 
 // Function to render an entity
 void Renderer::renderEntity(const RenderInformation &info) { renderEntity(info, 0.0f); }
@@ -17,14 +17,14 @@ void Renderer::renderEntity(const RenderInformation &info, float rotation) {
 }
 
 void Renderer::renderEntity(const RenderInformation &info, float rotation, Texture2D texture, Rectangle sourceRec) {
-    DrawBillboardPro(camera, texture, sourceRec, Vector3{info.position.x, info.position.y + info.height / 2, 0}, UP,
+    DrawBillboardPro(camera, texture, sourceRec, Vector3{info.position.x, info.position.y + info.height / 2, 0}, UP_DIR,
                      Vector2{static_cast<float>(info.width), static_cast<float>(info.height)}, Vector2{0.0f, 0.0f},
                      rotation, WHITE);
 }
 
 static float currentFrame = 0;
 static float framesSpeed = 5;
-const float FRAMES_COUNTER = 4.0f;
+const float framesCounter = 4.0f;
 static float lastTime = 0;
 void Renderer::renderHiker(RenderInformation &hikerInfo) {
     if (hikerInfo.texture == "walk") {
@@ -37,13 +37,13 @@ void Renderer::renderHiker(RenderInformation &hikerInfo) {
 void Renderer::animateHiker(RenderInformation &hikerInfo) {
     Texture2D texture = resourceManager.getTexture(hikerInfo.texture);
 
-    float width = (float)texture.width / FRAMES_COUNTER;
+    float width = (float)texture.width / framesCounter;
     float currentFrameWidth = width * currentFrame;
 
     if (GetTime() >= lastTime + 1.0f / framesSpeed) {
         lastTime = static_cast<float>(GetTime());
         currentFrame += 1;
-        if (currentFrame >= FRAMES_COUNTER) {
+        if (currentFrame >= framesCounter) {
             currentFrame = 0;
         }
     }

@@ -6,7 +6,6 @@
 #define SURVIVING_SARNTAL_RESOURCEMANAGER_H
 
 #include "raylib.h"
-#include "string"
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -27,7 +26,30 @@ class ResourceManager {
         {"helicopter", LoadTexture("../assets/texture/helicopter.png")},
         {"midground", LoadTexture("../assets/layers/glacial_mountains.png")},
         {"foreground", LoadTexture("../assets/layers/clouds_mg_1.png")}};
-    std::unordered_map<std::string, Sound> soundEffects;
+    std::unordered_map<std::string, Sound> soundEffects = {
+        {"background_music", LoadSound("../assets/audio/background_music.mp3")},
+        {"background_music2", LoadSound("../assets/audio/background_music2.wav")},
+        {"boom", LoadSound("../assets/audio/boom.wav")},
+        {"cool_sound", LoadSound("../assets/audio/cool_sound.mp3")},
+        {"duck", LoadSound("../assets/audio/duck.wav")},
+        {"dudum", LoadSound("../assets/audio/dudum.wav")},
+        {"error", LoadSound("../assets/audio/error.wav")},
+        {"fart", LoadSound("../assets/audio/fart.wav")},
+        {"game_over", LoadSound("../assets/audio/game_over.wav")},
+        {"gameover", LoadSound("../assets/audio/gameover.wav")},
+        {"jump", LoadSound("../assets/audio/jump.wav")},
+        {"mepmep", LoadSound("../assets/audio/mepmep.wav")},
+        {"ohje", LoadSound("../assets/audio/ohje.wav")},
+        {"oof", LoadSound("../assets/audio/oof.wav")},
+        {"pickup", LoadSound("../assets/audio/pickup.wav")},
+        {"pipe", LoadSound("../assets/audio/pipe.wav")},
+        {"proper_coin", LoadSound("../assets/audio/proper_coin.wav")},
+        {"proper_duck", LoadSound("../assets/audio/proper_duck.wav")},
+        {"proper_jump", LoadSound("../assets/audio/proper_jump.wav")},
+        {"proper_rock_smash", LoadSound("../assets/audio/proper_rock_smash.wav")},
+        {"shutdown", LoadSound("../assets/audio/shutdown.wav")}
+
+    };
     std::unordered_map<std::string, Music> musics;
 
   public:
@@ -81,6 +103,12 @@ class ResourceManager {
             throw std::runtime_error("Music with name " + name + " does not exist");
         }
         return musics[name];
+    }
+
+    void unloadAllSounds() {
+        for (auto &entry : soundEffects) {
+            UnloadSound(entry.second);
+        }
     }
 };
 #endif // SURVIVING_SARNTAL_RESOURCEMANAGER_H
