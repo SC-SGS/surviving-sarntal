@@ -5,31 +5,50 @@
 #ifndef SURVIVING_SARNTAL_RENDERER_H
 #define SURVIVING_SARNTAL_RENDERER_H
 
-#include "../../entities/Hiker.h"
-#include "../../entities/Mountain.h"
-#include "../../entities/RenderedEntity.h"
-#include "../../entities/Rock.h"
-#include "../../utils/game_constants.h"
+#include "../../entities/World.h"
 #include "../ResourceManager.h"
 #include "raylib.h"
 #include "render_information/RenderInformation.h"
+#include <cmath>
+#include <valarray>
 
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 
 class Renderer {
   public:
-    Renderer() {
+    explicit Renderer(World *world) : world(world) {
+        // TODO get border from world
+        float leftBorder = world->getMinX();
+        float rightBorder = world->getMaxX();
+
+        // Calculate the center of the camera view based on the borders
+        float centerX = (leftBorder + rightBorder) / 2.0f;
+        float centerY = 0.0f;
+
+        // Calculate the visible width and height
+        float visibleWidth = rightBorder - leftBorder;
+        float visibleHeight =
+            visibleWidth * (static_cast<float>(GetScreenHeight()) / static_cast<float>(GetScreenWidth()));
+
+        // Distance from the camera to the plane (Z position)
+        float cameraDistance = 300.0f; // Adjust as needed
+
+        // Calculate the required field of view (FOV) for the vertical axis
+        float fovY = 2.0f * std::atan2(visibleHeight / 2.0f, cameraDistance) * (180.0f / PI);
+
         // Initialize the camera
-        camera.position = {0.0f, 0.0f, 300.0f}; // Camera position
-        camera.target = {0.0f, 0.0f, 0.0f};     // Camera looking at point
-        camera.up = {0.0f, 1.0f, 0.0f};         // Camera up vector (rotation towards target)
-        camera.fovy = 45.0f;                    // Camera field-of-view Y
-        camera.projection = CAMERA_PERSPECTIVE; // Camera mode type
+        camera.position = Vector3{centerX, centerY, cameraDistance}; // Camera position
+        camera.target = Vector3{centerX, centerY, 0.0f};             // Camera looking at point
+        camera.up = Vector3{0.0f, 1.0f, 0.0f};                       // Camera up vector (rotation towards target)
+        camera.fovy = fovY;                                          // Camera field-of-view Y
+        camera.projection = CAMERA_PERSPECTIVE;
+
         regenerateGradientTexture();
     }
-    void render(Hiker hiker, RockClass *rocks, int numRocks, MountainClass &mountain);
+    void draw();
 
   private:
+    World *world; // Pointer to the World object
     void renderEntity(const RenderInformation &info);
     void renderEntity(const RenderInformation &info, float rotation);
     void renderBackground();
@@ -48,6 +67,7 @@ class Renderer {
     void renderEntity(const RenderInformation &info, float rotation, Texture2D texture, Rectangle sourceRec);
     static void drawBackgroundTextureRepeatedly(Texture2D texture2D, float scrolling, float scale, float offsetY);
     static void renderMountain(MountainClass &mountain, Color topColor = WHITE, Color bottomColor = BLUE);
+    void renderEntities();
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
