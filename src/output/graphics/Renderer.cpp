@@ -75,30 +75,40 @@ void Renderer::renderMountain(MountainClass &mountain, Color topColor, Color bot
     }
 }
 
-// Main rendering function
-void Renderer::render(Hiker hiker, RockClass rocks[], int numRocks, MountainClass &mountain) {
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    // Render background
-    renderBackground();
-
-    BeginMode3D(camera);
-
-    // DrawGrid(1000, 10.0f);
+void Renderer::renderEntities() {
+    auto hiker = world->getHiker();
+    auto rocks = world->getRocks();
+    auto mountain = world->getMountain();
 
     // Render hiker
     RenderInformation hikerInfo = hiker.getRenderInformation();
     renderHiker(hikerInfo);
 
     // Render rocks
-    for (int i = 0; i < numRocks; ++i) {
-        RenderInformation rockInfo = rocks[i].getRenderInformation();
+    for (const auto &rock : rocks) {
+        RenderInformation rockInfo = rock->getRenderInformation();
         renderRock(rockInfo);
     }
 
     // Render mountain
     renderMountain(mountain, SKYBLUE, BLUE);
+}
+
+// Main rendering function
+void Renderer::draw() {
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    // Render background
+    renderBackground();
+
+    // Adjust y-position of camera
+    camera.position.y = world->getHiker().getRenderInformation().position.y + 100.0f;
+
+    BeginMode3D(camera);
+
+    renderEntities();
 
     EndMode3D();
 
