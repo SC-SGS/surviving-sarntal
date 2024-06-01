@@ -63,6 +63,7 @@ class MountainClass {
      * @return Returns start_index and end_index of the section from minX to
      * maxX INCLUDING start_index and EXCLUDING end_index;
      */
+    // TODO Bezeichner und Doku ändern
     static IndexIntervalNew getRelevantMountainSection(float minX, float maxX);
 
     /** Returns a position from a given index. The index should previously be

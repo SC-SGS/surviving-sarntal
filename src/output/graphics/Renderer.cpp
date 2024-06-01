@@ -1,8 +1,4 @@
 #include "Renderer.h"
-#include "../../entities/Hiker.h"
-#include "../../entities/RenderedEntity.h"
-#include "../../entities/Rock.h"
-#include "../../utils/game_constants.h"
 #include "raylib.h"
 
 constexpr Vector3 UP_DIR = {0, 1, 0};
@@ -17,9 +13,9 @@ void Renderer::renderEntity(const RenderInformation &info, float rotation) {
 }
 
 void Renderer::renderEntity(const RenderInformation &info, float rotation, Texture2D texture, Rectangle sourceRec) {
-    DrawBillboardPro(camera, texture, sourceRec, Vector3{info.position.x, info.position.y + info.height / 2, 0}, UP_DIR,
-                     Vector2{static_cast<float>(info.width), static_cast<float>(info.height)}, Vector2{0.0f, 0.0f},
-                     rotation, WHITE);
+    DrawBillboardPro(camera, texture, sourceRec, Vector3{info.position.x, info.position.y + info.height / 2, -1},
+                     UP_DIR, Vector2{static_cast<float>(info.width), static_cast<float>(info.height)},
+                     Vector2{0.0f, 0.0f}, rotation, WHITE);
 }
 
 static float currentFrame = 0;
@@ -58,8 +54,29 @@ void Renderer::renderRock(const RenderInformation &rockInfo) {
     renderEntity(rockInfo, rockInfo.rotation.angular_offset);
 }
 
+void Renderer::renderMountain(MountainClass &mountain, Color topColor, Color bottomColor) {
+    // Retrieve the relevant section of the mountain to be displayed
+    IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
+
+    // Draw the mountain
+    for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - 1; ++i) {
+        Position pos1 = mountain.getVertex(i);
+        Position pos2 = mountain.getVertex(i + 1);
+
+        // Define the vertices for the triangles in 3D space
+        Vector2 vector1 = {static_cast<float>(pos2.x), static_cast<float>(pos2.y)};
+        Vector2 vector2 = {static_cast<float>(pos1.x), static_cast<float>(pos1.y)};
+        Vector2 vector3 = {static_cast<float>(pos1.x), static_cast<float>(-GetScreenHeight())};
+        Vector2 vector4 = {static_cast<float>(pos2.x), static_cast<float>(-GetScreenHeight())};
+
+        // TODO Fill the area below the line with a gradient
+        DrawTriangle(vector1, vector2, vector3, topColor);
+        DrawTriangle(vector3, vector4, vector1, topColor);
+    }
+}
+
 // Main rendering function
-void Renderer::render(Hiker hiker, RockClass rocks[], int numRocks) {
+void Renderer::render(Hiker hiker, RockClass rocks[], int numRocks, MountainClass &mountain) {
     BeginDrawing();
     ClearBackground(BLACK);
 
@@ -79,6 +96,9 @@ void Renderer::render(Hiker hiker, RockClass rocks[], int numRocks) {
         RenderInformation rockInfo = rocks[i].getRenderInformation();
         renderRock(rockInfo);
     }
+
+    // Render mountain
+    renderMountain(mountain, SKYBLUE, BLUE);
 
     EndMode3D();
 

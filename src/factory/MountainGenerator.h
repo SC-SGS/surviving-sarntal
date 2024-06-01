@@ -25,7 +25,10 @@ class MountainGenerator {
      *
      * @param world
      */
-    static void loadChunksOfMountain(World *world);
+    void loadChunksOfMountain(World *world);
+    static float getTerrainHeight(float x, float y, float ridge_height, float baseline = 0.0f);
+    void generateChunkMesh(World &world);
+    static Vector3 computeNormal(Vector3 p1, Vector3 p2, Vector3 p3);
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAINGENERATOR_H
