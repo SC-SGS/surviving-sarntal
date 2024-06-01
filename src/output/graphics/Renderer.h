@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_RENDERER_H
 
 #include "../../entities/Hiker.h"
+#include "../../entities/Mountain.h"
 #include "../../entities/RenderedEntity.h"
 #include "../../entities/Rock.h"
 #include "../../utils/game_constants.h"
@@ -26,7 +27,7 @@ class Renderer {
         camera.projection = CAMERA_PERSPECTIVE; // Camera mode type
         regenerateGradientTexture();
     }
-    void render(Hiker hiker, RockClass *rocks, int numRocks);
+    void render(Hiker hiker, RockClass *rocks, int numRocks, MountainClass &mountain);
 
   private:
     void renderEntity(const RenderInformation &info);
@@ -42,11 +43,11 @@ class Renderer {
     Texture2D gradient_texture_background{};
     void regenerateGradientTexture();
     void renderRock(const RenderInformation &rockInfo);
-    void renderHiker(const RenderInformation &hikerInfo);
+    void renderHiker(RenderInformation &hikerInfo);
     void animateHiker(RenderInformation &hikerInfo);
     void renderEntity(const RenderInformation &info, float rotation, Texture2D texture, Rectangle sourceRec);
-    void renderHiker(RenderInformation &hikerInfo);
     static void drawBackgroundTextureRepeatedly(Texture2D texture2D, float scrolling, float scale, float offsetY);
+    static void renderMountain(MountainClass &mountain, Color topColor = WHITE, Color bottomColor = BLUE);
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
