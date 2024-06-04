@@ -7,7 +7,6 @@ struct Position;
 
 struct Velocity;
 
-// TODO check consistency of position and velocity as aliases for vector and move to utils
 struct Vector {
     floatType x, y;
 
@@ -46,15 +45,7 @@ struct Position : Vector {};
 
 struct Velocity : Vector {};
 
-struct Radius {
-    floatType value;
-};
-
 struct Rotation {
     floatType angular_velocity;
     floatType angular_offset;
 };
-
-struct Rock {};
-
-struct Exploding {};

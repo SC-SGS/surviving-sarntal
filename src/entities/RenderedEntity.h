@@ -5,7 +5,6 @@
 #ifndef SURVIVING_SARNTAL_RENDEREDENTITY_H
 #define SURVIVING_SARNTAL_RENDEREDENTITY_H
 
-// TODO remove this include
 #include "../output/graphics/renderInformation/RenderInformation.h"
 #include "../utilities/vector.h"
 
@@ -21,7 +20,6 @@ class RenderedEntity {
     virtual RenderInformation getRenderInformation();
     void setAnimationInformation(AnimationInformation &animationInformation);
 
-    // TODO why do we use their vector? we need our own and also, renamings like Position as vector alias for clarity
     void setPosition(Vector &position);
     Vector getPosition();
 

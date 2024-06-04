@@ -12,7 +12,8 @@
 #include <memory>
 
 class Game : public Singleton<Game> {
-    friend class Singleton<Game>; // Allow Singleton to access the constructor??
+    friend class Singleton<Game>;
+
   public:
     void run() const;
 
