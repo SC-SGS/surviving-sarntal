@@ -6,12 +6,12 @@
 #define INTERPOLATOR_H
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 
-class Interpolator {
+class Interpolator : public Singleton<Interpolator> {
+    friend class Singleton<Interpolator>;
 
   public:
-    explicit Interpolator(const World &world);
-
     /**
      * Probably linear interpolation for positions and Slerp for orientations.
      * @param alpha blending factor of current and previous state (the two last states before the next frame)
@@ -20,6 +20,8 @@ class Interpolator {
 
   private:
     const World &world;
+    Interpolator();
+    ~Interpolator();
 };
 
 #endif // INTERPOLATOR_H

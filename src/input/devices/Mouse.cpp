@@ -3,7 +3,8 @@
 //
 
 #include "Mouse.h"
+#include <queue>
 
 Mouse::~Mouse() = default;
 
-std::list<GameEvent> Mouse::getGameEvents() { return {}; }
+std::queue<GameEvent> Mouse::getGameEvents() { return {}; }

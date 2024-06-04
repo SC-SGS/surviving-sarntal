@@ -4,6 +4,7 @@
 
 #include "Keyboard.h"
 #include "raylib.h"
+#include <iostream>
 
 Keyboard::Keyboard() {
     INPUT_MAPPINGS = {// Normal events
@@ -21,22 +22,25 @@ Keyboard::Keyboard() {
                       // Virtual axis modifications
                       {{KEY_TAB, TRIGGER_PRESSED}, {AXIS_MODIFICATION, ITEM_SWITCH, 1}},
                       {{KEY_D, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, 1}},
-                      {{KEY_A, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1}}};
+                      {{KEY_A, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1}},
+                      {{KEY_D, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0}},
+                      {{KEY_A, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0}}};
 }
 
 Keyboard::~Keyboard() = default;
 
-const std::map<TriggerType, std::function<bool(int)>> Keyboard::RAYLIB_MAPPINGS{{TRIGGER_PRESSED, IsKeyPressed},
-                                                                                {TRIGGER_DOWN, IsKeyDown},
-                                                                                {TRIGGER_RELEASED, IsKeyReleased},
-                                                                                {TRIGGER_UP, IsKeyUp}};
+const std::map<TriggerType, std::function<bool(int)>> Keyboard::raylibMappings{{TRIGGER_PRESSED, IsKeyPressed},
+                                                                               {TRIGGER_DOWN, IsKeyDown},
+                                                                               {TRIGGER_RELEASED, IsKeyReleased},
+                                                                               {TRIGGER_UP, IsKeyUp}};
 
-std::list<GameEvent> Keyboard::getGameEvents() {
-    std::list<GameEvent> events = {};
+std::queue<GameEvent> Keyboard::getGameEvents() {
+    std::queue<GameEvent> events = {};
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
-        if (Keyboard::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(deviceEvent.trigger)) {
-            events.push_back(getGameEvent(deviceEvent));
+        if (Keyboard::raylibMappings.at(deviceEvent.triggerType)(deviceEvent.trigger)) {
+            // std::cout << "Device Event: " << it->first.trigger << std::endl;
+            events.push(getGameEvent(deviceEvent));
         }
     }
     return events;

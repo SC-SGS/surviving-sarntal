@@ -6,22 +6,27 @@
 #define SURVIVING_SARNTAL_DESTRUCTOR_HPP
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 
-class Destructor {
+class Destructor : public Singleton<Destructor> {
+    friend class Singleton<Destructor>;
 
   public:
-    explicit Destructor(World &world);
-
     void destruct() const;
 
   private:
     World &world;
+    Destructor();
+    ~Destructor();
 
     /**
      * Destructs all rocks that are outside of the world borders.
      */
     void destructRocks() const;
-
+    /**
+     * Destructs all items that are outside of the world borders.
+     */
+    void destructItems() const;
     /**
      * Destruct chunks of the mountain that are outside of the world borders;
      */

@@ -12,6 +12,12 @@ HikerMovement::HikerMovement() {
     lastJump = 0;
 }
 
+HikerMovement::HikerMovement(HikerMovement::MovementState state, HikerMovement::Direction direction)
+    : currentState(state), currentDirection(direction) {
+    canJumpAgain = true;
+    lastJump = 0;
+}
+
 HikerMovement::MovementState HikerMovement::getState() const { return currentState; }
 
 // TODO where do we need this?

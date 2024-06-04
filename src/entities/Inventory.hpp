@@ -75,6 +75,11 @@ class Inventory {
     size_t getSelectedSlot() const;
 
     /**
+     * returns whether the selected slot has an item.
+     */
+    bool isSelectedSlotFree() const;
+
+    /**
      * switches the selected slot by the given offset (+i to switch i slots
      * forward, -i backward)
      * @param offset

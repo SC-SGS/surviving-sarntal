@@ -7,6 +7,7 @@
 
 #include "InputDevice.h"
 #include <functional>
+#include <queue>
 /**
  * Represents a keyboard.
  */
@@ -16,10 +17,10 @@ class Keyboard : public InputDevice {
     ~Keyboard() override;
 
   protected:
-    std::list<GameEvent> getGameEvents() override;
+    std::queue<GameEvent> getGameEvents() override;
 
   private:
-    static const std::map<TriggerType, std::function<bool(int)>> RAYLIB_MAPPINGS;
+    static const std::map<TriggerType, std::function<bool(int)>> raylibMappings;
 };
 
 #endif // SURVIVING_SARNTAL_KEYBOARD_H
