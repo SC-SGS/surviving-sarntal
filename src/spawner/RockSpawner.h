@@ -6,8 +6,8 @@
 #define SURVIVING_SARNTAL_ROCKSPAWNER_H
 
 #include "../entities/World.h"
+#include "../utilities/GameConstants.hpp"
 #include "../utilities/Singleton.hpp"
-#include "../utils/game_constants.hpp"
 
 /**
  * Rock spawning phases that can occur during the game.
