@@ -42,7 +42,7 @@ void EventProcessor::processEvents() {
         const GameEventFunction func = gameEventFunctionMappings.at(event);
         // std::cout << "Function exists? " << (func != nullptr) << std::endl;
         (this->*func)(event);
-        // TODO remove one-time events like jump from queue, but add hold events again?
+        // TODO remove one-time events like jump from queue, but add hold events (especially walk) again?
         this->eventQueue.pop();
     }
     for (auto eventFunction : this->autoEventFunctions) {
@@ -50,7 +50,7 @@ void EventProcessor::processEvents() {
     }
 }
 
-// TODO: Let output handle sound, graphics?
+// TODO: make hiker methods
 void EventProcessor::crouch(const GameEvent event) const {
     // std::cout << "Crouch hiker." << std::endl;
     auto &hiker = this->world.getHiker();
@@ -62,7 +62,7 @@ void EventProcessor::crouch(const GameEvent event) const {
     }
 }
 
-// TODO: Let output handle sound, graphics?
+// TODO: sounds
 void EventProcessor::uncrouch(const GameEvent event) const {
     // std::cout << "Uncrouch hiker." << std::endl;
     auto &hiker = this->world.getHiker();
@@ -115,10 +115,7 @@ void EventProcessor::useItem(const GameEvent event) const {
     }
 }
 
-// TODO I removed this getHiker().useSelectedItem(this->world.getHiker()); }
-
-// TODO: Let output handle sound, graphics?, change to use resource manager
-void EventProcessor::jump(GameEvent event) const { // NOLINT(*-function-size)
+void EventProcessor::jump(GameEvent event) const {
     // std::cout << "Jump hiker." << std::endl;
     auto &hiker = this->world.getHiker();
     auto &hikerMovement = hiker.getHikerMovement();
@@ -129,19 +126,13 @@ void EventProcessor::jump(GameEvent event) const { // NOLINT(*-function-size)
         hikerMovement.setLastJump(0.0);
         hikerMovement.setCanJumpAgain(true);
     }
-    // std::cout << "dadada" << hikerMovement.getCanJumpAgain() << std::endl;
-    // std::cout << "aha" << hiker.getVelocity().y << std::endl;
     if (hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain()) {
-        // PlaySound(jump_sound);
         auto &vel = hiker.getVelocity();
         vel.y = JUMP_VELOCITY_CONSTANT;
         hiker.setVelocity(vel);
         if (hikerMovement.getState() == HikerMovement::IN_AIR) {
             hikerMovement.setCanJumpAgain(false);
         }
-        // std::cout << "aha" << hiker.getVelocity().y << std::endl;
-        // std::cout << "can jump" << hikerMovement.getCanJumpAgain() << std::endl;
-        // std::cout << hikerMovement.getCanJumpAgain() << std::endl;
         hikerMovement.setState(HikerMovement::IN_AIR);
     }
 }
@@ -167,7 +158,6 @@ void EventProcessor::switchItem(const GameEvent event) const {
 }
 
 void EventProcessor::moveX(const GameEvent event) const {
-    // std::cout << "Previous Speed: " << world.getHiker().getVelocity().x << std::endl;
     const float xFactor = event.axisValue;
     floatType speed = NORMAL_SPEED;
     if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::CROUCHED) {
@@ -177,8 +167,6 @@ void EventProcessor::moveX(const GameEvent event) const {
     auto vel = this->world.getHiker().getVelocity();
     vel.x = speed * xFactor;
     this->world.getHiker().setVelocity(vel);
-    // if(vel.x > 0)
-    // std::cout << "New Speed: " << world.getHiker().getVelocity().x << std::endl;
 }
 
 void EventProcessor::moveY(const GameEvent event) const {

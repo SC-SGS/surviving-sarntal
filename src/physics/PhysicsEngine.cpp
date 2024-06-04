@@ -8,13 +8,12 @@
 #include <iostream>
 #include <mutex>
 
-// TODO deltaT game constant?
 PhysicsEngine::PhysicsEngine()
-    : deltaT(0.01), world(World::getInstance()), accumulator(0.f), timeLastUpdate(0.f), spawner(Spawner::getInstance()),
-      eventProcessor(EventProcessor::getInstance()), accelerator(Accelerator::getInstance()),
-      positioner(Positioner::getInstance()), collisionDetector(CollisionDetector::getInstance()),
-      collisionHandler(CollisionHandler::getInstance()), interpolator(Interpolator::getInstance()),
-      destructor(Destructor::getInstance()) {
+    : deltaT(PHYSICS_DELTA_T), world(World::getInstance()), accumulator(0.f), timeLastUpdate(0.f),
+      spawner(Spawner::getInstance()), eventProcessor(EventProcessor::getInstance()),
+      accelerator(Accelerator::getInstance()), positioner(Positioner::getInstance()),
+      collisionDetector(CollisionDetector::getInstance()), collisionHandler(CollisionHandler::getInstance()),
+      interpolator(Interpolator::getInstance()), destructor(Destructor::getInstance()) {
     this->setDeltaT(this->deltaT);
     std::cout << "PhysicsEngine gets constructed" << std::endl;
 }
@@ -45,8 +44,6 @@ void PhysicsEngine::setDeltaT(const float deltaT) {
 }
 
 void PhysicsEngine::updateTimeStep() const {
-    // TODO spawn stuff
-    // TODO should velocities be updated by processEvents or only in acceleate
     this->spawner.spawn();
     this->eventProcessor.processEvents();
     this->accelerator.accelerate();

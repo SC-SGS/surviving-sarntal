@@ -44,7 +44,7 @@ class Item : public RenderedEntity {
 
   private:
     // TODO do we need getters for these? and why is the item type the item id?????????
-    ItemType itemID;
+    ItemType itemType;
     ItemInformation itemInformation;
     std::string name;
     std::string texture;

@@ -31,12 +31,10 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
     friend class Singleton<PhysicsEngine>;
 
   public:
-    // TODO there should be a destructor here somewhere, destructing all the physicists
-
     /**
      * Perform N = frameTime / deltaT update steps and interpolate at the end.
      * The first of the N updates takes into consideration the inputs from the last iteration of the game loop.
-     * //TODO is it possible to intepolate the state with no return value
+     * //TODO is it possible to interpolate the state with no return value
      * The state of the world at the end of this method should be the state at exactly the time, the next frame is
      * rendered.
      *
@@ -44,12 +42,10 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
      * at render time. We accept having a latency of up to min(frameTime, deltaT) and corresponding input aliasing
      * effects.
      * //TODO only way I see how to solve this would be having physics on different thread but I believe we should try
-     * //TODO this version first and check later how it looks and feels
-     * //TODO This is a general problem: Do the physics run slower than the frame rate or can we split the physics in
-     * //TODO parts that are tied to frame rate (input) and parts that are not (particles/rocks)
-     * //TODO do we need to change input? Is input coupled to frame rate?
-     *
-     * // TODO NO, events have to be gotten in every step!!!
+     * // this version first and check later how it looks and feels
+     * // This is a general problem: Do the physics run slower than the frame rate or can we split the physics in
+     * // parts that are tied to frame rate (input) and parts that are not (particles/rocks)
+     * // do we need to change input? Is input coupled to frame rate?
      *
      * @param events
      */
@@ -131,7 +127,7 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
     void updateTimeStep() const;
 
     /**
-     * Destructs all physicists (TODO)
+     * Destructs all physicists
      * and sets isInit to false;
      */
     ~PhysicsEngine();

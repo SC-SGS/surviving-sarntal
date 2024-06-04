@@ -15,7 +15,7 @@ CollisionDetector::~CollisionDetector() { std::cout << "CollisionDetector gets d
 
 void CollisionDetector::detectCollisions() const {}
 
-bool CollisionDetector::rocksCollide(RockClass &rock1, RockClass &rock2) {
+bool CollisionDetector::rocksCollide(Rock &rock1, Rock &rock2) {
     const Vector pos1 = rock1.getPosition();
     const float rad1 = rock1.getRadius();
     const Vector pos2 = rock2.getPosition();
@@ -23,7 +23,7 @@ bool CollisionDetector::rocksCollide(RockClass &rock1, RockClass &rock2) {
     return (pos1.distanceTo(pos2) <= rad1 + rad2);
 }
 
-bool CollisionDetector::isPlayerHitByRock(RockClass &rock) {
+bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
     const auto rockPosition = rock.getPosition();
     const auto rad = rock.getRadius();
     // hiker position is at his feet, but here we use the center of mass (center of the rectangle) as position
@@ -51,8 +51,8 @@ bool CollisionDetector::isPlayerHitByRock(RockClass &rock) {
 
 Vector CollisionDetector::getNormal(const std::size_t idx, const Vector rockPos) const {
     // determine closer vertex
-    Position vertexOther = this->world.getMountain().getVertex((idx - 1) % MountainClass::NUMBER_OF_VERTICES);
-    const Position vertexRight = this->world.getMountain().getVertex((idx + 1) % MountainClass::NUMBER_OF_VERTICES);
+    Position vertexOther = this->world.getMountain().getVertex((idx - 1) % Mountain::NUMBER_OF_VERTICES);
+    const Position vertexRight = this->world.getMountain().getVertex((idx + 1) % Mountain::NUMBER_OF_VERTICES);
     if (rockPos.distanceTo(vertexOther) > rockPos.distanceTo(vertexRight)) {
         // else already correct
         vertexOther = vertexRight;

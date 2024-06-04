@@ -10,7 +10,7 @@
 #include "CollisionDetector.hpp"
 
 /**
- * todo NOOOO THIS BAD
+ * todo will be changed with mountain
  */
 struct Vertex {
     std::size_t index;
@@ -36,13 +36,10 @@ class CollisionHandler : public Singleton<CollisionHandler> {
     /**
      * Returns the closest Vertex to a rock on the mountain
      *
-     * TODO THIS IS BAD, THIS IS EVIL, THIS NEED TO CHANGE
-     * TODO it will probably change anyways if we do the mountain differently
-     *
      * @param rock
      * @return
      */
-    Vertex getClosestVertex(RockClass &rock) const;
+    Vertex getClosestVertex(Rock &rock) const;
 
     /**
      * Tests whether a player collides with the rock and updates his state accordingly.
@@ -62,7 +59,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
      * @param rock
      * @return
      */
-    static int rockDamage(RockClass &rock);
+    static int rockDamage(Rock &rock);
 
     /**
      * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.
@@ -79,7 +76,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
      * @param rock
      * @param closestVertex
      */
-    void rockTerrainCollision(RockClass &rock, Vertex closestVertex) const;
+    void rockTerrainCollision(Rock &rock, Vertex closestVertex) const;
 
     /**
      * Yikes, this is naive.
@@ -95,7 +92,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
      * @param rock1
      * @param rock2
      */
-    static void rockRockCollision(RockClass &rock1, RockClass &rock2);
+    static void rockRockCollision(Rock &rock1, Rock &rock2);
 
     /**
      * Returns the next position of a given rock with a velocity and angular velocity, disregarding any collisions that
@@ -108,7 +105,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
      * @param rock
      * @return
      */
-    RockClass getNextState(RockClass &rock) const;
+    Rock getNextState(Rock &rock) const;
 
     /**
      * Sigh ...

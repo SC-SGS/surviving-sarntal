@@ -21,7 +21,7 @@ void Destructor::destruct() const {
 
 void Destructor::destructRocks() const {
     this->world.getRocks().remove_if(
-        [this](RockClass rock) { return this->world.isOutOfScope(rock) || rock.getShouldBeDestroyed(); });
+        [this](Rock rock) { return this->world.isOutOfScope(rock) || rock.getShouldBeDestroyed(); });
 }
 
 void Destructor::destructItems() const {
