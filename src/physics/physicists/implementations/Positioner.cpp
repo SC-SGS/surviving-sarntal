@@ -53,19 +53,15 @@ void Positioner::updateRockPositions() const {
 }
 
 void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
-    // TODO maybe we want to switch back to float type, but clang won't allow it as of now
     float knockback = 0;
     Hiker &hiker = this->world.getHiker();
     // TODO this should go into the collision handler, but there might be problems with the event processor so let's
-    // leave it here until we take care of the physics
+    // TODO leave it here until we take care of the physics
     if (hiker.getIsHit()) {
         const float radius = hiker.getHitInformation().radiusRock;
         const float rockVelocity = hiker.getHitInformation().velocityRock;
-        // TODO KNOCKBACK could vary with rock type, e.g. small rocks with little damage but massive knockback etc
-        // TODO also, why is knockback only in x direction?
+        // TODO KNOCKBACK could vary with rock type, e.g. small rocks with little damage but massive knockback
         knockback = rockVelocity * KNOCKBACKCONST * radius;
-        // TODO I think we should remove all unnecessary prints
-        // std::cout << "hit: " << knockback << std::endl;
         int counter = hiker.getHitInformation().countingVariable;
         counter++;
         // TODO I don't like the HitInformation
@@ -81,44 +77,21 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     }
 
     auto pos = hiker.getPosition();
-    // std::cout << pos.x << std::endl;
-    // std::cout << "Hiker state: " << hiker.getHikerMovement().getState() << std::endl;
-    // std::cout << "Hiker direction: " << hiker.getHikerMovement().getDirection() << std::endl;
     const auto vel = hiker.getVelocity();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
-        // std::cout << "Hiker in air" << std::endl;
         pos.x += knockback + AIR_MOVEMENT_SPEED_FACTOR * vel.x * this->deltaT;
         const auto terrainY = this->world.getMountain().getYPosFromX(pos.x);
         const auto airY = pos.y + vel.y * this->deltaT;
         if (airY < terrainY) {
-            // std::cout << "Jump successful" << std::endl;
             pos.y = airY;
-            // std::cout << this->deltaT << std::endl;
-            // std::cout << hiker.getHikerMovement().getLastJump() << std::endl;
         } else {
-            // std::cout << "Jump failed" << std::endl;
             pos.y = terrainY;
             hiker.getVelocity().y = 0.f;
             hiker.getHikerMovement().setState(HikerMovement::MovementState::MOVING);
             hiker.getHikerMovement().setLastJump(0.0);
-            // TODO I think graphics does that already
-            /* it.entity(0).remove<graphics::BillboardComponent>();
-            it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
-                c = {0};
-                c.billUp = {0.0f, 0.0f, 1.0f};
-                c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
-                c.resourceHandle =
-                    it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/player_walk.png");
-                c.width = HIKER_WIDTH; // TODO?
-                c.height = HIKER_HEIGHT;
-                c.current_frame = 0;
-                c.numFrames = 4;
-            });
-            */
         }
         // TODO this whole speedfactor shebang needs thorough examination and fiddling in later stages
     } else if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
-        // std::cout << "here" << std::endl;
         const auto nextXPos = vel.x * this->deltaT + pos.x;
         const auto nextYPos = this->world.getMountain().getYPosFromX(nextXPos);
         Vector direction = {nextXPos - pos.x, nextYPos - pos.y};
@@ -137,7 +110,6 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         pos.x = this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET;
     }
     hiker.setPosition(pos);
-    // std::cout << "New pos: " << pos.x << " | " << world.getHiker().getPosition().x << std::endl;
 }
 
 float Positioner::getSpeedFactor(const float slope) {
@@ -145,14 +117,14 @@ float Positioner::getSpeedFactor(const float slope) {
         return MIN_SPEED_NEG_SLOPE;
     }
     if (slope <= FASTEST_NEG_SCOPE) {
-        return MountainClass::linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
-                                                  {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
+        return Mountain::linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
+                                             {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
     }
     if (slope <= 0) {
-        return MountainClass::linearInterpolation(slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+        return Mountain::linearInterpolation(slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
     }
     if (slope <= SLOWEST_POS_SCOPE) {
-        return MountainClass::linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+        return Mountain::linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
     }
 
     return MIN_SPEED_POS_SCOPE;

@@ -16,8 +16,8 @@ struct IndexIntervalNew {
 };
 
 // TODO this whole class needs to be reworked, which we do anyways later, and a lot of refactoring is necessary
-class MountainClass : public Singleton<MountainClass> {
-    friend class Singleton<MountainClass>;
+class Mountain : public Singleton<Mountain> {
+    friend class Singleton<Mountain>;
 
   public:
     /**
@@ -131,8 +131,8 @@ class MountainClass : public Singleton<MountainClass> {
     static float linearInterpolation(float xPos, Position left, Position right);
 
   private:
-    MountainClass();
-    ~MountainClass();
+    Mountain();
+    ~Mountain();
 
     std::array<Position, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
     std::size_t startOfCircularArray{0};

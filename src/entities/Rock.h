@@ -13,18 +13,18 @@
  * This class represents a rock in the game. A rock is simulated by a certain point (position) with a radius
  * and the attributes velocity and rotation.
  */
-// TODO struct might be better for performance, is it called RockClass?
+// TODO struct might be better for performance?
 // TODO what about destructors, as in the programming concept in c++?
-class RockClass : public RenderedEntity {
+class Rock : public RenderedEntity {
   public:
-    RockClass(Vector position, Vector velocity, Rotation rotation, float radius) : RenderedEntity(position) {
+    Rock(Vector position, Vector velocity, Rotation rotation, float radius) : RenderedEntity(position) {
         this->position = position;
         this->velocity = velocity;
         this->rotation = rotation;
         this->radius = radius;
     };
 
-    ~RockClass() = default;
+    ~Rock() = default;
 
     void setVelocity(Vector &newVelocity);
     void setRotation(const Rotation &newRotation);

@@ -8,19 +8,19 @@
 #include <iostream>
 #include <utility>
 
-RenderInformation RockClass::getRenderInformation() {
+RenderInformation Rock::getRenderInformation() {
     return RenderInformation{Vector2(position), {0, 0}, radius * 2.0f, radius * 2.0f, rotation, "rock"};
 }
 
-void RockClass::setRotation(const Rotation &newRotation) { rotation = newRotation; }
+void Rock::setRotation(const Rotation &newRotation) { rotation = newRotation; }
 
-void RockClass::setVelocity(Vector &newVelocity) { velocity = newVelocity; }
+void Rock::setVelocity(Vector &newVelocity) { velocity = newVelocity; }
 
-Rotation RockClass::getRotation() { return rotation; }
+Rotation Rock::getRotation() { return rotation; }
 
-Vector RockClass::getVelocity() { return velocity; }
+Vector Rock::getVelocity() { return velocity; }
 
-float RockClass::getRadius() const { return radius; }
+float Rock::getRadius() const { return radius; }
 
-bool RockClass::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
-void RockClass::setShouldBeDestroyed(const bool shouldBeDestroyed) { this->shouldBeDestroyed = shouldBeDestroyed; }
+bool Rock::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
+void Rock::setShouldBeDestroyed(const bool shouldBeDestroyed) { this->shouldBeDestroyed = shouldBeDestroyed; }

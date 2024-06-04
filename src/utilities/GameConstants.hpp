@@ -8,6 +8,8 @@ constexpr int SCREEN_WIDTH = 1600;
 constexpr int SCREEN_HEIGHT = 900;
 }; // namespace graphics
 
+constexpr floatType PHYSICS_DELTA_T = 0.01;
+
 constexpr floatType PLAYER_SPAWN_OFFSET = 500;
 
 /**

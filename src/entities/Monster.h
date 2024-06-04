@@ -30,9 +30,6 @@ class Monster : public RenderedEntity, public Singleton<Monster> {
     floatType getXPosition() const;
     void setXPosition(floatType positionX);
 
-    // what is the data type of delta time?
-    void updateMonsterPosition();
-
   private:
     Monster();
     ~Monster();

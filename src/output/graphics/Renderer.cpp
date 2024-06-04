@@ -57,8 +57,6 @@ void Renderer::renderEntity(RenderedEntity &entity, float rotation, Texture2D te
     // Define the origin for rotation.
     Vector2 origin = {info.width / 2, info.height / 2};
 
-    // DrawCircle(static_cast<int>(entity.getPosition().x), static_cast<int>(entity.getPosition().y), 100.f,
-    // BLACK); // todo @daniel pls fix this
     // Draw the texture
     DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
 }
@@ -111,7 +109,7 @@ void Renderer::renderRock(RenderedEntity &entity) {
     renderEntity(entity, entity.getRenderInformation().rotation.angular_offset);
 }
 
-void Renderer::renderMountain(MountainClass &mountain, Color topColor, Color bottomColor) const {
+void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomColor) const {
     // Retrieve the relevant section of the mountain to be displayed
     IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
 

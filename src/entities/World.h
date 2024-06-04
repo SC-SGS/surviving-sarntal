@@ -22,29 +22,25 @@
  * This class serves the purpose to combine all the single entities into one structure.
  */
 
-// TODO Should be singleton (see Physics Engine for implementation details)
-// TODO I dislike that our getters are non-const. It makes the design kinda weird.
 class World : public Singleton<World> {
     friend class Singleton<World>; // Allow Singleton to access the constructor??
 
   public:
-    // TODO it would be nice to have getters and mutable getters. There should be an immutable getter option (const).
-
     Hiker &getHiker() const;
 
     Inventory &getInventory() const;
 
     Monster &getMonster() const;
 
-    MountainClass &getMountain() const;
+    Mountain &getMountain() const;
 
-    std::list<RockClass> &getRocks();
+    std::list<Rock> &getRocks();
 
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
-    void addRock(RockClass &rock);
+    void addRock(Rock &rock);
 
     std::list<std::shared_ptr<Item>> &getItems() const;
 
@@ -82,12 +78,10 @@ class World : public Singleton<World> {
 
   private:
     // TODO into yaml config and check value
-    // constexpr Vector DEFAULT_HIKER_POS = {0, MountainClass::getInstance().getYPosFromX(0)};
+    // constexpr Vector DEFAULT_HIKER_POS = {0, Mountain::getInstance().getYPosFromX(0)};
     static constexpr size_t DEFAULT_INV_SLOT_NUM = 3;
-
-    // TODO we need to make sure that these attributes are only saved here, i.e. there are only pointers everywhere else
     // TODO check hiker and/or inventory singleton?
-    MountainClass &mountain = MountainClass::getInstance();
+    Mountain &mountain = Mountain::getInstance();
     float hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
     std::unique_ptr<Hiker> hiker =
         std::make_unique<Hiker>(Vector{hikerPositionX, mountain.getYPosFromX(hikerPositionX)});
@@ -100,13 +94,11 @@ class World : public Singleton<World> {
 
     int coinScore = 0;
 
-    const std::unique_ptr<std::list<RockClass>> rocks = std::make_unique<std::list<RockClass>>();
+    const std::unique_ptr<std::list<Rock>> rocks = std::make_unique<std::list<Rock>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
     World();
     ~World();
-
-    // TODO spawn rock method and destruct rock method or at least add and remove from list
 };
 
 #endif // SURVIVING_SARNTAL_WORLD_H
