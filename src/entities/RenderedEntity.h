@@ -6,8 +6,8 @@
 #define SURVIVING_SARNTAL_RENDEREDENTITY_H
 
 // TODO remove this include
-#include "../components/vector.h"
-#include "../output/graphics/render_information/RenderInformation.h"
+#include "../output/graphics/renderInformation/RenderInformation.h"
+#include "../utilities/vector.h"
 
 /**
  * This class serves as a base class for rendered entities.

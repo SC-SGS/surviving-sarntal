@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../utils/game_constants.hpp"
+#include "GameConstants.hpp"
 #include "raylib.h"
 
 struct Position;

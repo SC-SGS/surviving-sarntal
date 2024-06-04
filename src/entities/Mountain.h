@@ -2,8 +2,8 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "../components/vector.h"
 #include "../utilities/Singleton.hpp"
+#include "../utilities/vector.h"
 #include <array>
 #include <cmath>
 #include <memory>

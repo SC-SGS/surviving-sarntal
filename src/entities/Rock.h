@@ -5,8 +5,7 @@
 #ifndef SURVIVING_SARNTAL_ROCK_H
 #define SURVIVING_SARNTAL_ROCK_H
 
-#include "../components/vector.h"
-#include "../output/graphics/render_information/RenderInformation.h"
+#include "../utilities/vector.h"
 
 #include "RenderedEntity.h"
 

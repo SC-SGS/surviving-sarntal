@@ -2,9 +2,9 @@
 // Created by felix-roehr on 5/27/24.
 //
 
-#include "Spawner.hpp"
-#include "../../factory/MountainGenerator.h"
-#include "../../factory/RockSpawner.h"
+#include "../Spawner.hpp"
+#include "../../../spawner/MountainGenerator.h"
+#include "../../../spawner/RockSpawner.h"
 
 #include <iostream>
 #include <mutex>
