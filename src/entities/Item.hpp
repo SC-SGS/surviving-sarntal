@@ -38,6 +38,8 @@ class Item : public RenderedEntity {
      */
     static ItemInformation getItemInformation(ItemType type);
 
+    RenderInformation getRenderInformation() override;
+
     ItemType getItemType() const;
 
   private:

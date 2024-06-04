@@ -23,12 +23,12 @@ project(surviving-sarntal)
 add_library(raygui INTERFACE)
 target_include_directories(raygui INTERFACE libs/raygui)
 
-FetchContent_Declare(flecs URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/flecs-3.2.7.tar.gz)
-FetchContent_MakeAvailable(flecs)
 FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.tar.gz)
 FetchContent_MakeAvailable(raylib)
 FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-1.14.0.tar.gz)
 FetchContent_MakeAvailable(googletest)
+FetchContent_Declare(yaml-cpp URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/yaml-cpp-0.8.0.tar.gz)
+FetchContent_MakeAvailable(yaml-cpp)
 #FetchContent_Declare(SDL2 URL libs/SDL/SDL2-2.28.3.tar.gz)
 #FetchContent_MakeAvailable(SDL2)
 
@@ -38,12 +38,8 @@ if(APPLE)
     include_directories(/opt/homebrew/Cellar/sdl2/2.30.2/include)
 endif()
 
-file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
-if (KINECT)
-    list(FILTER SRC EXCLUDE REGEX "main.cpp")
-else ()
-    list(FILTER SRC EXCLUDE REGEX "main.cpp|kinect_handler.h|kinect_handler.cpp")
-endif ()
+file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h" "src/*.hpp")
+
 #now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
 add_library(surviving-sarntal-library ${SRC})
 #now all those files get made into one library callled surviving-sarntal-library
@@ -54,19 +50,8 @@ target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
 
 target_clangformat_setup(surviving-sarntal-library)
 
-target_link_libraries(surviving-sarntal-library PUBLIC flecs::flecs_static raylib raygui)
-if (KINECT)
-    add_library( NITE-lib SHARED IMPORTED )
-    set_target_properties( NITE-lib PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libs/NITE/libXnVNite_1_5_2.so)
-    target_link_libraries(surviving-sarntal-library PUBLIC NITE-lib)
-    target_link_libraries(surviving-sarntal-library PUBLIC OpenNI)
-    configure_file(libs/NITE/Include/Sample-Scene.xml . COPYONLY)
-    configure_file(libs/NITE/Include/Sample-Tracking.xml . COPYONLY)
-    configure_file(libs/NITE/Include/Sample-User.xml . COPYONLY)
-    add_definitions(-Dkinect=1)
-    #message(WARNING "Kinect is activated")
-endif ()
-
+target_link_libraries(surviving-sarntal-library PUBLIC raylib raygui)
+target_link_libraries(surviving-sarntal-library PUBLIC yaml-cpp)
 
 #link some libraries to the surviving-sarntal-library that we are defining atm
 # Check if the operating system is macOS

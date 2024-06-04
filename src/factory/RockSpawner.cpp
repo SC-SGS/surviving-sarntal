@@ -3,88 +3,82 @@
 //
 
 #include "RockSpawner.h"
+#include <iostream>
+#include <mutex>
+#include <random>
 
-SpawnData RockSpawner::spawnData = {0, 0, 0};
+RockSpawner::RockSpawner() { std::cout << "Rock Spawner initialized." << std::endl; }
 
-void RockSpawner::spawnRocks(World *world, SpawnData *spawnData) {
-    // TODO figure out camera stuff
-    // auto camera =
-    // it.world().lookup("Camera").get_mut<graphics::Camera2DComponent>();
+RockSpawner::~RockSpawner() { std::cout << "Rock Spawner destroyed." << std::endl; }
 
+// TODO remove nolint and completely reengineer
+void RockSpawner::spawnRocks() {
+    if (!shouldSpawnRocks()) {
+        return;
+    }
+
+    const int numRocksToSpawn = computeNumRocksToSpawn();
+    for (int i = 0; i < numRocksToSpawn; i++) {
+        this->spawnRock(i);
+    }
+}
+
+// NOLINTBEGIN
+void RockSpawner::spawnRock(const size_t idxRock) {
+    const std::vector<Vector> offsetsAdditionalRocks = getOffsetsAdditionalRocks();
+    Vector spawnBasePos = getRandSpawnPos();
+    const float rad =
+        static_cast<float>(std::rand() / (1.0 * RAND_MAX)) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+
+    Vector velocity = {MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+                                                (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
+                       0};
+    Rotation rotation = {MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+                                                  (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY),
+                         0.0f};
+
+    Vector position = {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x,
+                       spawnBasePos.y + offsetsAdditionalRocks[idxRock].y};
+
+    RockClass newRock(position, velocity, rotation, rad);
+
+    this->world.addRock(newRock);
+
+    // TODO remove
+    /*floatType xPosition = this->world.getHiker().getPosition().x + 500;
+    floatType yPosition = this->world.getMountain().getYPosFromX(xPosition) - 500;
+    auto position = Vector{xPosition, yPosition};
+    RockClass newRock(position, Vector{0, 0}, Rotation{2, 0}, 25);*/
+    // this->world.addRock(newRock);
+    std::cout << "Rock spawned." << std::endl;
+    // std::cout << newRock.getPosition().x << " - " << newRock.getPosition().y
+    // << " Hiker: " << world.getHiker().getPosition().x << " " << world.getHiker().getPosition().x << std::endl;
+}
+
+bool RockSpawner::shouldSpawnRocks() {
     auto gameTime = GetTime();
-    RockSpawnPhase rockSpawnPhase = determineRockSpawnPhase(gameTime);
-    float timeBetweenRockspawns = rockSpawnTimeFromPhase(rockSpawnPhase);
-
-    if (gameTime > spawnData->rockSpawnTime + timeBetweenRockspawns) {
-        spawnData->rockSpawnTime = spawnData->rockSpawnTime + timeBetweenRockspawns;
-
-        // compute spawn Basepoint
-        // offset on x-axis by -300 to spawn visible on screen
-        constexpr float DEBUG_MAKE_SPAWN_VISIBLE_OFFSET = 400.;
-
-        // TODO figure out camera stuff
-        // const float spawn_x_coord = camera->target.x +
-        // ((float)graphics::SCREEN_WIDTH) / 2 + 100;
-        // //-DEBUG_MAKE_SPAWN_VISIBLE_OFFSET;
-
-        const float spawnXCoord = 0;
-        Position spawnBasepoint = world->getMountain().getVertex(
-            MountainClass::getRelevantMountainSection(spawnXCoord, spawnXCoord).startIndex);
-        // spawn rocks offset by constant amount above mountain
-        spawnBasepoint.y += 350.;
-
-        int numRocksToSpawn = computeNumRocksToSpawn(rockSpawnPhase, spawnData);
-        const std::vector<Position> offsetsAdditionalRocks{
-            {0., 0.}, {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.}, {-MAX_ROCK_SIZE - 5., MAX_ROCK_SIZE * 2 + 10.}};
-
-        for (int i{0}; i < numRocksToSpawn; i++) {
-            // NOLINTBEGIN
-            double r = ((double)std::rand() / (RAND_MAX));
-            // NOLINTEND
-            float radius = ((float)r) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
-
-            constexpr float CONST_VEL_COMPONENT{-300.};
-            // NOLINTBEGIN
-            float randomVelocityComponent{((((float)std::rand()) / RAND_MAX) - 0.5f) * 200.f};
-            // NOLINTEND
-
-            std::cout << "rock spawned" << std::endl;
-
-            Vector velocity = {CONST_VEL_COMPONENT + randomVelocityComponent, 0};
-            Rotation rotation = {0.0f, 0.0f};
-
-            Vector position = {spawnBasepoint.x + offsetsAdditionalRocks[i].x,
-                               spawnBasepoint.y + offsetsAdditionalRocks[i].y};
-
-            RockClass newRock(velocity, rotation, radius, position);
-
-            world->addRock(&newRock);
-
-            if (rockSpawnPhase == EXPLOSIVE_BATCHES) {
-                spawnData->explosiveRockModuloCount++;
-                if (spawnData->explosiveRockModuloCount >= 10) {
-                    spawnData->explosiveRockModuloCount = 0;
-                    // TODO what about this?
-                    // rock_entity.add<Exploding>();
-                }
-            }
-        }
+    float timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
+    bool shouldSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
+    if (shouldSpawn) {
+        this->lastSpawnTime += static_cast<float>(gameTime);
     }
+    return shouldSpawn;
 }
-int RockSpawner::computeNumRocksToSpawn(RockSpawnPhase rockSpawnPhase, SpawnData *spawnData) {
-    int numRocksToSpawn{1};
+
+int RockSpawner::computeNumRocksToSpawn() {
     if (rockSpawnPhase == ROCK_BATCHES || rockSpawnPhase == EXPLOSIVE_BATCHES) {
-        spawnData->batchModuloCount++;
-        if (spawnData->batchModuloCount >= 3) {
-            spawnData->batchModuloCount = 0;
-            numRocksToSpawn = 3;
+        numberOfRocksSinceLastBatch = numberOfRocksSinceLastBatch++ % 3;
+        if (numberOfRocksSinceLastBatch == 0) {
+            return 3;
         }
     }
-    return numRocksToSpawn;
+    return 1;
 }
-float RockSpawner::rockSpawnTimeFromPhase(RockSpawnPhase rockSpawnPhase) {
+
+float RockSpawner::rockSpawnTimeFromPhase() {
+    this->rockSpawnPhase = determineRockSpawnPhase();
     if (rockSpawnPhase == VERY_BEGINNING) {
-        return 1000.;
+        return 10.;
     } else if (rockSpawnPhase == IRREGULAR_ROCKS) {
         return 5.;
     } else if (rockSpawnPhase == REGULAR_ROCKS) {
@@ -93,7 +87,9 @@ float RockSpawner::rockSpawnTimeFromPhase(RockSpawnPhase rockSpawnPhase) {
         return 4.;
     }
 }
-RockSpawnPhase RockSpawner::determineRockSpawnPhase(double gameTime) {
+
+RockSpawnPhase RockSpawner::determineRockSpawnPhase() {
+    auto gameTime = GetTime();
     if (gameTime < 5.) {
         return VERY_BEGINNING;
     } else if (gameTime < 20.) {
@@ -106,3 +102,18 @@ RockSpawnPhase RockSpawner::determineRockSpawnPhase(double gameTime) {
         return EXPLOSIVE_BATCHES;
     }
 }
+
+std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
+    return {{0., 0.}, {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.}, {-MAX_ROCK_SIZE - 5., MAX_ROCK_SIZE * 2 + 10.}};
+}
+
+Vector RockSpawner::getRandSpawnPos() const {
+    // const auto spawnIndex = this->world.getMountain().getLatestChunk().startIndex;
+    // const auto spawnXPos = this->world.getMountain().getVertex(spawnIndex).x;
+    const auto spawnXPos = 1000.f + this->world.getMonster().getXPosition();
+    const auto randYOffset =
+        static_cast<float>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
+    const auto spawnYPos = this->world.getMountain().getYPosFromX(spawnXPos) - randYOffset;
+    return Vector{spawnXPos, spawnYPos};
+}
+// NOLINTEND

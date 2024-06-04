@@ -5,14 +5,19 @@
 #include "../entities/Item.hpp"
 #include <chrono>
 #include <ctime>
+#include <iostream>
+#include <mutex>
 
 // NOLINTBEGIN
 std::random_device dev;
 std::mt19937 ItemSpawner::randomEngine(0);
 std::uniform_int_distribution<int> ItemSpawner::distribution{0, RAND_MAX};
+double ItemSpawner::nextSpawnTime(0);
 // NOLINTEND
 
-ItemSpawner::ItemSpawner() = default;
+ItemSpawner::ItemSpawner() { std::cout << "ItemSpawner initialized." << std::endl; }
+
+ItemSpawner::~ItemSpawner() { std::cout << "ItemSpawner destroyed." << std::endl; }
 
 int ItemSpawner::generateRandomNumberGeometric(int p_exp) {
     int rand = RAND_MAX;
@@ -22,32 +27,32 @@ int ItemSpawner::generateRandomNumberGeometric(int p_exp) {
     return std::floor(std::log(RAND_MAX) - std::log(rand));
 }
 
-void ItemSpawner::spawnItems(World *world) {
-    if (GetTime() - itemSpawnTime > 0) {
-        auto itemType = (ItemType)(distribution(randomEngine) % itemCount);
-
-        // TODO figure out camera stuff
-        /**float_type x_position = it.world()
-                                    .lookup("Camera")
-                                    .get_mut<graphics::Camera2DComponent>()
-                                    ->target.x +
-                                (float)graphics::SCREEN_WIDTH / 2;**/
-
-        // TODO dependent on physics implementation
-        auto position = Vector{0, 0};
-        /**auto position = Position{
-            x_position, physics::getYPosFromX(it.world(), x_position, 0)};**/
-        position.y +=
-            ITEM_BASE_HEIGHT + (ITEM_MAX_HEIGHT - ITEM_BASE_HEIGHT) * ((float)distribution(randomEngine) / RAND_MAX);
-        this->itemSpawnTime =
-            static_cast<float>(GetTime() + 3. + (.125 / ITEMS_PER_SECOND * generateRandomNumberGeometric(3)));
-
-        std::cout << "spawning " << itemType << " at " << position.x << "," << position.y << " " << std::endl;
-
-        ItemInformation itemInformation = Item::getItemInformation(itemType);
-
-        const Item newItem(itemType, itemInformation, position);
-
-        world->addItem(newItem);
+void ItemSpawner::spawnItems() {
+    if (GetTime() < nextSpawnTime) {
+        return;
     }
+
+    const auto itemType = getNextRandomItemType();
+    const auto position = getNextRandomPosition();
+    const auto itemInformation = Item::getItemInformation(itemType);
+
+    const Item newItem(itemType, itemInformation, position);
+    this->world.addItem(newItem);
+    updateNextSpawnTime();
+
+    std::cout << "spawning " << itemType << " at " << position.x << "," << position.y << " " << std::endl;
+}
+void ItemSpawner::updateNextSpawnTime() {
+    // TODO make better
+    nextSpawnTime = GetTime() + 3.0f;
+}
+ItemType ItemSpawner::getNextRandomItemType() {
+    // TODO make better
+    return ItemType::DUCK_ITEM;
+}
+Vector ItemSpawner::getNextRandomPosition() {
+    // TODO make better / dependent on physics implementation
+    auto position = World::getInstance().getHiker().getPosition();
+    position.y -= 200;
+    return position;
 }

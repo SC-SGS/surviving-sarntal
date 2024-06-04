@@ -7,6 +7,8 @@
 #include "devices/Keyboard.h"
 #include "devices/Mouse.h"
 #include "raylib.h"
+#include <iostream>
+#include <mutex>
 
 InputHandler::InputHandler() {
     bool deviceSet = false;
@@ -19,9 +21,12 @@ InputHandler::InputHandler() {
     if (!deviceSet) {
         this->device = new Keyboard();
     }
+    std::cout << "InputHandler constructed" << std::endl;
 }
 
-InputHandler::InputHandler(Device device) {
+InputHandler::~InputHandler() { std::cout << "InputHandler destructed" << std::endl; }
+
+InputHandler::InputHandler(const Device device) {
     switch (device) {
     case DEVICE_GAMEPAD:
         for (int i = 0; i < maxGamepads; i++) {
@@ -42,4 +47,4 @@ InputHandler::InputHandler(Device device) {
     }
 }
 
-std::list<GameEvent> InputHandler::getEvents() const { return device->getGameEvents(); }
+std::queue<GameEvent> InputHandler::getEvents() const { return device->getGameEvents(); }

@@ -6,35 +6,32 @@
 #define SURVIVING_SARNTAL_INVENTORYHANDLER_H
 
 #include "../input/events/GameEvent.h"
+#include "../utilities/Singleton.hpp"
 #include "World.h"
 
-/**
- * This struct represents an item that can be collected by the player.
- */
-struct CollectableItem {
-    ItemType itemType = NO_ITEM;
-    float distance = std::numeric_limits<float>::infinity();
-};
+class InventoryHandler : public Singleton<InventoryHandler> {
+    friend class Singleton<InventoryHandler>;
 
-class InventoryHandler {
   public:
-    InventoryHandler();
     /**
-     * This method checks whether the hiker can pick up an item.
-     * All items currently displayed are checked.
-     * @param world
+     * This method inserts a new item into the inventory. If the currently selected slot is free,
+     * the item will be inserted into the inventory. Otherwise, the next free slot is searched.
+     * If there is no free slot, the currently selected slot is overwritten.
+     * When the item is picked up, it is removed from the world.
+     * @param item
      */
-    static void checkCanCollect(World &world);
+    void pickUpItem(const std::shared_ptr<Item> &item);
 
     /**
-     * This method updates the inventory based on the user input.
-     * @param gameEvent
-     * @param hiker
+     * This method removes the currently selected item from the inventory when it is
+     * used by the player.
      */
-    static void updateInventory(const GameEvent &gameEvent, World &world);
+    void removeSelectedItem();
 
   private:
-    static CollectableItem collectableItem;
+    World &world = World::getInstance();
+    InventoryHandler();
+    ~InventoryHandler();
 };
 
 #endif // SURVIVING_SARNTAL_INVENTORYHANDLER_H

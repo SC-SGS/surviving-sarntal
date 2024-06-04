@@ -6,12 +6,15 @@
 #define COLLISIONDETECTOR_H
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 
 // TODO so far this is a collection of evil utils, pls come pick me up, I'm scared
-class CollisionDetector {
+class CollisionDetector : public Singleton<CollisionDetector> {
+    friend class Singleton<CollisionDetector>;
 
   public:
-    explicit CollisionDetector(World &world);
+    CollisionDetector(const CollisionDetector &) = delete;
+    void operator=(const CollisionDetector &) = delete;
 
     /**
      * TODO This should later return a collision object with a list of collided rock IDs, player is hit and damage to
@@ -29,11 +32,11 @@ class CollisionDetector {
      * TODO maybe later adapt to non-circular rocks and it should be used in some method that uses linked cell or
      * TODO something similar
      *
-     * @param r1
+     * @param rock1
      * @param r2
      * @return
      */
-    static bool rocksCollide(RockClass &r1, RockClass &r2);
+    static bool rocksCollide(RockClass &rock1, RockClass &rock2);
 
     /**
      * Checks whether the player is hit by a given rock, where the player is represented as a axis-aligned rectangle and
@@ -67,6 +70,8 @@ class CollisionDetector {
 
   private:
     World &world;
+    CollisionDetector();
+    ~CollisionDetector();
 };
 
 #endif // COLLISIONDETECTOR_H

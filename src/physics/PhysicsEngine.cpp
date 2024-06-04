@@ -1,50 +1,63 @@
+
 //
 // Created by bjoern on 5/21/24.
 //
 
 #include "PhysicsEngine.hpp"
 
-PhysicsEngine *PhysicsEngine::physicsEngine = nullptr;
+#include <iostream>
+#include <mutex>
 
-PhysicsEngine *PhysicsEngine::getPhysicsEngine(const float deltaT, World &world) {
-    if (physicsEngine == nullptr) {
-        physicsEngine = new PhysicsEngine(deltaT, world);
-    }
-    return physicsEngine;
+// TODO deltaT game constant?
+PhysicsEngine::PhysicsEngine()
+    : deltaT(0.01), world(World::getInstance()), accumulator(0.f), timeLastUpdate(0.f), spawner(Spawner::getInstance()),
+      eventProcessor(EventProcessor::getInstance()), accelerator(Accelerator::getInstance()),
+      positioner(Positioner::getInstance()), collisionDetector(CollisionDetector::getInstance()),
+      collisionHandler(CollisionHandler::getInstance()), interpolator(Interpolator::getInstance()),
+      destructor(Destructor::getInstance()) {
+    this->setDeltaT(this->deltaT);
+    std::cout << "PhysicsEngine gets constructed" << std::endl;
 }
 
-PhysicsEngine::PhysicsEngine(const float deltaT, World &world) : deltaT(deltaT), world(world) {
-    this->inputHandler = new InputHandler();
-    this->eventProcessor = new EventProcessor(world, *this->inputHandler);
-    this->accelerator = new Accelerator(world, deltaT);
-    this->positioner = new Positioner(world, deltaT);
-    this->collisionDetector = new CollisionDetector(world);
-    this->collisionHandler = new CollisionHandler(world, *this->collisionDetector, this->deltaT);
-    this->interpolator = new Interpolator(world);
-    this->destructor = new Destructor(world);
-    this->spawner = new Spawner(world);
-}
-
-void PhysicsEngine::update(const float frameTime) {
+void PhysicsEngine::update(std::queue<GameEvent> &events) {
+    auto currentTime = static_cast<float>(GetTime()); // TODO should this be GetFrameTime()?
+    const float frameTime = currentTime - this->timeLastUpdate;
+    this->timeLastUpdate = currentTime;
     // TODO fine adjustment of max frame time to avoid spiral of death in case of lag
     this->accumulator += frameTime > 100 * this->deltaT ? 100 * this->deltaT : frameTime;
+    this->eventProcessor.setEventQueue(events);
     while (this->accumulator >= this->deltaT) {
         this->updateTimeStep();
         this->accumulator -= this->deltaT;
+        // std::cout << "A Physics step occurred" << std::endl;
     }
     const float alpha = this->accumulator / this->deltaT;
-    this->interpolator->interpolate(alpha);
+    this->interpolator.interpolate(alpha);
+}
+
+float PhysicsEngine::getDeltaT() const { return this->deltaT; }
+
+void PhysicsEngine::setDeltaT(const float deltaT) {
+    this->deltaT = deltaT;
+    this->accelerator.setDeltaT(deltaT);
+    this->positioner.setDeltaT(deltaT);
+    this->collisionHandler.setDeltaT(deltaT);
 }
 
 void PhysicsEngine::updateTimeStep() const {
     // TODO spawn stuff
     // TODO should velocities be updated by processEvents or only in acceleate
-    this->spawner->spawn();
-    this->eventProcessor->processEvents();
-    this->accelerator->accelerate();
+    this->spawner.spawn();
+    this->eventProcessor.processEvents();
+    this->accelerator.accelerate();
     // TODO check placement of collision detection
-    this->collisionDetector->detectCollisions();
-    this->collisionHandler->handleCollisions();
-    this->positioner->updatePositions();
-    this->destructor->destruct(); // TODO mountain chunks should probably also be destructed here
+    this->collisionDetector.detectCollisions();
+    this->collisionHandler.handleCollisions();
+    this->positioner.updatePositions();
+    this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
+}
+
+PhysicsEngine::~PhysicsEngine() {
+    // TODO delete the other singletons (all singletons need a static destructor)
+    std::cout << "PhysicsEngine gets deconstructed" << std::endl;
 }

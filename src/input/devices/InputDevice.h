@@ -9,6 +9,7 @@
 #include "../events/GameEvent.h"
 #include <list>
 #include <map>
+#include <queue>
 #include <unordered_map>
 /**
  * An input device is characterised by its inputs and how they are mapped to
@@ -22,10 +23,10 @@ class InputDevice {
      *
      * @return list of events
      */
-    virtual std::list<GameEvent> getGameEvents() = 0;
+    virtual std::queue<GameEvent> getGameEvents() = 0;
 
   protected:
-    std::map<DeviceEvent, GameEvent> INPUT_MAPPINGS;
+    std::map<DeviceEvent, GameEvent, DeviceEventCompare> INPUT_MAPPINGS;
 
     /**
      * Maps a device event to the corresponding event for the game using the

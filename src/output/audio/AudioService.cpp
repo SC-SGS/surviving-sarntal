@@ -4,10 +4,8 @@
 
 #include "AudioService.hpp"
 
-AudioService &AudioService::getInstance() {
-    static AudioService instance;
-    return instance;
-}
+#include <mutex>
+
 void AudioService::playSound(const std::string &soundName) const { PlaySound(resourceManager.getSound(soundName)); }
 
 AudioService::AudioService() {

@@ -4,11 +4,11 @@
 
 #include "EventProcessor.hpp"
 
-// TODO why is the game event list passed to all functions and never used???
+#include <iostream>
+#include <mutex>
 
-EventProcessor::EventProcessor(World &world, const InputHandler &inputHandler)
-    : world(world), inputHandler(inputHandler) {
-    functionMappings = {
+EventProcessor::EventProcessor() : world(World::getInstance()) {
+    gameEventFunctionMappings = {
         {{AXIS_MODIFICATION, ITEM_SWITCH, 0}, &EventProcessor::switchItem},
         {{AXIS_MODIFICATION, MOVEMENT_X, 0}, &EventProcessor::moveX},
         {{AXIS_MODIFICATION, MOVEMENT_Y, 0}, &EventProcessor::moveY},
@@ -24,131 +24,125 @@ EventProcessor::EventProcessor(World &world, const InputHandler &inputHandler)
         {{TOGGLE_DEBUG, NO_AXIS, 0}, &EventProcessor::toggleDebug},
         {{NO_EVENT, NO_AXIS, 0}, &EventProcessor::noEvent},
     };
+    autoEventFunctions = {
+        &EventProcessor::pickAutoCollectableItems,
+    };
+    std::cout << "EventProcessor gets constructed" << std::endl;
 }
 
+EventProcessor::~EventProcessor() { std::cout << "EventProcessor gets deconstructed" << std::endl; }
+
 void EventProcessor::processEvents() {
-    const auto events = this->inputHandler.getEvents();
-    for (auto event : events) {
-        const EventFunction func = functionMappings.at(event);
+    const auto numEvents = this->eventQueue.size();
+    for (int i = 0; i < numEvents; i++) {
+        const auto &event = this->eventQueue.front();
+        // std::cout << "Game event: " << event.type << std::endl;
+        //  std::cout << "Game event type (EventProcessor): " << event.type << std::endl;
+        //  std::cout << "Game event axis (EventProcessor): " << event.axis << std::endl;
+        const GameEventFunction func = gameEventFunctionMappings.at(event);
+        // std::cout << "Function exists? " << (func != nullptr) << std::endl;
         (this->*func)(event);
+        // TODO remove one-time events like jump from queue, but add hold events again?
+        this->eventQueue.pop();
+    }
+    for (auto eventFunction : this->autoEventFunctions) {
+        (this->*eventFunction)();
     }
 }
 
 // TODO: Let output handle sound, graphics?
 void EventProcessor::crouch(const GameEvent event) const {
-    auto hiker = this->world.getHiker();
-    auto hikerMovement = this->world.getHiker().getHikerMovement();
+    // std::cout << "Crouch hiker." << std::endl;
+    auto &hiker = this->world.getHiker();
+    auto &hikerMovement = this->world.getHiker().getHikerMovement();
     if (hikerMovement.getState() == HikerMovement::MOVING) {
         hikerMovement.setState(HikerMovement::CROUCHED);
         hiker.setHeight(DUCKED_HIKER_HEIGHT);
         hiker.setWidth(DUCKED_HIKER_WIDTH);
-        // TODO remove
-        /*RenderInformation info = {{0.0f, 0.0f, 1.0f},
-                                  {0.0f, 0.0f, -HIKER_HEIGHT / 2},
-                                  static_cast<int>(DUCKED_HIKER_WIDTH),
-                                  static_cast<int>(DUCKED_HIKER_HEIGHT),
-                                  LoadTexture("../../assets/texture/hiker_duck.png")};
-        hiker.setRenderInformation(info);*/
-        // it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->height = DUCKED_HIKER_HEIGHT;
-        // it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width = DUCKED_HIKER_WIDTH;
-        // it.entity(0).remove<graphics::AnimatedBillboardComponent>();
-        // it.entity(0).set([&](graphics::BillboardComponent &c) {
-        //     c = {0};
-        //     c.billUp = {0.0f, 0.0f, 1.0f};
-        //     c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
-        //     c.resourceHandle =
-        //         it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/hiker_duck.png");
-        //     c.width = DUCKED_HIKER_WIDTH; // TODO?
-        //     c.height = DUCKED_HIKER_HEIGHT;
-        // });
     }
 }
 
 // TODO: Let output handle sound, graphics?
 void EventProcessor::uncrouch(const GameEvent event) const {
-    auto hiker = this->world.getHiker();
-    auto hikerMovement = this->world.getHiker().getHikerMovement();
+    // std::cout << "Uncrouch hiker." << std::endl;
+    auto &hiker = this->world.getHiker();
+    auto &hikerMovement = this->world.getHiker().getHikerMovement();
     if (hikerMovement.getState() == HikerMovement::CROUCHED) {
         hikerMovement.setState(HikerMovement::MOVING);
         hiker.setHeight(HIKER_HEIGHT);
         hiker.setWidth(HIKER_WIDTH);
-        // TODO remove
-        /*RenderInformation info = {{0.0f, 0.0f, 1.0f},
-                                  {0.0f, 0.0f, -HIKER_HEIGHT / 2},
-                                  static_cast<int>(HIKER_WIDTH),
-                                  static_cast<int>(HIKER_HEIGHT),
-                                  LoadTexture("../../assets/texture/hiker_walk.png")};
-        hiker.setRenderInformation(info);*/
-        // it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->height = HIKER_HEIGHT;
-        // it.entity(0).get_mut<graphics::RectangleShapeRenderComponent>()->width = HIKER_WIDTH;
-        // it.entity(0).remove<graphics::BillboardComponent>();
-        // it.entity(0).set([&](graphics::AnimatedBillboardComponent &c) {
-        //     c = {0};
-        //     c.billUp = {0.0f, 0.0f, 1.0f};
-        //     c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
-        //     c.resourceHandle =
-        //         it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/player_walk.png");
-        //     c.width = HIKER_WIDTH; // TODO?
-        //     c.height = HIKER_HEIGHT;
-        //     c.current_frame = 0;
-        //     c.numFrames = 4;
-        // });
     }
 }
 
-// TODO: use method from InventoryHandler to check for collectible items
 void EventProcessor::pickItem(const GameEvent event) const {
-    const auto items = this->world.getNearbyItems();
+    const auto &items = this->world.getNearbyItems();
     for (auto const &item : items) {
-        if (!Item::getItemInformation(item.getItemType()).autoCollect) {
-            this->world.getInventory().pickup(item.getItemType());
+        const ItemInformation info = Item::getItemInformation(item->getItemType());
+        if (!info.autoCollect) {
+            if (!info.useOnPickup) {
+                this->inventoryHandler.pickUpItem(item);
+            } else {
+                this->world.useItem(item->getItemType());
+            }
         }
     }
 }
 
-void EventProcessor::dropItem(GameEvent event) const { this->world.getInventory().drop(); }
+void EventProcessor::pickAutoCollectableItems() const {
+    const auto &items = this->world.getNearbyItems();
+    for (auto const &item : items) {
+        const ItemInformation info = Item::getItemInformation(item->getItemType());
+        if (info.autoCollect) {
+            if (!info.useOnPickup) {
+                this->inventoryHandler.pickUpItem(item);
+            } else {
+                this->world.useItem(item->getItemType());
+            }
+        }
+    }
+}
+
+void EventProcessor::dropItem(GameEvent event) const {
+    if (!this->world.getInventory().isSelectedSlotFree()) {
+        this->inventoryHandler.removeSelectedItem();
+    }
+}
 
 void EventProcessor::useItem(const GameEvent event) const {
-    this->world.useItem(this->world.getInventory().getSelectedItem());
+    if (!this->world.getInventory().isSelectedSlotFree()) {
+        this->world.useItem(this->world.getInventory().getSelectedItem());
+        this->inventoryHandler.removeSelectedItem();
+    }
 }
+
 // TODO I removed this getHiker().useSelectedItem(this->world.getHiker()); }
 
-// TODO: Let output handle sound, graphics?, change to use ressource manager
-void EventProcessor::jump(GameEvent event) const {
-    auto hiker = this->world.getHiker();
-    auto hikerMovement = hiker.getHikerMovement();
+// TODO: Let output handle sound, graphics?, change to use resource manager
+void EventProcessor::jump(GameEvent event) const { // NOLINT(*-function-size)
+    // std::cout << "Jump hiker." << std::endl;
+    auto &hiker = this->world.getHiker();
+    auto &hikerMovement = hiker.getHikerMovement();
     if (hikerMovement.getState() == HikerMovement::CROUCHED) {
         return;
     }
     if (hikerMovement.getState() != HikerMovement::IN_AIR) {
         hikerMovement.setLastJump(0.0);
+        hikerMovement.setCanJumpAgain(true);
     }
+    // std::cout << "dadada" << hikerMovement.getCanJumpAgain() << std::endl;
+    // std::cout << "aha" << hiker.getVelocity().y << std::endl;
     if (hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain()) {
         // PlaySound(jump_sound);
-        auto vel = hiker.getVelocity();
+        auto &vel = hiker.getVelocity();
         vel.y = JUMP_VELOCITY_CONSTANT;
         hiker.setVelocity(vel);
         if (hikerMovement.getState() == HikerMovement::IN_AIR) {
             hikerMovement.setCanJumpAgain(false);
         }
+        // std::cout << "aha" << hiker.getVelocity().y << std::endl;
+        // std::cout << "can jump" << hikerMovement.getCanJumpAgain() << std::endl;
+        // std::cout << hikerMovement.getCanJumpAgain() << std::endl;
         hikerMovement.setState(HikerMovement::IN_AIR);
-        // TODO remove
-        /*RenderInformation info = {{0.0f, 0.0f, 1.0f},
-                                  {0.0f, 0.0f, -HIKER_HEIGHT / 2},
-                                  static_cast<int>(HIKER_WIDTH),
-                                  static_cast<int>(HIKER_HEIGHT),
-                                  LoadTexture("../../assets/texture/hiker_jump.png")};
-        hiker.setRenderInformation(info);*/
-        // it.entity(0).remove<graphics::AnimatedBillboardComponent>();
-        // it.entity(0).set([&](graphics::BillboardComponent &c) {
-        //     c = {0};
-        //     c.billUp = {0.0f, 0.0f, 1.0f};
-        //     c.billPositionStatic = {0.0f, 0.0f, -HIKER_HEIGHT / 2};
-        //     c.resourceHandle =
-        //         it.world().get_mut<graphics::Resources>()->textures.load("../assets/texture/hiker_jump.png");
-        //     c.width = HIKER_WIDTH; // TODO?
-        //     c.height = HIKER_HEIGHT;
-        // });
     }
 }
 
@@ -173,8 +167,9 @@ void EventProcessor::switchItem(const GameEvent event) const {
 }
 
 void EventProcessor::moveX(const GameEvent event) const {
+    // std::cout << "Previous Speed: " << world.getHiker().getVelocity().x << std::endl;
     const float xFactor = event.axisValue;
-    float_type speed = NORMAL_SPEED;
+    floatType speed = NORMAL_SPEED;
     if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::CROUCHED) {
         speed *= DUCK_SPEED_FACTOR;
     }
@@ -182,6 +177,8 @@ void EventProcessor::moveX(const GameEvent event) const {
     auto vel = this->world.getHiker().getVelocity();
     vel.x = speed * xFactor;
     this->world.getHiker().setVelocity(vel);
+    // if(vel.x > 0)
+    // std::cout << "New Speed: " << world.getHiker().getVelocity().x << std::endl;
 }
 
 void EventProcessor::moveY(const GameEvent event) const {
@@ -191,3 +188,5 @@ void EventProcessor::moveY(const GameEvent event) const {
 void EventProcessor::noEvent(const GameEvent event) const {
     // Do nothing
 }
+
+void EventProcessor::setEventQueue(std::queue<GameEvent> &eventQueue) { this->eventQueue = eventQueue; }

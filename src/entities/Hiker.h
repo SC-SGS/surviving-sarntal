@@ -39,19 +39,19 @@ class Hiker : public RenderedEntity {
     int getHealthPoints() const;
     void setHealthPoints(int healthPoints);
 
-    HikerMovement getHikerMovement() const;
+    HikerMovement &getHikerMovement();
     void setHikerMovement(const HikerMovement &movement);
 
     bool getIsHit() const;
     void setIsHit(bool isHit);
 
-    HitInformation getHitInformation() const;
+    HitInformation &getHitInformation();
     void setHitInformation(const HitInformation &hit);
 
-    Vector getVelocity() const;
+    Vector &getVelocity();
     void setVelocity(const Vector &newVel);
 
-    bool getIsAlive() const;
+    bool getIsAlive();
     void setIsAlive(bool alive);
 
     RenderInformation getRenderInformation() override;
@@ -61,7 +61,7 @@ class Hiker : public RenderedEntity {
     float height{};
     float width{};
     int healthPoints{};
-    HikerMovement hikerMovement;
+    HikerMovement hikerMovement{};
     bool isHit{};
     HitInformation hitInformation{};
     bool isAlive{};

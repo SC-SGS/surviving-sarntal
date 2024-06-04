@@ -6,29 +6,36 @@
 #define SURVIVING_SARNTAL_MOUNTAINGENERATOR_H
 
 #include "../entities/World.h"
+#include "../utilities/Singleton.hpp"
 
 /**
  * This class is responsible for generating the mountain chunk by chunk.
  */
 
-class MountainGenerator {
+class MountainGenerator : public Singleton<MountainGenerator> {
+    friend class Singleton<MountainGenerator>; // Allow Singleton to access the constructor??
 
   public:
     /**
      * Checks if a new chunk of the mountain needs to be generated and lets the
      * mountain generate a new chunk if needed.
-     * @param world
      */
-    static void generateMountainChunk(World *world);
+    void generateMountainChunk();
 
     /**
-     *
-     * @param world
+     * This method is responsible for loading the initial chunks of the mountain
+     * when the game is first started.
      */
-    void loadChunksOfMountain(World *world);
-    static float getTerrainHeight(float x, float y, float ridge_height, float baseline = 0.0f);
-    void generateChunkMesh(World &world);
-    static Vector3 computeNormal(Vector3 p1, Vector3 p2, Vector3 p3);
+    static void loadChunksOfMountain();
+    float getTerrainHeight(float xVal, float yVal, float ridge_height, float baseline = 0.0f);
+    void generateChunkMesh();
+    static Vector3 computeNormal(Vector3 pos1, Vector3 pos2, Vector3 pos3);
+
+  private:
+    World &world = World::getInstance();
+
+    MountainGenerator();
+    ~MountainGenerator();
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAINGENERATOR_H
