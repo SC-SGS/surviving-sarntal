@@ -6,17 +6,22 @@
 #define POSITIONER_H
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 
-class Positioner {
+class Positioner : public Singleton<Positioner> {
+    friend class Singleton<Positioner>;
 
   public:
-    explicit Positioner(World &world, float deltaT);
+    void updatePositions();
 
-    void updatePositions() const;
+    void setDeltaT(float deltaT);
 
   private:
     World &world;
-    const float deltaT;
+    float deltaT;
+
+    Positioner();
+    ~Positioner();
 
     /**
      * Use movement equations to update rock positions.
@@ -31,7 +36,7 @@ class Positioner {
     /**
      * Moves the monster forward so that it always aligns with the left screen border.
      */
-    void updateMonsterPosition() const;
+    void updateMonsterPosition();
 
     /**
      * Moves the left and right world border at each step to match the currently displayed part of the world.

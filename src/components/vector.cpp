@@ -15,7 +15,7 @@ void Vector::operator+=(const Vector &other) {
     y += other.y;
 }
 
-Vector Vector::operator+(float_type other) const { return {x + other, y + other}; }
+Vector Vector::operator+(floatType other) const { return {x + other, y + other}; }
 
 Vector Vector::operator-(Vector const &other) const { return {x - other.x, y - other.y}; }
 
@@ -24,24 +24,24 @@ void Vector::operator-=(const Vector &other) {
     y -= other.y;
 }
 
-Vector Vector::operator*(float_type scalar) const { return {x * scalar, y * scalar}; }
+Vector Vector::operator*(floatType scalar) const { return {x * scalar, y * scalar}; }
 
-float_type Vector::operator*(Vector const &other) const { return x * other.x + y * other.y; }
+floatType Vector::operator*(Vector const &other) const { return x * other.x + y * other.y; }
 
-Vector Vector::operator/(float_type scalar) const { return {x / scalar, y / scalar}; }
+Vector Vector::operator/(floatType scalar) const { return {x / scalar, y / scalar}; }
 
-void Vector::operator/=(float_type scalar) {
+void Vector::operator/=(floatType scalar) {
     x /= scalar;
     y /= scalar;
 }
-float_type Vector::distanceTo(const Vector &other) const {
-    Vector delta_pos = *this - other;
-    return std::sqrt(delta_pos * delta_pos);
+floatType Vector::distanceTo(const Vector &other) const {
+    Vector deltaPos = *this - other;
+    return std::sqrt(deltaPos * deltaPos);
 }
 
-float_type Vector::length() const { return this->distanceTo({0., 0.}); }
+floatType Vector::length() const { return this->distanceTo({0., 0.}); }
 
 Vector Vector::reflectOnNormal(const Vector &normal) const {
-    float_type normal_velocity = std::abs(*this * normal);
-    return *this + normal * normal_velocity * (1. + ROCK_TERRAIN_DAMPING);
+    floatType normalVelocity = std::abs(*this * normal);
+    return *this + normal * normalVelocity * (1. + ROCK_TERRAIN_DAMPING);
 }

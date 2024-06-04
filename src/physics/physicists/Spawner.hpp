@@ -6,14 +6,22 @@
 #define SURVIVING_SARNTAL_SPAWNER_HPP
 
 #include "../../entities/World.h"
-class Spawner {
+#include "../../factory/ItemSpawner.h"
+#include "../../factory/MountainGenerator.h"
+#include "../../factory/RockSpawner.h"
+class Spawner : public Singleton<Spawner> {
+    friend class Singleton<Spawner>;
 
   public:
-    explicit Spawner(World &world);
     void spawn() const;
 
   private:
-    World &world;
+    Spawner();
+    ~Spawner();
+
+    RockSpawner &rockSpawner = RockSpawner::getInstance();
+    MountainGenerator &mountainGenerator = MountainGenerator::getInstance();
+    ItemSpawner &itemSpawner = ItemSpawner::getInstance();
 
     /**
      * Spawn rocks for this time step.

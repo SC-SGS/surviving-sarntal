@@ -6,22 +6,36 @@
 #define SURVIVING_SARNTAL_MONSTER_H
 
 #include "../output/graphics/render_information/RenderInformation.h"
-#include "../utils/game_constants.h"
+#include "../utilities/Singleton.hpp"
+#include "../utils/game_constants.hpp"
 #include "RenderedEntity.h"
+
+#include <memory>
 
 /**
  * This class represents the monster/ kill bar in the game. The kill bar moves
  * constantly. The player is killed as soon as he is reached by the kill bar.
  */
-class Monster : public RenderedEntity {
+class Monster : public RenderedEntity, public Singleton<Monster> {
+    friend class Singleton<Monster>;
+
   public:
+    Monster(const Monster &) = delete;
+    void operator=(const Monster &) = delete;
+
     explicit Monster(Vector position);
 
-    float_type getXPosition() const;
-    void setXPosition(float_type positionX);
+    RenderInformation getRenderInformation() override;
+
+    floatType getXPosition() const;
+    void setXPosition(floatType positionX);
 
     // what is the data type of delta time?
     void updateMonsterPosition();
+
+  private:
+    Monster();
+    ~Monster();
 };
 
 #endif // SURVIVING_SARNTAL_MONSTER_H

@@ -6,6 +6,7 @@
 #define COLLISIONHANDLER_H
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 #include "CollisionDetector.hpp"
 
 /**
@@ -16,17 +17,21 @@ struct Vertex {
     float distance;
 };
 
-class CollisionHandler {
+class CollisionHandler : public Singleton<CollisionHandler> {
+    friend class Singleton<CollisionHandler>;
 
   public:
-    explicit CollisionHandler(World &world, CollisionDetector &collisionDetector, float deltaT);
-
     void handleCollisions();
+
+    void setDeltaT(float deltaT);
 
   private:
     World &world;
     CollisionDetector &collisionDetector;
-    const float deltaT;
+    float deltaT;
+
+    CollisionHandler();
+    ~CollisionHandler();
 
     /**
      * Returns the closest Vertex to a rock on the mountain
@@ -63,7 +68,7 @@ class CollisionHandler {
      * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.
      * TODO this is bad and will be changed with spline mountain; also needs lookahead and some analytic methods
      */
-    void rockTerrainCollisions() const;
+    void rockTerrainCollisions(); // const;
 
     /**
      * This prevents the rock from going into the mountain by reflecting him on the surface.

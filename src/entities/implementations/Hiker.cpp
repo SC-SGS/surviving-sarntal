@@ -4,16 +4,23 @@
 
 #include "../Hiker.h"
 #include "../../components/vector.h"
-#include "../../utils/game_constants.h"
-#include "iostream"
+#include "../../utils/game_constants.hpp"
+#include "../World.h"
+#include <iostream>
 #include <utility>
+
+#include <memory>
 
 Hiker::Hiker(const Vector position)
     : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
-      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true) {}
+      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true) {
+    animation = {4, 0, 0.3, 0};
+    std::cout << "Hiker initialized." << std::endl;
+}
 
 RenderInformation Hiker::getRenderInformation() {
-    return RenderInformation{Vector2(position), width, height, {0, 0}, hikerMovement.getStateString()};
+    return RenderInformation{Vector2(position), {0, height / 2}, width, height, {0, 0}, hikerMovement.getStateString(),
+                             animation};
 }
 
 float Hiker::getHeight() const { return height; }
@@ -28,7 +35,7 @@ int Hiker::getHealthPoints() const { return healthPoints; }
 
 void Hiker::setHealthPoints(const int healthPoints) { this->healthPoints = healthPoints; }
 
-HikerMovement Hiker::getHikerMovement() const { return hikerMovement; }
+HikerMovement &Hiker::getHikerMovement() { return hikerMovement; }
 
 void Hiker::setHikerMovement(const HikerMovement &movement) {
     switch (movement.getState()) {
@@ -48,7 +55,7 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
     hikerMovement = movement;
 }
 
-HitInformation Hiker::getHitInformation() const { return hitInformation; }
+HitInformation &Hiker::getHitInformation() { return hitInformation; }
 
 void Hiker::setHitInformation(const struct HitInformation &hit) { hitInformation = hit; }
 
@@ -56,9 +63,11 @@ bool Hiker::getIsHit() const { return isHit; }
 
 void Hiker::setIsHit(bool isHit) { this->isHit = isHit; }
 
-Vector Hiker::getVelocity() const { return velocity; }
+Vector &Hiker::getVelocity() { return velocity; }
 
 void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
-bool Hiker::getIsAlive() const { return isAlive; }
+bool Hiker::getIsAlive() {
+    return this->getPosition().x - World::getInstance().getMonster().getXPosition() > 0 && this->healthPoints > 0;
+}
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }

@@ -18,6 +18,7 @@ class HikerMovement {
     enum Direction { LEFT, RIGHT, NEUTRAL };
 
     HikerMovement();
+    HikerMovement(MovementState state, Direction direction);
 
     MovementState getState() const;
     std::string getStateString() const;

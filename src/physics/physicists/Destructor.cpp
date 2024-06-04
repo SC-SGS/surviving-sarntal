@@ -4,19 +4,29 @@
 
 #include "Destructor.hpp"
 
-Destructor::Destructor(World &world) : world(world) {}
+#include "../../entities/Item.hpp"
+
+#include <iostream>
+#include <mutex>
+
+Destructor::Destructor() : world(World::getInstance()) { std::cout << "Destructor gets constructed" << std::endl; }
+
+Destructor::~Destructor() { std::cout << "Destructor gets deconstructed" << std::endl; }
 
 void Destructor::destruct() const {
     destructRocks();
+    destructItems();
     destructMountain();
 }
 
 void Destructor::destructRocks() const {
-    for (auto const rock : this->world.getRocks()) {
-        if (this->world.isOutOfScope(*rock)) {
-            delete rock;
-        }
-    }
+    this->world.getRocks().remove_if(
+        [this](RockClass rock) { return this->world.isOutOfScope(rock) || rock.getShouldBeDestroyed(); });
+}
+
+void Destructor::destructItems() const {
+    this->world.getItems().remove_if(
+        [this](const std::shared_ptr<Item> &item) { return this->world.isOutOfScope(*item); });
 }
 
 void Destructor::destructMountain() const {

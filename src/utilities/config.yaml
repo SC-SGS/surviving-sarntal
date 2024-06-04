@@ -1,0 +1,22 @@
+# Sample YAML file
+person:
+  name: John Doe
+  age: 30
+  occupation: Developer
+  hobbies:
+    - Reading
+    - Playing guitar
+    - Hiking
+
+textures:
+  crouch: "../assets/texture/player_duck.png"
+  jump: "../assets/texture/player_jump.png"
+  walk: "../assets/texture/player_walk.png"
+  kaiserschmarrn: "../assets/texture/kaiserschmarrn.png"
+  coin: "../assets/texture/coin.png"
+  duck: "../assets/texture/duck.png"
+  rock: "../assets/texture/stone.png"
+  helicopter: "../assets/texture/helicopter.png"
+  midground: "../assets/layers/glacial_mountains.png"
+  foreground: "../assets/layers/clouds_mg_1.png"
+  mountain: "../assets/layers/mountain.png"

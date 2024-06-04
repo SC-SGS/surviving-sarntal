@@ -3,8 +3,10 @@
 //
 
 #include "../components/vector.h"
+#include "../utilities/Singleton.hpp"
 #include <array>
 #include <cmath>
+#include <memory>
 #include <random>
 #include <vector>
 
@@ -14,7 +16,9 @@ struct IndexIntervalNew {
 };
 
 // TODO this whole class needs to be reworked, which we do anyways later, and a lot of refactoring is necessary
-class MountainClass {
+class MountainClass : public Singleton<MountainClass> {
+    friend class Singleton<MountainClass>;
+
   public:
     /**
      * Number of Vertices explicitly stored by the mountain data structure.
@@ -24,7 +28,7 @@ class MountainClass {
     /**
      * Width covered by mountain generated at one point in time.
      */
-    static constexpr float MOUNTAIN_WIDTH{2048.};
+    static constexpr float MOUNTAIN_WIDTH{3 * 2048.};
 
     /**
      * Distance between two points of mountain.
@@ -38,14 +42,12 @@ class MountainClass {
     /**
      * steepness of ramp generated in prototype
      */
-    static constexpr float SLOPE{0.25};
+    static constexpr float SLOPE{-0.25}; // TODO fix pls slope should be positive when the mountain goes up
 
     /**
      * value beween 0 and 1 (prefereably between 0.5 and 0.75)
      */
     static constexpr float ROUGHNESS_TERRAIN{0.4};
-
-    MountainClass();
 
     /**
      * Generates a new Chunk and deletes oldest chunk. Updates internal data
@@ -110,10 +112,10 @@ class MountainClass {
      * TODO there was an offset in this function in the original, because the hiker position was its center, now its his
      * TODO feet
      *
-     * @param x the x-Coordinate
+     * @param xPos the x-Coordinate
      * @return the y coordinate on top of the mountain
      */
-    float getYPosFromX(float x) const;
+    float getYPosFromX(float xPos) const;
 
     /**
      * Performs simple linear interpolation
@@ -121,14 +123,17 @@ class MountainClass {
      * TODO depending on the mountain, this should become the evaluation of a spline function etc.
      * TODO this function is used as a linInterpolator in one place so it shoudl probably go into a util class.
      *
-     * @param x
+     * @param xPos
      * @param left
      * @param right
      * @return
      */
-    static float linearInterpolation(float x, Position left, Position right);
+    static float linearInterpolation(float xPos, Position left, Position right);
 
   private:
+    MountainClass();
+    ~MountainClass();
+
     std::array<Position, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
     std::size_t startOfCircularArray{0};
     // TODO why are these denominators so weird? they do not adhere to our guidelines!
@@ -150,9 +155,9 @@ class MountainClass {
     // TODO Does this function really interpolate? What does it do, also ... it is unused
     // void interpolate(std::size_t leftIndex, std::size_t rightIndex);
 
-    static float_type computeDisplacementChange(float_type displacement);
+    static floatType computeDisplacementChange(floatType displacement);
 
-    void updateMidpoint(std::size_t leftIndex, std::size_t rightIndex, std::size_t midIndex, float_type change);
+    void updateMidpoint(std::size_t leftIndex, std::size_t rightIndex, std::size_t midIndex, floatType change);
 
     /**
      * Temporary helper function, do not touch

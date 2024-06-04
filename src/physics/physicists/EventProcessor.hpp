@@ -5,46 +5,116 @@
 #ifndef EVENTPROCESSOR_H
 #define EVENTPROCESSOR_H
 
+#include "../../entities/InventoryHandler.h"
 #include "../../entities/World.h"
 #include "../../input/InputHandler.h"
 #include "../../input/events/GameEvent.h"
+#include "../../utilities/Singleton.hpp"
 
 #include <list>
+#include <queue>
 
-class EventProcessor {
-    using EventFunction = void (EventProcessor::*)(GameEvent) const;
+class EventProcessor : public Singleton<EventProcessor> {
+    friend class Singleton<EventProcessor>;
+
+    using GameEventFunction = void (EventProcessor::*)(GameEvent) const;
+    using AutoEventFunction = void (EventProcessor::*)() const;
 
   public:
-    explicit EventProcessor(World &world, const InputHandler &inputHandler);
-
     /**
      * Performs the changes to the world caused by the user input.
      */
     void processEvents();
 
-  private:
-    World &world;
-    const InputHandler &inputHandler;
+    void setEventQueue(std::queue<GameEvent> &eventQueue);
 
-    std::map<GameEvent, EventFunction> functionMappings;
+  private:
+    World &world = World::getInstance();
+    InventoryHandler &inventoryHandler = InventoryHandler::getInstance();
+    std::queue<GameEvent> eventQueue{};
+
+    std::map<GameEvent, GameEventFunction, GameEventCompare> gameEventFunctionMappings;
+
+    std::list<AutoEventFunction> autoEventFunctions;
 
     // TODO pls doc
+    /*
+     * Puts the Hiker into the crouched state.
+     *
+     * @param event crouch event
+     */
     void crouch(GameEvent event) const;
+
+    /*
+     * Puts the Hiker into the uncrouched state.
+     *
+     * @param event uncrouch event
+     */
     void uncrouch(GameEvent event) const;
+
+    /**
+     * Picks all Items in range that can't be collected automatically
+     *
+     * @param event
+     */
     void pickItem(GameEvent event) const;
+
+    /**
+     * Picks all items in range that can be collected automatically.
+     */
+    void pickAutoCollectableItems() const;
+
+    /**
+     * This method drops the currently selected item from the inventory.
+     * @param event
+     */
     void dropItem(GameEvent event) const;
+
+    /**
+     * This method uses the currently selected item.
+     * @param event
+     */
     void useItem(GameEvent event) const;
+
+    /**
+     * This method puts the hiker in a jumping state.
+     * @param event
+     */
     void jump(GameEvent event) const;
+
+    /**
+     * This method pauses the game.
+     * @param event
+     */
     void pause(GameEvent event) const;
+
     void specialAbility(GameEvent event) const;
+
     void toggleDebug(GameEvent event) const;
+
     void fullscreen(GameEvent event) const;
 
+    /**
+     * This method switches the currently selected item in the inventory.
+     *
+     * @param event
+     */
     void switchItem(GameEvent event) const;
+
+    /**
+     * This method is responsible for adapting the hiker's speed based on user input.
+     * If the user clicks the button that moves the hiker to the right, the speed is increased.
+     * If the user clicks the button that moves the hiker to the left, the speed is decreased.
+     *
+     * @param event
+     */
     void moveX(GameEvent event) const;
     void moveY(GameEvent event) const;
 
     void noEvent(GameEvent event) const;
+
+    EventProcessor();
+    ~EventProcessor();
 };
 
 #endif // EVENTPROCESSOR_H
