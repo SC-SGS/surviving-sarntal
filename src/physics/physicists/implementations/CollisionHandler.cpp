@@ -2,7 +2,7 @@
 // Created by bjoern on 5/21/24.
 //
 
-#include "CollisionHandler.hpp"
+#include "../CollisionHandler.hpp"
 
 #include <iostream>
 #include <mutex>

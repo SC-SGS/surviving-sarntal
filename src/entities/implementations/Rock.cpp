@@ -4,7 +4,7 @@
 
 #include "../Rock.h"
 
-#include "../../components/vector.h"
+#include "../../utilities/vector.h"
 #include <iostream>
 #include <utility>
 

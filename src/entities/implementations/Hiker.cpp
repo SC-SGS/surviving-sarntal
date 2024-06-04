@@ -3,8 +3,8 @@
 //
 
 #include "../Hiker.h"
-#include "../../components/vector.h"
-#include "../../utils/game_constants.hpp"
+#include "../../utilities/GameConstants.hpp"
+#include "../../utilities/vector.h"
 #include "../World.h"
 #include <iostream>
 #include <utility>

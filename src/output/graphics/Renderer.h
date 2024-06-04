@@ -9,7 +9,6 @@
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
-#include "render_information/RenderInformation.h"
 #include <cmath>
 #include <valarray>
 

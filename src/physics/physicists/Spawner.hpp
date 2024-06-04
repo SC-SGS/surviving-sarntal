@@ -6,9 +6,10 @@
 #define SURVIVING_SARNTAL_SPAWNER_HPP
 
 #include "../../entities/World.h"
-#include "../../factory/ItemSpawner.h"
-#include "../../factory/MountainGenerator.h"
-#include "../../factory/RockSpawner.h"
+#include "../../spawner/ItemSpawner.h"
+#include "../../spawner/MountainGenerator.h"
+#include "../../spawner/RockSpawner.h"
+
 class Spawner : public Singleton<Spawner> {
     friend class Singleton<Spawner>;
 

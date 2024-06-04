@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RENDERINFORMATION_H
 #define SURVIVING_SARNTAL_RENDERINFORMATION_H
 
-#include "../../../components/vector.h"
+#include "../../../utilities/vector.h"
 #include "AnimationInformation.h"
 #include "raylib.h"
 #include <string>

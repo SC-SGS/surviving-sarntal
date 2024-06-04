@@ -5,9 +5,9 @@
 #ifndef SURVIVING_SARNTAL_MONSTER_H
 #define SURVIVING_SARNTAL_MONSTER_H
 
-#include "../output/graphics/render_information/RenderInformation.h"
+#include "../output/graphics/renderInformation/RenderInformation.h"
+#include "../utilities/GameConstants.hpp"
 #include "../utilities/Singleton.hpp"
-#include "../utils/game_constants.hpp"
 #include "RenderedEntity.h"
 
 #include <memory>
