@@ -7,6 +7,7 @@
 
 #include "../entities/World.h"
 #include "../input/events/GameEvent.h"
+#include "../utilities/Singleton.hpp"
 #include "physicists/Accelerator.hpp"
 #include "physicists/CollisionDetector.hpp"
 #include "physicists/CollisionHandler.hpp"
@@ -25,37 +26,12 @@
  * interval of constant length</b> deltaT. See also
  * <a href="https://web.archive.org/web/20130328024036/http://gafferongames.com/game-physics/fix-your-timestep/">Fix
  * your Timestep</a>.</p>
- *
- * <p>The Physics Engine follows the <b>Singleton</b> design pattern as there can only be one.
- * However, this implementation of the Singleton design pattern is not Thread safe, so the PhysicsEngine should not be
- * created in parallel threads.
- * We accept this implementation, because the PhysicsEngine will be created in the game loop or before, where no
- * concurrency is intended.</p>
  */
-class PhysicsEngine {
+class PhysicsEngine : public Singleton<PhysicsEngine> {
+    friend class Singleton<PhysicsEngine>;
 
   public:
     // TODO there should be a destructor here somewhere, destructing all the physicists
-    /**
-     * Singletons should not be cloneable.
-     */
-    PhysicsEngine(PhysicsEngine &other) = delete;
-
-    /**
-     * Singletons should not be assignable.
-     */
-    void operator=(const PhysicsEngine &) = delete;
-
-    /**
-     * This is the static method that controls the access to the singleton
-     * instance. On the first run, it creates the PhysicsEngine object and places it
-     * into the static field. On subsequent runs, it returns the client existing
-     * object stored in the static field.
-     *
-     * @param deltaT the constant time step size for the physics simulation
-     * @param world the world
-     */
-    static PhysicsEngine *getPhysicsEngine(float deltaT, World &world);
 
     /**
      * Perform N = frameTime / deltaT update steps and interpolate at the end.
@@ -75,20 +51,17 @@ class PhysicsEngine {
      *
      * // TODO NO, events have to be gotten in every step!!!
      *
-     * @param frameTime
+     * @param events
      */
-    void update(float frameTime);
+    void update(std::queue<GameEvent> &events);
+    float getDeltaT() const;
+    void setDeltaT(float deltaT);
 
   private:
     /**
-     * The singleton object or null, if not yet initialized
-     */
-    static PhysicsEngine *physicsEngine;
-
-    /**
      * The constant length of a simulation time interval.
      */
-    const float deltaT;
+    float deltaT;
 
     /**
      * The world containing all entities.
@@ -96,69 +69,72 @@ class PhysicsEngine {
     World &world;
 
     /**
+     * Timestamp of last update.
+     */
+    float timeLastUpdate;
+
+    /**
      * Time produced by the renderer that is consumed by the simulation in constant and discrete deltaT sized chunks.
      */
-    float accumulator{};
+    float accumulator;
 
     /**
      * Responsible for spawning entities at the start of each step.
      */
-    const Spawner *spawner;
-
-    /**
-     * The InputHandler responsible for processing all inputs.
-     */
-    const InputHandler *inputHandler;
+    const Spawner &spawner;
 
     /**
      * The event processor, changing the world state based on a given list of Input events.
      */
-    EventProcessor *eventProcessor;
+    EventProcessor &eventProcessor;
 
     /**
      * The force calculator, calculating the forces and accelerations of every movable entity.
      */
-    const Accelerator *accelerator;
+    Accelerator &accelerator;
 
     /**
      * The positioner, updating the position of hiker and rocks based on their current positions, verlocities and
      * accelerations.
      */
-    const Positioner *positioner;
+    Positioner &positioner;
 
     /**
      * The collision detector, checking for collisions of objects after an update step by the positioner.
      */
-    CollisionDetector *collisionDetector;
+    CollisionDetector &collisionDetector;
 
     /**
      * If collisions have been detected, they need to be resolved by the collision handler.
      */
-    CollisionHandler *collisionHandler;
+    CollisionHandler &collisionHandler;
 
     /**
      * Interpolates the position of objects at rendering time and saves it in the render info.
      */
-    const Interpolator *interpolator;
+    const Interpolator &interpolator;
 
     /**
      * Responsible for destructing all entities that are outside of the world borders.
      */
-    const Destructor *destructor;
+    const Destructor &destructor;
 
     /**
      * The private constructor method of the PhysicsEngine.
      * Only to be called once.
-     *
-     * @param deltaT simulation time step size
-     * @param world the world
      */
-    PhysicsEngine(float deltaT, World &world);
+    PhysicsEngine();
 
     /**
      * Simulates the change in the state of the world over the next deltaT time interval.
      */
     void updateTimeStep() const;
+
+    /**
+     * Destructs all physicists (TODO)
+     * and sets isInit to false;
+     */
+    ~PhysicsEngine();
 };
 
 #endif // PHYSICSENGINE_H

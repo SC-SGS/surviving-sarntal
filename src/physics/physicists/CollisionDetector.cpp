@@ -4,15 +4,22 @@
 
 #include "CollisionDetector.hpp"
 
-CollisionDetector::CollisionDetector(World &world) : world(world) {}
+#include <iostream>
+#include <mutex>
+
+CollisionDetector::CollisionDetector() : world(World::getInstance()) {
+    std::cout << "CollisionDetector gets constructed" << std::endl;
+}
+
+CollisionDetector::~CollisionDetector() { std::cout << "CollisionDetector gets deconstructed" << std::endl; }
 
 void CollisionDetector::detectCollisions() const {}
 
-bool CollisionDetector::rocksCollide(RockClass &r1, RockClass &r2) {
-    const Vector pos1 = r1.getPosition();
-    const float rad1 = r1.getRadius();
-    const Vector pos2 = r1.getPosition();
-    const float rad2 = r1.getRadius();
+bool CollisionDetector::rocksCollide(RockClass &rock1, RockClass &rock2) {
+    const Vector pos1 = rock1.getPosition();
+    const float rad1 = rock1.getRadius();
+    const Vector pos2 = rock2.getPosition();
+    const float rad2 = rock2.getRadius();
     return (pos1.distanceTo(pos2) <= rad1 + rad2);
 }
 
@@ -20,7 +27,8 @@ bool CollisionDetector::isPlayerHitByRock(RockClass &rock) {
     const auto rockPosition = rock.getPosition();
     const auto rad = rock.getRadius();
     // hiker position is at his feet, but here we use the center of mass (center of the rectangle) as position
-    const auto adjustedHikerPosition = this->world.getHiker().getPosition() + this->world.getHiker().getHeight() / 2;
+    const auto pos = this->world.getHiker().getPosition();
+    const auto adjustedHikerPosition = Vector{pos.x, pos.y - this->world.getHiker().getHeight() / 2};
     const auto hikerHeight = this->world.getHiker().getHeight();
     const auto hikerWidth = this->world.getHiker().getWidth();
     const auto xCenterDistanceAbs = std::abs(adjustedHikerPosition.x - rockPosition.x);
@@ -56,9 +64,9 @@ Vector CollisionDetector::getNormal(const std::size_t idx, const Vector rockPos)
     // R =  (  0   -1  )
     //      (  1    0  )
     Vector normal = {-slope.y, slope.x};
-    if (normal.y < 0) {
+    if (normal.y > 0) {
         normal = normal * -1.f;
     }
-    const float_type normalization = std::sqrt(normal * normal);
+    const floatType normalization = std::sqrt(normal * normal);
     return normal / normalization;
 }

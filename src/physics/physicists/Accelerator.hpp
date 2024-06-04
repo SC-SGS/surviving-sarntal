@@ -6,13 +6,14 @@
 #define ACCELERATOR_H
 
 #include "../../entities/World.h"
+#include "../../utilities/Singleton.hpp"
 
-class Accelerator {
+class Accelerator : public Singleton<Accelerator> {
+    friend class Singleton<Accelerator>;
 
   public:
-    explicit Accelerator(World &world, float deltaT);
-
     void accelerate() const;
+    void setDeltaT(float deltaT);
 
   private:
     World &world;
@@ -20,7 +21,7 @@ class Accelerator {
     /**
      * The constant length of a simulation time interval.
      */
-    const float deltaT;
+    float deltaT;
 
     /**
      * Retrieves all rocks in the world and updates their velocities.
@@ -40,6 +41,9 @@ class Accelerator {
      * Checks the velocity to determine the direction of the hiker.
      */
     void updateHikerDirection() const;
+
+    Accelerator();
+    ~Accelerator();
 };
 
 #endif // ACCELERATOR_H

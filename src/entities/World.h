@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_WORLD_H
 #define SURVIVING_SARNTAL_WORLD_H
 
-#include "../utils/game_constants.h"
+#include "../utilities/Singleton.hpp"
 #include "Hiker.h"
 #include "Inventory.hpp"
 #include "Item.hpp"
@@ -13,8 +13,8 @@
 #include "Mountain.h"
 #include "Rock.h"
 
-#include <iostream>
 #include <list>
+#include <memory>
 
 /**
  * This class represents our game world. It owns all the entities that occur in our game world,
@@ -24,72 +24,55 @@
 
 // TODO Should be singleton (see Physics Engine for implementation details)
 // TODO I dislike that our getters are non-const. It makes the design kinda weird.
-class World {
+class World : public Singleton<World> {
+    friend class Singleton<World>; // Allow Singleton to access the constructor??
 
   public:
-    World() = delete;
-    void initializeWorld();
     // TODO it would be nice to have getters and mutable getters. There should be an immutable getter option (const).
 
-    void setHiker(const Hiker &newHiker);
-    Hiker &getHiker();
+    Hiker &getHiker() const;
 
-    void setInventory(const Inventory &newInventory);
-    Inventory &getInventory();
+    Inventory &getInventory() const;
 
-    void setMonster(const Monster &newMonster);
-    Monster &getMonster();
+    Monster &getMonster() const;
 
-    void setMountain(const MountainClass &newMountain);
-    MountainClass &getMountain();
+    MountainClass &getMountain() const;
 
-    void setRocks(const std::list<RockClass *> &newRocks);
-    std::list<RockClass *> &getRocks();
+    std::list<RockClass> &getRocks();
 
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
-    void addRock(RockClass *rock);
+    void addRock(RockClass &rock);
 
-    void setItems(const std::list<Item> &items);
-    std::list<Item> &getItems();
+    std::list<std::shared_ptr<Item>> &getItems() const;
 
     /**
      * ´This method adds an item to the game by adding it to the list of items
      * @param item
      */
-    void addItem(const Item &item);
+    void addItem(const Item &item) const;
 
     /**
      * This method uses an item, performing the respective change to player and
      * game state.
      * @param itemType
+     * TODO this belongs in item
      */
     void useItem(ItemType itemType);
 
     void useCoin();
     void useDuck();
-    void useKaiserschmarrn();
+    void useKaiserschmarrn() const;
 
     /**
      * Returns a list of all items that are close enough to the hiker to be picked up
-     * TODO: implement
      *
      * @return list of nearby items
      */
-    std::list<Item> getNearbyItems() const;
+    std::list<std::shared_ptr<Item>> getNearbyItems() const;
 
-  private:
-    // TODO we need to make sure that these attributes are only saved here, i.e. there are only pointers everywhere else
-    Hiker hiker;
-    // TODO why does the world have an inventory and not the hiker?
-    Inventory inventory;
-    Monster monster;
-    MountainClass mountain;
-    float minX;
-
-  public:
     float getMinX() const;
     void setMinX(float minX);
     float getMaxX() const;
@@ -98,10 +81,30 @@ class World {
     bool isOutOfScope(RenderedEntity &entity) const;
 
   private:
-    float maxX;
+    // TODO into yaml config and check value
+    // constexpr Vector DEFAULT_HIKER_POS = {0, MountainClass::getInstance().getYPosFromX(0)};
+    static constexpr size_t DEFAULT_INV_SLOT_NUM = 3;
 
-    std::list<RockClass *> rocks;
-    std::list<Item> items;
+    // TODO we need to make sure that these attributes are only saved here, i.e. there are only pointers everywhere else
+    // TODO check hiker and/or inventory singleton?
+    MountainClass &mountain = MountainClass::getInstance();
+    float hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
+    std::unique_ptr<Hiker> hiker =
+        std::make_unique<Hiker>(Vector{hikerPositionX, mountain.getYPosFromX(hikerPositionX)});
+    // TODO inventory belongs to HIKER!!!
+    std::unique_ptr<Inventory> inventory = std::make_unique<Inventory>(DEFAULT_INV_SLOT_NUM);
+    Monster &monster = Monster::getInstance();
+
+    float minX = 0;
+    float maxX = graphics::SCREEN_WIDTH;
+
+    int coinScore = 0;
+
+    const std::unique_ptr<std::list<RockClass>> rocks = std::make_unique<std::list<RockClass>>();
+    const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
+        std::make_unique<std::list<std::shared_ptr<Item>>>();
+    World();
+    ~World();
 
     // TODO spawn rock method and destruct rock method or at least add and remove from list
 };

@@ -6,15 +6,12 @@
 #define SURVIVING_SARNTAL_AUDIOSERVICE_HPP
 
 #include "../ResourceManager.h"
-#include "raylib.h"
-#include <iostream>
 #include <string>
 
-class AudioService {
+class AudioService : public Singleton<AudioService> {
+    friend class Singleton<AudioService>;
+
   public:
-    static AudioService &getInstance();
-    AudioService(const AudioService &) = delete;
-    void operator=(const AudioService &) = delete;
     void playSound(const std::string &soundName) const;
 
   private:

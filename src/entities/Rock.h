@@ -18,10 +18,6 @@
 // TODO what about destructors, as in the programming concept in c++?
 class RockClass : public RenderedEntity {
   public:
-    RockClass(Vector velocity, Rotation rotation, float radius, Vector position);
-
-    // TODO why is there a constructor for a rock with just the position?
-    explicit RockClass(Vector position) : RenderedEntity(position) { this->position = position; }
     RockClass(Vector position, Vector velocity, Rotation rotation, float radius) : RenderedEntity(position) {
         this->position = position;
         this->velocity = velocity;
@@ -40,10 +36,14 @@ class RockClass : public RenderedEntity {
 
     RenderInformation getRenderInformation() override;
 
+    bool getShouldBeDestroyed() const;
+    void setShouldBeDestroyed(bool shouldBeDestroyed);
+
   private:
     Vector velocity{};
     Rotation rotation{};
     float radius = MIN_ROCK_SIZE;
+    bool shouldBeDestroyed = false;
 };
 
 #endif // SURVIVING_SARNTAL_ROCK_H

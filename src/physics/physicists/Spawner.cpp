@@ -6,17 +6,15 @@
 #include "../../factory/MountainGenerator.h"
 #include "../../factory/RockSpawner.h"
 
-Spawner::Spawner(World &world) : world(world) {}
+#include <iostream>
+#include <mutex>
+
+Spawner::Spawner() { std::cout << "Spawner gets constructed" << std::endl; }
+
+Spawner::~Spawner() { std::cout << "Spawner gets deconstructed" << std::endl; }
 
 void Spawner::spawn() const {
-    spawnRocks();
-    spawnMountain();
-}
-
-void Spawner::spawnRocks() const { RockSpawner::spawnRocks(&this->world, &RockSpawner::spawnData); }
-
-void Spawner::spawnMountain() const {
-    // TODO change this, so that generating and deleting a chunk can be split.
-    // TODO: Also, the current state of the mountain generation is really confusing. Change that too.
-    MountainGenerator::generateMountainChunk(&world);
+    this->mountainGenerator.generateMountainChunk();
+    this->rockSpawner.spawnRocks();
+    this->itemSpawner.spawnItems();
 }

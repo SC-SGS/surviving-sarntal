@@ -5,7 +5,7 @@
 #include "Gamepad.h"
 #include "raylib.h"
 
-Gamepad::Gamepad(int id) : ID(id) {
+Gamepad::Gamepad(int gamepadID) : gamepadID(gamepadID) {
     INPUT_MAPPINGS = {
         // Normal events
         {{GAMEPAD_BUTTON_RIGHT_FACE_DOWN, TRIGGER_PRESSED}, {JUMP, NO_AXIS, NO_MODIFICATION}},
@@ -31,7 +31,7 @@ Gamepad::Gamepad(int id) : ID(id) {
     };
 }
 
-const std::map<TriggerType, std::function<bool(int, int)>> Gamepad::RAYLIB_MAPPINGS = {
+const std::map<TriggerType, std::function<bool(int, int)>> Gamepad::raylibMappings = {
     {TRIGGER_PRESSED, IsGamepadButtonPressed},
     {TRIGGER_DOWN, IsGamepadButtonDown},
     {TRIGGER_RELEASED, IsGamepadButtonReleased},
@@ -40,17 +40,17 @@ const std::map<TriggerType, std::function<bool(int, int)>> Gamepad::RAYLIB_MAPPI
 
 Gamepad::~Gamepad() = default;
 
-std::list<GameEvent> Gamepad::getGameEvents() {
-    std::list<GameEvent> events = {};
+std::queue<GameEvent> Gamepad::getGameEvents() {
+    std::queue<GameEvent> events = {};
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
         if (deviceEvent.triggerType == TRIGGER_POSITION) {
-            float axisValue = Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(ID, deviceEvent.trigger);
+            float axisValue = Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger);
             GameEvent gameEvent = getGameEvent(deviceEvent);
             gameEvent.axisValue = axisValue;
-            events.push_back(gameEvent);
-        } else if (Gamepad::RAYLIB_MAPPINGS.at(deviceEvent.triggerType)(ID, deviceEvent.trigger)) {
-            events.push_back(getGameEvent(deviceEvent));
+            events.push(gameEvent);
+        } else if (Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger)) {
+            events.push(getGameEvent(deviceEvent));
         }
     }
     return events;

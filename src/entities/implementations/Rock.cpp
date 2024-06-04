@@ -5,13 +5,11 @@
 #include "../Rock.h"
 
 #include "../../components/vector.h"
+#include <iostream>
 #include <utility>
 
-RockClass::RockClass(Vector velocity, Rotation rotation, float radius, Vector position)
-    : RenderedEntity(position), velocity(velocity), rotation(rotation), radius(radius) {}
-
 RenderInformation RockClass::getRenderInformation() {
-    return RenderInformation{Vector2(position), radius, radius, rotation, "rock"};
+    return RenderInformation{Vector2(position), {0, 0}, radius * 2.0f, radius * 2.0f, rotation, "rock"};
 }
 
 void RockClass::setRotation(const Rotation &newRotation) { rotation = newRotation; }
@@ -23,3 +21,6 @@ Rotation RockClass::getRotation() { return rotation; }
 Vector RockClass::getVelocity() { return velocity; }
 
 float RockClass::getRadius() const { return radius; }
+
+bool RockClass::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
+void RockClass::setShouldBeDestroyed(const bool shouldBeDestroyed) { this->shouldBeDestroyed = shouldBeDestroyed; }

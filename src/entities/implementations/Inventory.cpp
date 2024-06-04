@@ -3,10 +3,13 @@
 //
 
 #include "../Inventory.hpp"
+#include <iostream>
 
-Inventory::Inventory(size_t slotCount) : slots(slotCount, ItemSlot{ItemType::NO_ITEM}), selectedSlot(0) {}
+Inventory::Inventory(size_t slotCount) : slots(slotCount, ItemSlot{ItemType::NO_ITEM}), selectedSlot(0) {
+    std::cout << "Inventory initialized." << std::endl;
+}
 
-Inventory::Inventory() : Inventory(3) {}
+Inventory::Inventory() : Inventory(INVENTORY_SLOTS) {}
 
 size_t Inventory::getSlotCount() const { return slots.size(); }
 
@@ -25,3 +28,5 @@ ItemType Inventory::getSelectedItem() const { return getItem(getSelectedSlot());
 size_t Inventory::getSelectedSlot() const { return selectedSlot; }
 
 void Inventory::switchItem(int offset) { selectedSlot = (selectedSlot + offset + getSlotCount()) % getSlotCount(); }
+
+bool Inventory::isSelectedSlotFree() const { return this->getItem(this->getSelectedSlot()) != NO_ITEM; }

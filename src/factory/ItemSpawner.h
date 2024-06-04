@@ -6,22 +6,16 @@
 #define SURVIVING_SARNTAL_ITEMSPAWNER_H
 
 #include "../entities/World.h"
+#include "../utilities/Singleton.hpp"
 
 /**
  * This class is responsible for spawning items during the game.
  */
 
-class ItemSpawner {
-  private:
-    float itemSpawnTime{};
-    int itemCount{3};
-
-    static std::random_device dev;
-    static std::mt19937 randomEngine;
-    static std::uniform_int_distribution<int> distribution;
+class ItemSpawner : public Singleton<ItemSpawner> {
+    friend class Singleton<ItemSpawner>; // Allow Singleton to access the constructor??
 
   public:
-    ItemSpawner();
     /**
      * generate a random variable that follows the geometric distribution with p
      * = 1/2^p_exp
@@ -34,7 +28,25 @@ class ItemSpawner {
      * This method spawns items.
      * @param world
      */
-    void spawnItems(World *world);
+    void spawnItems();
+
+  private:
+    float itemSpawnTime{};
+    int itemCount{3};
+    static double nextSpawnTime;
+
+    static std::random_device dev;
+    static std::mt19937 randomEngine;
+    static std::uniform_int_distribution<int> distribution;
+
+    World &world = World::getInstance();
+
+    static void updateNextSpawnTime();
+    static ItemType getNextRandomItemType();
+    static Vector getNextRandomPosition();
+
+    ItemSpawner();
+    ~ItemSpawner();
 };
 
 #endif // SURVIVING_SARNTAL_ITEMSPAWNER_H

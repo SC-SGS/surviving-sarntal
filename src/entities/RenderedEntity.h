@@ -19,6 +19,7 @@ class RenderedEntity {
     explicit RenderedEntity(Vector position);
 
     virtual RenderInformation getRenderInformation();
+    void setAnimationInformation(AnimationInformation &animationInformation);
 
     // TODO why do we use their vector? we need our own and also, renamings like Position as vector alias for clarity
     void setPosition(Vector &position);
@@ -26,6 +27,7 @@ class RenderedEntity {
 
   protected:
     Vector position{};
+    AnimationInformation animation{0, 0, 0, 0};
 };
 
 #endif // SURVIVING_SARNTAL_RENDEREDENTITY_H

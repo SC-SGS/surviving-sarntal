@@ -4,18 +4,30 @@
 
 #include "Positioner.hpp"
 
-Positioner::Positioner(World &world, const float deltaT) : world(world), deltaT(deltaT) {}
+#include <iostream>
+#include <mutex>
 
-void Positioner::updatePositions() const {
+Positioner::Positioner() : world(World::getInstance()), deltaT(1) {
+    std::cout << "Positioner gets constructed" << std::endl;
+};
+
+Positioner::~Positioner() { std::cout << "Positioner gets deconstructed" << std::endl; }
+
+void Positioner::updatePositions() {
     this->updateMonsterPosition();
     this->updateWorldBorderPosition();
     this->updateRockPositions();
     this->updateHikerPosition();
-};
+}
 
-void Positioner::updateMonsterPosition() const {
+void Positioner::setDeltaT(const float deltaT) { this->deltaT = deltaT; };
+
+void Positioner::updateMonsterPosition() {
     auto xPos = this->world.getMonster().getXPosition();
-    this->world.getMonster().setXPosition(xPos + KILL_BAR_VELOCITY * this->deltaT);
+    auto newXPos = xPos + KILL_BAR_VELOCITY * this->deltaT;
+    auto newYPos = this->world.getMountain().getYPosFromX(xPos);
+    Vector newPos = {newXPos, newYPos};
+    this->world.getMonster().setPosition(newPos);
 }
 
 void Positioner::updateWorldBorderPosition() const {
@@ -24,20 +36,23 @@ void Positioner::updateWorldBorderPosition() const {
     auto delta = KILL_BAR_VELOCITY * this->deltaT;
     this->world.setMinX(xMin + delta);
     this->world.setMaxX(xMax + delta);
+    // std::cout << "World border x minimum position: " << xMin << std::endl;
 }
 
 void Positioner::updateRockPositions() const {
-    for (RockClass *rock : this->world.getRocks()) {
-        auto pos = rock->getPosition();
-        pos += rock->getVelocity() * this->deltaT;
-        rock->setPosition(pos);
-        auto rot = rock->getRotation();
+    for (auto &rock : this->world.getRocks()) {
+        auto pos = rock.getPosition();
+        // std::cout << pos.x << pos.y << std::endl;
+        pos += rock.getVelocity() * this->deltaT;
+        rock.setPosition(pos);
+        auto rot = rock.getRotation();
         rot.angular_offset += rot.angular_velocity * this->deltaT;
-        rock->setRotation(rot);
+        rock.setRotation(rot);
+        // std::cout << pos.x << pos.y << std::endl;
     }
 }
 
-void Positioner::updateHikerPosition() const {
+void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     // TODO maybe we want to switch back to float type, but clang won't allow it as of now
     float knockback = 0;
     Hiker &hiker = this->world.getHiker();
@@ -50,7 +65,7 @@ void Positioner::updateHikerPosition() const {
         // TODO also, why is knockback only in x direction?
         knockback = rockVelocity * KNOCKBACKCONST * radius;
         // TODO I think we should remove all unnecessary prints
-        std::cout << "hit: " << knockback << std::endl;
+        // std::cout << "hit: " << knockback << std::endl;
         int counter = hiker.getHitInformation().countingVariable;
         counter++;
         // TODO I don't like the HitInformation
@@ -66,17 +81,25 @@ void Positioner::updateHikerPosition() const {
     }
 
     auto pos = hiker.getPosition();
+    // std::cout << pos.x << std::endl;
+    // std::cout << "Hiker state: " << hiker.getHikerMovement().getState() << std::endl;
+    // std::cout << "Hiker direction: " << hiker.getHikerMovement().getDirection() << std::endl;
     const auto vel = hiker.getVelocity();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
+        // std::cout << "Hiker in air" << std::endl;
         pos.x += knockback + AIR_MOVEMENT_SPEED_FACTOR * vel.x * this->deltaT;
         const auto terrainY = this->world.getMountain().getYPosFromX(pos.x);
         const auto airY = pos.y + vel.y * this->deltaT;
-        if (airY > terrainY) {
+        if (airY < terrainY) {
+            // std::cout << "Jump successful" << std::endl;
             pos.y = airY;
+            // std::cout << this->deltaT << std::endl;
+            // std::cout << hiker.getHikerMovement().getLastJump() << std::endl;
         } else {
+            // std::cout << "Jump failed" << std::endl;
             pos.y = terrainY;
+            hiker.getVelocity().y = 0.f;
             hiker.getHikerMovement().setState(HikerMovement::MovementState::MOVING);
-            hiker.getHikerMovement().setCanJumpAgain(true);
             hiker.getHikerMovement().setLastJump(0.0);
             // TODO I think graphics does that already
             /* it.entity(0).remove<graphics::BillboardComponent>();
@@ -95,16 +118,18 @@ void Positioner::updateHikerPosition() const {
         }
         // TODO this whole speedfactor shebang needs thorough examination and fiddling in later stages
     } else if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
+        // std::cout << "here" << std::endl;
         const auto nextXPos = vel.x * this->deltaT + pos.x;
         const auto nextYPos = this->world.getMountain().getYPosFromX(nextXPos);
         Vector direction = {nextXPos - pos.x, nextYPos - pos.y};
         const float length = direction.length();
         const float slope = direction.y / direction.x;
         const float speedFactor = getSpeedFactor(slope);
-        // TODO this speed formula is sus
+        // TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
         pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
         pos.y = this->world.getMountain().getYPosFromX(pos.x);
     } else {
+        // std::cout << "Knock knock mf" << std::endl;
         pos.x += knockback;
         pos.y = this->world.getMountain().getYPosFromX(pos.x);
     }
@@ -112,6 +137,7 @@ void Positioner::updateHikerPosition() const {
         pos.x = this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET;
     }
     hiker.setPosition(pos);
+    // std::cout << "New pos: " << pos.x << " | " << world.getHiker().getPosition().x << std::endl;
 }
 
 float Positioner::getSpeedFactor(const float slope) {

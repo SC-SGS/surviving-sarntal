@@ -1,14 +1,15 @@
 #pragma once
 
-#include "../utils/game_constants.h"
+#include "../utils/game_constants.hpp"
 #include "raylib.h"
 
 struct Position;
 
 struct Velocity;
 
+// TODO check consistency of position and velocity as aliases for vector and move to utils
 struct Vector {
-    float_type x, y;
+    floatType x, y;
 
     explicit operator Vector2() const;
 
@@ -18,7 +19,7 @@ struct Vector {
 
     Velocity operator+(Vector const &) const;
 
-    Vector operator+(float_type) const;
+    Vector operator+(floatType) const;
 
     void operator+=(Vector const &);
 
@@ -26,17 +27,17 @@ struct Vector {
 
     void operator-=(Vector const &);
 
-    Vector operator*(float_type) const;
+    Vector operator*(floatType) const;
 
-    float_type operator*(Vector const &) const;
+    floatType operator*(Vector const &) const;
 
-    Vector operator/(float_type) const;
+    Vector operator/(floatType) const;
 
-    void operator/=(float_type);
+    void operator/=(floatType);
 
-    [[nodiscard]] float_type distanceTo(Vector const &) const;
+    [[nodiscard]] floatType distanceTo(Vector const &) const;
 
-    [[nodiscard]] float_type length() const;
+    [[nodiscard]] floatType length() const;
 
     [[nodiscard]] Vector reflectOnNormal(Vector const &) const;
 };
@@ -46,12 +47,12 @@ struct Position : Vector {};
 struct Velocity : Vector {};
 
 struct Radius {
-    float_type value;
+    floatType value;
 };
 
 struct Rotation {
-    float_type angular_velocity;
-    float_type angular_offset;
+    floatType angular_velocity;
+    floatType angular_offset;
 };
 
 struct Rock {};
