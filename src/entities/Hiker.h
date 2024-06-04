@@ -5,8 +5,8 @@
 #ifndef SURVIVING_SARNTAL_HIKER_H
 #define SURVIVING_SARNTAL_HIKER_H
 
-#include "../components/vector.h"
-#include "../output/graphics/render_information/RenderInformation.h"
+#include "../output/graphics/renderInformation/RenderInformation.h"
+#include "../utilities/vector.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
 #include <list>

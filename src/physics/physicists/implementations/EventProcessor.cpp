@@ -2,7 +2,7 @@
 // Created by bjoern on 5/21/24.
 //
 
-#include "EventProcessor.hpp"
+#include "../EventProcessor.hpp"
 
 #include <iostream>
 #include <mutex>

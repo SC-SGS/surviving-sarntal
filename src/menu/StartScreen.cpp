@@ -1,7 +1,7 @@
 //
 // Created by six on 5/4/24.
 //
-#include "start_screen.h"
+#include "StartScreen.h"
 #include "raylib.h"
 
 void StartScreen::draw() {
