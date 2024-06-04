@@ -42,7 +42,7 @@ class Renderer : public Singleton<Renderer> {
     void renderRock(RenderedEntity &entity);
     void renderHiker(RenderedEntity &hiker);
     static void drawBackgroundTextureRepeatedly(Texture2D texture2D, float scrolling, float scale, float offsetY);
-    void renderMountain(MountainClass &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
+    void renderMountain(Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
     void renderEntities();
     void animateEntity(RenderedEntity &entity);
     void renderAnimation(RenderedEntity &entity);

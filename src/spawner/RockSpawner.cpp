@@ -11,7 +11,6 @@ RockSpawner::RockSpawner() { std::cout << "Rock Spawner initialized." << std::en
 
 RockSpawner::~RockSpawner() { std::cout << "Rock Spawner destroyed." << std::endl; }
 
-// TODO remove nolint and completely reengineer
 void RockSpawner::spawnRocks() {
     if (!shouldSpawnRocks()) {
         return;
@@ -40,19 +39,10 @@ void RockSpawner::spawnRock(const size_t idxRock) {
     Vector position = {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x,
                        spawnBasePos.y + offsetsAdditionalRocks[idxRock].y};
 
-    RockClass newRock(position, velocity, rotation, rad);
+    Rock newRock(position, velocity, rotation, rad);
 
     this->world.addRock(newRock);
-
-    // TODO remove
-    /*floatType xPosition = this->world.getHiker().getPosition().x + 500;
-    floatType yPosition = this->world.getMountain().getYPosFromX(xPosition) - 500;
-    auto position = Vector{xPosition, yPosition};
-    RockClass newRock(position, Vector{0, 0}, Rotation{2, 0}, 25);*/
-    // this->world.addRock(newRock);
     std::cout << "Rock spawned." << std::endl;
-    // std::cout << newRock.getPosition().x << " - " << newRock.getPosition().y
-    // << " Hiker: " << world.getHiker().getPosition().x << " " << world.getHiker().getPosition().x << std::endl;
 }
 
 bool RockSpawner::shouldSpawnRocks() {

@@ -20,7 +20,6 @@ HikerMovement::HikerMovement(HikerMovement::MovementState state, HikerMovement::
 
 HikerMovement::MovementState HikerMovement::getState() const { return currentState; }
 
-// TODO where do we need this?
 std::string HikerMovement::getStateString() const {
     switch (currentState) { // TODO take from config see issue #30 (you sure?)
     case MOVING:

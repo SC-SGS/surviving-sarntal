@@ -25,6 +25,3 @@ RenderInformation Monster::getRenderInformation() {
 floatType Monster::getXPosition() const { return position.x; }
 
 void Monster::setXPosition(floatType positionX) { position.x = positionX; }
-
-// TODO needs delta time of the game (one time step) as an input to calculate the updated position
-void Monster::updateMonsterPosition() {}

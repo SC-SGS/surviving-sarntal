@@ -18,11 +18,11 @@ Inventory &World::getInventory() const { return *inventory; }
 
 Monster &World::getMonster() const { return monster; }
 
-MountainClass &World::getMountain() const { return mountain; }
+Mountain &World::getMountain() const { return mountain; }
 
 bool World::isOutOfScope(RenderedEntity &entity) const {
-    bool result = entity.getPosition().x < this->minX - MountainClass::CHUNK_WIDTH;
-    // entity.getPosition().x > this->maxX + MountainClass::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
+    bool result = entity.getPosition().x < this->minX - Mountain::CHUNK_WIDTH;
+    // entity.getPosition().x > this->maxX + Mountain::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
     // entity.getPosition().y > mountain.getYPosFromX(entity.getPosition().x);
     if (result) {
         std::cout << "A rock has left this cruel world" << entity.getPosition().x << entity.getPosition().y
@@ -41,9 +41,9 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     return nearbyItems;
 }
 
-void World::addRock(RockClass &rock) { this->rocks->push_back(rock); }
+void World::addRock(Rock &rock) { this->rocks->push_back(rock); }
 
-std::list<RockClass> &World::getRocks() { return *rocks; }
+std::list<Rock> &World::getRocks() { return *rocks; }
 
 std::list<std::shared_ptr<Item>> &World::getItems() const { return *items; }
 

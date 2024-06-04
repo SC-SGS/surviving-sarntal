@@ -8,7 +8,7 @@
 
 // TODO why is item information always copied?
 Item::Item(const ItemType itemType, ItemInformation itemInformation, const Vector position)
-    : RenderedEntity(position), itemID(itemType), itemInformation(std::move(itemInformation)) {
+    : RenderedEntity(position), itemType(itemType), itemInformation(std::move(itemInformation)) {
     this->texture = this->itemInformation.name;
     std::cout << "Item initialized." << std::endl;
 }
@@ -26,7 +26,7 @@ ItemInformation Item::getItemInformation(const ItemType type) {
     }
 }
 
-ItemType Item::getItemType() const { return this->itemID; }
+ItemType Item::getItemType() const { return this->itemType; }
 
 RenderInformation Item::getRenderInformation() {
     return RenderInformation{Vector2(this->position), {0, 0}, ITEM_BASE_HEIGHT, ITEM_BASE_HEIGHT, {0, 0}, texture};

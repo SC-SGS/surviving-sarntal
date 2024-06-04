@@ -29,14 +29,13 @@ class CollisionDetector : public Singleton<CollisionDetector> {
     /**
      * Checks whether two given circular rocks collide.
      *
-     * TODO maybe later adapt to non-circular rocks and it should be used in some method that uses linked cell or
-     * TODO something similar
+     * TODO maybe later adapt to non-circular rocks and it should be used in some method that uses linked cell or sth
      *
      * @param rock1
      * @param r2
      * @return
      */
-    static bool rocksCollide(RockClass &rock1, RockClass &rock2);
+    static bool rocksCollide(Rock &rock1, Rock &rock2);
 
     /**
      * Checks whether the player is hit by a given rock, where the player is represented as a axis-aligned rectangle and
@@ -44,12 +43,11 @@ class CollisionDetector : public Singleton<CollisionDetector> {
      * See
      * <a href="https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection">this</a>.
      *
-     * TODO I am not quite happy with this. there should be one method to detect all collisions and return a collObj
-     * TODO this method should be tested well
+     * TODO there should be one method to detect all collisions and return a collObj this method should be tested well
      *
      * @return
      */
-    bool isPlayerHitByRock(RockClass &rock);
+    bool isPlayerHitByRock(Rock &rock);
 
     /**
      * Used to calculate the normal... AT A VERTEX!!!
