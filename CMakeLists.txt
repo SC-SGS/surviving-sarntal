@@ -67,7 +67,7 @@ target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
 
 enable_testing()
 
-file(GLOB_RECURSE TEST_SRC "test/*.cpp" "test/*.h")
+file(GLOB_RECURSE TEST_SRC "test/*.cpp" "test/*.h" "test/*.hpp")
 add_executable(
         main_test
         ${TEST_SRC}
