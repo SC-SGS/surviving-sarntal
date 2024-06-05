@@ -16,17 +16,17 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-stages:          # List of stages for jobs, and their order of execution
-  - validate
-  - build
+stages:  
+  - build        # List of stages for jobs, and their order of execution
   - test
+  - lint
   - run-exe
 
 
-clang-format-validate:
-  stage: validate
+clang-format:
+  stage: lint
   script:
-    - for f in $(find src -name '*.cpp' -or -name '*.h'); do clang-format --dry-run --Werror --style=file $f; done;
+    - clang-format -style=file $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --Werror --dry-run
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -48,7 +48,18 @@ test-job:
       - cmake-build-debug/surviving-sarntal
     expire_in: 1 hour
 
-run-exe:
+
+clang-tidy:
+  stage: lint
+  script:
+    - clang-tidy -p=cmake-build-debug/ $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --warnings-as-errors=* --header-filter="^((src|test)/.*)$" --use-color
+
+  dependencies:
+    - build-job
+    - test-job
+    - clang-format
+
+run-exe:                # TODO we can practically remove this until we have a GUI stub (which we won't)
   stage: run-exe
   script:
     - ./run_check.sh
