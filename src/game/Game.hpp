@@ -30,6 +30,7 @@ class Game : public Singleton<Game> {
     AudioService &audioService = AudioService::getInstance();
     InputHandler &inputHandler = InputHandler::getInstance();
 
+    static void drawEndScreen();
     Game();
     ~Game();
 };
