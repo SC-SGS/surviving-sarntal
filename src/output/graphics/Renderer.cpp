@@ -1,6 +1,8 @@
 #include "Renderer.h"
+#include "../../game/Game.hpp"
 #include "raylib.h"
 
+#include <cmath>
 #include <memory>
 #include <mutex>
 
@@ -57,8 +59,15 @@ void Renderer::renderEntity(RenderedEntity &entity, float rotation, Texture2D te
     // Define the origin for rotation.
     Vector2 origin = {info.width / 2, info.height / 2};
 
-    // Draw the texture
-    DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
+    // Draw the texture if not in debug mode
+    if (!Game::getInstance().debugMode) {
+        DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
+    } else {
+        // Draw Rectangle for collision box, center with width and height
+        DrawRectangleLines(static_cast<int>(info.position.x - info.width / 2),
+                           static_cast<int>(info.position.y - info.height), static_cast<int>(info.width),
+                           static_cast<int>(info.height), RED);
+    }
 }
 
 void Renderer::animateEntity(RenderedEntity &entity) {
@@ -108,32 +117,50 @@ void Renderer::renderHiker(RenderedEntity &hiker) {
 void Renderer::renderRock(RenderedEntity &entity) {
     renderEntity(entity, entity.getRenderInformation().rotation.angular_offset);
 }
+void Renderer::debugRenderRock(RenderedEntity &entity) {
+    // Draw Circle for collision box
+    DrawCircleLines(static_cast<int>(entity.getRenderInformation().position.x),
+                    static_cast<int>(entity.getRenderInformation().position.y), entity.getRenderInformation().width / 2,
+                    RED);
+
+    // Calculate the end points of the line to detect rotation
+    float rotation = entity.getRenderInformation().rotation.angular_offset;
+    float radius = entity.getRenderInformation().width / 2;
+    int endX = static_cast<int>(entity.getRenderInformation().position.x + radius * std::cos(rotation));
+    int endY = static_cast<int>(entity.getRenderInformation().position.y + radius * std::sin(rotation));
+
+    // Draw the line
+    DrawLine(static_cast<int>(entity.getRenderInformation().position.x),
+             static_cast<int>(entity.getRenderInformation().position.y), endX, endY, RED);
+}
 
 void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomColor) const {
     // Retrieve the relevant section of the mountain to be displayed
     IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
-
     // Get lower border of screen
     float lowerBorder = camera.target.y + (static_cast<float>(GetScreenHeight()) / (2.0f * camera.zoom)) + 100.0f;
-
     // Load the texture
     Texture2D texture = resourceManager.getTexture("mountain");
     Rectangle sourceRec = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
-
     // Define origin and rotation
     Vector2 origin = {0.0f, 0.0f};
     float rotation = 0.0f;
-
     // Draw the mountain
     const int vertexOffset = 1;
     for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
         Position pos1 = mountain.getVertex(i);
         Position pos2 = mountain.getVertex(i + vertexOffset);
-        // Define destination rectangle (where to draw the texture, size of the texture in the destination)
-        Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
-                              lowerBorder - pos1.y}; // todo make so it is not so pixelated
-
-        DrawTexturePro(texture, sourceRec, destRec1, origin, rotation, WHITE);
+        // Render the mountain depending on debug mode
+        if (Game::getInstance().debugMode) {
+            // Draw the line
+            DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
+                     static_cast<int>(pos2.y), RED);
+        } else {
+            // Define destination rectangle (where to draw the texture, size of the texture in the destination)
+            Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
+                                  lowerBorder - pos1.y}; // todo make so it is not so pixelated
+            DrawTexturePro(texture, sourceRec, destRec1, origin, rotation, WHITE);
+        }
     }
 }
 
@@ -159,6 +186,35 @@ void Renderer::renderEntities() {
         renderEntity(*item);
     }
 
+    // Render mountain
+    renderMountain(mountain, SKYBLUE, BLUE);
+}
+
+void Renderer::debugRenderEntities() {
+    auto &hiker = world.getHiker();
+    auto &rocks = world.getRocks();
+    auto &monster = world.getMonster();
+    auto &mountain = world.getMountain();
+    // Render hiker
+    renderHiker(hiker);
+    // Render rocks
+    for (auto &rock : rocks) {
+        debugRenderRock(rock);
+    }
+    // Render monster
+    DrawLine(static_cast<int>(monster.getRenderInformation().position.x),
+             static_cast<int>(camera.target.y - (0.5 * GetScreenHeight())),
+             static_cast<int>(monster.getRenderInformation().position.x), GetScreenHeight(), RED);
+    // Render Items
+    for (const auto &item : world.getItems()) {
+        renderEntity(*item);
+        auto fontSize = 20;
+        auto itemType = item->getRenderInformation().texture.c_str();
+        auto centerX = static_cast<int>(item->getRenderInformation().position.x) - MeasureText(itemType, fontSize) / 2;
+        DrawText(itemType, centerX, static_cast<int>(item->getRenderInformation().position.y), fontSize, GREEN);
+        DrawCircleLines(static_cast<int>(item->getRenderInformation().position.x),
+                        static_cast<int>(item->getRenderInformation().position.y), HIKER_ITEM_COLLECTION_RANGE, BLUE);
+    }
     // Render mountain
     renderMountain(mountain, SKYBLUE, BLUE);
 }
@@ -217,8 +273,9 @@ void Renderer::draw() {
 
     DrawGrid(1000, 20);
 
-    // Render background
-    renderBackground();
+    // Render background if not in debug mode
+    if (!Game::getInstance().debugMode)
+        renderBackground();
 
     // Adjust y-position of camera
     camera.target.y = world.getHiker().getRenderInformation().position.y - 100.0f;
@@ -226,7 +283,11 @@ void Renderer::draw() {
 
     BeginMode2D(camera);
 
-    renderEntities();
+    if (!Game::getInstance().debugMode)
+        renderEntities();
+    else {
+        debugRenderEntities();
+    }
 
     EndMode2D();
     renderInventory();
