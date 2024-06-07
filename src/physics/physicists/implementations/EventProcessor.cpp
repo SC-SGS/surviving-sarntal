@@ -3,6 +3,7 @@
 //
 
 #include "../EventProcessor.hpp"
+#include "../../../game/Game.hpp"
 
 #include <iostream>
 #include <mutex>
@@ -145,8 +146,8 @@ void EventProcessor::specialAbility(const GameEvent event) const {
     // TODO: implement
 }
 
-void EventProcessor::toggleDebug(const GameEvent event) const {
-    // TODO: implement
+void EventProcessor::toggleDebug(const GameEvent event) const { // NOLINT(*-convert-member-functions-to-static)
+    Game::getInstance().debugMode = !Game::getInstance().debugMode;
 }
 
 void EventProcessor::fullscreen(const GameEvent event) const {
