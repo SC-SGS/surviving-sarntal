@@ -23,6 +23,8 @@ class Game : public Singleton<Game> {
     // TODO there is no pe but input is handled
     void playRound() const;
 
+    bool debugMode = false;
+
   private:
     World &world = World::getInstance();
     Renderer &renderer = Renderer::getInstance();
