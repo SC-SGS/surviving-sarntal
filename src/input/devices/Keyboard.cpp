@@ -8,23 +8,23 @@
 
 Keyboard::Keyboard() {
     INPUT_MAPPINGS = {// Normal events
-                      {{KEY_SPACE, TRIGGER_PRESSED}, {JUMP, NO_AXIS, 0}},
-                      {{KEY_LEFT_SHIFT, TRIGGER_DOWN}, {CROUCH, NO_AXIS, 0}},
-                      {{KEY_LEFT_SHIFT, TRIGGER_RELEASED}, {UNCROUCH, NO_AXIS, 0}},
-                      {{KEY_Q, TRIGGER_PRESSED}, {ITEM_PICK, NO_AXIS, 0}},
-                      {{KEY_E, TRIGGER_PRESSED}, {ITEM_USE, NO_AXIS, 0}},
-                      {{KEY_F, TRIGGER_PRESSED}, {ITEM_DROP, NO_AXIS, 0}},
-                      {{KEY_R, TRIGGER_PRESSED}, {SPECIAL_ABILITY, NO_AXIS, 0}},
-                      {{KEY_F11, TRIGGER_PRESSED}, {FULLSCREEN, NO_AXIS, 0}},
-                      {{KEY_P, TRIGGER_PRESSED}, {TOGGLE_DEBUG, NO_AXIS, 0}},
-                      {{KEY_BACKSPACE, TRIGGER_PRESSED}, {PAUSE, NO_AXIS, 0}},
+                      {{KEY_SPACE, TRIGGER_PRESSED}, {JUMP, NO_AXIS, 0, false}},
+                      {{KEY_LEFT_SHIFT, TRIGGER_DOWN}, {CROUCH, NO_AXIS, 0, false}},
+                      {{KEY_LEFT_SHIFT, TRIGGER_RELEASED}, {UNCROUCH, NO_AXIS, 0, false}},
+                      {{KEY_Q, TRIGGER_PRESSED}, {ITEM_PICK, NO_AXIS, 0, false}},
+                      {{KEY_E, TRIGGER_PRESSED}, {ITEM_USE, NO_AXIS, 0, false}},
+                      {{KEY_F, TRIGGER_PRESSED}, {ITEM_DROP, NO_AXIS, 0, false}},
+                      {{KEY_R, TRIGGER_PRESSED}, {SPECIAL_ABILITY, NO_AXIS, 0, false}},
+                      {{KEY_F11, TRIGGER_PRESSED}, {FULLSCREEN, NO_AXIS, 0, false}},
+                      {{KEY_P, TRIGGER_PRESSED}, {TOGGLE_DEBUG, NO_AXIS, 0, false}},
+                      {{KEY_BACKSPACE, TRIGGER_PRESSED}, {PAUSE, NO_AXIS, 0, false}},
 
                       // Virtual axis modifications
-                      {{KEY_TAB, TRIGGER_PRESSED}, {AXIS_MODIFICATION, ITEM_SWITCH, 1}},
-                      {{KEY_D, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, 1}},
-                      {{KEY_A, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1}},
-                      {{KEY_D, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0}},
-                      {{KEY_A, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0}}};
+                      {{KEY_TAB, TRIGGER_PRESSED}, {AXIS_MODIFICATION, ITEM_SWITCH, 1, false}},
+                      {{KEY_D, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, 1, true}},
+                      {{KEY_A, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1, true}},
+                      {{KEY_D, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0, false}},
+                      {{KEY_A, TRIGGER_RELEASED}, {AXIS_MODIFICATION, MOVEMENT_X, 0, false}}};
 }
 
 Keyboard::~Keyboard() = default;
