@@ -71,3 +71,6 @@ bool Hiker::getIsAlive() {
 }
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }
+void Hiker::addHealthPoints(const int points) {
+    this->setHealthPoints(std::min(this->healthPoints + points, HIKER_MAX_HEALTH));
+}

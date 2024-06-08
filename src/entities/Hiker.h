@@ -56,6 +56,8 @@ class Hiker : public RenderedEntity {
 
     RenderInformation getRenderInformation() override;
 
+    void addHealthPoints(int points);
+
   private:
     Vector velocity{};
     float height{};

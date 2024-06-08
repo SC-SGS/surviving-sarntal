@@ -66,8 +66,7 @@ void World::useItem(const ItemType itemType) {
 }
 
 void World::useKaiserschmarrn() const {
-    const int currentHealth = this->hiker->getHealthPoints();
-    this->hiker->setHealthPoints(std::min(currentHealth + KAISERSCHMARRN_HEALTH_RESTORATION, HIKER_MAX_HEALTH));
+    this->hiker->addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
     std::cout << "used Kaiserschmarrn" << std::endl;
 }
 
