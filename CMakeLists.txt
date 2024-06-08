@@ -35,7 +35,7 @@ FetchContent_MakeAvailable(yaml-cpp)
 include_directories(libs/NITE/Include /usr/include/ni)
 # Check if the operating system is macOS
 if(APPLE)
-    include_directories(/opt/homebrew/Cellar/sdl2/2.30.2/include)
+    include_directories(/opt/homebrew/Cellar/sdl2/2.30.3/include)
 endif()
 
 file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h" "src/*.hpp")
@@ -57,7 +57,7 @@ target_link_libraries(surviving-sarntal-library PUBLIC yaml-cpp)
 # Check if the operating system is macOS
 if(APPLE)
     # Link the library with absolute path on macOS
-    target_link_libraries(surviving-sarntal-library PUBLIC /opt/homebrew/Cellar/sdl2/2.30.2/lib/libSDL2.dylib)
+    target_link_libraries(surviving-sarntal-library PUBLIC /opt/homebrew/Cellar/sdl2/2.30.3/lib/libSDL2.dylib)
 else()
     # Link the library by its name on other operating systems
     target_link_libraries(surviving-sarntal-library PUBLIC SDL2)

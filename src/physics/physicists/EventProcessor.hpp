@@ -5,7 +5,6 @@
 #ifndef EVENTPROCESSOR_H
 #define EVENTPROCESSOR_H
 
-#include "../../entities/InventoryHandler.h"
 #include "../../entities/World.h"
 #include "../../input/InputHandler.h"
 #include "../../input/events/GameEvent.h"
@@ -30,7 +29,6 @@ class EventProcessor : public Singleton<EventProcessor> {
 
   private:
     World &world = World::getInstance();
-    InventoryHandler &inventoryHandler = InventoryHandler::getInstance();
     std::queue<GameEvent> eventQueue{};
 
     std::map<GameEvent, GameEventFunction, GameEventCompare> gameEventFunctionMappings;
@@ -112,6 +110,8 @@ class EventProcessor : public Singleton<EventProcessor> {
     void moveY(GameEvent event) const;
 
     void noEvent(GameEvent event) const;
+
+    void pickItem(const std::shared_ptr<Item> &item) const;
 
     EventProcessor();
     ~EventProcessor();

@@ -13,14 +13,8 @@
 /**
  * Enum to specify the different types of items that occur in the game.
  */
+// todo remove no_item @aleksis
 enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2 };
-
-struct ItemInformation {
-    std::string name;
-    bool autoCollect;
-    bool useOnPickup;
-    bool dropOnUse;
-};
 
 /**
  * This class represents an Item in the game. An item can be of type
@@ -30,28 +24,29 @@ struct ItemInformation {
  */
 class Item : public RenderedEntity {
   public:
-    Item(ItemType itemType, ItemInformation itemInformation, Vector position);
-
-    /**
-     * This method gets the information about an item based on the item type.
-     * @return item information
-     */
-    static ItemInformation getItemInformation(ItemType type);
+    Item(ItemType itemType, Vector position);
 
     RenderInformation getRenderInformation() override;
 
     ItemType getItemType() const;
 
+    std::string getName() const;
+
+    bool canAutoCollect() const;
+
+    bool canUseOnPickUp() const;
+
+    bool shouldDropOnUse() const;
+
   private:
-    // TODO do we need getters for these? and why is the item type the item id?????????
     ItemType itemType;
-    ItemInformation itemInformation;
     std::string name;
-    std::string texture;
     std::string audio;
-    bool autoCollect{};
-    bool useOnPickup{};
-    bool dropOnUse{};
+    bool autoCollect = false;
+    bool useOnPickup = false;
+    bool dropOnUse = false;
+
+    void buildItem();
 };
 
 #endif // SURVIVING_SARNTAL_ITEM_HPP
