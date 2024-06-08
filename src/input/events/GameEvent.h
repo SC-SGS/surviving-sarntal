@@ -19,6 +19,7 @@ struct GameEvent {
     EventType type;
     Axis axis;
     float axisValue;
+    bool executeRepeatedly;
 
     // bool operator<(const GameEvent &e) const { return type < e.type || axis < e.axis; }
 };
