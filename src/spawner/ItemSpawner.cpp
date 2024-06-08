@@ -9,23 +9,12 @@
 #include <mutex>
 
 // NOLINTBEGIN
-std::random_device dev;
-std::mt19937 ItemSpawner::randomEngine(0);
-std::uniform_int_distribution<int> ItemSpawner::distribution{0, RAND_MAX};
-double ItemSpawner::nextSpawnTime(0);
+double ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
 ItemSpawner::ItemSpawner() { std::cout << "ItemSpawner initialized." << std::endl; }
 
 ItemSpawner::~ItemSpawner() { std::cout << "ItemSpawner destroyed." << std::endl; }
-
-int ItemSpawner::generateRandomNumberGeometric(int p_exp) {
-    int rand = RAND_MAX;
-    for (int i = 0; i < p_exp; ++i) {
-        rand = rand & distribution(randomEngine);
-    }
-    return std::floor(std::log(RAND_MAX) - std::log(rand));
-}
 
 void ItemSpawner::spawnItems() {
     if (GetTime() < nextSpawnTime) {
@@ -34,25 +23,33 @@ void ItemSpawner::spawnItems() {
 
     const auto itemType = getNextRandomItemType();
     const auto position = getNextRandomPosition();
-    const auto itemInformation = Item::getItemInformation(itemType);
 
-    const Item newItem(itemType, itemInformation, position);
+    const Item newItem = Item(itemType, position);
     this->world.addItem(newItem);
     updateNextSpawnTime();
 
     std::cout << "spawning " << itemType << " at " << position.x << "," << position.y << " " << std::endl;
 }
 void ItemSpawner::updateNextSpawnTime() {
-    // TODO make better
-    nextSpawnTime = GetTime() + 3.0f;
+    auto rand = static_cast<float>(randomGenerator.getRandomNumber(2, 10));
+    nextSpawnTime = GetTime() + rand;
 }
 ItemType ItemSpawner::getNextRandomItemType() {
-    // TODO make better
-    return ItemType::DUCK_ITEM;
+    int rand = randomGenerator.getRandomNumber(0, 2);
+    switch (rand) {
+    case 0:
+        return KAISERSCHMARRN;
+    case 1:
+        return COIN;
+    case 2:
+        return DUCK_ITEM;
+    default:
+        return NO_ITEM;
+    }
 }
 Vector ItemSpawner::getNextRandomPosition() {
-    // TODO make better / dependent on physics implementation
-    auto position = World::getInstance().getHiker().getPosition();
-    position.y -= 200;
-    return position;
+    auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300));
+    auto xPosition = static_cast<floatType>(World::getInstance().getMaxX() + 10);
+    auto yPosition = static_cast<floatType>(Mountain::getInstance().getYPosFromX(xPosition)) - randYOffset;
+    return Vector{xPosition, yPosition};
 }

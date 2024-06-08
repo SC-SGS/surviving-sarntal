@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_ITEMSPAWNER_H
 
 #include "../entities/World.h"
+#include "../utilities/RandomGenerator.hpp"
 #include "../utilities/Singleton.hpp"
 
 /**
@@ -17,33 +18,20 @@ class ItemSpawner : public Singleton<ItemSpawner> {
 
   public:
     /**
-     * generate a random variable that follows the geometric distribution with p
-     * = 1/2^p_exp
-     * @param p_exp
-     * @return
-     */
-    static int generateRandomNumberGeometric(int p_exp);
-
-    /**
      * This method spawns items.
      * @param world
      */
     void spawnItems();
 
   private:
-    float itemSpawnTime{};
-    int itemCount{3};
     static double nextSpawnTime;
 
-    static std::random_device dev;
-    static std::mt19937 randomEngine;
-    static std::uniform_int_distribution<int> distribution;
-
     World &world = World::getInstance();
+    RandomGenerator &randomGenerator = RandomGenerator::getInstance();
 
-    static void updateNextSpawnTime();
-    static ItemType getNextRandomItemType();
-    static Vector getNextRandomPosition();
+    void updateNextSpawnTime();
+    ItemType getNextRandomItemType();
+    Vector getNextRandomPosition();
 
     ItemSpawner();
     ~ItemSpawner();
