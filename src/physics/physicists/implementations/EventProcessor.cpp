@@ -10,20 +10,20 @@
 
 EventProcessor::EventProcessor() : world(World::getInstance()) {
     gameEventFunctionMappings = {
-        {{AXIS_MODIFICATION, ITEM_SWITCH, 0}, &EventProcessor::switchItem},
-        {{AXIS_MODIFICATION, MOVEMENT_X, 0}, &EventProcessor::moveX},
-        {{AXIS_MODIFICATION, MOVEMENT_Y, 0}, &EventProcessor::moveY},
-        {{JUMP, NO_AXIS, 0}, &EventProcessor::jump},
-        {{CROUCH, NO_AXIS, 0}, &EventProcessor::crouch},
-        {{UNCROUCH, NO_AXIS, 0}, &EventProcessor::uncrouch},
-        {{ITEM_PICK, NO_AXIS, 0}, &EventProcessor::pickItem},
-        {{ITEM_USE, NO_AXIS, 0}, &EventProcessor::useItem},
-        {{ITEM_DROP, NO_AXIS, 0}, &EventProcessor::dropItem},
-        {{PAUSE, NO_AXIS, 0}, &EventProcessor::pause},
-        {{FULLSCREEN, NO_AXIS, 0}, &EventProcessor::fullscreen},
-        {{SPECIAL_ABILITY, NO_AXIS, 0}, &EventProcessor::specialAbility},
-        {{TOGGLE_DEBUG, NO_AXIS, 0}, &EventProcessor::toggleDebug},
-        {{NO_EVENT, NO_AXIS, 0}, &EventProcessor::noEvent},
+        {{AXIS_MODIFICATION, ITEM_SWITCH, 0, false}, &EventProcessor::switchItem},
+        {{AXIS_MODIFICATION, MOVEMENT_X, 0, false}, &EventProcessor::moveX},
+        {{AXIS_MODIFICATION, MOVEMENT_Y, 0, false}, &EventProcessor::moveY},
+        {{JUMP, NO_AXIS, 0, false}, &EventProcessor::jump},
+        {{CROUCH, NO_AXIS, 0, false}, &EventProcessor::crouch},
+        {{UNCROUCH, NO_AXIS, 0, false}, &EventProcessor::uncrouch},
+        {{ITEM_PICK, NO_AXIS, 0, false}, &EventProcessor::pickItem},
+        {{ITEM_USE, NO_AXIS, 0, false}, &EventProcessor::useItem},
+        {{ITEM_DROP, NO_AXIS, 0, false}, &EventProcessor::dropItem},
+        {{PAUSE, NO_AXIS, 0, false}, &EventProcessor::pause},
+        {{FULLSCREEN, NO_AXIS, 0, false}, &EventProcessor::fullscreen},
+        {{SPECIAL_ABILITY, NO_AXIS, 0, false}, &EventProcessor::specialAbility},
+        {{TOGGLE_DEBUG, NO_AXIS, 0, false}, &EventProcessor::toggleDebug},
+        {{NO_EVENT, NO_AXIS, 0, false}, &EventProcessor::noEvent},
     };
     autoEventFunctions = {
         &EventProcessor::pickAutoCollectableItems,
@@ -37,13 +37,11 @@ void EventProcessor::processEvents() {
     const auto numEvents = this->eventQueue.size();
     for (int i = 0; i < numEvents; i++) {
         const auto &event = this->eventQueue.front();
-        // std::cout << "Game event: " << event.type << std::endl;
-        //  std::cout << "Game event type (EventProcessor): " << event.type << std::endl;
-        //  std::cout << "Game event axis (EventProcessor): " << event.axis << std::endl;
         const GameEventFunction func = gameEventFunctionMappings.at(event);
-        // std::cout << "Function exists? " << (func != nullptr) << std::endl;
         (this->*func)(event);
-        // TODO remove one-time events like jump from queue, but add hold events (especially walk) again?
+        if (event.executeRepeatedly) {
+            this->eventQueue.push(event);
+        }
         this->eventQueue.pop();
     }
     for (auto eventFunction : this->autoEventFunctions) {
