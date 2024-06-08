@@ -78,13 +78,8 @@ void EventProcessor::uncrouch(const GameEvent event) const {
 void EventProcessor::pickItem(const GameEvent event) const {
     const auto &items = this->world.getNearbyItems();
     for (auto const &item : items) {
-        const ItemInformation info = Item::getItemInformation(item->getItemType());
-        if (!info.autoCollect) {
-            if (!info.useOnPickup) {
-                this->inventoryHandler.pickUpItem(item);
-            } else {
-                this->world.useItem(item->getItemType());
-            }
+        if (!item->canAutoCollect()) {
+            pickItem(item);
         }
     }
 }
@@ -92,27 +87,22 @@ void EventProcessor::pickItem(const GameEvent event) const {
 void EventProcessor::pickAutoCollectableItems() const {
     const auto &items = this->world.getNearbyItems();
     for (auto const &item : items) {
-        const ItemInformation info = Item::getItemInformation(item->getItemType());
-        if (info.autoCollect) {
-            if (!info.useOnPickup) {
-                this->inventoryHandler.pickUpItem(item);
-            } else {
-                this->world.useItem(item->getItemType());
-            }
+        if (item->canAutoCollect()) {
+            pickItem(item);
         }
     }
 }
 
 void EventProcessor::dropItem(GameEvent event) const {
-    if (!this->world.getInventory().isSelectedSlotFree()) {
-        this->inventoryHandler.removeSelectedItem();
+    if (!this->world.getInventory().selectedSlotIsEmpty()) {
+        this->world.getInventory().removeSelectedItem();
     }
 }
 
 void EventProcessor::useItem(const GameEvent event) const {
-    if (!this->world.getInventory().isSelectedSlotFree()) {
-        this->world.useItem(this->world.getInventory().getSelectedItem());
-        this->inventoryHandler.removeSelectedItem();
+    if (!this->world.getInventory().selectedSlotIsEmpty()) {
+        this->world.useItem(this->world.getInventory().getSelectedItemType());
+        this->world.getInventory().removeSelectedItem();
     }
 }
 
@@ -155,7 +145,7 @@ void EventProcessor::fullscreen(const GameEvent event) const {
 }
 
 void EventProcessor::switchItem(const GameEvent event) const {
-    this->world.getInventory().switchItem(static_cast<int>(event.axisValue));
+    this->world.getInventory().switchItemSlot(static_cast<int>(event.axisValue));
 }
 
 void EventProcessor::moveX(const GameEvent event) const {
@@ -179,3 +169,13 @@ void EventProcessor::noEvent(const GameEvent event) const {
 }
 
 void EventProcessor::setEventQueue(std::queue<GameEvent> &eventQueue) { this->eventQueue = eventQueue; }
+
+void EventProcessor::pickItem(const std::shared_ptr<Item> &item) const {
+    if (item->canUseOnPickUp()) {
+        this->world.useItem(item->getItemType());
+        this->world.getItems().remove(item);
+    } else if (this->world.getInventory().canCollectItem(item)) {
+        this->world.getInventory().addItem(item);
+        this->world.getItems().remove(item);
+    }
+}

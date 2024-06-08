@@ -220,12 +220,11 @@ void Renderer::debugRenderEntities() {
 }
 
 void Renderer::renderItemSlot(Inventory &inventory, int slotNumber, int startX, int startY) {
-    auto itemType = inventory.getItem(slotNumber);
-    if (itemType == ItemType::NO_ITEM) {
+    if (inventory.slotIsEmpty(slotNumber)) {
         return;
     }
-    auto itemInfo = Item::getItemInformation(itemType);
-    auto texture = resourceManager.getTexture(itemInfo.name);
+    auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
+    auto texture = resourceManager.getTexture(textureName);
     DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height},
                    {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * INVENTORY_SLOT_SIZE,
                     static_cast<float>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
@@ -235,11 +234,11 @@ void Renderer::renderItemSlot(Inventory &inventory, int slotNumber, int startX, 
 void Renderer::renderInventory() {
     auto &inventory = world.getInventory();
 
-    int inventoryWidth = static_cast<int>(inventory.getSlotCount()) * static_cast<int>(INVENTORY_SLOT_SIZE);
+    int inventoryWidth = static_cast<int>(inventory.getNumberOfSlots()) * static_cast<int>(INVENTORY_SLOT_SIZE);
     int startX = GetScreenWidth() - inventoryWidth - UI_MARGIN;
     int startY = GetScreenHeight() - static_cast<int>(INVENTORY_SLOT_SIZE) - UI_MARGIN;
 
-    for (int i = 0; i < inventory.getSlotCount(); i++) {
+    for (int i = 0; i < inventory.getNumberOfSlots(); i++) {
         // Draw Rectangle for each slot
         DrawRectangleLines(startX + i * static_cast<int>(INVENTORY_SLOT_SIZE), startY, INVENTORY_SLOT_SIZE,
                            INVENTORY_SLOT_SIZE, WHITE);

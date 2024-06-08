@@ -8,65 +8,83 @@
 #include "Item.hpp"
 #include "string"
 #include "vector"
-
-struct ItemSlot {
-    ItemType itemType = ItemType::NO_ITEM;
-};
+#include <algorithm>
+#include <memory>
 
 /**
  * This class represents the inventory of a player. An inventory stores several
  * items.
- * TODO we need to refactor the whole thing with the items. this is not loosely coupled and very weird an unintuitive
- * TODO inventory should have a list of references to item objects
  */
 class Inventory {
 
   private:
-    std::vector<ItemSlot> slots;
+    std::vector<std::vector<std::shared_ptr<Item>>> slots;
     size_t selectedSlot = 0;
+
+    int getSlotOfItem(ItemType itemType);
+    bool itemTypeInInventory(ItemType itemType);
+    bool itemSlotAvailable();
+    int getNextFreeSlot();
+    void addItem(int slot, const std::shared_ptr<Item> &item);
 
   public:
     explicit Inventory(size_t slotCount);
     Inventory();
 
-    static void initItems();
-
     /**
      * @brief This method returns the number of slots in the inventory.
      * @return number of slots
      */
-    size_t getSlotCount() const;
+    size_t getNumberOfSlots() const;
 
     /**
-     * @brief This method adds a picked-up item to the inventory.
-     * @param itemType
+     * @brief This method adds an item to the inventory.
+     *
+     * If there are free item slots and the item is added to the next free slot.
+     * If the itemType is already in the inventory and there is space left in that slot the item is added to that slot,
+     * otherwise the nothing is done with the item.
+     *
+     * @param item
      */
-    void pickup(ItemType itemType);
+    void addItem(const std::shared_ptr<Item> &item);
 
     /**
-     * @brief This method clear the selected slot of the inventory.
+     * Return true if the item can be collected.
+     *
+     * Returns true if one of the slots has the same item type and
+     * at least one more item of that type can be added to the inventory.
+     * Return true if the item type is not yet in the inventory and and there is at least one free inventory slot.
+     *
+     * @param item
+     * @return
      */
-    void drop();
+    bool canCollectItem(const std::shared_ptr<Item> &item);
 
     /**
-     * @brief This method sets the given item type for a given slot.
-     * @param slotNumber
-     * @param itemType
+     * @brief This method clear the currently selected slot of the inventory.
      */
-    void setItem(size_t slotNumber, ItemType itemType);
+    void removeSelectedItem();
 
     /**
      * @brief This method returns the item type at a given slot number.
      * @param slotNumber
      * @return item type at the given slot
      */
-    ItemType getItem(size_t slotNumber) const;
+    ItemType getItemType(size_t slotNumber) const;
 
     /**
      * @brief This method returns the item type at the currently selected slot.
      * @return currently selected item type
      */
-    ItemType getSelectedItem() const;
+    ItemType getSelectedItemType() const;
+
+    /**
+     * Returns the Item saved in the current slot. If the slot is empty a runtime exception is thrown.
+     * @return current selected Item
+     */
+    std::shared_ptr<Item> getSelectedItem() const;
+
+    std::shared_ptr<Item> getItem(size_t slot) const;
 
     /**
      * @brief This method returns the index of the currently selected slot.
@@ -77,14 +95,18 @@ class Inventory {
     /**
      * returns whether the selected slot has an item.
      */
-    bool isSelectedSlotFree() const;
+    bool selectedSlotIsEmpty() const;
+
+    bool slotIsEmpty(size_t slot) const;
 
     /**
      * switches the selected slot by the given offset (+i to switch i slots
      * forward, -i backward)
      * @param offset
      */
-    void switchItem(int offset);
+    void switchItemSlot(int offset);
+
+    size_t getNumberOfItems(size_t slot) const;
 };
 
 #endif // SURVIVING_SARNTAL_INVENTORY_HPP

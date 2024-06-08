@@ -6,15 +6,21 @@
 
 #include <mutex>
 
-void AudioService::playSound(const std::string &soundName) const { PlaySound(resourceManager.getSound(soundName)); }
+void AudioService::playSound(const std::string &soundName) const {
+    try {
+        PlaySound(resourceManager.getSound(soundName));
+    } catch (...) {
+        std::cout << "Sound name was used that does not exist" << std::endl;
+    }
+}
 
 AudioService::AudioService() {
     InitAudioDevice();
-    std::cout << "Audio device initialized." << std::endl;
+    std::cout << "Audio Service initialized." << std::endl;
 }
 
 AudioService::~AudioService() {
     resourceManager.unloadAllSounds();
     CloseAudioDevice();
-    std::cout << "Audio device closed." << std::endl;
+    std::cout << "Audio Service destructed." << std::endl;
 }
