@@ -46,7 +46,7 @@ void ResourceManager::loadMusic() {
                           {"pickup", LoadSound("../assets/audio/pickup.wav")},
                           {"pipe", LoadSound("../assets/audio/pipe.wav")},
                           {"proper_coin", LoadSound("../assets/audio/proper_coin.wav")},
-                          {"proper_duck", LoadSound("../assets/audio/proper_duck.wav")},
+                          {"proper_crouch", LoadSound("../assets/audio/proper_crouch.wav")},
                           {"proper_jump", LoadSound("../assets/audio/proper_jump.wav")},
                           {"proper_rock_smash", LoadSound("../assets/audio/proper_rock_smash.wav")},
                           {"shutdown", LoadSound("../assets/audio/shutdown.wav")}};

@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_HIKER_H
 #define SURVIVING_SARNTAL_HIKER_H
 
+#include "../output/audio/AudioService.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
 #include "../utilities/vector.h"
 #include "HikerMovement.h"
@@ -39,26 +40,45 @@ class Hiker : public RenderedEntity {
     int getHealthPoints() const;
     void setHealthPoints(int healthPoints);
 
-    HikerMovement &getHikerMovement();
+    const HikerMovement &getHikerMovement() const;
     void setHikerMovement(const HikerMovement &movement);
 
     bool getIsHit() const;
     void setIsHit(bool isHit);
 
-    HitInformation &getHitInformation();
+    const HitInformation &getHitInformation() const;
     void setHitInformation(const HitInformation &hit);
 
-    Vector &getVelocity();
+    const Vector &getVelocity() const;
     void setVelocity(const Vector &newVel);
 
-    bool getIsAlive();
+    bool getIsAlive() const;
     void setIsAlive(bool alive);
 
     RenderInformation getRenderInformation() override;
 
+    void turnLeft();
+    void turnRight();
+    void turnNeutral();
+    void setLastJump(float lastJump);
+
+    void crouch();
+    void uncrouch();
+    void jump();
+    void setHikerMoving();
+
+    void moveToRight(floatType deltaX);
+    void moveToLeft(floatType deltaX);
+
+    void accelerateX(floatType deltaX);
+    void accelerateY(floatType deltaY);
+    void setXVelocity(floatType xValue);
+    void setYVelocity(floatType yValue);
+
     void addHealthPoints(int points);
 
   private:
+    AudioService &audioService = AudioService::getInstance();
     Vector velocity{};
     float height{};
     float width{};
@@ -67,6 +87,7 @@ class Hiker : public RenderedEntity {
     bool isHit{};
     HitInformation hitInformation{};
     bool isAlive{};
+    void doSecondJump();
 };
 
 #endif // SURVIVING_SARNTAL_HIKER_H

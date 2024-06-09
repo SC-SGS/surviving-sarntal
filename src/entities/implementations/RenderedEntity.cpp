@@ -15,4 +15,4 @@ void RenderedEntity::setAnimationInformation(AnimationInformation &animationInfo
 }
 
 void RenderedEntity::setPosition(Vector &position) { this->position = position; }
-Vector RenderedEntity::getPosition() { return position; }
+const Vector &RenderedEntity::getPosition() const { return position; }
