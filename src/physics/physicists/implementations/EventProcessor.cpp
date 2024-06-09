@@ -49,28 +49,14 @@ void EventProcessor::processEvents() {
     }
 }
 
-// TODO: make hiker methods
 void EventProcessor::crouch(const GameEvent event) const {
     // std::cout << "Crouch hiker." << std::endl;
-    auto &hiker = this->world.getHiker();
-    auto &hikerMovement = this->world.getHiker().getHikerMovement();
-    if (hikerMovement.getState() == HikerMovement::MOVING) {
-        hikerMovement.setState(HikerMovement::CROUCHED);
-        hiker.setHeight(DUCKED_HIKER_HEIGHT);
-        hiker.setWidth(DUCKED_HIKER_WIDTH);
-    }
+    this->world.getHiker().crouch();
 }
 
-// TODO: sounds
 void EventProcessor::uncrouch(const GameEvent event) const {
     // std::cout << "Uncrouch hiker." << std::endl;
-    auto &hiker = this->world.getHiker();
-    auto &hikerMovement = this->world.getHiker().getHikerMovement();
-    if (hikerMovement.getState() == HikerMovement::CROUCHED) {
-        hikerMovement.setState(HikerMovement::MOVING);
-        hiker.setHeight(HIKER_HEIGHT);
-        hiker.setWidth(HIKER_WIDTH);
-    }
+    this->world.getHiker().uncrouch();
 }
 
 void EventProcessor::pickItem(const GameEvent event) const {
@@ -106,24 +92,7 @@ void EventProcessor::useItem(const GameEvent event) const {
 
 void EventProcessor::jump(GameEvent event) const {
     // std::cout << "Jump hiker." << std::endl;
-    auto &hiker = this->world.getHiker();
-    auto &hikerMovement = hiker.getHikerMovement();
-    if (hikerMovement.getState() == HikerMovement::CROUCHED) {
-        return;
-    }
-    if (hikerMovement.getState() != HikerMovement::IN_AIR) {
-        hikerMovement.setLastJump(0.0);
-        hikerMovement.setCanJumpAgain(true);
-    }
-    if (hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain()) {
-        auto &vel = hiker.getVelocity();
-        vel.y = JUMP_VELOCITY_CONSTANT;
-        hiker.setVelocity(vel);
-        if (hikerMovement.getState() == HikerMovement::IN_AIR) {
-            hikerMovement.setCanJumpAgain(false);
-        }
-        hikerMovement.setState(HikerMovement::IN_AIR);
-    }
+    this->world.getHiker().jump();
 }
 
 void EventProcessor::pause(const GameEvent event) const {
@@ -152,10 +121,7 @@ void EventProcessor::moveX(const GameEvent event) const {
     if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::CROUCHED) {
         speed *= DUCK_SPEED_FACTOR;
     }
-
-    auto vel = this->world.getHiker().getVelocity();
-    vel.x = speed * xFactor;
-    this->world.getHiker().setVelocity(vel);
+    this->world.getHiker().setXVelocity(speed * xFactor);
 }
 
 void EventProcessor::moveY(const GameEvent event) const {

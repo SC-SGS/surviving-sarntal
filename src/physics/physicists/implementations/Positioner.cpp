@@ -86,9 +86,9 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
             pos.y = airY;
         } else {
             pos.y = terrainY;
-            hiker.getVelocity().y = 0.f;
-            hiker.getHikerMovement().setState(HikerMovement::MovementState::MOVING);
-            hiker.getHikerMovement().setLastJump(0.0);
+            hiker.setYVelocity(0.f);
+            hiker.setHikerMoving();
+            hiker.setLastJump(0.0);
         }
         // TODO this whole speedfactor shebang needs thorough examination and fiddling in later stages
     } else if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
