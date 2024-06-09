@@ -35,7 +35,7 @@ int Hiker::getHealthPoints() const { return healthPoints; }
 
 void Hiker::setHealthPoints(const int healthPoints) { this->healthPoints = healthPoints; }
 
-HikerMovement &Hiker::getHikerMovement() { return hikerMovement; }
+const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 
 void Hiker::setHikerMovement(const HikerMovement &movement) {
     switch (movement.getState()) {
@@ -55,7 +55,7 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
     hikerMovement = movement;
 }
 
-HitInformation &Hiker::getHitInformation() { return hitInformation; }
+const HitInformation &Hiker::getHitInformation() const { return hitInformation; }
 
 void Hiker::setHitInformation(const struct HitInformation &hit) { hitInformation = hit; }
 
@@ -63,14 +63,64 @@ bool Hiker::getIsHit() const { return isHit; }
 
 void Hiker::setIsHit(bool isHit) { this->isHit = isHit; }
 
-Vector &Hiker::getVelocity() { return velocity; }
+const Vector &Hiker::getVelocity() const { return velocity; }
 
 void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
-bool Hiker::getIsAlive() {
+
+bool Hiker::getIsAlive() const {
     return this->getPosition().x - World::getInstance().getMonster().getXPosition() > 0 && this->healthPoints > 0;
 }
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }
 void Hiker::addHealthPoints(const int points) {
     this->setHealthPoints(std::min(this->healthPoints + points, HIKER_MAX_HEALTH));
+}
+
+void Hiker::turnLeft() { this->hikerMovement.setDirection(HikerMovement::LEFT); }
+void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT); }
+void Hiker::turnNeutral() { this->hikerMovement.setDirection(HikerMovement::NEUTRAL); }
+void Hiker::crouch() {
+    audioService.playSound("crouch");
+    if (this->hikerMovement.getState() == HikerMovement::MOVING) {
+        this->hikerMovement.setState(HikerMovement::CROUCHED);
+        this->setHeight(DUCKED_HIKER_HEIGHT);
+        this->setWidth(DUCKED_HIKER_WIDTH);
+    }
+}
+void Hiker::uncrouch() {
+    if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
+        hikerMovement.setState(HikerMovement::MOVING);
+        this->setHeight(HIKER_HEIGHT);
+        this->setWidth(HIKER_WIDTH);
+    }
+}
+void Hiker::jump() {
+    audioService.playSound("jump");
+    if (hikerMovement.getState() == HikerMovement::CROUCHED) {
+        return;
+    }
+    if (hikerMovement.getState() != HikerMovement::IN_AIR) {
+        hikerMovement.setLastJump(0.0);
+        hikerMovement.setCanJumpAgain(true);
+    }
+    const bool canSecondJump = hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain();
+    if (canSecondJump) {
+        doSecondJump();
+    }
+}
+void Hiker::setHikerMoving() { this->hikerMovement.setState(HikerMovement::MOVING); }
+void Hiker::moveToRight(floatType deltaX) { this->position.setX(this->position.x + deltaX); }
+void Hiker::moveToLeft(floatType deltaX) { this->position.setX(this->position.x - deltaX); }
+void Hiker::accelerateX(floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
+void Hiker::accelerateY(floatType deltaY) { this->velocity.setY(this->velocity.y + deltaY); }
+void Hiker::setXVelocity(floatType xValue) { this->velocity.setX(xValue); }
+void Hiker::setYVelocity(floatType yValue) { this->velocity.setY(yValue); }
+void Hiker::setLastJump(float lastJump) { this->hikerMovement.setLastJump(lastJump); }
+void Hiker::doSecondJump() {
+    audioService.playSound("jump");
+    this->velocity.setY(JUMP_VELOCITY_CONSTANT);
+    if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
+        this->hikerMovement.setCanJumpAgain(false);
+    }
+    hikerMovement.setState(HikerMovement::IN_AIR);
 }

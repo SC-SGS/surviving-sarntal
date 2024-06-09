@@ -45,3 +45,5 @@ Vector Vector::reflectOnNormal(const Vector &normal) const {
     floatType normalVelocity = std::abs(*this * normal);
     return *this + normal * normalVelocity * (1. + ROCK_TERRAIN_DAMPING);
 }
+void Vector::setX(floatType xValue) { this->x = xValue; }
+void Vector::setY(floatType yValue) { this->y = yValue; }

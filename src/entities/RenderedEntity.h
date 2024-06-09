@@ -21,7 +21,7 @@ class RenderedEntity {
     void setAnimationInformation(AnimationInformation &animationInformation);
 
     void setPosition(Vector &position);
-    Vector getPosition();
+    const Vector &getPosition() const;
 
   protected:
     Vector position{};
