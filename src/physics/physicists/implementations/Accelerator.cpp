@@ -34,12 +34,10 @@ void Accelerator::updateRockVelocities() const {
 }
 
 void Accelerator::updateHikerVelocity() const {
-    if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
-        this->world.getHiker().getHikerMovement().setLastJump(this->world.getHiker().getHikerMovement().getLastJump() +
-                                                              this->deltaT);
-        auto vel = this->world.getHiker().getVelocity();
-        vel.y += GRAVITATIONAL_CONSTANT * this->deltaT;
-        this->world.getHiker().setVelocity(vel);
+    Hiker &hiker = this->world.getHiker();
+    if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
+        hiker.setLastJump(this->world.getHiker().getHikerMovement().getLastJump() + this->deltaT);
+        hiker.accelerateY(GRAVITATIONAL_CONSTANT * this->deltaT);
     }
 }
 
@@ -47,11 +45,11 @@ void Accelerator::updateHikerDirection() const {
     auto &hiker = this->world.getHiker();
     auto vel = hiker.getVelocity();
     if (vel.x < 0) {
-        hiker.getHikerMovement().setDirection(HikerMovement::Direction::LEFT);
+        hiker.turnLeft();
     } else if (vel.x > 0) {
-        hiker.getHikerMovement().setDirection(HikerMovement::Direction::RIGHT);
+        hiker.turnRight();
     } else {
-        hiker.getHikerMovement().setDirection(HikerMovement::Direction::NEUTRAL);
+        hiker.turnNeutral();
     }
     // std::cout << "Updated hiker direction: " << this->world.getHiker().getHikerMovement().getDirection() <<
     // std::endl;

@@ -16,6 +16,10 @@ struct Vector {
 
     explicit operator Velocity() const;
 
+    void setX(floatType xValue);
+
+    void setY(floatType yValue);
+
     Velocity operator+(Vector const &) const;
 
     Vector operator+(floatType) const;
