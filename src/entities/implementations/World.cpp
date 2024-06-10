@@ -8,9 +8,9 @@
 
 World::World() { std::cout << "World constructed" << std::endl; }
 
-float World::getMaxX() const { return maxX; }
+floatType World::getMaxX() const { return maxX; }
 
-void World::setMaxX(const float maxX) { this->maxX = maxX; }
+void World::setMaxX(const floatType maxX) { this->maxX = maxX; }
 
 Hiker &World::getHiker() const { return *hiker; }
 
@@ -80,7 +80,7 @@ void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
     std::cout << "used duck" << std::endl;
 }
 
-float World::getMinX() const { return minX; }
-void World::setMinX(const float minX) { World::minX = minX; }
+floatType World::getMinX() const { return minX; }
+void World::setMinX(const floatType minX) { World::minX = minX; }
 
 World::~World() { std::cout << "World destroyed" << std::endl; }

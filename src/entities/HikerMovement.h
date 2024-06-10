@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_HIKERMOVEMENT_H
 #define SURVIVING_SARNTAL_HIKERMOVEMENT_H
 
+#include "../utilities/GameConstants.hpp"
 #include <string>
 
 /**
@@ -27,14 +28,14 @@ class HikerMovement {
     void setDirection(Direction direction);
     bool getCanJumpAgain() const;
     void setCanJumpAgain(bool canJump);
-    float getLastJump() const;
-    void setLastJump(float lastJump);
+    floatType getLastJump() const;
+    void setLastJump(floatType lastJump);
 
   private:
     MovementState currentState;
     Direction currentDirection;
     bool canJumpAgain{};
-    float lastJump{};
+    floatType lastJump{};
 };
 
 #endif // SURVIVING_SARNTAL_HIKERMOVEMENT_H

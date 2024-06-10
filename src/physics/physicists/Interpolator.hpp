@@ -16,7 +16,7 @@ class Interpolator : public Singleton<Interpolator> {
      * Probably linear interpolation for positions and Slerp for orientations.
      * @param alpha blending factor of current and previous state (the two last states before the next frame)
      */
-    void interpolate(float alpha) const;
+    void interpolate(floatType alpha) const;
 
   private:
     const World &world;

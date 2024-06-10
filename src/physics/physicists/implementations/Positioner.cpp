@@ -20,7 +20,7 @@ void Positioner::updatePositions() {
     this->updateHikerPosition();
 }
 
-void Positioner::setDeltaT(const float deltaT) { this->deltaT = deltaT; };
+void Positioner::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; };
 
 void Positioner::updateMonsterPosition() {
     auto xPos = this->world.getMonster().getXPosition();
@@ -53,13 +53,13 @@ void Positioner::updateRockPositions() const {
 }
 
 void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
-    float knockback = 0;
+    floatType knockback = 0;
     Hiker &hiker = this->world.getHiker();
     // TODO this should go into the collision handler, but there might be problems with the event processor so let's
     // TODO leave it here until we take care of the physics
     if (hiker.getIsHit()) {
-        const float radius = hiker.getHitInformation().radiusRock;
-        const float rockVelocity = hiker.getHitInformation().velocityRock;
+        const floatType radius = hiker.getHitInformation().radiusRock;
+        const floatType rockVelocity = hiker.getHitInformation().velocityRock;
         // TODO KNOCKBACK could vary with rock type, e.g. small rocks with little damage but massive knockback
         knockback = rockVelocity * KNOCKBACKCONST * radius;
         int counter = hiker.getHitInformation().countingVariable;
@@ -95,9 +95,9 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         const auto nextXPos = vel.x * this->deltaT + pos.x;
         const auto nextYPos = this->world.getMountain().getYPosFromX(nextXPos);
         Vector direction = {nextXPos - pos.x, nextYPos - pos.y};
-        const float length = direction.length();
-        const float slope = direction.y / direction.x;
-        const float speedFactor = getSpeedFactor(slope);
+        const floatType length = direction.length();
+        const floatType slope = direction.y / direction.x;
+        const floatType speedFactor = getSpeedFactor(slope);
         // TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
         pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
         pos.y = this->world.getMountain().getYPosFromX(pos.x);
@@ -112,7 +112,7 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     hiker.setPosition(pos);
 }
 
-float Positioner::getSpeedFactor(const float slope) {
+floatType Positioner::getSpeedFactor(const floatType slope) {
     if (slope <= SLOWEST_NEG_SLOPE) {
         return MIN_SPEED_NEG_SLOPE;
     }

@@ -20,7 +20,7 @@ Rotation Rock::getRotation() { return rotation; }
 
 Vector Rock::getVelocity() { return velocity; }
 
-float Rock::getRadius() const { return radius; }
+floatType Rock::getRadius() const { return radius; }
 
 bool Rock::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
 void Rock::setShouldBeDestroyed(const bool shouldBeDestroyed) { this->shouldBeDestroyed = shouldBeDestroyed; }
