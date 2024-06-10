@@ -14,11 +14,11 @@ class Positioner : public Singleton<Positioner> {
   public:
     void updatePositions();
 
-    void setDeltaT(float deltaT);
+    void setDeltaT(floatType deltaT);
 
   private:
     World &world;
-    float deltaT;
+    floatType deltaT;
 
     Positioner();
     ~Positioner();
@@ -52,7 +52,7 @@ class Positioner : public Singleton<Positioner> {
      * @param slope
      * @return the speed factor
      */
-    static float getSpeedFactor(float slope);
+    static floatType getSpeedFactor(floatType slope);
 };
 
 #endif // POSITIONER_H

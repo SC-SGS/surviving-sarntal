@@ -22,11 +22,11 @@ void CollisionHandler::handleCollisions() {
     this->rockRockCollisions();
 }
 
-void CollisionHandler::setDeltaT(const float deltaT) { this->deltaT = deltaT; }
+void CollisionHandler::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 
 Vertex CollisionHandler::getClosestVertex(Rock &rock) const {
     const auto pos = rock.getPosition();
-    const float rad = rock.getRadius();
+    const floatType rad = rock.getRadius();
     const floatType xMin = pos.x - rad;
     const floatType xMax = pos.x + rad;
     const Mountain &mountain = this->world.getMountain();
@@ -93,7 +93,7 @@ void CollisionHandler::rockTerrainCollision(Rock &rock, const Vertex closestVert
     const auto mass = std::pow(rad, 2);
     const Vector parallelVector = {-normal.y, normal.x};
     const auto velocityParallel = vel * parallelVector;
-    rot.angular_velocity += static_cast<float>((GAMMA) * (velocityParallel - rot.angular_velocity * rad) / mass);
+    rot.angular_velocity += static_cast<floatType>((GAMMA) * (velocityParallel - rot.angular_velocity * rad) / mass);
     if (rot.angular_velocity >= MAX_ANGULAR_VELOCITY) {
         rot.angular_velocity = MAX_ANGULAR_VELOCITY;
     }
@@ -162,7 +162,7 @@ Rock CollisionHandler::getNextState(Rock &rock) const {
     return {newPos, rock.getVelocity(), newRot, rock.getRadius()};
 }
 
-float CollisionHandler::capAngularVelocity(const float angVel) {
+floatType CollisionHandler::capAngularVelocity(const floatType angVel) {
     if (angVel >= MAX_ANGULAR_VELOCITY) {
         return MAX_ANGULAR_VELOCITY;
     }

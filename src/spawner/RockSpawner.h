@@ -27,7 +27,7 @@ class RockSpawner : public Singleton<RockSpawner> {
     void spawnRocks();
 
   private:
-    float lastSpawnTime{0.};
+    floatType lastSpawnTime{0.};
     int numberOfRocksSinceLastBatch{0};
     bool b = false;
     RockSpawnPhase rockSpawnPhase = VERY_BEGINNING;
@@ -52,7 +52,7 @@ class RockSpawner : public Singleton<RockSpawner> {
      * @param rockSpawnPhase
      * @return time between rock spawns
      */
-    float rockSpawnTimeFromPhase();
+    floatType rockSpawnTimeFromPhase();
 
     /**
      * Determines the current rock spawn phase based on the game time.

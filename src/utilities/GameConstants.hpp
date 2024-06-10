@@ -48,7 +48,7 @@ constexpr int ITEMS_PER_SLOT = 1;
 constexpr int KAISERSCHMARRN_HEALTH_RESTORATION = 30;
 constexpr int COIN_SCORE = 500;
 
-constexpr double SPAWN_START_TIME = 5.0;
+constexpr floatType SPAWN_START_TIME = 5.0;
 
 constexpr floatType ITEM_BASE_HEIGHT = 40.; // minimal height at which items are placed above the ground
 constexpr floatType ITEM_MAX_HEIGHT = 200.; // max height above the terrain where items are spawned
@@ -81,7 +81,7 @@ constexpr floatType ROCK_TIME_PERIOD_EASY = 2;
 
 struct RockSpawnParameters {
     int num_rocks_to_spawn;
-    float time_between_rockspawns;
+    floatType time_between_rockspawns;
 };
 
 /**

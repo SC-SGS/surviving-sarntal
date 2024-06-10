@@ -9,7 +9,7 @@
 #include <mutex>
 
 // NOLINTBEGIN
-double ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
+floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
 ItemSpawner::ItemSpawner() { std::cout << "ItemSpawner initialized." << std::endl; }
@@ -31,8 +31,8 @@ void ItemSpawner::spawnItems() {
     std::cout << "spawning " << itemType << " at " << position.x << "," << position.y << " " << std::endl;
 }
 void ItemSpawner::updateNextSpawnTime() {
-    auto rand = static_cast<float>(randomGenerator.getRandomNumber(2, 10));
-    nextSpawnTime = GetTime() + rand;
+    auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10));
+    nextSpawnTime = static_cast<floatType>(GetTime()) + rand;
 }
 ItemType ItemSpawner::getNextRandomItemType() {
     int rand = randomGenerator.getRandomNumber(0, 2);

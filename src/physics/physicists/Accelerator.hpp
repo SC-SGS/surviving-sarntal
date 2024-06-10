@@ -13,7 +13,7 @@ class Accelerator : public Singleton<Accelerator> {
 
   public:
     void accelerate() const;
-    void setDeltaT(float deltaT);
+    void setDeltaT(floatType deltaT);
 
   private:
     World &world;
@@ -21,7 +21,7 @@ class Accelerator : public Singleton<Accelerator> {
     /**
      * The constant length of a simulation time interval.
      */
-    float deltaT;
+    floatType deltaT;
 
     /**
      * Retrieves all rocks in the world and updates their velocities.

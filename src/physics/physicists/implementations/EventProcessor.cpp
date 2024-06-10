@@ -116,7 +116,7 @@ void EventProcessor::switchItem(const GameEvent event) const {
 }
 
 void EventProcessor::moveX(const GameEvent event) const {
-    const float xFactor = event.axisValue;
+    const floatType xFactor = event.axisValue;
     floatType speed = NORMAL_SPEED;
     if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::CROUCHED) {
         speed *= DUCK_SPEED_FACTOR;

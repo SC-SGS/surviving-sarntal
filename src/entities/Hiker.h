@@ -16,8 +16,8 @@
  * This struct contains information about a collision of a hiker with a rock.
  */
 struct HitInformation {
-    float radiusRock;
-    float velocityRock;
+    floatType radiusRock;
+    floatType velocityRock;
     int countingVariable;
 };
 
@@ -31,11 +31,11 @@ class Hiker : public RenderedEntity {
 
   public:
     explicit Hiker(Vector position);
-    float getHeight() const;
-    void setHeight(float height);
+    floatType getHeight() const;
+    void setHeight(floatType height);
 
-    float getWidth() const;
-    void setWidth(float width);
+    floatType getWidth() const;
+    void setWidth(floatType width);
 
     int getHealthPoints() const;
     void setHealthPoints(int healthPoints);
@@ -80,8 +80,8 @@ class Hiker : public RenderedEntity {
   private:
     AudioService &audioService = AudioService::getInstance();
     Vector velocity{};
-    float height{};
-    float width{};
+    floatType height{};
+    floatType width{};
     int healthPoints{};
     HikerMovement hikerMovement{};
     bool isHit{};

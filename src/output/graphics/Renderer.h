@@ -26,22 +26,23 @@ class Renderer : public Singleton<Renderer> {
 
     World &world = World::getInstance(); // Pointer to the World object
     void renderEntity(RenderedEntity &entity);
-    void renderEntity(RenderedEntity &entity, float rotation);
-    static void renderEntity(RenderedEntity &entity, float rotation, Texture2D texture, Rectangle sourceRec);
+    void renderEntity(RenderedEntity &entity, floatType rotation);
+    static void renderEntity(RenderedEntity &entity, floatType rotation, Texture2D texture, Rectangle sourceRec);
     void renderBackground();
     ResourceManager &resourceManager = ResourceManager::getInstance();
     Camera2D camera = {0};
     std::unordered_map<std::string, AnimationInformation> animations;
 
     // Initialize the scrolling speed
-    float scrolling_mid = 0;
-    float scrolling_fore = 0;
+    floatType scrolling_mid = 0;
+    floatType scrolling_fore = 0;
 
     Texture2D gradient_texture_background{};
     void regenerateGradientTexture();
     void renderRock(RenderedEntity &entity);
     void renderHiker(RenderedEntity &hiker);
-    static void drawBackgroundTextureRepeatedly(Texture2D texture2D, float scrolling, float scale, float offsetY);
+    static void drawBackgroundTextureRepeatedly(Texture2D texture2D, floatType scrolling, floatType scale,
+                                                floatType offsetY);
     void renderMountain(Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
     void renderEntities();
     void animateEntity(RenderedEntity &entity);
