@@ -14,7 +14,7 @@
  */
 struct Vertex {
     std::size_t index;
-    float distance;
+    floatType distance;
 };
 
 class CollisionHandler : public Singleton<CollisionHandler> {
@@ -23,12 +23,12 @@ class CollisionHandler : public Singleton<CollisionHandler> {
   public:
     void handleCollisions();
 
-    void setDeltaT(float deltaT);
+    void setDeltaT(floatType deltaT);
 
   private:
     World &world;
     CollisionDetector &collisionDetector;
-    float deltaT;
+    floatType deltaT;
 
     CollisionHandler();
     ~CollisionHandler();
@@ -113,7 +113,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
      * @param angVel
      * @return
      */
-    static float capAngularVelocity(float angVel);
+    static floatType capAngularVelocity(floatType angVel);
 };
 
 #endif // COLLISIONHANDLER_H

@@ -28,26 +28,26 @@ class Mountain : public Singleton<Mountain> {
     /**
      * Width covered by mountain generated at one point in time.
      */
-    static constexpr float MOUNTAIN_WIDTH{3 * 2048.};
+    static constexpr floatType MOUNTAIN_WIDTH{3 * 2048.};
 
     /**
      * Distance between two points of mountain.
      */
-    static constexpr float SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
+    static constexpr floatType SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
 
     static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 128;
 
-    static constexpr float CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
+    static constexpr floatType CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
 
     /**
      * steepness of ramp generated in prototype
      */
-    static constexpr float SLOPE{-0.25}; // TODO fix pls slope should be positive when the mountain goes up
+    static constexpr floatType SLOPE{-0.25}; // TODO fix pls slope should be positive when the mountain goes up
 
     /**
      * value beween 0 and 1 (prefereably between 0.5 and 0.75)
      */
-    static constexpr float ROUGHNESS_TERRAIN{0.4};
+    static constexpr floatType ROUGHNESS_TERRAIN{0.4};
 
     /**
      * Generates a new Chunk and deletes oldest chunk. Updates internal data
@@ -66,7 +66,7 @@ class Mountain : public Singleton<Mountain> {
      * maxX INCLUDING start_index and EXCLUDING end_index;
      */
     // TODO Bezeichner und Doku ändern
-    static IndexIntervalNew getRelevantMountainSection(float minX, float maxX);
+    static IndexIntervalNew getRelevantMountainSection(floatType minX, floatType maxX);
 
     /** Returns a position from a given index. The index should previously be
      * obtained via a separate function of the mountain.
@@ -115,7 +115,7 @@ class Mountain : public Singleton<Mountain> {
      * @param xPos the x-Coordinate
      * @return the y coordinate on top of the mountain
      */
-    float getYPosFromX(float xPos) const;
+    floatType getYPosFromX(floatType xPos) const;
 
     /**
      * Performs simple linear interpolation
@@ -128,7 +128,7 @@ class Mountain : public Singleton<Mountain> {
      * @param right
      * @return
      */
-    static float linearInterpolation(float xPos, Position left, Position right);
+    static floatType linearInterpolation(floatType xPos, Position left, Position right);
 
   private:
     Mountain();
@@ -148,7 +148,7 @@ class Mountain : public Singleton<Mountain> {
      * @param displacement Constant defining how aggressive it should be
      * roughened
      */
-    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, float displacement);
+    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, floatType displacement);
 
     void generateSlope();
 

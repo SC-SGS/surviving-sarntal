@@ -69,10 +69,10 @@ class World : public Singleton<World> {
      */
     std::list<std::shared_ptr<Item>> getNearbyItems() const;
 
-    float getMinX() const;
-    void setMinX(float minX);
-    float getMaxX() const;
-    void setMaxX(float maxX);
+    floatType getMinX() const;
+    void setMinX(floatType minX);
+    floatType getMaxX() const;
+    void setMaxX(floatType maxX);
 
     bool isOutOfScope(RenderedEntity &entity) const;
 
@@ -82,15 +82,15 @@ class World : public Singleton<World> {
     static constexpr size_t DEFAULT_INV_SLOT_NUM = 3;
     // TODO check hiker and/or inventory singleton?
     Mountain &mountain = Mountain::getInstance();
-    float hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
+    floatType hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
     std::unique_ptr<Hiker> hiker =
         std::make_unique<Hiker>(Vector{hikerPositionX, mountain.getYPosFromX(hikerPositionX)});
     // TODO inventory belongs to HIKER!!!
     std::unique_ptr<Inventory> inventory = std::make_unique<Inventory>(DEFAULT_INV_SLOT_NUM);
     Monster &monster = Monster::getInstance();
 
-    float minX = 0;
-    float maxX = graphics::SCREEN_WIDTH;
+    floatType minX = 0;
+    floatType maxX = graphics::SCREEN_WIDTH;
 
     int coinScore = 0;
 

@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RENDERINFORMATION_H
 #define SURVIVING_SARNTAL_RENDERINFORMATION_H
 
+#include "../../../utilities/GameConstants.hpp"
 #include "../../../utilities/vector.h"
 #include "AnimationInformation.h"
 #include "raylib.h"
@@ -17,8 +18,8 @@
 struct RenderInformation {
     Vector2 position;
     Vector2 offset = {0, 0};
-    float width;
-    float height;
+    floatType width;
+    floatType height;
     Rotation rotation;
     std::string texture;
     AnimationInformation animation = {0, 0, 0, 0};

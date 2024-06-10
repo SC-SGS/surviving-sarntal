@@ -17,9 +17,9 @@ void CollisionDetector::detectCollisions() const {}
 
 bool CollisionDetector::rocksCollide(Rock &rock1, Rock &rock2) {
     const Vector pos1 = rock1.getPosition();
-    const float rad1 = rock1.getRadius();
+    const floatType rad1 = rock1.getRadius();
     const Vector pos2 = rock2.getPosition();
-    const float rad2 = rock2.getRadius();
+    const floatType rad2 = rock2.getRadius();
     return (pos1.distanceTo(pos2) <= rad1 + rad2);
 }
 

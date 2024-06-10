@@ -26,13 +26,13 @@ void RockSpawner::spawnRocks() {
 void RockSpawner::spawnRock(const size_t idxRock) {
     const std::vector<Vector> offsetsAdditionalRocks = getOffsetsAdditionalRocks();
     Vector spawnBasePos = getRandSpawnPos();
-    const float rad =
-        static_cast<float>(std::rand() / (1.0 * RAND_MAX)) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+    const floatType rad =
+        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
-    Vector velocity = {MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+    Vector velocity = {MIN_SPAWN_VELOCITY + static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
                                                 (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
                        0};
-    Rotation rotation = {MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+    Rotation rotation = {MIN_SPAWN_VELOCITY + static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
                                                   (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY),
                          0.0f};
 
@@ -47,10 +47,10 @@ void RockSpawner::spawnRock(const size_t idxRock) {
 
 bool RockSpawner::shouldSpawnRocks() {
     auto gameTime = GetTime();
-    float timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
+    floatType timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
     bool shouldSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
     if (shouldSpawn) {
-        this->lastSpawnTime += static_cast<float>(gameTime);
+        this->lastSpawnTime += static_cast<floatType>(gameTime);
     }
     return shouldSpawn;
 }
@@ -65,7 +65,7 @@ int RockSpawner::computeNumRocksToSpawn() {
     return 1;
 }
 
-float RockSpawner::rockSpawnTimeFromPhase() {
+floatType RockSpawner::rockSpawnTimeFromPhase() {
     this->rockSpawnPhase = determineRockSpawnPhase();
     if (rockSpawnPhase == VERY_BEGINNING) {
         return 10.;
@@ -102,7 +102,7 @@ Vector RockSpawner::getRandSpawnPos() const {
     // const auto spawnXPos = this->world.getMountain().getVertex(spawnIndex).x;
     const auto spawnXPos = 1000.f + this->world.getMonster().getXPosition();
     const auto randYOffset =
-        static_cast<float>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
+        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
     const auto spawnYPos = this->world.getMountain().getYPosFromX(spawnXPos) - randYOffset;
     return Vector{spawnXPos, spawnYPos};
 }

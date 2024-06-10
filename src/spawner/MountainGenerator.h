@@ -27,7 +27,7 @@ class MountainGenerator : public Singleton<MountainGenerator> {
      * when the game is first started.
      */
     static void loadChunksOfMountain();
-    float getTerrainHeight(float xVal, float yVal, float ridge_height, float baseline = 0.0f);
+    floatType getTerrainHeight(floatType xVal, floatType yVal, floatType ridge_height, floatType baseline = 0.0f);
     void generateChunkMesh();
     static Vector3 computeNormal(Vector3 pos1, Vector3 pos2, Vector3 pos3);
 

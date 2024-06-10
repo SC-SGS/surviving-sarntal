@@ -13,4 +13,4 @@ Interpolator::Interpolator() : world(World::getInstance()) {
 
 Interpolator::~Interpolator() { std::cout << "Interpolator gets deconstructed" << std::endl; }
 
-void Interpolator::interpolate(float alpha) const {};
+void Interpolator::interpolate(floatType alpha) const {};

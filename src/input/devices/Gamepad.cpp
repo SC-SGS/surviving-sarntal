@@ -3,6 +3,7 @@
 //
 
 #include "Gamepad.h"
+#include "../../utilities/GameConstants.hpp"
 #include "raylib.h"
 
 Gamepad::Gamepad(int gamepadID) : gamepadID(gamepadID) {
@@ -45,7 +46,7 @@ std::queue<GameEvent> Gamepad::getGameEvents() {
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
         if (deviceEvent.triggerType == TRIGGER_POSITION) {
-            float axisValue = Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger);
+            floatType axisValue = Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger);
             GameEvent gameEvent = getGameEvent(deviceEvent);
             gameEvent.axisValue = axisValue;
             events.push(gameEvent);

@@ -13,10 +13,10 @@ MountainGenerator::MountainGenerator() {
 MountainGenerator::~MountainGenerator() { std::cout << "MountainGenerator destroyed." << std::endl; }
 
 void MountainGenerator::generateMountainChunk() {
-    const float currentLeftEdgeScreen{this->world.getMinX()};
-    const float leftestPointOfMountain{
+    const floatType currentLeftEdgeScreen{this->world.getMinX()};
+    const floatType leftestPointOfMountain{
         this->world.getMountain().getVertex(this->world.getMountain().getIndexIntervalOfEntireMountain().startIndex).x};
-    constexpr float CHUNK_DESTROY_BUFFER_CONSTANT{1.0};
+    constexpr floatType CHUNK_DESTROY_BUFFER_CONSTANT{1.0};
 
     if (leftestPointOfMountain < currentLeftEdgeScreen - Mountain::CHUNK_WIDTH - CHUNK_DESTROY_BUFFER_CONSTANT) {
 

@@ -9,27 +9,28 @@
 constexpr Vector3 UP_DIR = {0, 1, 0};
 
 Renderer::Renderer() {
-    float leftBorder = world.getMinX();
-    float rightBorder = world.getMaxX();
+    floatType leftBorder = world.getMinX();
+    floatType rightBorder = world.getMaxX();
 
     // Calculate the world width
-    float worldWidth = rightBorder - leftBorder;
+    floatType worldWidth = rightBorder - leftBorder;
 
     // Calculate the zoom level so that the world width fits the screen width
-    auto screenWidth = static_cast<float>(GetScreenWidth());
-    float zoom = screenWidth / worldWidth;
+    auto screenWidth = static_cast<floatType>(GetScreenWidth());
+    floatType zoom = screenWidth / worldWidth;
 
     // Calculate the visible width and height
-    float visibleWidth = rightBorder - leftBorder;
-    float visibleHeight = visibleWidth * (static_cast<float>(GetScreenHeight()) / static_cast<float>(GetScreenWidth()));
+    floatType visibleWidth = rightBorder - leftBorder;
+    floatType visibleHeight =
+        visibleWidth * (static_cast<floatType>(GetScreenHeight()) / static_cast<floatType>(GetScreenWidth()));
 
     // Calculate the center of the camera view based on the borders
-    float centerX = (leftBorder + rightBorder) / 2.0f;
-    float centerY = visibleHeight / 2.0f;
+    floatType centerX = (leftBorder + rightBorder) / 2.0f;
+    floatType centerY = visibleHeight / 2.0f;
 
     // Initialize the camera
     camera.target = {centerX, centerY};
-    camera.offset = {screenWidth / 2.0f, static_cast<float>(GetScreenHeight()) / 2.0f};
+    camera.offset = {screenWidth / 2.0f, static_cast<floatType>(GetScreenHeight()) / 2.0f};
     camera.rotation = 0.0f;
     camera.zoom = zoom;
 
@@ -45,13 +46,13 @@ Renderer::~Renderer() {
 // Function to render an entity
 void Renderer::renderEntity(RenderedEntity &entity) { renderEntity(entity, 0.0f); }
 
-void Renderer::renderEntity(RenderedEntity &entity, float rotation) {
+void Renderer::renderEntity(RenderedEntity &entity, floatType rotation) {
     Texture2D texture = resourceManager.getTexture(entity.getRenderInformation().texture);
-    Rectangle sourceRec = {0.0f, 0.0f, (float)texture.width, (float)texture.height}; // part of the texture used
+    Rectangle sourceRec = {0.0f, 0.0f, (floatType)texture.width, (floatType)texture.height}; // part of the texture used
     renderEntity(entity, rotation, texture, sourceRec);
 }
 
-void Renderer::renderEntity(RenderedEntity &entity, float rotation, Texture2D texture, Rectangle sourceRec) {
+void Renderer::renderEntity(RenderedEntity &entity, floatType rotation, Texture2D texture, Rectangle sourceRec) {
     auto info = entity.getRenderInformation();
     // Define the destination rectangle
     Rectangle destRec = {info.position.x + info.offset.x, info.position.y - info.offset.y, info.width, info.height};
@@ -72,7 +73,7 @@ void Renderer::renderEntity(RenderedEntity &entity, float rotation, Texture2D te
 
 void Renderer::animateEntity(RenderedEntity &entity) {
     auto info = entity.getRenderInformation();
-    auto currentTime = static_cast<float>(GetTime());
+    auto currentTime = static_cast<floatType>(GetTime());
     AnimationInformation &animation = info.animation;
 
     // Check if we need to advance to the next frame
@@ -92,15 +93,15 @@ void Renderer::renderAnimation(RenderedEntity &entity) {
     auto info = entity.getRenderInformation();
     // Get the texture and calculate frame width
     Texture2D texture = resourceManager.getTexture(info.texture);
-    float width = static_cast<float>(texture.width) / static_cast<float>(info.animation.frames);
-    float currentFrameWidth = width * static_cast<float>(info.animation.currentFrame);
+    floatType width = static_cast<floatType>(texture.width) / static_cast<floatType>(info.animation.frames);
+    floatType currentFrameWidth = width * static_cast<floatType>(info.animation.currentFrame);
 
     // Create source rectangle for the current frame
-    Rectangle sourceRec = {currentFrameWidth, 0.0f, width, static_cast<float>(texture.height)};
+    Rectangle sourceRec = {currentFrameWidth, 0.0f, width, static_cast<floatType>(texture.height)};
 
     // Update render information for the entity
     info.width = width;
-    info.height = static_cast<float>(texture.height);
+    info.height = static_cast<floatType>(texture.height);
 
     // Render the entity with the updated frame
     renderEntity(entity, info.rotation.angular_offset, texture, sourceRec);
@@ -124,8 +125,8 @@ void Renderer::debugRenderRock(RenderedEntity &entity) {
                     RED);
 
     // Calculate the end points of the line to detect rotation
-    float rotation = entity.getRenderInformation().rotation.angular_offset;
-    float radius = entity.getRenderInformation().width / 2;
+    floatType rotation = entity.getRenderInformation().rotation.angular_offset;
+    floatType radius = entity.getRenderInformation().width / 2;
     int endX = static_cast<int>(entity.getRenderInformation().position.x + radius * std::cos(rotation));
     int endY = static_cast<int>(entity.getRenderInformation().position.y + radius * std::sin(rotation));
 
@@ -138,13 +139,14 @@ void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomCo
     // Retrieve the relevant section of the mountain to be displayed
     IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
     // Get lower border of screen
-    float lowerBorder = camera.target.y + (static_cast<float>(GetScreenHeight()) / (2.0f * camera.zoom)) + 100.0f;
+    floatType lowerBorder =
+        camera.target.y + (static_cast<floatType>(GetScreenHeight()) / (2.0f * camera.zoom)) + 100.0f;
     // Load the texture
     Texture2D texture = resourceManager.getTexture("mountain");
-    Rectangle sourceRec = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
+    Rectangle sourceRec = {0.0f, 0.0f, (floatType)texture.width, (floatType)texture.height};
     // Define origin and rotation
     Vector2 origin = {0.0f, 0.0f};
-    float rotation = 0.0f;
+    floatType rotation = 0.0f;
     // Draw the mountain
     const int vertexOffset = 1;
     for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
@@ -225,9 +227,9 @@ void Renderer::renderItemSlot(Inventory &inventory, int slotNumber, int startX, 
     }
     auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
     auto texture = resourceManager.getTexture(textureName);
-    DrawTexturePro(texture, {0, 0, (float)texture.width, (float)texture.height},
+    DrawTexturePro(texture, {0, 0, (floatType)texture.width, (floatType)texture.height},
                    {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * INVENTORY_SLOT_SIZE,
-                    static_cast<float>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
+                    static_cast<floatType>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
                    {0, 0}, 0, WHITE);
 }
 
@@ -254,7 +256,7 @@ void Renderer::renderInventory() {
 
 void Renderer::renderHealthBar() {
     auto &hiker = world.getHiker();
-    float health = static_cast<float>(hiker.getHealthPoints()) / HIKER_MAX_HEALTH;
+    floatType health = static_cast<floatType>(hiker.getHealthPoints()) / HIKER_MAX_HEALTH;
     int screenWidth = GetScreenWidth();
     int startX = screenWidth - HEALTH_BAR_WIDTH - UI_MARGIN;
     int startY = UI_MARGIN;
@@ -307,17 +309,17 @@ void Renderer::renderBackground() {
     scrolling_mid -= 0.25f;
     scrolling_fore -= 0.5f;
 
-    float midScale = 5;  // scale of texture
-    float foreScale = 7; // scale of texture
+    floatType midScale = 5;  // scale of texture
+    floatType foreScale = 7; // scale of texture
 
-    float midOffsetY = static_cast<float>(GetScreenHeight()) -
-                       static_cast<float>(midgroundTex.height) * midScale; // align lower border
-    float foreOffsetY = static_cast<float>(GetScreenHeight()) -
-                        static_cast<float>(foregroundTex.height) * foreScale; // align lower border
+    floatType midOffsetY = static_cast<floatType>(GetScreenHeight()) -
+                           static_cast<floatType>(midgroundTex.height) * midScale; // align lower border
+    floatType foreOffsetY = static_cast<floatType>(GetScreenHeight()) -
+                            static_cast<floatType>(foregroundTex.height) * foreScale; // align lower border
 
-    if (scrolling_mid <= -static_cast<float>(midgroundTex.width) * midScale)
+    if (scrolling_mid <= -static_cast<floatType>(midgroundTex.width) * midScale)
         scrolling_mid = 0;
-    if (scrolling_fore <= -static_cast<float>(foregroundTex.width) * foreScale)
+    if (scrolling_fore <= -static_cast<floatType>(foregroundTex.width) * foreScale)
         scrolling_fore = 0;
 
     // Draw midground image repeatedly
@@ -327,11 +329,13 @@ void Renderer::renderBackground() {
     drawBackgroundTextureRepeatedly(foregroundTex, scrolling_fore, foreScale, foreOffsetY);
 }
 
-void Renderer::drawBackgroundTextureRepeatedly(Texture2D texture2D, float scrolling, float scale, float offsetY) {
+void Renderer::drawBackgroundTextureRepeatedly(Texture2D texture2D, floatType scrolling, floatType scale,
+                                               floatType offsetY) {
 
     DrawTextureEx(texture2D, {scrolling, offsetY}, 0.0f, scale, WHITE);
-    DrawTextureEx(texture2D, {static_cast<float>(texture2D.width) * scale + scrolling, offsetY}, 0.0f, scale, WHITE);
-    DrawTextureEx(texture2D, {static_cast<float>(texture2D.width) * scale * 2 + scrolling, offsetY}, 0.0f, scale,
+    DrawTextureEx(texture2D, {static_cast<floatType>(texture2D.width) * scale + scrolling, offsetY}, 0.0f, scale,
+                  WHITE);
+    DrawTextureEx(texture2D, {static_cast<floatType>(texture2D.width) * scale * 2 + scrolling, offsetY}, 0.0f, scale,
                   WHITE);
 }
 

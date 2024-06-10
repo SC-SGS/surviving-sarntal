@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_GAMEEVENT_H
 #define SURVIVING_SARNTAL_GAMEEVENT_H
 
+#include "../../utilities/GameConstants.hpp"
 #include "Axis.h"
 #include "AxisModification.h"
 #include "EventType.h"
@@ -18,7 +19,7 @@
 struct GameEvent {
     EventType type;
     Axis axis;
-    float axisValue;
+    floatType axisValue;
     bool executeRepeatedly;
 
     // bool operator<(const GameEvent &e) const { return type < e.type || axis < e.axis; }
