@@ -53,7 +53,7 @@ IndexIntervalNew Mountain::getRelevantMountainSection(const floatType minX, cons
         relevantMountainSection.endIndex += NUMBER_OF_VERTICES;
 
     return relevantMountainSection;
-    /*float leftmost_x = getVertex(0).x;
+    /*floatType leftmost_x = getVertex(0).x;
     IndexIntervalNew relevantMountainSection;
     relevantMountainSection.startIndex =
         (std::size_t)std::floor((minX - leftmost_x) / SECTION_WIDTH);
@@ -137,7 +137,7 @@ void Mountain::updateMidpoint(const std::size_t leftIndex, const std::size_t rig
         change;
 }
 
-float Mountain::getYPosFromX(const float xPos) const {
+floatType Mountain::getYPosFromX(const floatType xPos) const {
     const IndexIntervalNew interval = Mountain::getRelevantMountainSection(xPos, xPos);
     std::size_t closestIndices[] = {interval.startIndex, interval.endIndex};
     auto closestLeftDistance = std::abs(this->getVertex(interval.startIndex).x - xPos);
@@ -162,7 +162,7 @@ float Mountain::getYPosFromX(const float xPos) const {
     return linearInterpolation(xPos, vertexLeft, vertexRight);
 }
 
-float Mountain::linearInterpolation(const float xPos, const Position left, const Position right) {
+floatType Mountain::linearInterpolation(const floatType xPos, const Position left, const Position right) {
     return ((xPos - left.x) * right.y + (right.x - xPos) * left.y) / (right.x - left.x);
 }
 

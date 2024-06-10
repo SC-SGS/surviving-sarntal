@@ -24,7 +24,7 @@ class ItemSpawner : public Singleton<ItemSpawner> {
     void spawnItems();
 
   private:
-    static double nextSpawnTime;
+    static floatType nextSpawnTime;
 
     World &world = World::getInstance();
     RandomGenerator &randomGenerator = RandomGenerator::getInstance();

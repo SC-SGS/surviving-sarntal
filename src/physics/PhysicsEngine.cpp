@@ -19,8 +19,8 @@ PhysicsEngine::PhysicsEngine()
 }
 
 void PhysicsEngine::update(std::queue<GameEvent> &events) {
-    auto currentTime = static_cast<float>(GetTime()); // TODO should this be GetFrameTime()?
-    const float frameTime = currentTime - this->timeLastUpdate;
+    auto currentTime = static_cast<floatType>(GetTime()); // TODO should this be GetFrameTime()?
+    const floatType frameTime = currentTime - this->timeLastUpdate;
     this->timeLastUpdate = currentTime;
     // TODO fine adjustment of max frame time to avoid spiral of death in case of lag
     this->accumulator += frameTime > 100 * this->deltaT ? 100 * this->deltaT : frameTime;
@@ -30,13 +30,13 @@ void PhysicsEngine::update(std::queue<GameEvent> &events) {
         this->accumulator -= this->deltaT;
         // std::cout << "A Physics step occurred" << std::endl;
     }
-    const float alpha = this->accumulator / this->deltaT;
+    const floatType alpha = this->accumulator / this->deltaT;
     this->interpolator.interpolate(alpha);
 }
 
-float PhysicsEngine::getDeltaT() const { return this->deltaT; }
+floatType PhysicsEngine::getDeltaT() const { return this->deltaT; }
 
-void PhysicsEngine::setDeltaT(const float deltaT) {
+void PhysicsEngine::setDeltaT(const floatType deltaT) {
     this->deltaT = deltaT;
     this->accelerator.setDeltaT(deltaT);
     this->positioner.setDeltaT(deltaT);

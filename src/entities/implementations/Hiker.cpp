@@ -23,13 +23,13 @@ RenderInformation Hiker::getRenderInformation() {
                              animation};
 }
 
-float Hiker::getHeight() const { return height; }
+floatType Hiker::getHeight() const { return height; }
 
-void Hiker::setHeight(const float height) { this->height = height; }
+void Hiker::setHeight(const floatType height) { this->height = height; }
 
-float Hiker::getWidth() const { return width; }
+floatType Hiker::getWidth() const { return width; }
 
-void Hiker::setWidth(const float width) { this->width = width; }
+void Hiker::setWidth(const floatType width) { this->width = width; }
 
 int Hiker::getHealthPoints() const { return healthPoints; }
 

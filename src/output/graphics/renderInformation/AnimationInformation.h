@@ -5,11 +5,13 @@
 #ifndef SURVIVING_SARNTAL_ANIMATIONINFORMATION_H
 #define SURVIVING_SARNTAL_ANIMATIONINFORMATION_H
 
+#include "../../../utilities/GameConstants.hpp"
+
 struct AnimationInformation {
     int frames;
     int currentFrame;
-    float frameTime;
-    float lastTime;
+    floatType frameTime;
+    floatType lastTime;
 };
 
 #endif // SURVIVING_SARNTAL_ANIMATIONINFORMATION_H

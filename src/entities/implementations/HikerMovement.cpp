@@ -42,6 +42,6 @@ bool HikerMovement::getCanJumpAgain() const { return canJumpAgain; }
 
 void HikerMovement::setCanJumpAgain(const bool canJump) { this->canJumpAgain = canJump; }
 
-float HikerMovement::getLastJump() const { return lastJump; }
+floatType HikerMovement::getLastJump() const { return lastJump; }
 
-void HikerMovement::setLastJump(const float lastJump) { this->lastJump = lastJump; }
+void HikerMovement::setLastJump(const floatType lastJump) { this->lastJump = lastJump; }

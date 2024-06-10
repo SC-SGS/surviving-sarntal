@@ -50,14 +50,14 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
      * @param events
      */
     void update(std::queue<GameEvent> &events);
-    float getDeltaT() const;
-    void setDeltaT(float deltaT);
+    floatType getDeltaT() const;
+    void setDeltaT(floatType deltaT);
 
   private:
     /**
      * The constant length of a simulation time interval.
      */
-    float deltaT;
+    floatType deltaT;
 
     /**
      * The world containing all entities.
@@ -67,12 +67,12 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
     /**
      * Timestamp of last update.
      */
-    float timeLastUpdate;
+    floatType timeLastUpdate;
 
     /**
      * Time produced by the renderer that is consumed by the simulation in constant and discrete deltaT sized chunks.
      */
-    float accumulator;
+    floatType accumulator;
 
     /**
      * Responsible for spawning entities at the start of each step.
