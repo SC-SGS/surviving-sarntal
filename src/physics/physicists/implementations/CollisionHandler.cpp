@@ -8,11 +8,9 @@
 #include <mutex>
 
 CollisionHandler::CollisionHandler()
-    : world(World::getInstance()), collisionDetector(CollisionDetector::getInstance()), deltaT(1) {
-    std::cout << "CollisionHandler gets constructed" << std::endl;
-}
+    : world(World::getInstance()), collisionDetector(CollisionDetector::getInstance()), deltaT(1) {}
 
-CollisionHandler::~CollisionHandler() { std::cout << "CollisionHandler gets deconstructed" << std::endl; }
+CollisionHandler::~CollisionHandler() = default;
 
 void CollisionHandler::handleCollisions() {
     this->playerCollisions();
@@ -53,7 +51,7 @@ void CollisionHandler::playerCollisions() const {
         if (this->collisionDetector.isPlayerHitByRock(rock)) {
             // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
             const int rockDmg = rockDamage(rock);
-            std::cout << "Player hit! Dmg: " << rockDmg << std::endl;
+            spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             // TODO rumble (here?)
             this->world.getHiker().setHealthPoints(this->world.getHiker().getHealthPoints() - rockDmg);
             this->world.getHiker().setIsHit(true);

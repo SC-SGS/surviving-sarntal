@@ -8,10 +8,8 @@
 #include <mutex>
 // TODO #include <omp.h>
 
-Accelerator::Accelerator() : world(World::getInstance()), deltaT(1) {
-    std::cout << "Accelerator gets constructed" << std::endl;
-};
-Accelerator::~Accelerator() { std::cout << "Accelerator gets deconstructed" << std::endl; }
+Accelerator::Accelerator() : world(World::getInstance()), deltaT(1){};
+Accelerator::~Accelerator() = default;
 
 void Accelerator::accelerate() const {
     this->updateHikerVelocity();

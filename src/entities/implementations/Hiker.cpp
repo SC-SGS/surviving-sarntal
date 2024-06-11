@@ -6,6 +6,7 @@
 #include "../../utilities/GameConstants.hpp"
 #include "../../utilities/vector.h"
 #include "../World.h"
+#include "spdlog/spdlog.h"
 #include <iostream>
 #include <utility>
 
@@ -15,7 +16,7 @@ Hiker::Hiker(const Vector position)
     : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
       healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true) {
     animation = {4, 0, 0.3, 0};
-    std::cout << "Hiker initialized." << std::endl;
+    spdlog::info("A Hiker was initialized");
 }
 
 RenderInformation Hiker::getRenderInformation() {

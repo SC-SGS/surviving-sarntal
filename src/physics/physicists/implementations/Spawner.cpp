@@ -9,9 +9,9 @@
 #include <iostream>
 #include <mutex>
 
-Spawner::Spawner() { std::cout << "Spawner gets constructed" << std::endl; }
+Spawner::Spawner() = default;
 
-Spawner::~Spawner() { std::cout << "Spawner gets deconstructed" << std::endl; }
+Spawner::~Spawner() = default;
 
 void Spawner::spawn() const {
     this->mountainGenerator.generateMountainChunk();

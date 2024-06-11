@@ -7,11 +7,9 @@
 #include <iostream>
 #include <mutex>
 
-Positioner::Positioner() : world(World::getInstance()), deltaT(1) {
-    std::cout << "Positioner gets constructed" << std::endl;
-};
+Positioner::Positioner() : world(World::getInstance()), deltaT(1){};
 
-Positioner::~Positioner() { std::cout << "Positioner gets deconstructed" << std::endl; }
+Positioner::~Positioner() = default;
 
 void Positioner::updatePositions() {
     this->updateMonsterPosition();

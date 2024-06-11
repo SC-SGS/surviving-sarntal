@@ -4,11 +4,12 @@
 
 #include "Game.hpp"
 #include "../utilities/GameConstants.hpp"
+#include "spdlog/spdlog.h"
 #include <mutex>
 
-Game::Game() { std::cout << "Game initialized." << std::endl; }
+Game::Game() { spdlog::info("Game initialized."); }
 
-Game::~Game() { std::cout << "Game destroyed." << std::endl; }
+Game::~Game() { spdlog::info("Game destroyed."); }
 
 void Game::run() const {
     // game loop
