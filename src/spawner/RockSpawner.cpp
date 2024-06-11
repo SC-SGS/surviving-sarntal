@@ -7,9 +7,9 @@
 #include <mutex>
 #include <random>
 
-RockSpawner::RockSpawner() { std::cout << "Rock Spawner initialized." << std::endl; }
+RockSpawner::RockSpawner() = default;
 
-RockSpawner::~RockSpawner() { std::cout << "Rock Spawner destroyed." << std::endl; }
+RockSpawner::~RockSpawner() = default;
 
 void RockSpawner::spawnRocks() {
     if (!shouldSpawnRocks()) {
@@ -42,7 +42,7 @@ void RockSpawner::spawnRock(const size_t idxRock) {
     Rock newRock(position, velocity, rotation, rad);
 
     this->world.addRock(newRock);
-    std::cout << "Rock spawned." << std::endl;
+    spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);
 }
 
 bool RockSpawner::shouldSpawnRocks() {

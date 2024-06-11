@@ -35,13 +35,9 @@ Renderer::Renderer() {
     camera.zoom = zoom;
 
     regenerateGradientTexture();
-    std::cout << "Renderer initialized" << std::endl;
 }
 
-Renderer::~Renderer() {
-    CloseWindow();
-    std::cout << "Renderer destroyed" << std::endl;
-}
+Renderer::~Renderer() { CloseWindow(); }
 
 // Function to render an entity
 void Renderer::renderEntity(RenderedEntity &entity) { renderEntity(entity, 0.0f); }

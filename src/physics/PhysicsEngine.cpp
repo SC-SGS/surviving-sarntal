@@ -15,7 +15,6 @@ PhysicsEngine::PhysicsEngine()
       collisionDetector(CollisionDetector::getInstance()), collisionHandler(CollisionHandler::getInstance()),
       interpolator(Interpolator::getInstance()), destructor(Destructor::getInstance()) {
     this->setDeltaT(this->deltaT);
-    std::cout << "PhysicsEngine gets constructed" << std::endl;
 }
 
 void PhysicsEngine::update(std::queue<GameEvent> &events) {
@@ -56,5 +55,5 @@ void PhysicsEngine::updateTimeStep() const {
 
 PhysicsEngine::~PhysicsEngine() {
     // TODO delete the other singletons (all singletons need a static destructor)
-    std::cout << "PhysicsEngine gets deconstructed" << std::endl;
+    spdlog::info("Physics engine goes to sleep."); // we need this because clang tidy is annoying
 }

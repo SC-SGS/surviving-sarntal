@@ -7,6 +7,7 @@
 #include "devices/Keyboard.h"
 #include "devices/Mouse.h"
 #include "raylib.h"
+#include "spdlog/spdlog.h"
 #include <iostream>
 #include <mutex>
 
@@ -21,10 +22,10 @@ InputHandler::InputHandler() {
     if (!deviceSet) {
         this->device = new Keyboard();
     }
-    std::cout << "InputHandler constructed" << std::endl;
+    spdlog::info("InputHandler constructed");
 }
 
-InputHandler::~InputHandler() { std::cout << "InputHandler destructed" << std::endl; }
+InputHandler::~InputHandler() { spdlog::info("InputHandler destroyed"); }
 
 InputHandler::InputHandler(const Device device) {
     switch (device) {

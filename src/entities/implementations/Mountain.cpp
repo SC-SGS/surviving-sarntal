@@ -8,8 +8,6 @@
 #include <random>
 
 Mountain::Mountain() {
-    std::cout << "Mountain gets constructed" << std::endl;
-
     // create points and chunks corresponding to a simple ramp
     floatType currentX = -MOUNTAIN_WIDTH;
     floatType currentY = 0.;
@@ -22,10 +20,7 @@ Mountain::Mountain() {
     }
 }
 
-Mountain::~Mountain() { std::cout << "Monster destroyed" << std::endl; }
-
-// Mountain::Mountain() : random_engine(hardware_random_generator()),
-// distribution_used(0.0,1.0) {
+Mountain::~Mountain() = default;
 
 void Mountain::printTempDebugInfo() const {
     IndexIntervalNew testInterval{getRelevantMountainSection(10.2, 13.6)};
@@ -34,6 +29,7 @@ void Mountain::printTempDebugInfo() const {
               << getVertex(testInterval.startIndex).y << std::endl;
     std::cout << "right point coords: " << getVertex(testInterval.endIndex).x << ", "
               << getVertex(testInterval.endIndex).y << std::endl;
+    // todo add debug log here
 }
 
 Position Mountain::getVertex(const size_t index) const {
@@ -63,7 +59,7 @@ IndexIntervalNew Mountain::getRelevantMountainSection(const floatType minX, cons
 }
 
 void Mountain::generateNewChunk() {
-    std::cout << "Chunk generated" << std::endl;
+    spdlog::debug("Mountain chunk was generated.");
     generateSlope();
     generateTerrainRecursive(startOfCircularArray, startOfCircularArray + NUM_SECTIONS_PER_CHUNK - 1, 100);
     startOfCircularArray = (startOfCircularArray + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
