@@ -4,6 +4,7 @@
 
 #ifndef SINGLETON_HPP
 #define SINGLETON_HPP
+#include "spdlog/spdlog.h"
 #include <memory>
 #include <mutex>
 
@@ -51,8 +52,14 @@ template <typename T> class Singleton {
     static bool isInit;
 
   protected:
-    Singleton() { isInit = true; };
-    ~Singleton() { isInit = false; };
+    Singleton() {
+        isInit = true;
+        spdlog::info("A singleton instance of type {} was created.", typeid(T).name());
+    };
+    ~Singleton() {
+        isInit = false;
+        spdlog::info("A singleton instance of type {} was destroyed.", typeid(T).name());
+    };
 };
 
 template <typename T> std::unique_ptr<T, typename Singleton<T>::Deleter> Singleton<T>::instance = nullptr;

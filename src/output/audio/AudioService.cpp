@@ -10,17 +10,13 @@ void AudioService::playSound(const std::string &soundName) const {
     try {
         PlaySound(resourceManager.getSound(soundName));
     } catch (...) {
-        std::cout << "Sound name was used that does not exist" << std::endl;
+        spdlog::error("Sound with the name {} was used, but it does not exist.", soundName);
     }
 }
 
-AudioService::AudioService() {
-    InitAudioDevice();
-    std::cout << "Audio Service initialized." << std::endl;
-}
+AudioService::AudioService() { InitAudioDevice(); }
 
 AudioService::~AudioService() {
     resourceManager.unloadAllSounds();
     CloseAudioDevice();
-    std::cout << "Audio Service destructed." << std::endl;
 }

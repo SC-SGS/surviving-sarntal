@@ -8,12 +8,9 @@
 #include <iostream>
 #include <mutex>
 
-Monster::Monster() : RenderedEntity({0.1 * graphics::SCREEN_WIDTH, 0}) {
-    animation = {4, 0, 0.5, 0};
-    std::cout << "Monster constructed" << std::endl;
-}
+Monster::Monster() : RenderedEntity({0.1 * graphics::SCREEN_WIDTH, 0}) { animation = {4, 0, 0.5, 0}; }
 
-Monster::~Monster() { std::cout << "Monster destructed" << std::endl; }
+Monster::~Monster() = default;
 
 Monster::Monster(Vector position) : RenderedEntity(position) {}
 

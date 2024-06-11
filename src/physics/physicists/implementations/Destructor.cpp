@@ -9,9 +9,9 @@
 #include <iostream>
 #include <mutex>
 
-Destructor::Destructor() : world(World::getInstance()) { std::cout << "Destructor gets constructed" << std::endl; }
+Destructor::Destructor() : world(World::getInstance()) {}
 
-Destructor::~Destructor() { std::cout << "Destructor gets deconstructed" << std::endl; }
+Destructor::~Destructor() = default;
 
 void Destructor::destruct() const {
     destructRocks();

@@ -3,6 +3,7 @@
 //
 #include "ItemSpawner.h"
 #include "../entities/Item.hpp"
+#include "spdlog/spdlog.h"
 #include <chrono>
 #include <ctime>
 #include <iostream>
@@ -12,9 +13,9 @@
 floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
-ItemSpawner::ItemSpawner() { std::cout << "ItemSpawner initialized." << std::endl; }
+ItemSpawner::ItemSpawner() { spdlog::info("ItemSpawner was initialized."); }
 
-ItemSpawner::~ItemSpawner() { std::cout << "ItemSpawner destroyed." << std::endl; }
+ItemSpawner::~ItemSpawner() { spdlog::info("ItemSpawner was destroyed."); }
 
 void ItemSpawner::spawnItems() {
     if (GetTime() < nextSpawnTime) {
@@ -28,14 +29,16 @@ void ItemSpawner::spawnItems() {
     this->world.addItem(newItem);
     updateNextSpawnTime();
 
-    std::cout << "spawning " << itemType << " at " << position.x << "," << position.y << " " << std::endl;
+    spdlog::info("Spawning {0} at position (x: {1}, y: {2}).", itemType, position.x, position.y);
 }
 void ItemSpawner::updateNextSpawnTime() {
     auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10));
     nextSpawnTime = static_cast<floatType>(GetTime()) + rand;
+    spdlog::debug("Next spawn time was set to: {}", nextSpawnTime);
 }
 ItemType ItemSpawner::getNextRandomItemType() {
     int rand = randomGenerator.getRandomNumber(0, 2);
+    spdlog::debug("Next item to be spawned has item type: {}", rand);
     switch (rand) {
     case 0:
         return KAISERSCHMARRN;
@@ -51,5 +54,6 @@ Vector ItemSpawner::getNextRandomPosition() {
     auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300));
     auto xPosition = static_cast<floatType>(World::getInstance().getMaxX() + 10);
     auto yPosition = static_cast<floatType>(Mountain::getInstance().getYPosFromX(xPosition)) - randYOffset;
+    spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);
     return Vector{xPosition, yPosition};
 }

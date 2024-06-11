@@ -3,13 +3,14 @@
 //
 
 #include "../Inventory.hpp"
+#include "spdlog/spdlog.h"
 #include <iostream>
 
 Inventory::Inventory(size_t slotCount) : slots(slotCount) {
     for (size_t i = 0; i < slotCount; ++i) {
         slots[i] = std::vector<std::shared_ptr<Item>>();
     }
-    std::cout << "Inventory initialized." << std::endl;
+    spdlog::info("Inventory initialized.");
 }
 
 Inventory::Inventory() : Inventory(SLOTS_PER_INVENTORY) {}
@@ -106,6 +107,7 @@ std::shared_ptr<Item> Inventory::getSelectedItem() const {
     if (!this->selectedSlotIsEmpty()) {
         return this->slots[selectedSlot].front();
     } else {
+        spdlog::critical("The selected slot is emtpy and no item could be retrieved.");
         throw std::runtime_error("The selected slot is emtpy and no item could be retrieved.");
     }
 }
@@ -113,6 +115,7 @@ bool Inventory::slotIsEmpty(size_t slot) const {
     if (slot < slots.size()) {
         return slots[slot].empty();
     } else {
+        spdlog::critical("The slot {} does not exist in the inventory.", slot);
         throw std::runtime_error("The slot does not exist.");
     }
 }
@@ -121,6 +124,7 @@ std::shared_ptr<Item> Inventory::getItem(size_t slot) const {
     if (canGetItem) {
         return this->slots[slot].front();
     } else {
+        spdlog::critical("No Item could be retrieved from slot: {}.", slot);
         throw std::runtime_error("The slot is emtpy or the slot number is too high and no item could be retrieved.");
     }
 }

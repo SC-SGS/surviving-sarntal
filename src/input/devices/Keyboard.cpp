@@ -4,6 +4,7 @@
 
 #include "Keyboard.h"
 #include "raylib.h"
+#include "spdlog/spdlog.h"
 #include <iostream>
 
 Keyboard::Keyboard() {
@@ -39,7 +40,7 @@ std::queue<GameEvent> Keyboard::getGameEvents() {
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
         if (Keyboard::raylibMappings.at(deviceEvent.triggerType)(deviceEvent.trigger)) {
-            // std::cout << "Device Event: " << it->first.trigger << std::endl;
+            spdlog::debug("Device Event: {}", it->first.trigger);
             events.push(getGameEvent(deviceEvent));
         }
     }

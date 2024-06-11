@@ -7,10 +7,8 @@
 #include <iostream>
 #include <mutex>
 
-Interpolator::Interpolator() : world(World::getInstance()) {
-    std::cout << "Interpolator gets constructed" << std::endl;
-}
+Interpolator::Interpolator() : world(World::getInstance()) {}
 
-Interpolator::~Interpolator() { std::cout << "Interpolator gets deconstructed" << std::endl; }
+Interpolator::~Interpolator() = default;
 
 void Interpolator::interpolate(floatType alpha) const {};

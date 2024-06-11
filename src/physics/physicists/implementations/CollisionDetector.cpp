@@ -3,15 +3,11 @@
 //
 
 #include "../CollisionDetector.hpp"
-
-#include <iostream>
 #include <mutex>
 
-CollisionDetector::CollisionDetector() : world(World::getInstance()) {
-    std::cout << "CollisionDetector gets constructed" << std::endl;
-}
+CollisionDetector::CollisionDetector() : world(World::getInstance()) {}
 
-CollisionDetector::~CollisionDetector() { std::cout << "CollisionDetector gets deconstructed" << std::endl; }
+CollisionDetector::~CollisionDetector() = default;
 
 void CollisionDetector::detectCollisions() const {}
 
