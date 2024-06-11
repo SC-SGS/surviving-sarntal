@@ -9,7 +9,6 @@
 ResourceManager::ResourceManager() {
     this->loadTextures();
     this->loadMusic();
-    std::cout << "ResourceManager initialized" << std::endl;
 }
 
 void ResourceManager::loadTextures() {
@@ -52,7 +51,7 @@ void ResourceManager::loadMusic() {
                           {"shutdown", LoadSound("../assets/audio/shutdown.wav")}};
 }
 
-ResourceManager::~ResourceManager() { std::cout << "ResourceManager destroyed" << std::endl; }
+ResourceManager::~ResourceManager() = default;
 
 void ResourceManager::loadTexture(const std::string &name, const std::string &path) {
     if (textures.find(name) != textures.end()) {

@@ -5,12 +5,9 @@
 #include <iostream>
 #include <mutex>
 
-MountainGenerator::MountainGenerator() {
-    MountainGenerator::loadChunksOfMountain();
-    std::cout << "MountainGenerator initialized." << std::endl;
-}
+MountainGenerator::MountainGenerator() { MountainGenerator::loadChunksOfMountain(); }
 
-MountainGenerator::~MountainGenerator() { std::cout << "MountainGenerator destroyed." << std::endl; }
+MountainGenerator::~MountainGenerator() = default;
 
 void MountainGenerator::generateMountainChunk() {
     const floatType currentLeftEdgeScreen{this->world.getMinX()};
@@ -22,7 +19,7 @@ void MountainGenerator::generateMountainChunk() {
 
         if (this->world.getHiker().getIsAlive()) {
             this->world.getMountain().generateNewChunk();
-            std::cout << "Mountain chunk generated." << std::endl;
+            spdlog::debug("Mountain chunk generated.");
         }
     }
 }
@@ -32,5 +29,5 @@ void MountainGenerator::loadChunksOfMountain() {
     for (std::size_t i{0}; i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK; i++) {
         mountain.generateNewChunk();
     }
-    std::cout << "Loaded chunks of mountain" << std::endl;
+    spdlog::debug("Loaded chunks of mountain,");
 }

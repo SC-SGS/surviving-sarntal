@@ -6,7 +6,7 @@
 #include <iostream>
 #include <mutex>
 
-World::World() { std::cout << "World constructed" << std::endl; }
+World::World() = default;
 
 floatType World::getMaxX() const { return maxX; }
 
@@ -25,8 +25,7 @@ bool World::isOutOfScope(RenderedEntity &entity) const {
     // entity.getPosition().x > this->maxX + Mountain::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
     // entity.getPosition().y > mountain.getYPosFromX(entity.getPosition().x);
     if (result) {
-        std::cout << "A rock has left this cruel world" << entity.getPosition().x << entity.getPosition().y
-                  << std::endl;
+        spdlog::debug("A rock has left the scope of the game.");
     }
     return result;
 }
@@ -67,20 +66,20 @@ void World::useItem(const ItemType itemType) {
 
 void World::useKaiserschmarrn() const {
     this->hiker->addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
-    std::cout << "used Kaiserschmarrn" << std::endl;
+    spdlog::debug("Used Kaiserschmarrn.");
 }
 
 void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
     this->coinScore += COIN_SCORE;
-    std::cout << "used coin" << std::endl;
+    spdlog::debug("Used Coin.");
 }
 
 void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
     //  TODO play sounds
-    std::cout << "used duck" << std::endl;
+    spdlog::debug("Used Duck.");
 }
 
 floatType World::getMinX() const { return minX; }
 void World::setMinX(const floatType minX) { World::minX = minX; }
 
-World::~World() { std::cout << "World destroyed" << std::endl; }
+World::~World() = default;

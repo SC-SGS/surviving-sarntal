@@ -31,6 +31,8 @@ FetchContent_Declare(yaml-cpp URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/yaml-cpp-0.8.
 FetchContent_MakeAvailable(yaml-cpp)
 #FetchContent_Declare(SDL2 URL libs/SDL/SDL2-2.28.3.tar.gz)
 #FetchContent_MakeAvailable(SDL2)
+FetchContent_Declare(spdlog URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog-1.13.0.tar.gz)
+FetchContent_MakeAvailable(spdlog)
 
 include_directories(libs/NITE/Include /usr/include/ni)
 # Check if the operating system is macOS
@@ -52,6 +54,7 @@ target_clangformat_setup(surviving-sarntal-library)
 
 target_link_libraries(surviving-sarntal-library PUBLIC raylib raygui)
 target_link_libraries(surviving-sarntal-library PUBLIC yaml-cpp)
+target_link_libraries(surviving-sarntal-library PUBLIC spdlog::spdlog)  # Link spdlog to your library
 
 #link some libraries to the surviving-sarntal-library that we are defining atm
 # Check if the operating system is macOS

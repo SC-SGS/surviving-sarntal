@@ -28,10 +28,9 @@ EventProcessor::EventProcessor() : world(World::getInstance()) {
     autoEventFunctions = {
         &EventProcessor::pickAutoCollectableItems,
     };
-    std::cout << "EventProcessor gets constructed" << std::endl;
 }
 
-EventProcessor::~EventProcessor() { std::cout << "EventProcessor gets deconstructed" << std::endl; }
+EventProcessor::~EventProcessor() = default;
 
 void EventProcessor::processEvents() {
     const auto numEvents = this->eventQueue.size();
