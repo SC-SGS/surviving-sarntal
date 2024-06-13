@@ -14,7 +14,6 @@ class CollisionDetector : public Singleton<CollisionDetector> {
 
   public:
     CollisionDetector(const CollisionDetector &) = delete;
-    void operator=(const CollisionDetector &) = delete;
 
     /**
      * TODO This should later return a collision object with a list of collided rock IDs, player is hit and damage to
