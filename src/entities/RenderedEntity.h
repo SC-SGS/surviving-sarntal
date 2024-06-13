@@ -18,7 +18,7 @@ class RenderedEntity {
     explicit RenderedEntity(Vector position);
 
     virtual RenderInformation getRenderInformation();
-    void setAnimationInformation(AnimationInformation &animationInformation);
+    void setAnimationInformation(AnimationInformation animationInformation);
 
     void setPosition(Vector &position);
     const Vector &getPosition() const;

@@ -40,7 +40,9 @@ Renderer::Renderer() {
 Renderer::~Renderer() { CloseWindow(); }
 
 // Function to render an entity
-void Renderer::renderEntity(RenderedEntity &entity) { renderEntity(entity, 0.0f); }
+void Renderer::renderEntity(RenderedEntity &entity) {
+    renderEntity(entity, entity.getRenderInformation().rotation.angular_offset);
+}
 
 void Renderer::renderEntity(RenderedEntity &entity, floatType rotation) {
     Texture2D texture = resourceManager.getTexture(entity.getRenderInformation().texture);
@@ -111,9 +113,6 @@ void Renderer::renderHiker(RenderedEntity &hiker) {
     }
 }
 
-void Renderer::renderRock(RenderedEntity &entity) {
-    renderEntity(entity, entity.getRenderInformation().rotation.angular_offset);
-}
 void Renderer::debugRenderRock(RenderedEntity &entity) {
     // Draw Circle for collision box
     DrawCircleLines(static_cast<int>(entity.getRenderInformation().position.x),
@@ -165,6 +164,7 @@ void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomCo
 void Renderer::renderEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
+    auto &destroyedRocks = world.getDestroyedRocks();
     auto &monster = world.getMonster();
     auto &mountain = world.getMountain();
 
@@ -173,7 +173,12 @@ void Renderer::renderEntities() {
 
     // Render rocks
     for (auto &rock : rocks) {
-        renderRock(rock);
+        renderEntity(rock);
+    }
+
+    // Render destroyed rocks, e.g. explosions
+    for (auto &destroyedRock : destroyedRocks) {
+        animateEntity(destroyedRock);
     }
 
     // Render monster
@@ -267,8 +272,6 @@ void Renderer::renderHealthBar() {
 void Renderer::draw() {
     BeginDrawing();
     ClearBackground(BLACK);
-
-    DrawGrid(1000, 20);
 
     // Render background if not in debug mode
     if (!Game::getInstance().debugMode)
