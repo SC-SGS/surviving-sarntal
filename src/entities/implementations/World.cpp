@@ -94,6 +94,6 @@ void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
 }
 
 floatType World::getMinX() const { return minX; }
-void World::setMinX(const floatType minX) { World::minX = minX; }
+void World::setMinX(const floatType minX) { this->minX = minX; }
 
 World::~World() = default;

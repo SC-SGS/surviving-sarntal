@@ -7,3 +7,4 @@ out/
 .cache
 kinect/
 /UML/plant_UML
+.DB_Store
