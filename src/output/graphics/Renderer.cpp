@@ -223,15 +223,20 @@ void Renderer::debugRenderEntities() {
 }
 
 void Renderer::renderItemSlot(Inventory &inventory, int slotNumber, int startX, int startY) {
-    if (inventory.slotIsEmpty(slotNumber)) {
-        return;
+    if (!inventory.slotIsEmpty(slotNumber)) {
+        auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
+        auto texture = resourceManager.getTexture(textureName);
+        DrawTexturePro(texture, {0, 0, (floatType)texture.width, (floatType)texture.height},
+                       {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * INVENTORY_SLOT_SIZE,
+                        static_cast<floatType>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
+                       {0, 0}, 0, WHITE);
+        size_t numberOfItems = inventory.getNumberOfItems(slotNumber);
+        if (numberOfItems > 0) {
+            DrawText(std::to_string(numberOfItems).c_str(),
+                     static_cast<int>(startX) + slotNumber * static_cast<int>(INVENTORY_SLOT_SIZE) + 5,
+                     static_cast<int>(startY) + 5, 20, WHITE);
+        }
     }
-    auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
-    auto texture = resourceManager.getTexture(textureName);
-    DrawTexturePro(texture, {0, 0, (floatType)texture.width, (floatType)texture.height},
-                   {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * INVENTORY_SLOT_SIZE,
-                    static_cast<floatType>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
-                   {0, 0}, 0, WHITE);
 }
 
 void Renderer::renderInventory() {
