@@ -4,11 +4,6 @@
 
 #include "../Destructor.hpp"
 
-#include "../../../entities/Item.hpp"
-
-#include <iostream>
-#include <mutex>
-
 Destructor::Destructor() : world(World::getInstance()) {}
 
 Destructor::~Destructor() = default;
@@ -20,8 +15,13 @@ void Destructor::destruct() const {
 }
 
 void Destructor::destructRocks() const {
-    this->world.getRocks().remove_if(
-        [this](Rock rock) { return this->world.isOutOfScope(rock) || rock.getShouldBeDestroyed(); });
+    this->world.getRocks().remove_if([this](Rock rock) {
+        bool shouldBeDestroyed = rock.getShouldBeDestroyed();
+        if (shouldBeDestroyed) {
+            World::getInstance().addDestroyedRock(rock.getPosition(), rock.getRadius());
+        }
+        return shouldBeDestroyed || this->world.isOutOfScope(rock);
+    });
 }
 
 void Destructor::destructItems() const {

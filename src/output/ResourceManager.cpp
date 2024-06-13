@@ -20,6 +20,7 @@ void ResourceManager::loadTextures() {
                       {"Coin", LoadTexture("../assets/texture/coin.png")},
                       {"Duck", LoadTexture("../assets/texture/duck.png")},
                       {"rock", LoadTexture("../assets/texture/stone.png")},
+                      {"explosion", LoadTexture("../assets/texture/explosion.png")},
                       {"helicopter", LoadTexture("../assets/texture/helicopter.png")},
                       {"monster", LoadTexture("../assets/texture/killbar.png")},
                       {"midground", LoadTexture("../assets/layers/glacial_mountains.png")},
