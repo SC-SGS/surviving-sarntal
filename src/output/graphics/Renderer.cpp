@@ -273,6 +273,14 @@ void Renderer::renderHealthBar() {
     DrawRectangle(startX, startY, static_cast<int>(HEALTH_BAR_WIDTH * health), HEALTH_BAR_HEIGHT, GREEN);
 }
 
+void Renderer::renderScore() {
+    int fontSize = 20;
+    const char *scoreText;
+    scoreText = (std::to_string(Game::getInstance().getScore() / 10) + "m").c_str();
+    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - UI_MARGIN;
+    DrawText(scoreText, centerX, UI_MARGIN * 3, fontSize, WHITE);
+}
+
 // Main rendering function
 void Renderer::draw() {
     BeginDrawing();
@@ -297,6 +305,7 @@ void Renderer::draw() {
     EndMode2D();
     renderInventory();
     renderHealthBar();
+    renderScore();
 
     DrawFPS(0, 0);
 

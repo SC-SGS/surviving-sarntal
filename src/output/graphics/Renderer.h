@@ -52,6 +52,7 @@ class Renderer : public Singleton<Renderer> {
     void renderHealthBar();
     void debugRenderEntities();
     static void debugRenderRock(RenderedEntity &entity);
+    static void renderScore();
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
