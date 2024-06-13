@@ -44,7 +44,7 @@ constexpr floatType SLOWEST_POS_SCOPE = 2.f;
 constexpr floatType HIKER_ITEM_COLLECTION_RANGE = 200.f;
 
 constexpr int SLOTS_PER_INVENTORY = 3;
-constexpr int ITEMS_PER_SLOT = 1;
+constexpr int ITEMS_PER_SLOT = 64;
 constexpr int KAISERSCHMARRN_HEALTH_RESTORATION = 30;
 constexpr int COIN_SCORE = 500;
 
