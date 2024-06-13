@@ -11,13 +11,14 @@ Game::Game() { spdlog::info("Game initialized."); }
 
 Game::~Game() { spdlog::info("Game destroyed."); }
 
-void Game::run() const {
+void Game::run() {
     // game loop
     while (!WindowShouldClose()) {
         if (this->world.getHiker().getIsAlive()) {
             std::queue<GameEvent> events = this->inputHandler.getEvents();
             this->physicsEngine.update(events);
             this->renderer.draw();
+            updateScore();
         } else {
             drawEndScreen();
         }
@@ -42,4 +43,13 @@ void Game::drawEndScreen() {
     DrawText(message, posX, posY, fontSize, RED);
 
     EndDrawing();
+}
+
+int Game::getScore() const { return score; }
+
+void Game::updateScore() {
+    const Hiker &hiker = this->world.getHiker();
+    const Mountain &mountain = this->world.getMountain();
+    // TODO remove "-" when x axis inverted
+    score = std::max(score, -static_cast<int>(mountain.getYPosFromX(hiker.getPosition().x)));
 }
