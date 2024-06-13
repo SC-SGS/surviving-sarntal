@@ -21,7 +21,6 @@ class Monster : public RenderedEntity, public Singleton<Monster> {
 
   public:
     Monster(const Monster &) = delete;
-    void operator=(const Monster &) = delete;
 
     explicit Monster(Vector position);
 
