@@ -15,7 +15,7 @@ class Game : public Singleton<Game> {
     friend class Singleton<Game>;
 
   public:
-    void run() const;
+    void run();
 
     // TODO renderer and different renderer for Round?
     // TODO initialize physics engine and world per round
@@ -25,12 +25,17 @@ class Game : public Singleton<Game> {
 
     bool debugMode = false;
 
+    int getScore() const;
+
   private:
     World &world = World::getInstance();
     Renderer &renderer = Renderer::getInstance();
     PhysicsEngine &physicsEngine = PhysicsEngine::getInstance();
     AudioService &audioService = AudioService::getInstance();
     InputHandler &inputHandler = InputHandler::getInstance();
+
+    int score = 0;
+    void updateScore();
 
     static void drawEndScreen();
     Game();
