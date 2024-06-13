@@ -9,7 +9,12 @@
 #include <utility>
 
 RenderInformation Rock::getRenderInformation() {
-    return RenderInformation{Vector2(position), {0, 0}, radius * 2.0f, radius * 2.0f, rotation, "rock"};
+    if (animation.frames == 0) {
+        return RenderInformation{Vector2(position), {0, 0}, radius * 2.0f, radius * 2.0f, rotation, "rock"};
+    } else {
+        return RenderInformation{Vector2(position), {0, 0},      radius * 2.0f, radius * 2.0f,
+                                 rotation,          "explosion", animation};
+    }
 }
 
 void Rock::setRotation(const Rotation &newRotation) { rotation = newRotation; }
