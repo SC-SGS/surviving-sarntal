@@ -36,11 +36,15 @@ class World : public Singleton<World> {
 
     std::list<Rock> &getRocks();
 
+    std::list<Rock> &getDestroyedRocks() const;
+
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
     void addRock(Rock &rock);
+
+    void addDestroyedRock(Vector position, floatType radius);
 
     std::list<std::shared_ptr<Item>> &getItems() const;
 
@@ -95,6 +99,7 @@ class World : public Singleton<World> {
     int coinScore = 0;
 
     const std::unique_ptr<std::list<Rock>> rocks = std::make_unique<std::list<Rock>>();
+    const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
     World();

@@ -42,7 +42,21 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
 
 void World::addRock(Rock &rock) { this->rocks->push_back(rock); }
 
+void World::addDestroyedRock(Vector position, floatType radius) {
+    Rock destroyedRock(position, {0, 0}, {0, 0}, radius);
+    destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
+    this->destroyedRocks->push_back(destroyedRock);
+}
+
 std::list<Rock> &World::getRocks() { return *rocks; }
+
+std::list<Rock> &World::getDestroyedRocks() const {
+    destroyedRocks->remove_if([](Rock &rock) {
+        const auto animation = rock.getRenderInformation().animation;
+        return animation.currentFrame == animation.frames - 1;
+    });
+    return *destroyedRocks;
+}
 
 std::list<std::shared_ptr<Item>> &World::getItems() const { return *items; }
 
