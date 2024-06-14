@@ -13,9 +13,9 @@
 floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
-ItemSpawner::ItemSpawner() { spdlog::info("ItemSpawner was initialized."); }
+ItemSpawner::ItemSpawner() = default;
 
-ItemSpawner::~ItemSpawner() { spdlog::info("ItemSpawner was destroyed."); }
+ItemSpawner::~ItemSpawner() = default;
 
 void ItemSpawner::spawnItems() {
     if (GetTime() < nextSpawnTime) {
