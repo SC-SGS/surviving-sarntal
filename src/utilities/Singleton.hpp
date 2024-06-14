@@ -56,10 +56,7 @@ template <typename T> class Singleton {
         isInit = true;
         spdlog::info("A singleton instance of type {} was created.", typeid(T).name());
     };
-    ~Singleton() {
-        isInit = false;
-        spdlog::info("A singleton instance of type {} was destroyed.", typeid(T).name());
-    };
+    ~Singleton() { isInit = false; };
 };
 
 template <typename T> std::unique_ptr<T, typename Singleton<T>::Deleter> Singleton<T>::instance = nullptr;
