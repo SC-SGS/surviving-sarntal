@@ -25,7 +25,7 @@ InputHandler::InputHandler() {
     spdlog::info("InputHandler constructed");
 }
 
-InputHandler::~InputHandler() { spdlog::info("InputHandler destroyed"); }
+InputHandler::~InputHandler() = default;
 
 InputHandler::InputHandler(const Device device) {
     switch (device) {

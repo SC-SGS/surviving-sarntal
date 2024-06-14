@@ -12,44 +12,23 @@ ResourceManager::ResourceManager() {
 }
 
 void ResourceManager::loadTextures() {
-    this->textures = {// TODO take this from the configuration see issue #30
-                      {"crouch", LoadTexture("../assets/texture/player_duck.png")},
-                      {"jump", LoadTexture("../assets/texture/player_jump.png")},
-                      {"walk", LoadTexture("../assets/texture/player_walk.png")},
-                      {"Kaiserschmarrn", LoadTexture("../assets/texture/kaiserschmarrn.png")},
-                      {"Coin", LoadTexture("../assets/texture/coin.png")},
-                      {"Duck", LoadTexture("../assets/texture/duck.png")},
-                      {"rock", LoadTexture("../assets/texture/stone.png")},
-                      {"explosion", LoadTexture("../assets/texture/explosion.png")},
-                      {"helicopter", LoadTexture("../assets/texture/helicopter.png")},
-                      {"monster", LoadTexture("../assets/texture/killbar.png")},
-                      {"midground", LoadTexture("../assets/layers/glacial_mountains.png")},
-                      {"foreground", LoadTexture("../assets/layers/clouds_mg_1.png")},
-                      {"mountain", LoadTexture("../assets/layers/mountain.png")}};
+    auto configTextures = config.getTextures();
+
+    for (YAML::const_iterator it = configTextures.begin(); it != configTextures.end(); ++it) {
+        auto textureName = it->first.as<std::string>();
+        auto textureLocation = it->second.as<std::string>();
+        this->textures[textureName] = LoadTexture(textureLocation.c_str());
+    }
 }
 
 void ResourceManager::loadMusic() {
-    this->soundEffects = {{"background_music", LoadSound("../assets/audio/background_music.mp3")},
-                          {"background_music2", LoadSound("../assets/audio/background_music2.wav")},
-                          {"boom", LoadSound("../assets/audio/boom.wav")},
-                          {"cool_sound", LoadSound("../assets/audio/cool_sound.mp3")},
-                          {"duck", LoadSound("../assets/audio/duck.wav")},
-                          {"dudum", LoadSound("../assets/audio/dudum.wav")},
-                          {"error", LoadSound("../assets/audio/error.wav")},
-                          {"fart", LoadSound("../assets/audio/fart.wav")},
-                          {"game_over", LoadSound("../assets/audio/game_over.wav")},
-                          {"gameover", LoadSound("../assets/audio/gameover.wav")},
-                          {"jump", LoadSound("../assets/audio/jump.wav")},
-                          {"mepmep", LoadSound("../assets/audio/mepmep.wav")},
-                          {"ohje", LoadSound("../assets/audio/ohje.wav")},
-                          {"oof", LoadSound("../assets/audio/oof.wav")},
-                          {"pickup", LoadSound("../assets/audio/pickup.wav")},
-                          {"pipe", LoadSound("../assets/audio/pipe.wav")},
-                          {"proper_coin", LoadSound("../assets/audio/proper_coin.wav")},
-                          {"proper_crouch", LoadSound("../assets/audio/proper_crouch.wav")},
-                          {"proper_jump", LoadSound("../assets/audio/proper_jump.wav")},
-                          {"proper_rock_smash", LoadSound("../assets/audio/proper_rock_smash.wav")},
-                          {"shutdown", LoadSound("../assets/audio/shutdown.wav")}};
+    auto configSounds = config.getSounds();
+
+    for (YAML::const_iterator it = configSounds.begin(); it != configSounds.end(); ++it) {
+        auto soundName = it->first.as<std::string>();
+        auto soundLocation = it->second.as<std::string>();
+        this->soundEffects[soundName] = LoadSound(soundLocation.c_str());
+    }
 }
 
 ResourceManager::~ResourceManager() = default;

@@ -1,83 +1,13 @@
-float-type: &float-type  # Alias for float type definition
-  type: float
-
-graphics:
-  screen-width: 1600
-  screen-height: 900
-
-player-spawn-offset: 500.0
-
-player-size:
-  hiker-height: 90.6
-  hiker-width: 60.0
-  ducked-hiker-height: 65.9
-  ducked-hiker-width: 70.0
-
-player-movement-speed:
-  duck-speed-factor: 0.35
-  normal-speed: 500.0
-  jump-velocity-constant: 500.0
-  air-movement-speed-factor: 0.6
-  knockbackconst: 0.0001
-  min-speed-neg-slope: 0.6
-  max-speed-neg-slope: 1.5
-  min-speed-pos-scope: 0.5
-  slowest-neg-slope: -1.0
-  fastest-neg-scope: -0.5
-  slowest-pos-scope: 2.0
-
-player-items:
-  hiker-item-collection-range: 200.0
-  inventory-slots: 3
-  kaiserschmarrn-health-restoration: 30
-  coin-score: 500
-  item-base-height: 40.0
-  item-max-height: 200.0
-  items-per-second: 0.05
-
-rock-sizes:
-  min-rock-size: 10.0
-  max-rock-size: 25.0
-
-rock-speeds:
-  velocity-cap: 1200.0
-  gamma: 50.0
-  max-angular-velocity: 1000.0
-
-rock-spawn-times:
-  rock-time-period-difficult: 1.0
-  rock-time-period-medium: 5.0
-  rock-time-period-easy: 2.0
-
-rock-spawn-parameters:
-  num-rocks-to-spawn: 0  # Placeholder value, replace with actual number
-  time-between-rockspawns: 0.0  # Placeholder value, replace with actual time
-
-barriers:
-  kill-bar-velocity: 1.0
-  rock-kill-bar-offset: -75.0  # max-rock-size + 50.0
-  player-right-barrier-offset: 1280.0  # graphics::screen-width * 0.8
-  rumble-zone: 200.0
-
-physical-constants:
-  gravitational-constant: -1000.0
-  epsilon: 0.001
-  rock-terrain-damping: 0.8
-
-kinect-mode: false  # Default value, replace with actual value
-
-hiker-max-health: 100
-
-sounds:
-  background-music: "../assets/audio/background_music.mp3"
-  background-music2: "../assets/audio/background_music2.wav"
+soundEffects:
+  background_music: "../assets/audio/background_music.mp3"
+  background_music2: "../assets/audio/background_music2.wav"
   boom: "../assets/audio/boom.wav"
-  cool-sound: "../assets/audio/cool_sound.mp3"
+  cool_sound: "../assets/audio/cool_sound.mp3"
   duck: "../assets/audio/duck.wav"
   dudum: "../assets/audio/dudum.wav"
   error: "../assets/audio/error.wav"
   fart: "../assets/audio/fart.wav"
-  game-over: "../assets/audio/game_over.wav"
+  game_over: "../assets/audio/game_over.wav"
   gameover: "../assets/audio/gameover.wav"
   jump: "../assets/audio/jump.wav"
   mepmep: "../assets/audio/mepmep.wav"
@@ -85,21 +15,23 @@ sounds:
   oof: "../assets/audio/oof.wav"
   pickup: "../assets/audio/pickup.wav"
   pipe: "../assets/audio/pipe.wav"
-  proper-coin: "../assets/audio/proper_coin.wav"
-  proper-duck: "../assets/audio/proper_duck.wav"
-  proper-jump: "../assets/audio/proper_jump.wav"
-  proper-rock-smash: "../assets/audio/proper_rock_smash.wav"
+  proper_coin: "../assets/audio/proper_coin.wav"
+  proper_crouch: "../assets/audio/proper_crouch.wav"
+  proper_jump: "../assets/audio/proper_jump.wav"
+  proper_rock_smash: "../assets/audio/proper_rock_smash.wav"
   shutdown: "../assets/audio/shutdown.wav"
 
 textures:
   crouch: "../assets/texture/player_duck.png"
   jump: "../assets/texture/player_jump.png"
   walk: "../assets/texture/player_walk.png"
-  kaiserschmarrn: "../assets/texture/kaiserschmarrn.png"
-  coin: "../assets/texture/coin.png"
-  duck: "../assets/texture/duck.png"
+  Kaiserschmarrn: "../assets/texture/kaiserschmarrn.png"
+  Coin: "../assets/texture/coin.png"
+  Duck: "../assets/texture/duck.png"
   rock: "../assets/texture/stone.png"
+  explosion: "../assets/texture/explosion.png"
   helicopter: "../assets/texture/helicopter.png"
+  monster: "../assets/texture/killbar.png"
   midground: "../assets/layers/glacial_mountains.png"
   foreground: "../assets/layers/clouds_mg_1.png"
   mountain: "../assets/layers/mountain.png"

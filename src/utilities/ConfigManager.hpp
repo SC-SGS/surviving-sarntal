@@ -12,10 +12,8 @@ class ConfigManager : public Singleton<ConfigManager> {
     friend class Singleton<ConfigManager>; // Allow Singleton to access the constructor??
 
   public:
-    void testPublicFunction();
-    std::string textureLocation(const std::string &textureName);
     YAML::Node getTextures();
-    YAML::Node getConfig();
+    YAML::Node getSounds();
 
   private:
     ConfigManager();

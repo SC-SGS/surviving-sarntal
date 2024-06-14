@@ -9,7 +9,7 @@
 
 Game::Game() { spdlog::info("Game initialized."); }
 
-Game::~Game() { spdlog::info("Game destroyed."); }
+Game::~Game() = default;
 
 void Game::run() {
     // game loop
