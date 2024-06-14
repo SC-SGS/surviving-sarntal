@@ -2,8 +2,9 @@
 #include "spdlog/spdlog.h"
 
 int main(int argc, char *argv[]) {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::info);
     InitWindow(graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT, "Surviving Sarntal");
     SetTargetFPS(60);
     Game::getInstance().run();
+    return 0;
 }

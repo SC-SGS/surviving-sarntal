@@ -53,7 +53,4 @@ void PhysicsEngine::updateTimeStep() const {
     this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
 }
 
-PhysicsEngine::~PhysicsEngine() {
-    // TODO delete the other singletons (all singletons need a static destructor)
-    spdlog::info("Physics engine goes to sleep."); // we need this because clang tidy is annoying
-}
+PhysicsEngine::~PhysicsEngine() = default; // TODO delete the other singletons (all singletons need a static destructor)

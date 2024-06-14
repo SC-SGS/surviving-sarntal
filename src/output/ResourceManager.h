@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RESOURCEMANAGER_H
 #define SURVIVING_SARNTAL_RESOURCEMANAGER_H
 
+#include "../utilities/ConfigManager.hpp"
 #include "../utilities/Singleton.hpp"
 #include "raylib.h"
 #include <functional>
@@ -13,6 +14,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 
 class ResourceManager : public Singleton<ResourceManager> {
     friend class Singleton<ResourceManager>;
@@ -22,6 +24,8 @@ class ResourceManager : public Singleton<ResourceManager> {
     ~ResourceManager();
     void loadMusic();
     void loadTextures();
+
+    ConfigManager &config = ConfigManager::getInstance();
 
     std::unordered_map<std::string, Texture2D> textures;
     std::unordered_map<std::string, Sound> soundEffects;
