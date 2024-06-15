@@ -3,6 +3,8 @@
 //
 
 #include "../Inventory.hpp"
+
+#include "../../output/audio/AudioService.hpp"
 #include "spdlog/spdlog.h"
 #include <iostream>
 
@@ -84,6 +86,7 @@ int Inventory::getNextFreeSlot() {
 void Inventory::addItem(int slot, const std::shared_ptr<Item> &item) {
     if (slots[slot].size() < ITEMS_PER_SLOT) {
         slots[slot].push_back(item);
+        AudioService::getInstance().playSound("pickup-item");
     }
 }
 

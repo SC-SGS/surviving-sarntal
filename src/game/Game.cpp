@@ -13,6 +13,9 @@ Game::~Game() = default;
 
 void Game::run() {
     // game loop
+    audioService.playSound("background-music");
+    bool playedEndSound = false;
+
     while (!WindowShouldClose()) {
         if (this->world.getHiker().getIsAlive()) {
             std::queue<GameEvent> events = this->inputHandler.getEvents();
@@ -20,6 +23,10 @@ void Game::run() {
             this->renderer.draw();
             updateScore();
         } else {
+            if (!playedEndSound) {
+                audioService.playSound("game-over");
+                playedEndSound = true;
+            }
             drawEndScreen();
         }
     }

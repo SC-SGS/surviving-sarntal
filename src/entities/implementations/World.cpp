@@ -80,16 +80,19 @@ void World::useItem(const ItemType itemType) {
 
 void World::useKaiserschmarrn() const {
     this->hiker->addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
+    AudioService::getInstance().playSound("use-kaiserschmarrn");
     spdlog::debug("Used Kaiserschmarrn.");
 }
 
 void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
     this->coinScore += COIN_SCORE;
+    AudioService::getInstance().playSound("use-coin");
     spdlog::debug("Used Coin.");
 }
 
 void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
     //  TODO play sounds
+    AudioService::getInstance().playSound("use-duck");
     spdlog::debug("Used Duck.");
 }
 
