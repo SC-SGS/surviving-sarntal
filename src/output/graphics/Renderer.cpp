@@ -273,6 +273,14 @@ void Renderer::renderHealthBar() {
     DrawRectangle(startX, startY, static_cast<int>(HEALTH_BAR_WIDTH * health), HEALTH_BAR_HEIGHT, GREEN);
 }
 
+void Renderer::renderCoinScore() {
+    int fontSize = 20;
+    const char *scoreText;
+    scoreText = (std::to_string(World::getInstance().getCoinScore())).c_str();
+    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - UI_MARGIN;
+    DrawText(scoreText, centerX, UI_MARGIN * 5, fontSize, GOLD);
+}
+
 void Renderer::renderScore() {
     int fontSize = 20;
     const char *scoreText;
@@ -306,6 +314,7 @@ void Renderer::draw() {
     renderInventory();
     renderHealthBar();
     renderScore();
+    renderCoinScore();
 
     DrawFPS(0, 0);
 

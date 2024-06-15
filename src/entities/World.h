@@ -38,6 +38,8 @@ class World : public Singleton<World> {
 
     std::list<Rock> &getDestroyedRocks() const;
 
+    int getCoinScore() const;
+
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
