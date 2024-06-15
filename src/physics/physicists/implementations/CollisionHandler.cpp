@@ -50,6 +50,8 @@ void CollisionHandler::playerCollisions() const {
     for (auto &rock : this->world.getRocks()) {
         if (this->collisionDetector.isPlayerHitByRock(rock)) {
             // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
+            AudioService::getInstance().playSound("rock-smash");
+            AudioService::getInstance().playSound("boom");
             const int rockDmg = rockDamage(rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             // TODO rumble (here?)
