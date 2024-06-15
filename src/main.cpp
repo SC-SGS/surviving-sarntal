@@ -4,6 +4,7 @@
 int main(int argc, char *argv[]) {
     spdlog::set_level(spdlog::level::info);
     InitWindow(graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT, "Surviving Sarntal");
+    InitAudioDevice(); // Initialize audio device
     SetTargetFPS(60);
     Game::getInstance().run();
     return 0;
