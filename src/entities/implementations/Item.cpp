@@ -24,7 +24,7 @@ void Item::buildItem() {
     case COIN:
         this->name = "Coin";
         this->autoCollect = true;
-        this->useOnPickup = false;
+        this->useOnPickup = true;
         this->dropOnUse = true;
         break;
     case DUCK_ITEM:
