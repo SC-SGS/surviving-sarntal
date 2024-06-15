@@ -9,12 +9,13 @@
 void AudioService::playSound(const std::string &soundName) const {
     try {
         PlaySound(resourceManager.getSound(soundName));
+        spdlog::debug("Playing a sound with name: {}", soundName);
     } catch (...) {
         spdlog::error("Sound with the name {} was used, but it does not exist.", soundName);
     }
 }
 
-AudioService::AudioService() { InitAudioDevice(); }
+AudioService::AudioService() = default;
 
 AudioService::~AudioService() {
     resourceManager.unloadAllSounds();

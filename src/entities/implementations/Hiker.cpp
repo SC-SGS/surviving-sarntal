@@ -81,8 +81,8 @@ void Hiker::turnLeft() { this->hikerMovement.setDirection(HikerMovement::LEFT); 
 void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT); }
 void Hiker::turnNeutral() { this->hikerMovement.setDirection(HikerMovement::NEUTRAL); }
 void Hiker::crouch() {
-    audioService.playSound("crouch");
     if (this->hikerMovement.getState() == HikerMovement::MOVING) {
+        audioService.playSound("crouch");
         this->hikerMovement.setState(HikerMovement::CROUCHED);
         this->setHeight(DUCKED_HIKER_HEIGHT);
         this->setWidth(DUCKED_HIKER_WIDTH);
@@ -96,7 +96,6 @@ void Hiker::uncrouch() {
     }
 }
 void Hiker::jump() {
-    audioService.playSound("jump");
     if (hikerMovement.getState() == HikerMovement::CROUCHED) {
         return;
     }
