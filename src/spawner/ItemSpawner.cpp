@@ -2,18 +2,22 @@
 // Created by Anietta Weckauff on 14.05.24.
 //
 #include "ItemSpawner.h"
-#include "../entities/Item.hpp"
 #include "spdlog/spdlog.h"
-#include <chrono>
-#include <ctime>
-#include <iostream>
-#include <mutex>
 
 // NOLINTBEGIN
 floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
-ItemSpawner::ItemSpawner() = default;
+ItemSpawner::ItemSpawner() {
+    YAML::Node items = ConfigManager::getInstance().getItems();
+    this->spawnWeightsSum = 0;
+    for (YAML::const_iterator it = items.begin(); it != items.end(); ++it) {
+        int spawnWeight = it->second["spawn-weight"].as<int>();
+        int typeId = it->second["type-id"].as<int>();
+        this->spawnWeightsSum += spawnWeight;
+        this->spawnWeights[typeId] = spawnWeight;
+    }
+}
 
 ItemSpawner::~ItemSpawner() = default;
 
@@ -37,18 +41,15 @@ void ItemSpawner::updateNextSpawnTime() {
     spdlog::debug("Next spawn time was set to: {}", nextSpawnTime);
 }
 ItemType ItemSpawner::getNextRandomItemType() {
-    int rand = randomGenerator.getRandomNumber(0, 2);
-    spdlog::debug("Next item to be spawned has item type: {}", rand);
-    switch (rand) {
-    case 0:
-        return KAISERSCHMARRN;
-    case 1:
-        return COIN;
-    case 2:
-        return DUCK_ITEM;
-    default:
-        return NO_ITEM;
+    int rand = randomGenerator.getRandomNumber(1, this->spawnWeightsSum);
+    for (auto spawnWeight : this->spawnWeights) {
+        rand -= spawnWeight.second;
+        if (rand < 1) {
+            spdlog::debug("Next item to be spawned has item type: {}", spawnWeight.first);
+            return ItemType(spawnWeight.first);
+        }
     }
+    return COIN;
 }
 Vector ItemSpawner::getNextRandomPosition() {
     auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300));
