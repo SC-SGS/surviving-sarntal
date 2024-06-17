@@ -21,3 +21,4 @@ ConfigManager::~ConfigManager() = default;
 
 YAML::Node ConfigManager::getSounds() { return config["soundEffects"]; }
 YAML::Node ConfigManager::getTextures() { return config["textures"]; }
+YAML::Node ConfigManager::getItems() { return config["items"]; }

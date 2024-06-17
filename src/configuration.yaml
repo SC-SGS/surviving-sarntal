@@ -26,9 +26,9 @@ textures:
   crouch: "../assets/texture/player_duck.png"
   jump: "../assets/texture/player_jump.png"
   walk: "../assets/texture/player_walk.png"
-  Kaiserschmarrn: "../assets/texture/kaiserschmarrn.png"
-  Coin: "../assets/texture/coin.png"
-  Duck: "../assets/texture/duck.png"
+  kaiserschmarrn: "../assets/texture/kaiserschmarrn.png"
+  coin: "../assets/texture/coin.png"
+  duck: "../assets/texture/duck.png"
   rock: "../assets/texture/stone.png"
   explosion: "../assets/texture/explosion.png"
   helicopter: "../assets/texture/helicopter.png"
@@ -36,3 +36,23 @@ textures:
   midground: "../assets/layers/glacial_mountains.png"
   foreground: "../assets/layers/clouds_mg_1.png"
   mountain: "../assets/layers/mountain.png"
+
+items:
+  kaiserschmarrn:
+    type-id: 0
+    autoCollect: false
+    useOnPickUp: false
+    dropOnUse: true
+    spawn-weight: 5
+  coin:
+    type-id: 1
+    autoCollect: true
+    useOnPickUp: true
+    dropOnUse: true
+    spawn-weight: 3
+  duck:
+    type-id: 2
+    autoCollect: true
+    useOnPickUp: false
+    dropOnUse: true
+    spawn-weight: 2
