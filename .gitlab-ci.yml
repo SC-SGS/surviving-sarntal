@@ -16,12 +16,22 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
+workflow: # && $CI_MERGE_REQUEST_STATE == "opened" && $CI_MERGE_REQUEST_DRAFT == "false"'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+    - if: '$CI_MERGE_REQUEST_TITLE =~ /^Draft.*$/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+
 stages:  
   - build        # List of stages for jobs, and their order of execution
   - test
   - lint
   - run-exe
-
 
 clang-format:
   stage: lint
@@ -48,12 +58,10 @@ test-job:
       - cmake-build-debug/surviving-sarntal
     expire_in: 1 hour
 
-
 clang-tidy:
   stage: lint
   script:
     - clang-tidy -p=cmake-build-debug/ $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --warnings-as-errors=* --header-filter="^((src|test)/.*)$" --use-color
-
   dependencies:
     - build-job
     - test-job
@@ -69,7 +77,6 @@ run-exe:                # TODO we can practically remove this until we have a GU
     paths:
       - cmake-build-debug/surviving-sarntal
     expire_in: 1 hour
-
 
 #unit-test-job:   # This job runs in the test stage.
 #  stage: test    # It only starts when the job in the build stage completes successfully.
