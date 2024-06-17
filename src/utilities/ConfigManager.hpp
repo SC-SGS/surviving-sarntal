@@ -14,6 +14,7 @@ class ConfigManager : public Singleton<ConfigManager> {
   public:
     YAML::Node getTextures();
     YAML::Node getSounds();
+    YAML::Node getItems();
 
   private:
     ConfigManager();

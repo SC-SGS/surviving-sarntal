@@ -25,6 +25,12 @@ class ItemSpawner : public Singleton<ItemSpawner> {
 
   private:
     static floatType nextSpawnTime;
+    int spawnWeightsSum;
+
+    /**
+     * Maps the itemType id to the spawn weight of the item
+     */
+    std::unordered_map<int, int> spawnWeights;
 
     World &world = World::getInstance();
     RandomGenerator &randomGenerator = RandomGenerator::getInstance();

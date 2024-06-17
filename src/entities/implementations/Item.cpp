@@ -12,35 +12,27 @@ RenderInformation Item::getRenderInformation() {
     return RenderInformation{Vector2(this->position), {0, 0}, ITEM_BASE_HEIGHT, ITEM_BASE_HEIGHT, {0, 0}, this->name};
 }
 
-// TODO make better
 void Item::buildItem() {
     switch (this->itemType) {
     case KAISERSCHMARRN:
-        this->name = "Kaiserschmarrn";
-        this->autoCollect = false;
-        this->useOnPickup = false;
-        this->dropOnUse = true;
+        this->name = "kaiserschmarrn";
         break;
     case COIN:
-        this->name = "Coin";
-        this->autoCollect = true;
-        this->useOnPickup = true;
-        this->dropOnUse = true;
+        this->name = "coin";
         break;
     case DUCK_ITEM:
-        this->name = "Duck";
-        this->autoCollect = true;
-        this->useOnPickup = false;
-        this->dropOnUse = true;
+        this->name = "duck";
         break;
     default:
-        this->name = "NoItem"; // todo remove ?? Add texture for Noitem
-        this->autoCollect = false;
-        this->useOnPickup = false;
-        this->dropOnUse = false;
-        break;
+        this->name = "coin";
     }
+
+    YAML::Node item = ConfigManager::getInstance().getItems()[this->name];
+    this->autoCollect = item["autoCollect"].as<bool>();
+    this->useOnPickup = item["useOnPickUp"].as<bool>();
+    this->dropOnUse = item["dropOnUse"].as<bool>();
 }
+
 std::string Item::getName() const { return this->name; }
 bool Item::canAutoCollect() const { return this->autoCollect; }
 bool Item::canUseOnPickUp() const { return this->useOnPickup; }
