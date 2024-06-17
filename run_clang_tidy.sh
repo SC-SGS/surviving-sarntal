@@ -44,4 +44,3 @@ for FILE in $FILES; do
         print_message $RED "clang-tidy found issues in $FILE"
     fi
 done
-
