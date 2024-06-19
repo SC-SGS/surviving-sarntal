@@ -7,6 +7,7 @@
 
 #include "../events/DeviceEvent.h"
 #include "../events/GameEvent.h"
+#include "Device.h"
 #include <list>
 #include <map>
 #include <queue>
@@ -17,6 +18,7 @@
  */
 class InputDevice {
   public:
+    explicit InputDevice(int deviceId, Device device);
     virtual ~InputDevice();
     /**
      * Checks for events currently happening on this device to control the game.
@@ -24,6 +26,16 @@ class InputDevice {
      * @return list of events
      */
     virtual std::queue<GameEvent> getGameEvents() = 0;
+
+    /**
+     * Returns the ID of this device. The ID is only relevant for gamepads, as multiple such devices can be connected.
+     * For all other devices, the ID is -1.
+     *
+     * @return The ID of this device
+     */
+    int getId() const;
+
+    Device getDevice() const;
 
   protected:
     std::map<DeviceEvent, GameEvent, DeviceEventCompare> INPUT_MAPPINGS;
@@ -36,6 +48,10 @@ class InputDevice {
      * @return corresponding game event
      */
     GameEvent getGameEvent(DeviceEvent deviceEvent) const;
+
+  private:
+    const int deviceId;
+    const Device device;
 };
 
 #endif // SURVIVING_SARNTAL_INPUTDEVICE_H

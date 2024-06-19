@@ -21,8 +21,7 @@ class InputHandler : public Singleton<InputHandler> {
     friend class Singleton<InputHandler>; // Allow Singleton to access the constructor??
 
   private:
-    static const int maxGamepads = 8;
-    InputDevice *device;
+    std::vector<InputDevice *> devices;
 
     /**
      * Creates the input handler with the device currently available. If both
@@ -33,16 +32,25 @@ class InputHandler : public Singleton<InputHandler> {
 
   public:
     /**
-     * Creates an input handler with the specified device.
-     */
-    explicit InputHandler(Device device);
-
-    /**
      * Checks for events currently happening to control the game.
      *
      * @return list of events
      */
     std::queue<GameEvent> getEvents() const;
+
+    /**
+     * Update the input Handler to also recognize gamepads as input
+     */
+    void initializeGamepads();
+
+    /**
+     * Checks whether gamepads have been initialized.
+     *
+     * @return
+     */
+    bool gamepadsInitialized() const;
+
+    std::vector<InputDevice *> getDevices() const;
 };
 
 #endif // SURVIVING_SARNTAL_INPUTHANDLER_H

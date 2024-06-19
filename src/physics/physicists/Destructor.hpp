@@ -31,6 +31,11 @@ class Destructor : public Singleton<Destructor> {
      * Destruct chunks of the mountain that are outside of the world borders;
      */
     void destructMountain() const;
+
+    /**
+     * Kill hiker if necessary.
+     */
+    void destructHiker() const;
 };
 
 #endif // SURVIVING_SARNTAL_DESTRUCTOR_HPP

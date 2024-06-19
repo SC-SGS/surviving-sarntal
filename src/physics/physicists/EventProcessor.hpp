@@ -25,7 +25,17 @@ class EventProcessor : public Singleton<EventProcessor> {
      */
     void processEvents();
 
-    void setEventQueue(std::queue<GameEvent> &eventQueue);
+    /**
+     * Adds new events to the queue.
+     *
+     * @param eventQueue
+     */
+    void addEvents(std::queue<GameEvent> &eventQueue);
+
+    /**
+     * Clears events executed repetedly from the event queue.
+     */
+    void clearRepeatedEvents();
 
   private:
     World &world = World::getInstance();

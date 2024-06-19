@@ -12,6 +12,7 @@ void Destructor::destruct() const {
     destructRocks();
     destructItems();
     destructMountain();
+    destructHiker();
 }
 
 void Destructor::destructRocks() const {
@@ -31,4 +32,10 @@ void Destructor::destructItems() const {
 
 void Destructor::destructMountain() const {
     // TODO: Implement when mountain implementation is reworked
+}
+
+void Destructor::destructHiker() const {
+    if (this->world.getHiker().needsToDie()) {
+        this->world.getHiker().kill();
+    }
 }

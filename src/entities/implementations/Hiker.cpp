@@ -3,6 +3,7 @@
 //
 
 #include "../Hiker.h"
+#include "../../output/haptics/HapticsService.hpp"
 #include "../../utilities/GameConstants.hpp"
 #include "../../utilities/vector.h"
 #include "../World.h"
@@ -68,9 +69,7 @@ const Vector &Hiker::getVelocity() const { return velocity; }
 
 void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
 
-bool Hiker::getIsAlive() const {
-    return this->getPosition().x - World::getInstance().getMonster().getXPosition() > 0 && this->healthPoints > 0;
-}
+bool Hiker::getIsAlive() const { return this->isAlive; }
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }
 void Hiker::addHealthPoints(const int points) {
@@ -123,4 +122,15 @@ void Hiker::doSecondJump() {
         this->hikerMovement.setCanJumpAgain(false);
     }
     hikerMovement.setState(HikerMovement::IN_AIR);
+}
+
+bool Hiker::needsToDie() const {
+    return this->getPosition().x - World::getInstance().getMonster().getXPosition() <= 0 || this->healthPoints <= 0;
+}
+
+void Hiker::kill() {
+    this->isAlive = false;
+    this->healthPoints = 0;
+    this->velocity = {0, 0};
+    HapticsService::deathRumble();
 }
