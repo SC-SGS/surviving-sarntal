@@ -17,7 +17,13 @@ void Game::run() {
     bool playedEndSound = false;
 
     while (!WindowShouldClose()) {
-        if (this->world.getHiker().getIsAlive()) {
+        if (GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized()) {
+            this->inputHandler.initializeGamepads();
+            if (this->inputHandler.gamepadsInitialized()) {
+                spdlog::info("Gamepads initialized at time {}", GetTime());
+            }
+        } else if (this->world.getHiker().getIsAlive()) {
+            // this->inputHandler.update();
             std::queue<GameEvent> events = this->inputHandler.getEvents();
             this->physicsEngine.update(events);
             this->renderer.draw();

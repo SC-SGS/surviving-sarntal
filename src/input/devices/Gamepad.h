@@ -18,7 +18,6 @@ class Gamepad : public InputDevice {
     ~Gamepad() override;
 
   protected:
-    const int gamepadID;
     std::queue<GameEvent> getGameEvents() override;
 
   private:
