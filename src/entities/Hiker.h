@@ -77,6 +77,9 @@ class Hiker : public RenderedEntity {
 
     void addHealthPoints(int points);
 
+    bool needsToDie() const;
+    void kill();
+
   private:
     AudioService &audioService = AudioService::getInstance();
     Vector velocity{};

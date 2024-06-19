@@ -6,6 +6,7 @@
 #define COLLISIONHANDLER_H
 
 #include "../../entities/World.h"
+#include "../../output/haptics/HapticsService.hpp"
 #include "../../utilities/Singleton.hpp"
 #include "CollisionDetector.hpp"
 
@@ -29,6 +30,7 @@ class CollisionHandler : public Singleton<CollisionHandler> {
     World &world;
     CollisionDetector &collisionDetector;
     floatType deltaT;
+    HapticsService &hapticsService;
 
     CollisionHandler();
     ~CollisionHandler();

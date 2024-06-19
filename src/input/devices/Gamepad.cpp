@@ -5,8 +5,9 @@
 #include "Gamepad.h"
 #include "../../utilities/GameConstants.hpp"
 #include "raylib.h"
+#include "spdlog/spdlog.h"
 
-Gamepad::Gamepad(int gamepadID) : gamepadID(gamepadID) {
+Gamepad::Gamepad(int gamepadID) : InputDevice(gamepadID, DEVICE_GAMEPAD) {
     INPUT_MAPPINGS = {
         // Normal events
         {{GAMEPAD_BUTTON_RIGHT_FACE_DOWN, TRIGGER_PRESSED}, {JUMP, NO_AXIS, NO_MODIFICATION, false}},
@@ -19,16 +20,13 @@ Gamepad::Gamepad(int gamepadID) : gamepadID(gamepadID) {
         {{GAMEPAD_BUTTON_MIDDLE_RIGHT, TRIGGER_PRESSED}, {PAUSE, NO_AXIS, NO_MODIFICATION, false}},
 
         // Virtual axis modifications
-        {{GAMEPAD_BUTTON_LEFT_FACE_RIGHT, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, INCREASE, true}},
-        {{GAMEPAD_BUTTON_LEFT_FACE_LEFT, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, DECREASE, true}},
+        {{GAMEPAD_BUTTON_LEFT_FACE_RIGHT, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, 1, true}},
+        {{GAMEPAD_BUTTON_LEFT_FACE_LEFT, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1, true}},
 
         // Axis modifications
         {{GAMEPAD_AXIS_LEFT_X, TRIGGER_POSITION}, {AXIS_MODIFICATION, MOVEMENT_X, 0, true}},
         {{GAMEPAD_AXIS_LEFT_Y, TRIGGER_POSITION}, {AXIS_MODIFICATION, MOVEMENT_Y, 0, true}},
         {{GAMEPAD_AXIS_RIGHT_X, TRIGGER_POSITION}, {AXIS_MODIFICATION, ITEM_SWITCH, 0, false}},
-        //{{GAMEPAD_AXIS_RIGHT_X, TRIGGER_POSITION},{AXIS_MODIFICATION,
-        // SECONDARY_X, 0, false}},
-        {{GAMEPAD_AXIS_RIGHT_Y, TRIGGER_POSITION}, {AXIS_MODIFICATION, SECONDARY_Y, 0, true}},
     };
 }
 
@@ -37,7 +35,7 @@ const std::map<TriggerType, std::function<bool(int, int)>> Gamepad::raylibMappin
     {TRIGGER_DOWN, IsGamepadButtonDown},
     {TRIGGER_RELEASED, IsGamepadButtonReleased},
     {TRIGGER_UP, IsGamepadButtonUp},
-    {TRIGGER_POSITION, GetGamepadAxisMovement}};
+};
 
 Gamepad::~Gamepad() = default;
 
@@ -46,11 +44,11 @@ std::queue<GameEvent> Gamepad::getGameEvents() {
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
         if (deviceEvent.triggerType == TRIGGER_POSITION) {
-            floatType axisValue = Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger);
+            floatType axisValue = GetGamepadAxisMovement(this->getId(), deviceEvent.trigger);
             GameEvent gameEvent = getGameEvent(deviceEvent);
             gameEvent.axisValue = axisValue;
             events.push(gameEvent);
-        } else if (Gamepad::raylibMappings.at(deviceEvent.triggerType)(gamepadID, deviceEvent.trigger)) {
+        } else if (Gamepad::raylibMappings.at(deviceEvent.triggerType)(this->getId(), deviceEvent.trigger)) {
             events.push(getGameEvent(deviceEvent));
         }
     }

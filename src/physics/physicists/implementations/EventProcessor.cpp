@@ -36,6 +36,7 @@ void EventProcessor::processEvents() {
     const auto numEvents = this->eventQueue.size();
     for (int i = 0; i < numEvents; i++) {
         const auto &event = this->eventQueue.front();
+        // spdlog::info("Event with axis value {}.", event.axisValue);
         const GameEventFunction func = gameEventFunctionMappings.at(event);
         (this->*func)(event);
         if (event.executeRepeatedly) {
@@ -89,10 +90,7 @@ void EventProcessor::useItem(const GameEvent event) const {
     }
 }
 
-void EventProcessor::jump(GameEvent event) const {
-    // std::cout << "Jump hiker." << std::endl;
-    this->world.getHiker().jump();
-}
+void EventProcessor::jump(GameEvent event) const { this->world.getHiker().jump(); }
 
 void EventProcessor::pause(const GameEvent event) const {
     // TODO: implement
@@ -131,7 +129,24 @@ void EventProcessor::noEvent(const GameEvent event) const {
     // Do nothing
 }
 
-void EventProcessor::setEventQueue(std::queue<GameEvent> &eventQueue) { this->eventQueue = eventQueue; }
+void EventProcessor::addEvents(std::queue<GameEvent> &eventQueue) {
+    while (!eventQueue.empty()) {
+        this->eventQueue.push(eventQueue.front());
+        eventQueue.pop();
+    }
+}
+
+void EventProcessor::clearRepeatedEvents() {
+    std::queue<GameEvent> newEvents = {};
+    while (!this->eventQueue.empty()) {
+        GameEvent event = this->eventQueue.front();
+        this->eventQueue.pop();
+        if (!event.executeRepeatedly) {
+            newEvents.push(event);
+        }
+    }
+    this->eventQueue = newEvents;
+}
 
 void EventProcessor::pickItem(const std::shared_ptr<Item> &item) const {
     if (item->canUseOnPickUp()) {
