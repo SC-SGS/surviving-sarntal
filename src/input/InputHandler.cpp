@@ -12,40 +12,40 @@
 #include <mutex>
 
 InputHandler::InputHandler() {
-    bool deviceSet = false;
-    for (int i = 0; i < maxGamepads; i++) {
-        if (IsGamepadAvailable(i) && !deviceSet) {
-            this->device = new Gamepad(i);
-            deviceSet = true;
-        }
-    }
-    if (!deviceSet) {
-        this->device = new Keyboard();
-    }
-    spdlog::info("InputHandler constructed");
+    this->devices.push_back(new Keyboard());
+    spdlog::info("Keyboard added.");
 }
 
 InputHandler::~InputHandler() = default;
 
-InputHandler::InputHandler(const Device device) {
-    switch (device) {
-    case DEVICE_GAMEPAD:
-        for (int i = 0; i < maxGamepads; i++) {
-            if (IsGamepadAvailable(i)) {
-                this->device = new Gamepad(i);
-            }
+std::queue<GameEvent> InputHandler::getEvents() const {
+    std::queue<GameEvent> events = {};
+    for (auto device : this->devices) {
+        auto eventsFromDevice = device->getGameEvents();
+        while (!eventsFromDevice.empty()) {
+            events.push(eventsFromDevice.front());
+            eventsFromDevice.pop();
         }
-        break;
-    case DEVICE_KEYBOARD:
-        this->device = new Keyboard();
-        break;
-    case DEVICE_MOUSE:
-        this->device = new Mouse();
-        break;
-    default:
-        this->device = nullptr;
-        break;
     }
+    return events;
 }
 
-std::queue<GameEvent> InputHandler::getEvents() const { return device->getGameEvents(); }
+std::vector<InputDevice *> InputHandler::getDevices() const { return this->devices; }
+
+void InputHandler::initializeGamepads() {
+    BeginDrawing();
+    for (int i = 0; i < MAX_GAMEPADS; i++) {
+        if (IsGamepadAvailable(i)) {
+            this->devices.push_back(new Gamepad(i));
+            spdlog::info("Gamepad {} added.", i);
+        }
+    }
+    EndDrawing();
+}
+bool InputHandler::gamepadsInitialized() const {
+    if (std::any_of(this->devices.cbegin(), this->devices.cend(),
+                    [](InputDevice const *device) { return device->getDevice() == DEVICE_GAMEPAD; })) {
+        return true;
+    }
+    return false;
+}

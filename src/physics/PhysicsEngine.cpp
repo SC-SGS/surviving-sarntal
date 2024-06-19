@@ -23,7 +23,7 @@ void PhysicsEngine::update(std::queue<GameEvent> &events) {
     this->timeLastUpdate = currentTime;
     // TODO fine adjustment of max frame time to avoid spiral of death in case of lag
     this->accumulator += frameTime > 100 * this->deltaT ? 100 * this->deltaT : frameTime;
-    this->eventProcessor.setEventQueue(events);
+    this->eventProcessor.addEvents(events);
     while (this->accumulator >= this->deltaT) {
         this->updateTimeStep();
         this->accumulator -= this->deltaT;
@@ -31,6 +31,7 @@ void PhysicsEngine::update(std::queue<GameEvent> &events) {
     }
     const floatType alpha = this->accumulator / this->deltaT;
     this->interpolator.interpolate(alpha);
+    this->eventProcessor.clearRepeatedEvents();
 }
 
 floatType PhysicsEngine::getDeltaT() const { return this->deltaT; }

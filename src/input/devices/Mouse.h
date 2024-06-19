@@ -12,6 +12,7 @@
  */
 class Mouse : public InputDevice {
   public:
+    Mouse();
     ~Mouse() override;
 
   protected:

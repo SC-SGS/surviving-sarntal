@@ -8,7 +8,8 @@
 #include <mutex>
 
 CollisionHandler::CollisionHandler()
-    : world(World::getInstance()), collisionDetector(CollisionDetector::getInstance()), deltaT(1) {}
+    : world(World::getInstance()), collisionDetector(CollisionDetector::getInstance()),
+      hapticsService(HapticsService::getInstance()), deltaT(1) {}
 
 CollisionHandler::~CollisionHandler() = default;
 
@@ -54,7 +55,7 @@ void CollisionHandler::playerCollisions() const {
             AudioService::getInstance().playSound("boom");
             const int rockDmg = rockDamage(rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
-            // TODO rumble (here?)
+            HapticsService::rockRumble(rockDmg);
             this->world.getHiker().setHealthPoints(this->world.getHiker().getHealthPoints() - rockDmg);
             this->world.getHiker().setIsHit(true);
             // TODO knockback issue
