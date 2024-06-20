@@ -33,7 +33,7 @@ void ItemSpawner::spawnItems() {
     this->world.addItem(newItem);
     updateNextSpawnTime();
 
-    spdlog::info("Spawning {0} at position (x: {1}, y: {2}).", itemType, position.x, position.y);
+    spdlog::info("Spawning {0} at position (x: {1}, y: {2}).", newItem.getName(), position.x, position.y);
 }
 void ItemSpawner::updateNextSpawnTime() {
     auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10));

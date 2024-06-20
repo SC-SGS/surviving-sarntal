@@ -53,7 +53,11 @@ class Renderer : public Singleton<Renderer> {
     void debugRenderEntities();
     static void debugRenderRock(RenderedEntity &entity);
     static void renderScore();
-    static void renderCoinScore();
+    void renderCoinScore();
+    void renderHUD();
+    void renderAltimeter();
+    static void renderAltimeterStep(int drawY, int drawAltitude, int fontSize);
+    static int floorToNearest(int number, int placeValue);
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

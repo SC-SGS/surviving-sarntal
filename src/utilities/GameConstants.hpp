@@ -29,7 +29,7 @@ constexpr floatType DUCKED_HIKER_WIDTH = 70.f; // 47.4f;
  * Player movement speed constants.
  */
 constexpr floatType DUCK_SPEED_FACTOR = .35f;
-constexpr floatType NORMAL_SPEED = 200.f;
+constexpr floatType NORMAL_SPEED = 260.f;
 constexpr floatType JUMP_VELOCITY_CONSTANT = -750.f;
 constexpr floatType AIR_MOVEMENT_SPEED_FACTOR = .6f;
 constexpr floatType KNOCKBACKCONST = 0.00005f;
@@ -109,5 +109,9 @@ constexpr int HEALTH_BAR_WIDTH = 200;
 constexpr int HEALTH_BAR_HEIGHT = 20;
 
 constexpr int UI_MARGIN = 20;
+constexpr int FONT_SIZE_SCORE = 30;
+constexpr int FONT_SIZE_ALTIMETER = 20;
+constexpr int POSITION_TO_SCORE_RATIO = 10;
+constexpr int ALTIMETER_STEPS = 10;
 
 #endif // SURVIVING_SARNTAL_GAMECONSTANTS_HPP

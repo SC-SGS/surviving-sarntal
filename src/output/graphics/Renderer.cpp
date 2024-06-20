@@ -169,17 +169,17 @@ void Renderer::renderEntities() {
     auto &monster = world.getMonster();
     auto &mountain = world.getMountain();
 
+    // Render destroyed rocks, e.g. explosions
+    for (auto &destroyedRock : destroyedRocks) {
+        animateEntity(destroyedRock);
+    }
+
     // Render hiker
     renderHiker(hiker);
 
     // Render rocks
     for (auto &rock : rocks) {
         renderEntity(rock);
-    }
-
-    // Render destroyed rocks, e.g. explosions
-    for (auto &destroyedRock : destroyedRocks) {
-        animateEntity(destroyedRock);
     }
 
     // Render monster
@@ -221,6 +221,16 @@ void Renderer::debugRenderEntities() {
     }
     // Render mountain
     renderMountain(mountain, SKYBLUE, BLUE);
+}
+
+void Renderer::renderHUD() {
+    renderAltimeter();
+    renderInventory();
+    renderHealthBar();
+    renderScore();
+    renderCoinScore();
+
+    DrawFPS(0, 0);
 }
 
 void Renderer::renderItemSlot(Inventory &inventory, int slotNumber, int startX, int startY) {
@@ -275,19 +285,64 @@ void Renderer::renderHealthBar() {
 }
 
 void Renderer::renderCoinScore() {
-    int fontSize = 20;
+    int fontSize = FONT_SIZE_SCORE;
     const char *scoreText;
     scoreText = (std::to_string(World::getInstance().getCoinScore())).c_str();
-    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - UI_MARGIN;
-    DrawText(scoreText, centerX, UI_MARGIN * 5, fontSize, GOLD);
+    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - 2 * UI_MARGIN;
+    DrawText(scoreText, centerX, UI_MARGIN * 6, fontSize, GOLD);
+    auto coinTexture = resourceManager.getTexture("coin");
+    DrawTexturePro(resourceManager.getTexture("coin"),
+                   {0, 0, (floatType)coinTexture.width, (floatType)coinTexture.height},
+                   {static_cast<float>(GetScreenWidth() - UI_MARGIN * 2), UI_MARGIN * 6, static_cast<float>(fontSize),
+                    static_cast<float>(fontSize)},
+                   {0, 0}, 0, WHITE);
 }
 
 void Renderer::renderScore() {
-    int fontSize = 20;
+    int fontSize = FONT_SIZE_SCORE;
     const char *scoreText;
-    scoreText = (std::to_string(Game::getInstance().getScore() / 10) + "m").c_str();
-    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - UI_MARGIN;
+    scoreText = (std::to_string(Game::getInstance().getScore() / POSITION_TO_SCORE_RATIO) + "m").c_str();
+    auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - 2 * UI_MARGIN;
     DrawText(scoreText, centerX, UI_MARGIN * 3, fontSize, WHITE);
+}
+
+void Renderer::renderAltimeter() {
+    int fontSize = FONT_SIZE_ALTIMETER;
+    int stepSize = ALTIMETER_STEPS * POSITION_TO_SCORE_RATIO; // Step size of the altimeter
+    // TODO remove - when x axis inverted
+    int currentAltitude = -static_cast<int>(world.getHiker().getPosition().y); // Current altitude of the hiker
+    int topAltitude = currentAltitude - GetScreenHeight() / 2;                 // Top altitude of the screen
+    int bottomAltitude = currentAltitude + GetScreenHeight() / 2;              // Bottom altitude of the screen
+
+    for (int i = floorToNearest(bottomAltitude, stepSize); i > topAltitude; i -= POSITION_TO_SCORE_RATIO) {
+        int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
+        int drawAltitude = i / POSITION_TO_SCORE_RATIO;
+
+        renderAltimeterStep(drawY, drawAltitude, fontSize);
+    }
+}
+
+void Renderer::renderAltimeterStep(int drawY, int drawAltitude, int fontSize) {
+    if (drawAltitude % ALTIMETER_STEPS == 0) {
+        // right side
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+        DrawText(std::to_string(drawAltitude).c_str(), GetScreenWidth() - UI_MARGIN - 30, drawY, fontSize, DARKGREEN);
+
+        // left side
+        DrawLine(0, drawY + fontSize / 2, UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+        DrawText(std::to_string(drawAltitude).c_str(), UI_MARGIN + 10, drawY, fontSize, DARKGREEN);
+    } else if (drawAltitude % (ALTIMETER_STEPS / 2) == 0) {
+        // right side
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+        // left side
+        DrawLine(0, drawY + fontSize / 2, UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+    } else {
+        // right side
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN / 2, drawY + fontSize / 2,
+                 DARKGREEN);
+        // left side
+        DrawLine(0, drawY + fontSize / 2, UI_MARGIN / 2, drawY + fontSize / 2, DARKGREEN);
+    }
 }
 
 // Main rendering function
@@ -300,7 +355,7 @@ void Renderer::draw() {
         renderBackground();
 
     // Adjust y-position of camera
-    camera.target.y = world.getHiker().getRenderInformation().position.y - 100.0f;
+    camera.target.y = world.getHiker().getRenderInformation().position.y;
     camera.target.x = (world.getMaxX() + world.getMinX()) / 2.0f;
 
     BeginMode2D(camera);
@@ -312,12 +367,7 @@ void Renderer::draw() {
     }
 
     EndMode2D();
-    renderInventory();
-    renderHealthBar();
-    renderScore();
-    renderCoinScore();
-
-    DrawFPS(0, 0);
+    renderHUD();
 
     EndDrawing();
 }
@@ -368,3 +418,5 @@ void Renderer::regenerateGradientTexture() {
     gradient_texture_background = LoadTextureFromImage(verticalGradient);
     UnloadImage(verticalGradient);
 }
+
+int Renderer::floorToNearest(int number, int placeValue) { return (number / placeValue) * placeValue; }
