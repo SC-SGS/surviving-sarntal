@@ -88,23 +88,25 @@ void CollisionHandler::rockTerrainCollision(Rock &rock, const Vertex closestVert
     auto vel = rock.getVelocity();
     auto pos = rock.getPosition();
     const auto rad = rock.getRadius();
-    auto rot = rock.getRotation();
+    floatType angularVelocity = rock.getAngularVelocity();
+    floatType angularOffset = rock.getAngularOffset();
     const auto normal = this->collisionDetector.getNormal(closestVertex.index, pos);
     vel = vel.reflectOnNormal(normal);
     const auto mass = std::pow(rad, 2);
     const Vector parallelVector = {-normal.y, normal.x};
     const auto velocityParallel = vel * parallelVector;
-    rot.angular_velocity += static_cast<floatType>((GAMMA) * (velocityParallel - rot.angular_velocity * rad) / mass);
-    if (rot.angular_velocity >= MAX_ANGULAR_VELOCITY) {
-        rot.angular_velocity = MAX_ANGULAR_VELOCITY;
+    angularVelocity += static_cast<floatType>((GAMMA) * (velocityParallel - angularVelocity * rad) / mass);
+    if (angularVelocity >= MAX_ANGULAR_VELOCITY) {
+        angularVelocity = MAX_ANGULAR_VELOCITY;
     }
-    if (rot.angular_velocity <= -MAX_ANGULAR_VELOCITY) {
-        rot.angular_velocity = -MAX_ANGULAR_VELOCITY;
+    if (angularVelocity <= -MAX_ANGULAR_VELOCITY) {
+        angularVelocity = -MAX_ANGULAR_VELOCITY;
     }
-    rot.angular_offset += this->deltaT * rot.angular_velocity;
-    // TODO maybe later explode rock here
+    angularOffset += this->deltaT * angularVelocity;
+    //  TODO maybe later explode rock here
     rock.setVelocity(vel);
-    rock.setRotation(rot);
+    rock.setAngularVelocity(angularVelocity);
+    rock.setAngularOffset(angularOffset);
 }
 
 void CollisionHandler::rockRockCollisions() {
@@ -132,8 +134,10 @@ void CollisionHandler::rockRockCollision(Rock &rock1, Rock &rock2) {
     const Vector pos2 = rock2.getPosition();
     const Vector velDiff = vel1 - vel2;
     const Vector posDiff = pos1 - pos2;
-    auto [angularVelocity1, angularOffset1] = rock1.getRotation();
-    auto [angularVelocity2, angularOffset2] = rock2.getRotation();
+    floatType angularVelocity1 = rock1.getAngularVelocity();
+    floatType angularOffset1 = rock1.getAngularOffset();
+    floatType angularVelocity2 = rock2.getAngularVelocity();
+    floatType angularOffset2 = rock2.getAngularOffset();
     const floatType distanceSq = posDiff * posDiff;
     const floatType totalMass = mass1 + mass2;
     vel1 -= posDiff * 2 * mass2 * (velDiff * posDiff) / (distanceSq * totalMass + EPSILON);
@@ -146,21 +150,18 @@ void CollisionHandler::rockRockCollision(Rock &rock1, Rock &rock2) {
     angularVelocity1 = capAngularVelocity(angularVelocity1);
     angularVelocity2 = capAngularVelocity(angularVelocity2);
     rock1.setVelocity(vel1);
-    rock1.setVelocity(vel2);
-    const Rotation rot1 = {angularVelocity1, angularOffset1};
-    const Rotation rot2 = {angularVelocity2, angularOffset2};
-    rock1.setRotation(rot1);
-    rock1.setRotation(rot2);
+    rock2.setVelocity(vel2);
+    rock1.setAngularVelocity(angularVelocity1);
+    rock2.setAngularVelocity(angularVelocity2);
+    rock1.setAngularOffset(angularOffset1);
+    rock2.setAngularOffset(angularOffset2);
 };
 
 Rock CollisionHandler::getNextState(Rock &rock) const {
     const auto pos = rock.getPosition();
     const auto newPos = pos + rock.getVelocity() * this->deltaT;
-    const auto rot = rock.getRotation();
-    auto newRot = rot;
-    // TODO Why do we still have a Rotation struct with shitty denominators and why are these values not rock attributes
-    newRot.angular_offset += rot.angular_velocity * this->deltaT;
-    return {newPos, rock.getVelocity(), newRot, rock.getRadius()};
+    const floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
+    return {newPos, rock.getVelocity(), rock.getAngularVelocity(), newAngularOffset, rock.getRadius()};
 }
 
 floatType CollisionHandler::capAngularVelocity(const floatType angVel) {

@@ -7,9 +7,8 @@
 
 RenderedEntity::RenderedEntity(Vector position) { this->position = position; }
 
-RenderInformation RenderedEntity::getRenderInformation() {
-    return {Vector2(position), {0, 0}, 0, 0, {0, 0}, "", animation};
-}
+RenderInformation RenderedEntity::getRenderInformation() { return {Vector2(position), {0, 0}, 0, 0, 0, "", animation}; }
+
 void RenderedEntity::setAnimationInformation(const AnimationInformation animationInformation) {
     animation = animationInformation;
 }

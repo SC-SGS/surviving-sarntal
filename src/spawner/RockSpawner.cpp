@@ -32,14 +32,14 @@ void RockSpawner::spawnRock(const size_t idxRock) {
     Vector velocity = {MIN_SPAWN_VELOCITY + static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
                                                 (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
                        0};
-    Rotation rotation = {MIN_SPAWN_VELOCITY + static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
-                                                  (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY),
-                         0.0f};
+    floatType angularVelocity = MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+                                                         (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY);
+    floatType angularOffset = 0.0f;
 
     Vector position = {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x,
                        spawnBasePos.y + offsetsAdditionalRocks[idxRock].y};
 
-    Rock newRock(position, velocity, rotation, rad);
+    Rock newRock(position, velocity, angularVelocity, angularOffset, rad);
 
     this->world.addRock(newRock);
     spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);

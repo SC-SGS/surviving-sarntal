@@ -17,20 +17,16 @@
 // TODO what about destructors, as in the programming concept in c++?
 class Rock : public RenderedEntity {
   public:
-    Rock(Vector position, Vector velocity, Rotation rotation, floatType radius) : RenderedEntity(position) {
-        this->position = position;
-        this->velocity = velocity;
-        this->rotation = rotation;
-        this->radius = radius;
-    };
-
+    Rock(Vector position, Vector velocity, floatType angularVelocity, floatType angularOffset, float radius);
     ~Rock() = default;
 
     void setVelocity(Vector &newVelocity);
-    void setRotation(const Rotation &newRotation);
+    void setAngularVelocity(floatType newAngularVelocity);
+    void setAngularOffset(floatType newAngularOffset);
 
     Vector getVelocity();
-    Rotation getRotation();
+    floatType getAngularVelocity() const;
+    floatType getAngularOffset() const;
     floatType getRadius() const;
 
     RenderInformation getRenderInformation() override;
@@ -40,7 +36,8 @@ class Rock : public RenderedEntity {
 
   private:
     Vector velocity{};
-    Rotation rotation{};
+    floatType angularVelocity;
+    floatType angularOffset;
     floatType radius = MIN_ROCK_SIZE;
     bool shouldBeDestroyed = false;
 };
