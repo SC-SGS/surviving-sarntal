@@ -47,14 +47,14 @@ bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
 
 Vector CollisionDetector::getNormal(const std::size_t idx, const Vector rockPos) const {
     // determine closer vertex
-    Position vertexOther = this->world.getMountain().getVertex((idx - 1) % Mountain::NUMBER_OF_VERTICES);
-    const Position vertexRight = this->world.getMountain().getVertex((idx + 1) % Mountain::NUMBER_OF_VERTICES);
+    Vector vertexOther = this->world.getMountain().getVertex((idx - 1) % Mountain::NUMBER_OF_VERTICES);
+    const Vector vertexRight = this->world.getMountain().getVertex((idx + 1) % Mountain::NUMBER_OF_VERTICES);
     if (rockPos.distanceTo(vertexOther) > rockPos.distanceTo(vertexRight)) {
         // else already correct
         vertexOther = vertexRight;
     }
     // calc distances
-    const Position vertex = this->world.getMountain().getVertex(idx);
+    const Vector vertex = this->world.getMountain().getVertex(idx);
     const Vector slope = vertex - vertexOther;
     // compute normal from distances via rotation
     // R =  (  0   -1  )

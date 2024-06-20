@@ -73,14 +73,14 @@ class Mountain : public Singleton<Mountain> {
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertex(size_t index) const;
+    Vector getVertex(size_t index) const;
 
     /** Returns a position from a given index. The index should previously be
      * obtained via a separate function of the mountain.
      * @param index
      * @return Position (consisting of x- and y-coordinate)
      */
-    Position getVertex(int index) const;
+    Vector getVertex(int index) const;
 
     /**
      * You can access all the points currently being held in the mountain
@@ -128,13 +128,13 @@ class Mountain : public Singleton<Mountain> {
      * @param right
      * @return
      */
-    static floatType linearInterpolation(floatType xPos, Position left, Position right);
+    static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
 
   private:
     Mountain();
     ~Mountain();
 
-    std::array<Position, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
+    std::array<Vector, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
     std::size_t startOfCircularArray{0};
     // TODO why are these denominators so weird? they do not adhere to our guidelines!
 

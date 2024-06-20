@@ -43,9 +43,8 @@ void Positioner::updateRockPositions() const {
         // std::cout << pos.x << pos.y << std::endl;
         pos += rock.getVelocity() * this->deltaT;
         rock.setPosition(pos);
-        auto rot = rock.getRotation();
-        rot.angular_offset += rot.angular_velocity * this->deltaT;
-        rock.setRotation(rot);
+        floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
+        rock.setAngularOffset(newAngularOffset);
         // std::cout << pos.x << pos.y << std::endl;
     }
 }

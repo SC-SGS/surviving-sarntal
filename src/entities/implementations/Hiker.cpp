@@ -21,7 +21,7 @@ Hiker::Hiker(const Vector position)
 }
 
 RenderInformation Hiker::getRenderInformation() {
-    return RenderInformation{Vector2(position), {0, height / 2}, width, height, {0, 0}, hikerMovement.getStateString(),
+    return RenderInformation{Vector2(position), {0, height / 2}, width, height, 0, hikerMovement.getStateString(),
                              animation};
 }
 

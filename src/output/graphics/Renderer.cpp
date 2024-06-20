@@ -41,7 +41,7 @@ Renderer::~Renderer() { CloseWindow(); }
 
 // Function to render an entity
 void Renderer::renderEntity(RenderedEntity &entity) {
-    renderEntity(entity, entity.getRenderInformation().rotation.angular_offset);
+    renderEntity(entity, entity.getRenderInformation().angularOffset);
 }
 
 void Renderer::renderEntity(RenderedEntity &entity, floatType rotation) {
@@ -102,7 +102,7 @@ void Renderer::renderAnimation(RenderedEntity &entity) {
     info.height = static_cast<floatType>(texture.height);
 
     // Render the entity with the updated frame
-    renderEntity(entity, info.rotation.angular_offset, texture, sourceRec);
+    renderEntity(entity, info.angularOffset, texture, sourceRec);
 }
 
 void Renderer::renderHiker(RenderedEntity &hiker) {
@@ -113,6 +113,7 @@ void Renderer::renderHiker(RenderedEntity &hiker) {
     }
 }
 
+void Renderer::renderRock(RenderedEntity &entity) { renderEntity(entity, entity.getRenderInformation().angularOffset); }
 void Renderer::debugRenderRock(RenderedEntity &entity) {
     // Draw Circle for collision box
     DrawCircleLines(static_cast<int>(entity.getRenderInformation().position.x),
@@ -120,7 +121,7 @@ void Renderer::debugRenderRock(RenderedEntity &entity) {
                     RED);
 
     // Calculate the end points of the line to detect rotation
-    floatType rotation = entity.getRenderInformation().rotation.angular_offset;
+    floatType rotation = entity.getRenderInformation().angularOffset;
     floatType radius = entity.getRenderInformation().width / 2;
     int endX = static_cast<int>(entity.getRenderInformation().position.x + radius * std::cos(rotation));
     int endY = static_cast<int>(entity.getRenderInformation().position.y + radius * std::sin(rotation));
@@ -145,8 +146,8 @@ void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomCo
     // Draw the mountain
     const int vertexOffset = 1;
     for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
-        Position pos1 = mountain.getVertex(i);
-        Position pos2 = mountain.getVertex(i + vertexOffset);
+        Vector pos1 = mountain.getVertex(i);
+        Vector pos2 = mountain.getVertex(i + vertexOffset);
         // Render the mountain depending on debug mode
         if (Game::getInstance().debugMode) {
             // Draw the line
