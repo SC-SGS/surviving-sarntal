@@ -32,10 +32,10 @@ void Mountain::printTempDebugInfo() const {
     // todo add debug log here
 }
 
-Position Mountain::getVertex(const size_t index) const {
+Vector Mountain::getVertex(const size_t index) const {
     return landscapeFixpointCircularArray[index % NUMBER_OF_VERTICES];
 }
-Position Mountain::getVertex(const int index) const {
+Vector Mountain::getVertex(const int index) const {
     return landscapeFixpointCircularArray[(index + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES];
 }
 
@@ -75,7 +75,7 @@ void Mountain::generateSlope() {
     for (int i = 0; i < NUM_POINTS_TO_GENERATE; i++) {
         currentX += SECTION_WIDTH;
         currentY += SECTION_WIDTH * SLOPE;
-        landscapeFixpointCircularArray[(startOfCircularArray + i) % arraySize] = Position{currentX, currentY};
+        landscapeFixpointCircularArray[(startOfCircularArray + i) % arraySize] = Vector{currentX, currentY};
     }
 }
 
@@ -158,7 +158,7 @@ floatType Mountain::getYPosFromX(const floatType xPos) const {
     return linearInterpolation(xPos, vertexLeft, vertexRight);
 }
 
-floatType Mountain::linearInterpolation(const floatType xPos, const Position left, const Position right) {
+floatType Mountain::linearInterpolation(const floatType xPos, const Vector left, const Vector right) {
     return ((xPos - left.x) * right.y + (right.x - xPos) * left.y) / (right.x - left.x);
 }
 

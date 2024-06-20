@@ -20,7 +20,7 @@ struct RenderInformation {
     Vector2 offset = {0, 0};
     floatType width;
     floatType height;
-    Rotation rotation;
+    floatType angularOffset;
     std::string texture;
     AnimationInformation animation = {0, 0, 0, 0};
 };

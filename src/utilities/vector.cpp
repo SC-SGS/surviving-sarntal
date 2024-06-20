@@ -4,18 +4,14 @@
 
 Vector::operator Vector2() const { return Vector2{x, y}; }
 
-Vector::operator Position() const { return Position{x, y}; }
-
-Vector::operator Velocity() const { return Velocity{x, y}; }
-
-Velocity Vector::operator+(Vector const &other) const { return {x + other.x, y + other.y}; }
+Vector Vector::operator+(Vector const &other) const { return {x + other.x, y + other.y}; }
 
 void Vector::operator+=(const Vector &other) {
     x += other.x;
     y += other.y;
 }
 
-Vector Vector::operator+(floatType other) const { return {x + other, y + other}; }
+Vector Vector::operator+(floatType scalar) const { return {x + scalar, y + scalar}; }
 
 Vector Vector::operator-(Vector const &other) const { return {x - other.x, y - other.y}; }
 
