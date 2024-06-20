@@ -15,7 +15,7 @@ Monster::~Monster() = default;
 Monster::Monster(Vector position) : RenderedEntity(position) {}
 
 RenderInformation Monster::getRenderInformation() {
-    return RenderInformation{Vector2(position), {0, HIKER_HEIGHT / 2}, HIKER_WIDTH * 3, HIKER_HEIGHT, {0, 0}, "monster",
+    return RenderInformation{Vector2(position), {0, HIKER_HEIGHT / 2}, HIKER_WIDTH * 3, HIKER_HEIGHT, 0, "monster",
                              animation};
 }
 

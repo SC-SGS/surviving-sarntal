@@ -25,7 +25,7 @@ void Accelerator::updateRockVelocities() const {
         vel.y += GRAVITATIONAL_CONSTANT * this->deltaT;
         // TODO rock speed probably shouldn't be capped
         if (vel.length() > VELOCITY_CAP) {
-            vel = (Velocity)(vel * VELOCITY_CAP / vel.length());
+            vel = (Vector)(vel * VELOCITY_CAP / vel.length());
         }
         rock.setVelocity(vel);
     }
