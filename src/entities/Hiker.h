@@ -81,7 +81,7 @@ class Hiker : public RenderedEntity {
     void kill();
 
   private:
-    AudioService &audioService = AudioService::getInstance();
+    // AudioService &audioService = AudioService::getInstance();
     Vector velocity{};
     floatType height{};
     floatType width{};
