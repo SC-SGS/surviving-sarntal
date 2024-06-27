@@ -21,13 +21,13 @@ class Inventory {
     std::vector<std::vector<std::shared_ptr<Item>>> slots;
     size_t selectedSlot = 0;
 
-    int getSlotOfItem(ItemType itemType);
     bool itemTypeInInventory(ItemType itemType);
     bool itemSlotAvailable();
     int getNextFreeSlot();
     void addItem(int slot, const std::shared_ptr<Item> &item);
 
   public:
+    int getSlotOfItem(ItemType itemType);
     explicit Inventory(size_t slotCount);
     Inventory();
 

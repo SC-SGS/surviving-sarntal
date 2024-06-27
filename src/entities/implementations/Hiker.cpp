@@ -81,7 +81,7 @@ void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT)
 void Hiker::turnNeutral() { this->hikerMovement.setDirection(HikerMovement::NEUTRAL); }
 void Hiker::crouch() {
     if (this->hikerMovement.getState() == HikerMovement::MOVING) {
-        audioService.playSound("crouch");
+        AudioService::getInstance().playSound("crouch");
         this->hikerMovement.setState(HikerMovement::CROUCHED);
         this->setHeight(DUCKED_HIKER_HEIGHT);
         this->setWidth(DUCKED_HIKER_WIDTH);
@@ -116,7 +116,7 @@ void Hiker::setXVelocity(floatType xValue) { this->velocity.setX(xValue); }
 void Hiker::setYVelocity(floatType yValue) { this->velocity.setY(yValue); }
 void Hiker::setLastJump(float lastJump) { this->hikerMovement.setLastJump(lastJump); }
 void Hiker::doSecondJump() {
-    audioService.playSound("jump");
+    AudioService::getInstance().playSound("jump");
     this->velocity.setY(JUMP_VELOCITY_CONSTANT);
     if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
         this->hikerMovement.setCanJumpAgain(false);
