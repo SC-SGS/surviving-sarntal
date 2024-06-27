@@ -6,7 +6,7 @@
 #include "iostream"
 
 ConfigManager::ConfigManager() {
-    std::string configLocation = "../src/configuration.yaml";
+    std::string configLocation = "../../src/configuration.yaml";
 
     try {
         config = YAML::LoadFile(configLocation);

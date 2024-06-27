@@ -50,12 +50,17 @@ build-job:       # This job runs in the build stage, which runs first.
 test-job:
   stage: test
   script:
-    - ctest --test-dir cmake-build-debug
+    - ctest --test-dir cmake-build-debug/test --rerun-failed --output-on-failure
+    - cmake --build cmake-build-debug --target coverage
+    - COVERAGE=$(lcov --summary cmake-build-debug/coverage/coverage.info | awk '/lines/ {print $2}')
+    - echo "Line coverage $COVERAGE" # print coverage value to cli
+    - lcov --summary cmake-build-debug/coverage/coverage.info | awk '/lines/ {if ($4 < 80) exit 1}' # fail pipeline if necessary
   dependencies:
     - build-job
   artifacts:
     paths:
-      - cmake-build-debug/surviving-sarntal
+      - cmake-build-debug/src/surviving-sarntal
+      - cmake-build-debug/coverage/report  # Include coverage report artifacts
     expire_in: 1 hour
 
 clang-tidy:
@@ -70,12 +75,12 @@ clang-tidy:
 run-exe:                # TODO we can practically remove this until we have a GUI stub (which we won't)
   stage: run-exe
   script:
-    - ./run_check.sh
+    - ./build-utils/run_check.sh
   dependencies:
     - build-job
   artifacts:
     paths:
-      - cmake-build-debug/surviving-sarntal
+      - cmake-build-debug/src/surviving-sarntal
     expire_in: 1 hour
 
 #unit-test-job:   # This job runs in the test stage.

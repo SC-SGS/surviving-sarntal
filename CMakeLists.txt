@@ -1,91 +1,87 @@
 cmake_minimum_required(VERSION 3.20)
+project(surviving-sarntal)
 
-if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
+# Enable testing
+enable_testing()
+
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set CMake policy if version is greater than 3.24.0
+if(${CMAKE_VERSION} VERSION_GREATER "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+
+# Add message to verify flags
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message("CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
+
+
+# Export compile commands for clang-tidy and other tools
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Add custom modules to CMake module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
-#set(CMAKE_CXX_CLANG_TIDY
-#        clang-tidy-17;
-#        -format-style='file';
-#        -header-filter=${CMAKE_SOURCE_DIR}/src;
-#        -extra-arg=-std=c++17;
-#)
+# Function to remove unnecessary .clang-tidy files in libraries
+function(remove_clang_tidy target_dir)
+    if(EXISTS ${target_dir}/.clang-tidy)
+        file(REMOVE ${target_dir}/.clang-tidy)
+    endif()
+endfunction()
 
+# Include required modules
 include(FetchContent)
-include(ClangFormat)
 
-project(surviving-sarntal)
-
+# Add raygui as an interface library
 add_library(raygui INTERFACE)
 target_include_directories(raygui INTERFACE libs/raygui)
 
+# FetchContent declarations for external libraries
 FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.tar.gz)
-FetchContent_MakeAvailable(raylib)
 FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-1.14.0.tar.gz)
-FetchContent_MakeAvailable(googletest)
 FetchContent_Declare(yaml-cpp URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/yaml-cpp-0.8.0.tar.gz)
-FetchContent_MakeAvailable(yaml-cpp)
-#FetchContent_Declare(SDL2 URL libs/SDL/SDL2-2.28.3.tar.gz)
-#FetchContent_MakeAvailable(SDL2)
 FetchContent_Declare(spdlog URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog-1.13.0.tar.gz)
+
+FetchContent_MakeAvailable(raylib)
+FetchContent_MakeAvailable(googletest)
+FetchContent_MakeAvailable(yaml-cpp)
 FetchContent_MakeAvailable(spdlog)
 
+# Remove unnecessary .clang-tidy files from fetched libraries
+remove_clang_tidy(${raylib_SOURCE_DIR})
+remove_clang_tidy(${googletest_SOURCE_DIR})
+remove_clang_tidy(${yaml-cpp_SOURCE_DIR})
+remove_clang_tidy(${spdlog_SOURCE_DIR})
+
+# Include directories
 include_directories(libs/NITE/Include /usr/include/ni)
-# Check if the operating system is macOS
 if(APPLE)
     include_directories(/opt/homebrew/Cellar/sdl2/2.30.3/include)
 endif()
 
-file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h" "src/*.hpp")
+# Add the src and test directories
+add_subdirectory(src)
+add_subdirectory(test)
 
-#now SRC contains all .cpp and .h files in the src folder (and its subdirectories) except main.cpp
-add_library(surviving-sarntal-library ${SRC})
-#now all those files get made into one library callled surviving-sarntal-library
-add_executable(surviving-sarntal src/main.cpp)
-#add main.cpp to surviving-sarntal executable
-
-target_compile_features(surviving-sarntal-library PUBLIC cxx_std_17)
-
-target_clangformat_setup(surviving-sarntal-library)
-
-target_link_libraries(surviving-sarntal-library PUBLIC raylib raygui)
-target_link_libraries(surviving-sarntal-library PUBLIC yaml-cpp)
-target_link_libraries(surviving-sarntal-library PUBLIC spdlog::spdlog)  # Link spdlog to your library
-
-#link some libraries to the surviving-sarntal-library that we are defining atm
-# Check if the operating system is macOS
-if(APPLE)
-    # Link the library with absolute path on macOS
-    target_link_libraries(surviving-sarntal-library PUBLIC /opt/homebrew/Cellar/sdl2/2.30.3/lib/libSDL2.dylib)
-else()
-    # Link the library by its name on other operating systems
-    target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
-endif()
-target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)
-#link the previously defined surviving-sarntal-library to the surviving-sarntal executable. The main.cpp has been included earlier
-
-enable_testing()
-
-file(GLOB_RECURSE TEST_SRC "test/*.cpp" "test/*.h" "test/*.hpp")
-add_executable(
-        main_test
-        ${TEST_SRC}
+# Custom target to filter compile_commands.json
+find_package(Python3 REQUIRED)
+add_custom_target(
+        filter_compile_commands
+        COMMAND ${CMAKE_COMMAND} -E echo "Filtering compile_commands.json"
+        COMMAND ${CMAKE_COMMAND} -E env python3 ${CMAKE_SOURCE_DIR}/build-utils/cleanupCompilationDatabase.py
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Filtering compile_commands.json to exclude libraries"
 )
-target_include_directories(main_test PUBLIC ".")
-target_link_libraries(
-        main_test
-        GTest::gtest_main
-        surviving-sarntal-library
-)
-#use surviving-sarntal-library for tests aswell. this way all the src-files only have to be compiled once instead of compiling it for the main executable and the tests
 
-set_target_properties(
-        surviving-sarntal PROPERTIES
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+# Add dependencies to ensure filtering is done after the main targets are built
+add_dependencies(surviving-sarntal filter_compile_commands)
+add_dependencies(test-surviving-sarntal filter_compile_commands)
 
-include(GoogleTest)
-gtest_discover_tests(main_test)

@@ -163,7 +163,6 @@ CheckOptions:
   readability-identifier-naming.ConstexprVariableCase: UPPER_CASE
   readability-identifier-length.MinimumVariableNameLength: 3
   readability-identifier-length.MaximumVariableNameLength: 35
-  readability-function-cognitive-complexity.Threshold: 15
   readability-function-size.LineThreshold: 30
   readability-function-size.ParameterThreshold: 4
   readability-function-size.NestingThreshold: 4
