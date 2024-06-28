@@ -114,4 +114,10 @@ constexpr int FONT_SIZE_ALTIMETER = 20;
 constexpr int POSITION_TO_SCORE_RATIO = 10;
 constexpr int ALTIMETER_STEPS = 10;
 
+constexpr floatType VISUAL_RUMBLE_INTENSITY = 0.4f;
+constexpr floatType VISUAL_RUMBLE_DAMPENING = 0.9f;
+
+constexpr floatType TEXTURE_MID_SCALE = 5;
+constexpr floatType TEXTURE_FORE_SCALE = 7;
+
 #endif // SURVIVING_SARNTAL_GAMECONSTANTS_HPP
