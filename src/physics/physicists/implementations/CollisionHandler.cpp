@@ -3,6 +3,7 @@
 //
 
 #include "../CollisionHandler.hpp"
+#include "../../../output/graphics/Renderer.h"
 
 #include <iostream>
 #include <mutex>
@@ -107,6 +108,9 @@ void CollisionHandler::rockTerrainCollision(Rock &rock, const Vertex closestVert
     rock.setVelocity(vel);
     rock.setAngularVelocity(angularVelocity);
     rock.setAngularOffset(angularOffset);
+
+    Renderer::getInstance().setShake((rock.getVelocity().length() * rock.getRadius() * VISUAL_RUMBLE_INTENSITY) /
+                                     VELOCITY_CAP);
 }
 
 void CollisionHandler::rockRockCollisions() {
