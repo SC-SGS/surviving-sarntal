@@ -19,6 +19,7 @@ class Renderer : public Singleton<Renderer> {
 
   public:
     void draw();
+    void setShake(float intensity);
 
   private:
     Renderer();
@@ -32,6 +33,8 @@ class Renderer : public Singleton<Renderer> {
     ResourceManager &resourceManager = ResourceManager::getInstance();
     Camera2D camera = {0};
     std::unordered_map<std::string, AnimationInformation> animations;
+    const Vector2 screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
+    float shakeIntensity = 0.0f;
 
     // Initialize the scrolling speed
     floatType scrolling_mid = 0;
@@ -58,6 +61,8 @@ class Renderer : public Singleton<Renderer> {
     void renderAltimeter();
     static void renderAltimeterStep(int drawY, int drawAltitude, int fontSize);
     static int floorToNearest(int number, int placeValue);
+    void applyRumbleEffect();
+    void renderNormalEntities();
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
