@@ -6,8 +6,6 @@
 #include <memory>
 #include <mutex>
 
-constexpr Vector3 UP_DIR = {0, 1, 0};
-
 Renderer::Renderer() {
     floatType leftBorder = world.getMinX();
     floatType rightBorder = world.getMaxX();
@@ -30,7 +28,7 @@ Renderer::Renderer() {
 
     // Initialize the camera
     camera.target = {centerX, centerY};
-    camera.offset = {screenWidth / 2.0f, static_cast<floatType>(GetScreenHeight()) / 2.0f};
+    camera.offset = screenCenter;
     camera.rotation = 0.0f;
     camera.zoom = zoom;
 
@@ -163,6 +161,14 @@ void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomCo
 }
 
 void Renderer::renderEntities() {
+    if (!Game::getInstance().debugMode)
+        renderNormalEntities();
+    else {
+        debugRenderEntities();
+    }
+}
+
+void Renderer::renderNormalEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
     auto &destroyedRocks = world.getDestroyedRocks();
@@ -345,14 +351,31 @@ void Renderer::renderAltimeterStep(int drawY, int drawAltitude, int fontSize) {
     }
 }
 
+void Renderer::applyRumbleEffect() {
+    if (shakeIntensity <= 0) {
+        return;
+    }
+
+    if (shakeIntensity > 0.01f) {
+        shakeIntensity *= VISUAL_RUMBLE_DAMPENING;
+        int shakeIntensityInt = static_cast<int>(shakeIntensity);
+        camera.offset.x = screenCenter.x + (float)GetRandomValue(-shakeIntensityInt, shakeIntensityInt);
+        camera.offset.y = screenCenter.y + (float)GetRandomValue(-shakeIntensityInt, shakeIntensityInt);
+    } else {
+        shakeIntensity = 0.0f;
+        camera.offset = screenCenter;
+    }
+}
+
 // Main rendering function
 void Renderer::draw() {
+    applyRumbleEffect();
+
     BeginDrawing();
     ClearBackground(BLACK);
 
     // Render background if not in debug mode
-    if (!Game::getInstance().debugMode)
-        renderBackground();
+    renderBackground();
 
     // Adjust y-position of camera
     camera.target.y = world.getHiker().getRenderInformation().position.y;
@@ -360,11 +383,7 @@ void Renderer::draw() {
 
     BeginMode2D(camera);
 
-    if (!Game::getInstance().debugMode)
-        renderEntities();
-    else {
-        debugRenderEntities();
-    }
+    renderEntities();
 
     EndMode2D();
     renderHUD();
@@ -372,7 +391,12 @@ void Renderer::draw() {
     EndDrawing();
 }
 
+void Renderer::setShake(float intensity) { shakeIntensity = intensity; }
+
 void Renderer::renderBackground() {
+    if (Game::getInstance().debugMode) {
+        return;
+    }
     DrawTexture(gradient_texture_background, 0, 0, WHITE);
 
     // Get the textures
@@ -382,24 +406,23 @@ void Renderer::renderBackground() {
     scrolling_mid -= 0.25f;
     scrolling_fore -= 0.5f;
 
-    floatType midScale = 5;  // scale of texture
-    floatType foreScale = 7; // scale of texture
-
     floatType midOffsetY = static_cast<floatType>(GetScreenHeight()) -
-                           static_cast<floatType>(midgroundTex.height) * midScale; // align lower border
+                           static_cast<floatType>(midgroundTex.height) * TEXTURE_MID_SCALE; // align lower border
     floatType foreOffsetY = static_cast<floatType>(GetScreenHeight()) -
-                            static_cast<floatType>(foregroundTex.height) * foreScale; // align lower border
+                            static_cast<floatType>(foregroundTex.height) * TEXTURE_FORE_SCALE; // align lower border
 
-    if (scrolling_mid <= -static_cast<floatType>(midgroundTex.width) * midScale)
+    if (scrolling_mid <= -static_cast<floatType>(midgroundTex.width) * TEXTURE_MID_SCALE) {
         scrolling_mid = 0;
-    if (scrolling_fore <= -static_cast<floatType>(foregroundTex.width) * foreScale)
+    }
+    if (scrolling_fore <= -static_cast<floatType>(foregroundTex.width) * TEXTURE_FORE_SCALE) {
         scrolling_fore = 0;
+    }
 
     // Draw midground image repeatedly
-    drawBackgroundTextureRepeatedly(midgroundTex, scrolling_mid, midScale, midOffsetY);
+    drawBackgroundTextureRepeatedly(midgroundTex, scrolling_mid, TEXTURE_MID_SCALE, midOffsetY);
 
     // Draw foreground image repeatedly
-    drawBackgroundTextureRepeatedly(foregroundTex, scrolling_fore, foreScale, foreOffsetY);
+    drawBackgroundTextureRepeatedly(foregroundTex, scrolling_fore, TEXTURE_FORE_SCALE, foreOffsetY);
 }
 
 void Renderer::drawBackgroundTextureRepeatedly(Texture2D texture2D, floatType scrolling, floatType scale,
