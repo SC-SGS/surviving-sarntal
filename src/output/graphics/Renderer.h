@@ -25,6 +25,7 @@ class Renderer : public Singleton<Renderer> {
     Renderer();
     ~Renderer();
 
+    void loadLandmarks();
     World &world = World::getInstance(); // Pointer to the World object
     void renderEntity(RenderedEntity &entity);
     void renderEntity(RenderedEntity &entity, floatType rotation);
@@ -33,6 +34,7 @@ class Renderer : public Singleton<Renderer> {
     ResourceManager &resourceManager = ResourceManager::getInstance();
     Camera2D camera = {0};
     std::unordered_map<std::string, AnimationInformation> animations;
+    std::unordered_map<std::string, int> landmarks;
     const Vector2 screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
     float shakeIntensity = 0.0f;
 
