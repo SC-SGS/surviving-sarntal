@@ -15,6 +15,7 @@ class ConfigManager : public Singleton<ConfigManager> {
     YAML::Node getTextures();
     YAML::Node getSounds();
     YAML::Node getItems();
+    std::unordered_map<std::string, int> getLandmarks();
 
   private:
     ConfigManager();
