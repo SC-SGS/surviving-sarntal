@@ -22,3 +22,14 @@ ConfigManager::~ConfigManager() = default;
 YAML::Node ConfigManager::getSounds() { return config["soundEffects"]; }
 YAML::Node ConfigManager::getTextures() { return config["textures"]; }
 YAML::Node ConfigManager::getItems() { return config["items"]; }
+std::unordered_map<std::string, int> ConfigManager::getLandmarks() {
+    std::unordered_map<std::string, int> landmarks;
+    if (config["landmarks"]) {
+        for (const auto &landmark : config["landmarks"]) {
+            auto name = landmark["name"].as<std::string>();
+            int height = landmark["height"].as<int>();
+            landmarks[name] = height;
+        }
+    }
+    return landmarks;
+}

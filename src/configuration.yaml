@@ -56,3 +56,13 @@ items:
     useOnPickUp: false
     dropOnUse: true
     spawn-weight: 2
+
+landmarks:
+  - name: "Statue of Liberty"
+    height: 93
+  - name: "Big Ben"
+    height: 96
+  - name: "Eiffel Tower"
+    height: 300
+  - name: "Mount Everest"
+    height: 8849

@@ -32,10 +32,14 @@ Renderer::Renderer() {
     camera.rotation = 0.0f;
     camera.zoom = zoom;
 
+    loadLandmarks();
+
     regenerateGradientTexture();
 }
 
 Renderer::~Renderer() { CloseWindow(); }
+
+void Renderer::loadLandmarks() { this->landmarks = ConfigManager::getInstance().getLandmarks(); }
 
 // Function to render an entity
 void Renderer::renderEntity(RenderedEntity &entity) {
@@ -325,6 +329,13 @@ void Renderer::renderAltimeter() {
         int drawAltitude = i / POSITION_TO_SCORE_RATIO;
 
         renderAltimeterStep(drawY, drawAltitude, fontSize);
+    }
+
+    for (const auto &landmark : landmarks) {
+        int altitude = landmark.second * POSITION_TO_SCORE_RATIO;
+        int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
+        DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
+        DrawText(landmark.first.c_str(), 2 * UI_MARGIN, drawY - fontSize, fontSize, DARKGREEN);
     }
 }
 
