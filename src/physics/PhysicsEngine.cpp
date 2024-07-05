@@ -7,13 +7,14 @@
 
 #include <iostream>
 #include <mutex>
-
-PhysicsEngine::PhysicsEngine()
-    : deltaT(PHYSICS_DELTA_T), world(World::getInstance()), accumulator(0.f), timeLastUpdate(0.f),
-      spawner(Spawner::getInstance()), eventProcessor(EventProcessor::getInstance()),
-      accelerator(Accelerator::getInstance()), positioner(Positioner::getInstance()),
-      collisionDetector(CollisionDetector::getInstance()), collisionHandler(CollisionHandler::getInstance()),
-      interpolator(Interpolator::getInstance()), destructor(Destructor::getInstance()) {
+// NOLINT [readability-function-size,-warnings-as-errors]
+PhysicsEngine::PhysicsEngine(World &world, Spawner &spawner, EventProcessor &eventProcessor, Accelerator &accelerator,
+                             Positioner &positioner, CollisionDetector &collisionDetector,
+                             CollisionHandler &collisionHandler, Interpolator &interpolator, Destructor &destructor)
+    : deltaT(PHYSICS_DELTA_T), world(world), accumulator(0.f), timeLastUpdate(0.f), spawner(spawner),
+      eventProcessor(eventProcessor), accelerator(accelerator), positioner(positioner),
+      collisionDetector(collisionDetector), collisionHandler(collisionHandler), interpolator(interpolator),
+      destructor(destructor) {
     this->setDeltaT(this->deltaT);
 }
 
@@ -53,5 +54,3 @@ void PhysicsEngine::updateTimeStep() const {
     this->positioner.updatePositions();
     this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
 }
-
-PhysicsEngine::~PhysicsEngine() = default; // TODO delete the other singletons (all singletons need a static destructor)

@@ -6,10 +6,12 @@
 #include "../utilities/GameConstants.hpp"
 #include "spdlog/spdlog.h"
 #include <mutex>
-
-Game::Game() { spdlog::info("Game initialized."); }
-
-Game::~Game() = default;
+Game::Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
+           InputHandler &inputHandler)
+    : world(world), renderer(renderer), physicsEngine(physicsEngine), audioService(audioService),
+      inputHandler(inputHandler) {
+    spdlog::info("Game initialized.");
+}
 
 void Game::run() {
     // game loop
@@ -27,7 +29,7 @@ void Game::run() {
             std::queue<GameEvent> events = this->inputHandler.getEvents();
             this->physicsEngine.update(events);
             this->renderer.draw();
-            updateScore();
+            this->world.updateGameScore();
         } else {
             if (!playedEndSound) {
                 audioService.playSound("game-over");
@@ -56,13 +58,4 @@ void Game::drawEndScreen() {
     DrawText(message, posX, posY, fontSize, RED);
 
     EndDrawing();
-}
-
-int Game::getScore() const { return score; }
-
-void Game::updateScore() {
-    const Hiker &hiker = this->world.getHiker();
-    const Mountain &mountain = this->world.getMountain();
-    // TODO remove "-" when x axis inverted
-    score = std::max(score, -static_cast<int>(mountain.getYPosFromX(hiker.getPosition().x)));
 }

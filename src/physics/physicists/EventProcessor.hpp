@@ -8,18 +8,20 @@
 #include "../../entities/World.h"
 #include "../../input/InputHandler.h"
 #include "../../input/events/GameEvent.h"
+#include "../../output/graphics/Renderer.h"
 #include "../../utilities/Singleton.hpp"
 
 #include <list>
 #include <queue>
 
-class EventProcessor : public Singleton<EventProcessor> {
-    friend class Singleton<EventProcessor>;
+class EventProcessor {
 
     using GameEventFunction = void (EventProcessor::*)(GameEvent) const;
     using AutoEventFunction = void (EventProcessor::*)() const;
 
   public:
+    explicit EventProcessor(World &world, Renderer &renderer);
+    ~EventProcessor() = default;
     /**
      * Performs the changes to the world caused by the user input.
      */
@@ -38,7 +40,9 @@ class EventProcessor : public Singleton<EventProcessor> {
     void clearRepeatedEvents();
 
   private:
-    World &world = World::getInstance();
+    // Dependencies
+    World &world;
+    Renderer &renderer;
     std::queue<GameEvent> eventQueue{};
 
     std::map<GameEvent, GameEventFunction, GameEventCompare> gameEventFunctionMappings;
@@ -46,14 +50,14 @@ class EventProcessor : public Singleton<EventProcessor> {
     std::list<AutoEventFunction> autoEventFunctions;
 
     // TODO pls doc
-    /*
+    /**
      * Puts the Hiker into the crouched state.
      *
      * @param event crouch event
      */
     void crouch(GameEvent event) const;
 
-    /*
+    /**
      * Puts the Hiker into the uncrouched state.
      *
      * @param event uncrouch event
@@ -122,9 +126,6 @@ class EventProcessor : public Singleton<EventProcessor> {
     void noEvent(GameEvent event) const;
 
     void pickItem(const std::shared_ptr<Item> &item) const;
-
-    EventProcessor();
-    ~EventProcessor();
 };
 
 #endif // EVENTPROCESSOR_H

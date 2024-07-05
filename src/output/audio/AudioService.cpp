@@ -15,9 +15,6 @@ void AudioService::playSound(const std::string &soundName) const {
     }
 }
 
-AudioService::AudioService() = default;
+AudioService::AudioService(ResourceManager &resourceManager) : resourceManager(resourceManager){};
 
-AudioService::~AudioService() {
-    resourceManager.unloadAllSounds();
-    CloseAudioDevice();
-}
+AudioService::~AudioService() { resourceManager.unloadAllSounds(); }

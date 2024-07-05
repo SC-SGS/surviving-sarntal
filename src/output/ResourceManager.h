@@ -16,22 +16,21 @@
 #include <unordered_map>
 #include <yaml-cpp/yaml.h>
 
-class ResourceManager : public Singleton<ResourceManager> {
-    friend class Singleton<ResourceManager>;
+class ResourceManager {
 
   private:
-    ResourceManager();
-    ~ResourceManager();
     void loadMusic();
     void loadTextures();
 
-    ConfigManager &config = ConfigManager::getInstance();
+    ConfigManager &config;
 
     std::unordered_map<std::string, Texture2D> textures;
     std::unordered_map<std::string, Sound> soundEffects;
     std::unordered_map<std::string, Music> musics;
 
   public:
+    ~ResourceManager() = default;
+    explicit ResourceManager(ConfigManager &configManager);
     void loadTexture(const std::string &name, const std::string &path);
     Texture2D getTexture(const std::string &name);
     void loadSound(const std::string &name, const std::string &path);

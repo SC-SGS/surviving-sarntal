@@ -11,10 +11,12 @@
 
 #include <memory>
 
-class Game : public Singleton<Game> {
-    friend class Singleton<Game>;
+class Game {
 
   public:
+    Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
+         InputHandler &inputHandler);
+    ~Game() = default;
     void run();
 
     // TODO renderer and different renderer for Round?
@@ -25,21 +27,14 @@ class Game : public Singleton<Game> {
 
     bool debugMode = false;
 
-    int getScore() const;
-
   private:
-    World &world = World::getInstance();
-    Renderer &renderer = Renderer::getInstance();
-    PhysicsEngine &physicsEngine = PhysicsEngine::getInstance();
-    AudioService &audioService = AudioService::getInstance();
-    InputHandler &inputHandler = InputHandler::getInstance();
-
-    int score = 0;
-    void updateScore();
+    World &world;
+    Renderer &renderer;
+    PhysicsEngine &physicsEngine;
+    AudioService &audioService;
+    InputHandler &inputHandler;
 
     static void drawEndScreen();
-    Game();
-    ~Game();
 };
 
 #endif // GAME_HPP

@@ -9,9 +9,8 @@
 #include <iostream>
 #include <mutex>
 
-Spawner::Spawner() = default;
-
-Spawner::~Spawner() = default;
+Spawner::Spawner(MountainGenerator &mountainGenerator, RockSpawner &rockSpawner, ItemSpawner &itemSpawner)
+    : mountainGenerator(mountainGenerator), rockSpawner(rockSpawner), itemSpawner(itemSpawner) {}
 
 void Spawner::spawn() const {
     this->mountainGenerator.generateMountainChunk();

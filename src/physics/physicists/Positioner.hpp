@@ -8,10 +8,11 @@
 #include "../../entities/World.h"
 #include "../../utilities/Singleton.hpp"
 
-class Positioner : public Singleton<Positioner> {
-    friend class Singleton<Positioner>;
+class Positioner {
 
   public:
+    explicit Positioner(World &world);
+    ~Positioner() = default;
     void updatePositions();
 
     void setDeltaT(floatType deltaT);
@@ -19,9 +20,6 @@ class Positioner : public Singleton<Positioner> {
   private:
     World &world;
     floatType deltaT;
-
-    Positioner();
-    ~Positioner();
 
     /**
      * Use movement equations to update rock positions.

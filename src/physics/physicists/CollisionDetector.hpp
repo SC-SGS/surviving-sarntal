@@ -9,11 +9,11 @@
 #include "../../utilities/Singleton.hpp"
 
 // TODO so far this is a collection of evil utils, pls come pick me up, I'm scared
-class CollisionDetector : public Singleton<CollisionDetector> {
-    friend class Singleton<CollisionDetector>;
+class CollisionDetector {
 
   public:
-    CollisionDetector(const CollisionDetector &) = delete;
+    explicit CollisionDetector(World &world);
+    ~CollisionDetector() = default;
 
     /**
      * TODO This should later return a collision object with a list of collided rock IDs, player is hit and damage to
@@ -67,8 +67,6 @@ class CollisionDetector : public Singleton<CollisionDetector> {
 
   private:
     World &world;
-    CollisionDetector();
-    ~CollisionDetector();
 };
 
 #endif // COLLISIONDETECTOR_H

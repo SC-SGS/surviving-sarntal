@@ -8,8 +8,7 @@
 #include <mutex>
 // TODO #include <omp.h>
 
-Accelerator::Accelerator() : world(World::getInstance()), deltaT(1){};
-Accelerator::~Accelerator() = default;
+Accelerator::Accelerator(World &world) : world(world), deltaT(1){};
 
 void Accelerator::accelerate() const {
     this->updateHikerVelocity();

@@ -1,12 +1,11 @@
 #include "Renderer.h"
-#include "../../game/Game.hpp"
 #include "raylib.h"
 
 #include <cmath>
-#include <memory>
 #include <mutex>
 
-Renderer::Renderer() {
+Renderer::Renderer(World &world, ResourceManager &resourceManager) : world(world), resourceManager(resourceManager) {
+
     floatType leftBorder = world.getMinX();
     floatType rightBorder = world.getMaxX();
 
@@ -37,8 +36,6 @@ Renderer::Renderer() {
     regenerateGradientTexture();
 }
 
-Renderer::~Renderer() { CloseWindow(); }
-
 void Renderer::loadLandmarks() { this->landmarks = ConfigManager::getInstance().getLandmarks(); }
 
 // Function to render an entity
@@ -52,7 +49,7 @@ void Renderer::renderEntity(RenderedEntity &entity, floatType rotation) {
     renderEntity(entity, rotation, texture, sourceRec);
 }
 
-void Renderer::renderEntity(RenderedEntity &entity, floatType rotation, Texture2D texture, Rectangle sourceRec) {
+void Renderer::renderEntity(RenderedEntity &entity, floatType rotation, Texture2D texture, Rectangle sourceRec) const {
     auto info = entity.getRenderInformation();
     // Define the destination rectangle
     Rectangle destRec = {info.position.x + info.offset.x, info.position.y - info.offset.y, info.width, info.height};
@@ -61,7 +58,7 @@ void Renderer::renderEntity(RenderedEntity &entity, floatType rotation, Texture2
     Vector2 origin = {info.width / 2, info.height / 2};
 
     // Draw the texture if not in debug mode
-    if (!Game::getInstance().debugMode) {
+    if (!this->debugMode) {
         DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
     } else {
         // Draw Rectangle for collision box, center with width and height
@@ -151,21 +148,21 @@ void Renderer::renderMountain(Mountain &mountain, Color topColor, Color bottomCo
         Vector pos1 = mountain.getVertex(i);
         Vector pos2 = mountain.getVertex(i + vertexOffset);
         // Render the mountain depending on debug mode
-        if (Game::getInstance().debugMode) {
-            // Draw the line
-            DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
-                     static_cast<int>(pos2.y), RED);
-        } else {
+        if (!this->debugMode) {
             // Define destination rectangle (where to draw the texture, size of the texture in the destination)
             Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
                                   lowerBorder - pos1.y}; // todo make so it is not so pixelated
             DrawTexturePro(texture, sourceRec, destRec1, origin, rotation, WHITE);
+        } else {
+            // Draw the line
+            DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
+                     static_cast<int>(pos2.y), RED);
         }
     }
 }
 
 void Renderer::renderEntities() {
-    if (!Game::getInstance().debugMode)
+    if (!this->debugMode)
         renderNormalEntities();
     else {
         debugRenderEntities();
@@ -297,7 +294,7 @@ void Renderer::renderHealthBar() {
 void Renderer::renderCoinScore() {
     int fontSize = FONT_SIZE_SCORE;
     const char *scoreText;
-    scoreText = (std::to_string(World::getInstance().getCoinScore())).c_str();
+    scoreText = (std::to_string(this->world.getCoinScore())).c_str();
     auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - 2 * UI_MARGIN;
     DrawText(scoreText, centerX, UI_MARGIN * 6, fontSize, GOLD);
     auto coinTexture = resourceManager.getTexture("coin");
@@ -311,7 +308,7 @@ void Renderer::renderCoinScore() {
 void Renderer::renderScore() {
     int fontSize = FONT_SIZE_SCORE;
     const char *scoreText;
-    scoreText = (std::to_string(Game::getInstance().getScore() / POSITION_TO_SCORE_RATIO) + "m").c_str();
+    scoreText = (std::to_string(this->world.getGameScore() / POSITION_TO_SCORE_RATIO) + "m").c_str();
     auto centerX = GetScreenWidth() - MeasureText(scoreText, fontSize) - 2 * UI_MARGIN;
     DrawText(scoreText, centerX, UI_MARGIN * 3, fontSize, WHITE);
 }
@@ -405,7 +402,7 @@ void Renderer::draw() {
 void Renderer::setShake(float intensity) { shakeIntensity = intensity; }
 
 void Renderer::renderBackground() {
-    if (Game::getInstance().debugMode) {
+    if (this->debugMode) {
         return;
     }
     DrawTexture(gradient_texture_background, 0, 0, WHITE);
@@ -454,3 +451,4 @@ void Renderer::regenerateGradientTexture() {
 }
 
 int Renderer::floorToNearest(int number, int placeValue) { return (number / placeValue) * placeValue; }
+void Renderer::toggleDebugMode() { this->debugMode = !this->debugMode; }
