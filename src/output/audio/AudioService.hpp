@@ -8,16 +8,15 @@
 #include "../ResourceManager.h"
 #include <string>
 
-class AudioService : public Singleton<AudioService> {
-    friend class Singleton<AudioService>;
+class AudioService {
 
   public:
+    ~AudioService();
     void playSound(const std::string &soundName) const;
+    explicit AudioService(ResourceManager &resourceManager);
 
   private:
-    AudioService();
-    ~AudioService();
-    ResourceManager &resourceManager = ResourceManager::getInstance();
+    ResourceManager &resourceManager;
 };
 
 #endif // SURVIVING_SARNTAL_AUDIOSERVICE_HPP

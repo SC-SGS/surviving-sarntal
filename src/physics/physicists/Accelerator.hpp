@@ -8,12 +8,13 @@
 #include "../../entities/World.h"
 #include "../../utilities/Singleton.hpp"
 
-class Accelerator : public Singleton<Accelerator> {
-    friend class Singleton<Accelerator>;
+class Accelerator {
 
   public:
     void accelerate() const;
     void setDeltaT(floatType deltaT);
+    explicit Accelerator(World &world);
+    ~Accelerator() = default;
 
   private:
     World &world;
@@ -41,9 +42,6 @@ class Accelerator : public Singleton<Accelerator> {
      * Checks the velocity to determine the direction of the hiker.
      */
     void updateHikerDirection() const;
-
-    Accelerator();
-    ~Accelerator();
 };
 
 #endif // ACCELERATOR_H

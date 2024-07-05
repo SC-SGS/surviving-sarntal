@@ -7,8 +7,6 @@
 #include <iostream>
 #include <mutex>
 
-Interpolator::Interpolator() : world(World::getInstance()) {}
-
-Interpolator::~Interpolator() = default;
+Interpolator::Interpolator(World &world) : world(world) {}
 
 void Interpolator::interpolate(floatType alpha) const {};

@@ -8,14 +8,14 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-Inventory::Inventory(size_t slotCount) : slots(slotCount) {
+Inventory::Inventory(size_t slotCount, AudioService &audioService) : slots(slotCount), audioService(audioService) {
     for (size_t i = 0; i < slotCount; ++i) {
         slots[i] = std::vector<std::shared_ptr<Item>>();
     }
     spdlog::info("Inventory initialized.");
 }
 
-Inventory::Inventory() : Inventory(SLOTS_PER_INVENTORY) {}
+Inventory::Inventory(AudioService &audioService) : Inventory(SLOTS_PER_INVENTORY, audioService) {}
 
 size_t Inventory::getNumberOfSlots() const { return slots.size(); }
 
@@ -86,7 +86,7 @@ int Inventory::getNextFreeSlot() {
 void Inventory::addItem(int slot, const std::shared_ptr<Item> &item) {
     if (slots[slot].size() < ITEMS_PER_SLOT) {
         slots[slot].push_back(item);
-        AudioService::getInstance().playSound("pickup-item");
+        this->audioService.playSound("pickup-item");
     }
 }
 

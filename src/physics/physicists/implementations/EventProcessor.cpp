@@ -8,7 +8,7 @@
 #include <iostream>
 #include <mutex>
 
-EventProcessor::EventProcessor() : world(World::getInstance()) {
+EventProcessor::EventProcessor(World &world, Renderer &renderer) : world(world), renderer(renderer) {
     gameEventFunctionMappings = {
         {{AXIS_MODIFICATION, ITEM_SWITCH, 0, false}, &EventProcessor::switchItem},
         {{AXIS_MODIFICATION, MOVEMENT_X, 0, false}, &EventProcessor::moveX},
@@ -29,8 +29,6 @@ EventProcessor::EventProcessor() : world(World::getInstance()) {
         &EventProcessor::pickAutoCollectableItems,
     };
 }
-
-EventProcessor::~EventProcessor() = default;
 
 void EventProcessor::processEvents() {
     const auto numEvents = this->eventQueue.size();
@@ -101,7 +99,7 @@ void EventProcessor::specialAbility(const GameEvent event) const {
 }
 
 void EventProcessor::toggleDebug(const GameEvent event) const { // NOLINT(*-convert-member-functions-to-static)
-    Game::getInstance().debugMode = !Game::getInstance().debugMode;
+    this->renderer.toggleDebugMode();
 }
 
 void EventProcessor::fullscreen(const GameEvent event) const {

@@ -6,6 +6,7 @@
 #define COLLISIONHANDLER_H
 
 #include "../../entities/World.h"
+#include "../../output/graphics/Renderer.h"
 #include "../../output/haptics/HapticsService.hpp"
 #include "../../utilities/Singleton.hpp"
 #include "CollisionDetector.hpp"
@@ -18,22 +19,25 @@ struct Vertex {
     floatType distance;
 };
 
-class CollisionHandler : public Singleton<CollisionHandler> {
-    friend class Singleton<CollisionHandler>;
+class CollisionHandler {
 
   public:
     void handleCollisions();
 
     void setDeltaT(floatType deltaT);
+    CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
+                     Renderer &renderer);
+    ~CollisionHandler() = default;
 
   private:
+    // Dependencies
     World &world;
     CollisionDetector &collisionDetector;
+    AudioService &audioService;
+    Renderer &renderer;
+
     floatType deltaT;
     HapticsService &hapticsService;
-
-    CollisionHandler();
-    ~CollisionHandler();
 
     /**
      * Returns the closest Vertex to a rock on the mountain

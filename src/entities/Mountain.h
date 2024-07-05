@@ -16,10 +16,11 @@ struct IndexIntervalNew {
 };
 
 // TODO this whole class needs to be reworked, which we do anyways later, and a lot of refactoring is necessary
-class Mountain : public Singleton<Mountain> {
-    friend class Singleton<Mountain>;
+class Mountain {
 
   public:
+    Mountain();
+    ~Mountain() = default;
     /**
      * Number of Vertices explicitly stored by the mountain data structure.
      */
@@ -131,9 +132,6 @@ class Mountain : public Singleton<Mountain> {
     static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
 
   private:
-    Mountain();
-    ~Mountain();
-
     std::array<Vector, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
     std::size_t startOfCircularArray{0};
     // TODO why are these denominators so weird? they do not adhere to our guidelines!

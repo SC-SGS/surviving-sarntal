@@ -15,11 +15,11 @@ target_link_libraries(surviving-sarntal-library PUBLIC raylib raygui yaml-cpp sp
 set_target_properties(surviving-sarntal-library PROPERTIES COMPILE_FLAGS "${GCC_COVERAGE_COMPILE_FLAGS}")
 set_target_properties(surviving-sarntal-library PROPERTIES LINK_FLAGS "${GCC_COVERAGE_LINK_FLAGS}")
 
-if(APPLE)
+if (APPLE)
     target_link_libraries(surviving-sarntal-library PUBLIC /opt/homebrew/Cellar/sdl2/2.30.3/lib/libSDL2.dylib)
-else()
+else ()
     target_link_libraries(surviving-sarntal-library PUBLIC SDL2)
-endif()
+endif ()
 
 # Link the library to the executable
 target_link_libraries(surviving-sarntal PUBLIC surviving-sarntal-library)

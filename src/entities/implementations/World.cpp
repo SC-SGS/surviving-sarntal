@@ -6,15 +6,13 @@
 #include <iostream>
 #include <mutex>
 
-World::World() = default;
-
 floatType World::getMaxX() const { return maxX; }
 
 void World::setMaxX(const floatType maxX) { this->maxX = maxX; }
 
-Hiker &World::getHiker() const { return *hiker; }
+Hiker &World::getHiker() const { return hiker; }
 
-Inventory &World::getInventory() const { return *inventory; }
+Inventory &World::getInventory() const { return inventory; }
 
 Monster &World::getMonster() const { return monster; }
 
@@ -32,8 +30,10 @@ bool World::isOutOfScope(RenderedEntity &entity) const {
 
 std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     std::list<std::shared_ptr<Item>> nearbyItems;
+    const Vector &position = this->hiker.getPosition();
     for (const auto &item : *this->items) {
-        if (item->getPosition().distanceTo(this->hiker->getPosition()) < HIKER_ITEM_COLLECTION_RANGE) {
+        const bool inRange = item->getPosition().distanceTo(position) < HIKER_ITEM_COLLECTION_RANGE;
+        if (inRange) {
             nearbyItems.push_back(item);
         }
     }
@@ -79,26 +79,35 @@ void World::useItem(const ItemType itemType) {
 }
 
 void World::useKaiserschmarrn() const {
-    this->hiker->addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
-    AudioService::getInstance().playSound("use-kaiserschmarrn");
+    this->hiker.addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
+    this->audioService.playSound("use-kaiserschmarrn");
     spdlog::debug("Used Kaiserschmarrn.");
 }
 
 void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
     this->coinScore += COIN_SCORE;
-    AudioService::getInstance().playSound("use-coin");
+    this->audioService.playSound("use-coin");
     spdlog::debug("Used Coin.");
 }
 
 void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
-    //  TODO play sounds
-    AudioService::getInstance().playSound("use-duck");
+    this->audioService.playSound("use-duck");
     spdlog::debug("Used Duck.");
 }
 
 floatType World::getMinX() const { return minX; }
-void World::setMinX(const floatType minX) { this->minX = minX; }
+void World::setMinX(const floatType newMinX) { this->minX = newMinX; }
 
 int World::getCoinScore() const { return this->coinScore; }
+
+World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService)
+    : audioService(audioService), mountain(mountain), hiker(hiker), inventory(inventory), monster(monster) {}
+
+int World::getGameScore() const { return this->gameScore; }
+
+void World::updateGameScore() {
+    const int hikerHeight = -static_cast<int>(this->mountain.getYPosFromX(this->hiker.getPosition().x));
+    this->gameScore = std::max(this->gameScore, hikerHeight);
+}
 
 World::~World() = default;

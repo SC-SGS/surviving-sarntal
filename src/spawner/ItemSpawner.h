@@ -13,10 +13,11 @@
  * This class is responsible for spawning items during the game.
  */
 
-class ItemSpawner : public Singleton<ItemSpawner> {
-    friend class Singleton<ItemSpawner>; // Allow Singleton to access the constructor??
+class ItemSpawner {
 
   public:
+    explicit ItemSpawner(World &world);
+    ~ItemSpawner() = default;
     /**
      * This method spawns items.
      * @param world
@@ -32,15 +33,12 @@ class ItemSpawner : public Singleton<ItemSpawner> {
      */
     std::unordered_map<int, int> spawnWeights;
 
-    World &world = World::getInstance();
+    World &world;
     RandomGenerator &randomGenerator = RandomGenerator::getInstance();
 
     void updateNextSpawnTime();
     ItemType getNextRandomItemType();
     Vector getNextRandomPosition();
-
-    ItemSpawner();
-    ~ItemSpawner();
 };
 
 #endif // SURVIVING_SARNTAL_ITEMSPAWNER_H

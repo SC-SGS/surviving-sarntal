@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ..
+
 # Directory containing the source files
 SRC_DIR="src/"
 TEST_DIR="test/"
