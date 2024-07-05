@@ -4,9 +4,7 @@
 
 #include "../Destructor.hpp"
 
-Destructor::Destructor() : world(World::getInstance()) {}
-
-Destructor::~Destructor() = default;
+Destructor::Destructor(World &world) : world(world) {}
 
 void Destructor::destruct() const {
     destructRocks();
@@ -19,7 +17,7 @@ void Destructor::destructRocks() const {
     this->world.getRocks().remove_if([this](Rock rock) {
         bool shouldBeDestroyed = rock.getShouldBeDestroyed();
         if (shouldBeDestroyed) {
-            World::getInstance().addDestroyedRock(rock.getPosition(), rock.getRadius());
+            this->world.addDestroyedRock(rock.getPosition(), rock.getRadius());
         }
         return shouldBeDestroyed || this->world.isOutOfScope(rock);
     });
@@ -35,7 +33,9 @@ void Destructor::destructMountain() const {
 }
 
 void Destructor::destructHiker() const {
-    if (this->world.getHiker().needsToDie()) {
+    const bool needsToDie = this->world.getHiker().getPosition().x - this->world.getMonster().getXPosition() <= 0;
+    const bool isAlive = this->world.getHiker().getIsAlive();
+    if (needsToDie || !isAlive) {
         this->world.getHiker().kill();
     }
 }

@@ -18,9 +18,10 @@ enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCH
  * This class is responsible for spawning rocks based on the current phase and state of the game.
  */
 // TODO extract all the constants
-class RockSpawner : public Singleton<RockSpawner> {
-    friend class Singleton<RockSpawner>; // Allow Singleton to access the constructor??
+class RockSpawner {
   public:
+    explicit RockSpawner(World &world);
+    ~RockSpawner() = default;
     /**
      * This method spawns rocks.
      */
@@ -32,10 +33,7 @@ class RockSpawner : public Singleton<RockSpawner> {
     bool b = false;
     RockSpawnPhase rockSpawnPhase = VERY_BEGINNING;
 
-    World &world = World::getInstance();
-
-    RockSpawner();
-    ~RockSpawner();
+    World &world;
 
     /**
      * Determines the number of rocks to spawn based on the current rock spawn

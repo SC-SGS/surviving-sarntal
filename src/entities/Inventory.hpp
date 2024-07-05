@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_INVENTORY_HPP
 #define SURVIVING_SARNTAL_INVENTORY_HPP
 
+#include "../output/audio/AudioService.hpp"
 #include "Item.hpp"
 #include "string"
 #include "vector"
@@ -20,6 +21,7 @@ class Inventory {
   private:
     std::vector<std::vector<std::shared_ptr<Item>>> slots;
     size_t selectedSlot = 0;
+    AudioService &audioService;
 
     bool itemTypeInInventory(ItemType itemType);
     bool itemSlotAvailable();
@@ -28,8 +30,8 @@ class Inventory {
 
   public:
     int getSlotOfItem(ItemType itemType);
-    explicit Inventory(size_t slotCount);
-    Inventory();
+    explicit Inventory(size_t slotCount, AudioService &audioService);
+    explicit Inventory(AudioService &audioService);
 
     /**
      * @brief This method returns the number of slots in the inventory.

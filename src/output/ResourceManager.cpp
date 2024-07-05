@@ -6,7 +6,7 @@
 
 #include <mutex>
 
-ResourceManager::ResourceManager() {
+ResourceManager::ResourceManager(ConfigManager &configManager) : config(configManager) {
     this->loadTextures();
     this->loadMusic();
 }
@@ -30,8 +30,6 @@ void ResourceManager::loadMusic() {
         this->soundEffects[soundName] = LoadSound(soundLocation.c_str());
     }
 }
-
-ResourceManager::~ResourceManager() = default;
 
 void ResourceManager::loadTexture(const std::string &name, const std::string &path) {
     if (textures.find(name) != textures.end()) {

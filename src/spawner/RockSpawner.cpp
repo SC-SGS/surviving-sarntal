@@ -7,9 +7,7 @@
 #include <mutex>
 #include <random>
 
-RockSpawner::RockSpawner() = default;
-
-RockSpawner::~RockSpawner() = default;
+RockSpawner::RockSpawner(World &world) : world(world){};
 
 void RockSpawner::spawnRocks() {
     if (!shouldSpawnRocks()) {

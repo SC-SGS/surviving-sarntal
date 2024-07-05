@@ -8,11 +8,10 @@
 #include <iostream>
 #include <mutex>
 
-CollisionHandler::CollisionHandler()
-    : world(World::getInstance()), collisionDetector(CollisionDetector::getInstance()),
+CollisionHandler::CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
+                                   Renderer &renderer)
+    : world(world), collisionDetector(collisionDetector), audioService(audioService), renderer(renderer),
       hapticsService(HapticsService::getInstance()), deltaT(1) {}
-
-CollisionHandler::~CollisionHandler() = default;
 
 void CollisionHandler::handleCollisions() {
     this->playerCollisions();
@@ -52,8 +51,8 @@ void CollisionHandler::playerCollisions() const {
     for (auto &rock : this->world.getRocks()) {
         if (this->collisionDetector.isPlayerHitByRock(rock)) {
             // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
-            AudioService::getInstance().playSound("rock-smash");
-            AudioService::getInstance().playSound("boom");
+            this->audioService.playSound("rock-smash");
+            this->audioService.playSound("boom");
             const int rockDmg = rockDamage(rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             HapticsService::rockRumble(rockDmg);
@@ -109,8 +108,7 @@ void CollisionHandler::rockTerrainCollision(Rock &rock, const Vertex closestVert
     rock.setAngularVelocity(angularVelocity);
     rock.setAngularOffset(angularOffset);
 
-    Renderer::getInstance().setShake((rock.getVelocity().length() * rock.getRadius() * VISUAL_RUMBLE_INTENSITY) /
-                                     VELOCITY_CAP);
+    this->renderer.setShake((rock.getVelocity().length() * rock.getRadius() * VISUAL_RUMBLE_INTENSITY) / VELOCITY_CAP);
 }
 
 void CollisionHandler::rockRockCollisions() {

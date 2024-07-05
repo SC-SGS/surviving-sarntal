@@ -8,16 +8,15 @@
 #include "../../entities/World.h"
 #include "../../utilities/Singleton.hpp"
 
-class Destructor : public Singleton<Destructor> {
-    friend class Singleton<Destructor>;
+class Destructor {
 
   public:
     void destruct() const;
+    explicit Destructor(World &world);
+    ~Destructor() = default;
 
   private:
     World &world;
-    Destructor();
-    ~Destructor();
 
     /**
      * Destructs all rocks that are outside of the world borders.

@@ -13,9 +13,9 @@
 
 #include <memory>
 
-Hiker::Hiker(const Vector position)
+Hiker::Hiker(const Vector position, AudioService &audioService)
     : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
-      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true) {
+      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true), audioService(audioService) {
     animation = {4, 0, 0.3, 0};
     spdlog::info("A Hiker was initialized");
 }
@@ -81,7 +81,7 @@ void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT)
 void Hiker::turnNeutral() { this->hikerMovement.setDirection(HikerMovement::NEUTRAL); }
 void Hiker::crouch() {
     if (this->hikerMovement.getState() == HikerMovement::MOVING) {
-        AudioService::getInstance().playSound("crouch");
+        this->audioService.playSound("crouch");
         this->hikerMovement.setState(HikerMovement::CROUCHED);
         this->setHeight(DUCKED_HIKER_HEIGHT);
         this->setWidth(DUCKED_HIKER_WIDTH);
@@ -116,16 +116,12 @@ void Hiker::setXVelocity(floatType xValue) { this->velocity.setX(xValue); }
 void Hiker::setYVelocity(floatType yValue) { this->velocity.setY(yValue); }
 void Hiker::setLastJump(float lastJump) { this->hikerMovement.setLastJump(lastJump); }
 void Hiker::doSecondJump() {
-    AudioService::getInstance().playSound("jump");
+    this->audioService.playSound("jump");
     this->velocity.setY(JUMP_VELOCITY_CONSTANT);
     if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
         this->hikerMovement.setCanJumpAgain(false);
     }
     hikerMovement.setState(HikerMovement::IN_AIR);
-}
-
-bool Hiker::needsToDie() const {
-    return this->getPosition().x - World::getInstance().getMonster().getXPosition() <= 0 || this->healthPoints <= 0;
 }
 
 void Hiker::kill() {
