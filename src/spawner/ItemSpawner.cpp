@@ -8,7 +8,7 @@
 floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
 // NOLINTEND
 
-ItemSpawner::ItemSpawner() {
+ItemSpawner::ItemSpawner(World &world) : world(world) {
     YAML::Node items = ConfigManager::getInstance().getItems();
     this->spawnWeightsSum = 0;
     for (YAML::const_iterator it = items.begin(); it != items.end(); ++it) {
@@ -18,8 +18,6 @@ ItemSpawner::ItemSpawner() {
         this->spawnWeights[typeId] = spawnWeight;
     }
 }
-
-ItemSpawner::~ItemSpawner() = default;
 
 void ItemSpawner::spawnItems() {
     if (GetTime() < nextSpawnTime) {
@@ -53,8 +51,8 @@ ItemType ItemSpawner::getNextRandomItemType() {
 }
 Vector ItemSpawner::getNextRandomPosition() {
     auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300));
-    auto xPosition = static_cast<floatType>(World::getInstance().getMaxX() + 10);
-    auto yPosition = static_cast<floatType>(Mountain::getInstance().getYPosFromX(xPosition)) - randYOffset;
+    auto xPosition = static_cast<floatType>(this->world.getMaxX() + 10);
+    auto yPosition = static_cast<floatType>(this->world.getMountain().getYPosFromX(xPosition)) - randYOffset;
     spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);
     return Vector{xPosition, yPosition};
 }

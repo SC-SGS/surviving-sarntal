@@ -21,11 +21,13 @@
  * including the hiker, monster, mountain as well as a list of rocks and a list of items.
  * This class serves the purpose to combine all the single entities into one structure.
  */
+class Hiker;
 
-class World : public Singleton<World> {
-    friend class Singleton<World>; // Allow Singleton to access the constructor??
+class World {
 
   public:
+    World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService);
+    ~World();
     Hiker &getHiker() const;
 
     Inventory &getInventory() const;
@@ -39,6 +41,10 @@ class World : public Singleton<World> {
     std::list<Rock> &getDestroyedRocks() const;
 
     int getCoinScore() const;
+
+    int getGameScore() const;
+
+    void updateGameScore();
 
     /**
      * This method adds a rock to the game by adding it to the list of rocks.
@@ -76,36 +82,31 @@ class World : public Singleton<World> {
     std::list<std::shared_ptr<Item>> getNearbyItems() const;
 
     floatType getMinX() const;
-    void setMinX(floatType minX);
+    void setMinX(floatType newMinX);
     floatType getMaxX() const;
     void setMaxX(floatType maxX);
 
     bool isOutOfScope(RenderedEntity &entity) const;
 
   private:
-    // TODO into yaml config and check value
-    // constexpr Vector DEFAULT_HIKER_POS = {0, Mountain::getInstance().getYPosFromX(0)};
-    static constexpr size_t DEFAULT_INV_SLOT_NUM = 3;
-    // TODO check hiker and/or inventory singleton?
-    Mountain &mountain = Mountain::getInstance();
-    floatType hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
-    std::unique_ptr<Hiker> hiker =
-        std::make_unique<Hiker>(Vector{hikerPositionX, mountain.getYPosFromX(hikerPositionX)});
-    // TODO inventory belongs to HIKER!!!
-    std::unique_ptr<Inventory> inventory = std::make_unique<Inventory>(DEFAULT_INV_SLOT_NUM);
-    Monster &monster = Monster::getInstance();
+    // Dependencies
+    Mountain &mountain;
+    Hiker &hiker;
+    Inventory &inventory;
+    Monster &monster;
+    AudioService &audioService;
 
+    // Attributes
     floatType minX = 0;
     floatType maxX = graphics::SCREEN_WIDTH;
 
     int coinScore = 0;
+    int gameScore = 0;
 
     const std::unique_ptr<std::list<Rock>> rocks = std::make_unique<std::list<Rock>>();
     const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
-    World();
-    ~World();
 };
 
 #endif // SURVIVING_SARNTAL_WORLD_H

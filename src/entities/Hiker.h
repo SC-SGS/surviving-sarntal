@@ -4,13 +4,17 @@
 
 #ifndef SURVIVING_SARNTAL_HIKER_H
 #define SURVIVING_SARNTAL_HIKER_H
+#pragma once
 
 #include "../output/audio/AudioService.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
 #include "../utilities/vector.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
+#include "World.h"
 #include <list>
+
+class World;
 
 /**
  * This struct contains information about a collision of a hiker with a rock.
@@ -30,7 +34,7 @@ struct HitInformation {
 class Hiker : public RenderedEntity {
 
   public:
-    explicit Hiker(Vector position);
+    explicit Hiker(Vector position, AudioService &audioService);
     floatType getHeight() const;
     void setHeight(floatType height);
 
@@ -81,7 +85,7 @@ class Hiker : public RenderedEntity {
     void kill();
 
   private:
-    // AudioService &audioService = AudioService::getInstance();
+    AudioService &audioService;
     Vector velocity{};
     floatType height{};
     floatType width{};

@@ -10,19 +10,17 @@
 #include "../../spawner/MountainGenerator.h"
 #include "../../spawner/RockSpawner.h"
 
-class Spawner : public Singleton<Spawner> {
-    friend class Singleton<Spawner>;
+class Spawner {
 
   public:
+    Spawner(MountainGenerator &mountainGenerator, RockSpawner &rockSpawner, ItemSpawner &itemSpawner);
+    ~Spawner() = default;
     void spawn() const;
 
   private:
-    Spawner();
-    ~Spawner();
-
-    RockSpawner &rockSpawner = RockSpawner::getInstance();
-    MountainGenerator &mountainGenerator = MountainGenerator::getInstance();
-    ItemSpawner &itemSpawner = ItemSpawner::getInstance();
+    RockSpawner &rockSpawner;
+    MountainGenerator &mountainGenerator;
+    ItemSpawner &itemSpawner;
 
     /**
      * Spawn rocks for this time step.

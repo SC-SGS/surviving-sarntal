@@ -5,9 +5,7 @@
 #include "../CollisionDetector.hpp"
 #include <mutex>
 
-CollisionDetector::CollisionDetector() : world(World::getInstance()) {}
-
-CollisionDetector::~CollisionDetector() = default;
+CollisionDetector::CollisionDetector(World &world) : world(world) {}
 
 void CollisionDetector::detectCollisions() const {}
 

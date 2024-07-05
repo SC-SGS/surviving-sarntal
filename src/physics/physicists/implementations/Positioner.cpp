@@ -7,9 +7,7 @@
 #include <iostream>
 #include <mutex>
 
-Positioner::Positioner() : world(World::getInstance()), deltaT(1){};
-
-Positioner::~Positioner() = default;
+Positioner::Positioner(World &world) : world(world), deltaT(1){};
 
 void Positioner::updatePositions() {
     this->updateMonsterPosition();

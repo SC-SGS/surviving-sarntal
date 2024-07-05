@@ -20,8 +20,6 @@ Mountain::Mountain() {
     }
 }
 
-Mountain::~Mountain() = default;
-
 void Mountain::printTempDebugInfo() const {
     IndexIntervalNew testInterval{getRelevantMountainSection(10.2, 13.6)};
     std::cout << "Mountain test indices: " << testInterval.startIndex << ", " << testInterval.endIndex << std::endl;

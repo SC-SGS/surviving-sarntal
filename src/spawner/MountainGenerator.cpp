@@ -5,9 +5,7 @@
 #include <iostream>
 #include <mutex>
 
-MountainGenerator::MountainGenerator() { MountainGenerator::loadChunksOfMountain(); }
-
-MountainGenerator::~MountainGenerator() = default;
+MountainGenerator::MountainGenerator(World &world) : world(world) { MountainGenerator::loadChunksOfMountain(); }
 
 void MountainGenerator::generateMountainChunk() {
     const floatType currentLeftEdgeScreen{this->world.getMinX()};
@@ -24,7 +22,7 @@ void MountainGenerator::generateMountainChunk() {
     }
 }
 void MountainGenerator::loadChunksOfMountain() {
-    Mountain &mountain = Mountain::getInstance();
+    Mountain &mountain = this->world.getMountain();
 
     for (std::size_t i{0}; i < Mountain::NUMBER_OF_VERTICES / Mountain::NUM_SECTIONS_PER_CHUNK; i++) {
         mountain.generateNewChunk();

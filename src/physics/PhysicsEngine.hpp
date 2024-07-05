@@ -27,8 +27,7 @@
  * <a href="https://web.archive.org/web/20130328024036/http://gafferongames.com/game-physics/fix-your-timestep/">Fix
  * your Timestep</a>.</p>
  */
-class PhysicsEngine : public Singleton<PhysicsEngine> {
-    friend class Singleton<PhysicsEngine>;
+class PhysicsEngine {
 
   public:
     /**
@@ -52,6 +51,12 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
     void update(std::queue<GameEvent> &events);
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
+
+    PhysicsEngine(World &world, Spawner &spawner, EventProcessor &eventProcessor, Accelerator &accelerator,
+                  Positioner &positioner, CollisionDetector &collisionDetector, CollisionHandler &collisionHandler,
+                  Interpolator &interpolator, Destructor &destructor);
+
+    ~PhysicsEngine() = default;
 
   private:
     /**
@@ -119,18 +124,11 @@ class PhysicsEngine : public Singleton<PhysicsEngine> {
      * The private constructor method of the PhysicsEngine.
      * Only to be called once.
      */
-    PhysicsEngine();
 
     /**
      * Simulates the change in the state of the world over the next deltaT time interval.
      */
     void updateTimeStep() const;
-
-    /**
-     * Destructs all physicists
-     * and sets isInit to false;
-     */
-    ~PhysicsEngine();
 };
 
 #endif // PHYSICSENGINE_H
