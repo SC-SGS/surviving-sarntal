@@ -15,7 +15,7 @@ void Accelerator::accelerate() const {
     this->updateRockVelocities();
     this->updateHikerDirection();
 }
-void Accelerator::setDeltaT(floatType deltaT) { this->deltaT = deltaT; }
+void Accelerator::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 
 void Accelerator::updateRockVelocities() const {
     // TODO #pragma omp parallel for

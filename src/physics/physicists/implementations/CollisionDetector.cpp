@@ -22,7 +22,7 @@ bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
     const auto rad = rock.getRadius();
     // hiker position is at his feet, but here we use the center of mass (center of the rectangle) as position
     const auto pos = this->world.getHiker().getPosition();
-    const auto adjustedHikerPosition = Vector{pos.x, pos.y - this->world.getHiker().getHeight() / 2};
+    const auto adjustedHikerPosition = Vector{pos.x, pos.y + this->world.getHiker().getHeight() / 2};
     const auto hikerHeight = this->world.getHiker().getHeight();
     const auto hikerWidth = this->world.getHiker().getWidth();
     const auto xCenterDistanceAbs = std::abs(adjustedHikerPosition.x - rockPosition.x);
@@ -58,7 +58,7 @@ Vector CollisionDetector::getNormal(const std::size_t idx, const Vector rockPos)
     // R =  (  0   -1  )
     //      (  1    0  )
     Vector normal = {-slope.y, slope.x};
-    if (normal.y > 0) {
+    if (normal.y < 0) {
         normal = normal * -1.f;
     }
     const floatType normalization = std::sqrt(normal * normal);

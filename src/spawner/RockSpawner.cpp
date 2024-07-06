@@ -27,8 +27,8 @@ void RockSpawner::spawnRock(const size_t idxRock) {
     const floatType rad =
         static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
 
-    Vector velocity = {MIN_SPAWN_VELOCITY + static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
-                                                (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
+    Vector velocity = {-MIN_SPAWN_VELOCITY - static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
+                                                 (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
                        0};
     floatType angularVelocity = MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
                                                          (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY);
@@ -48,7 +48,7 @@ bool RockSpawner::shouldSpawnRocks() {
     floatType timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
     bool shouldSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
     if (shouldSpawn) {
-        this->lastSpawnTime += static_cast<floatType>(gameTime);
+        this->lastSpawnTime = static_cast<floatType>(gameTime);
     }
     return shouldSpawn;
 }
@@ -98,10 +98,10 @@ std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
 Vector RockSpawner::getRandSpawnPos() const {
     // const auto spawnIndex = this->world.getMountain().getLatestChunk().startIndex;
     // const auto spawnXPos = this->world.getMountain().getVertex(spawnIndex).x;
-    const auto spawnXPos = 1000.f + this->world.getMonster().getXPosition();
+    const auto spawnXPos = 2000.f + this->world.getMonster().getXPosition();
     const auto randYOffset =
         static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
-    const auto spawnYPos = this->world.getMountain().getYPosFromX(spawnXPos) - randYOffset;
+    const auto spawnYPos = this->world.getMountain().getYPosFromX(spawnXPos) + randYOffset;
     return Vector{spawnXPos, spawnYPos};
 }
 // NOLINTEND

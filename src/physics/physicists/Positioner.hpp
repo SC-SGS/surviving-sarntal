@@ -13,7 +13,7 @@ class Positioner {
   public:
     explicit Positioner(World &world);
     ~Positioner() = default;
-    void updatePositions();
+    void updatePositions() const;
 
     void setDeltaT(floatType deltaT);
 
@@ -34,7 +34,7 @@ class Positioner {
     /**
      * Moves the monster forward so that it always aligns with the left screen border.
      */
-    void updateMonsterPosition();
+    void updateMonsterPosition() const;
 
     /**
      * Moves the left and right world border at each step to match the currently displayed part of the world.

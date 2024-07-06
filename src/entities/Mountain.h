@@ -43,7 +43,7 @@ class Mountain {
     /**
      * steepness of ramp generated in prototype
      */
-    static constexpr floatType SLOPE{-0.25}; // TODO fix pls slope should be positive when the mountain goes up
+    static constexpr floatType SLOPE{0.25};
 
     /**
      * value beween 0 and 1 (prefereably between 0.5 and 0.75)

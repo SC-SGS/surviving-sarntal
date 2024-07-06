@@ -30,7 +30,7 @@ constexpr floatType DUCKED_HIKER_WIDTH = 75.f; // 47.4f;
  */
 constexpr floatType DUCK_SPEED_FACTOR = .35f;
 constexpr floatType NORMAL_SPEED = 260.f;
-constexpr floatType JUMP_VELOCITY_CONSTANT = -750.f;
+constexpr floatType JUMP_VELOCITY_CONSTANT = 750.f;
 constexpr floatType AIR_MOVEMENT_SPEED_FACTOR = .6f;
 constexpr floatType KNOCKBACKCONST = 0.00005f;
 // Movement on a slope TODO these need to be fine-tuned!!!
@@ -101,7 +101,7 @@ constexpr floatType RUMBLE_ZONE = 200.f;
 /**
  * Physical constants
  */
-constexpr floatType GRAVITATIONAL_CONSTANT = 1000.f;
+constexpr floatType GRAVITATIONAL_CONSTANT = -1000.f;
 constexpr floatType EPSILON = 1e-3f;
 constexpr floatType ROCK_TERRAIN_DAMPING = 0.8f;
 

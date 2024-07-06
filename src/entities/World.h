@@ -36,7 +36,7 @@ class World {
 
     Mountain &getMountain() const;
 
-    std::list<Rock> &getRocks();
+    std::list<Rock> &getRocks() const;
 
     std::list<Rock> &getDestroyedRocks() const;
 
@@ -50,9 +50,9 @@ class World {
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
-    void addRock(Rock &rock);
+    void addRock(const Rock &rock) const;
 
-    void addDestroyedRock(Vector position, floatType radius);
+    void addDestroyedRock(Vector position, floatType radius) const;
 
     std::list<std::shared_ptr<Item>> &getItems() const;
 
@@ -86,7 +86,7 @@ class World {
     floatType getMaxX() const;
     void setMaxX(floatType maxX);
 
-    bool isOutOfScope(RenderedEntity &entity) const;
+    bool isOutOfScope(const RenderedEntity &entity) const;
 
   private:
     // Dependencies
