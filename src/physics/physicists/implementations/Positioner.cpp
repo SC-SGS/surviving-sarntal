@@ -9,7 +9,7 @@
 
 Positioner::Positioner(World &world) : world(world), deltaT(1){};
 
-void Positioner::updatePositions() {
+void Positioner::updatePositions() const {
     this->updateMonsterPosition();
     this->updateWorldBorderPosition();
     this->updateRockPositions();
@@ -18,18 +18,18 @@ void Positioner::updatePositions() {
 
 void Positioner::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; };
 
-void Positioner::updateMonsterPosition() {
-    auto xPos = this->world.getMonster().getXPosition();
-    auto newXPos = xPos + KILL_BAR_VELOCITY * this->deltaT;
-    auto newYPos = this->world.getMountain().getYPosFromX(xPos);
+void Positioner::updateMonsterPosition() const {
+    const auto xPos = this->world.getMonster().getXPosition();
+    const auto newXPos = xPos + KILL_BAR_VELOCITY * this->deltaT;
+    const auto newYPos = this->world.getMountain().getYPosFromX(xPos);
     Vector newPos = {newXPos, newYPos};
     this->world.getMonster().setPosition(newPos);
 }
 
 void Positioner::updateWorldBorderPosition() const {
-    auto xMin = this->world.getMinX();
-    auto xMax = this->world.getMaxX();
-    auto delta = KILL_BAR_VELOCITY * this->deltaT;
+    const auto xMin = this->world.getMinX();
+    const auto xMax = this->world.getMaxX();
+    const auto delta = KILL_BAR_VELOCITY * this->deltaT;
     this->world.setMinX(xMin + delta);
     this->world.setMaxX(xMax + delta);
     // std::cout << "World border x minimum position: " << xMin << std::endl;
@@ -41,7 +41,7 @@ void Positioner::updateRockPositions() const {
         // std::cout << pos.x << pos.y << std::endl;
         pos += rock.getVelocity() * this->deltaT;
         rock.setPosition(pos);
-        floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
+        const floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
         rock.setAngularOffset(newAngularOffset);
         // std::cout << pos.x << pos.y << std::endl;
     }
@@ -77,7 +77,7 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         pos.x += knockback + AIR_MOVEMENT_SPEED_FACTOR * vel.x * this->deltaT;
         const auto terrainY = this->world.getMountain().getYPosFromX(pos.x);
         const auto airY = pos.y + vel.y * this->deltaT;
-        if (airY < terrainY) {
+        if (airY > terrainY) {
             pos.y = airY;
         } else {
             pos.y = terrainY;

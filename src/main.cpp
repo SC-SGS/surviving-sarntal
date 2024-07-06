@@ -1,9 +1,15 @@
 #include "game/Game.hpp"
+#include "spdlog/fmt/bundled/chrono.h"
 #include "spdlog/spdlog.h"
 
+// TODO extract initialization to game
 int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warnings-as-errors]
     spdlog::set_level(spdlog::level::info);
     InitWindow(graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT, "Surviving Sarntal");
+
+    InitAudioDevice(); // Initialize audio device
+    SetTargetFPS(60);
+    SDL_Init(SDL_INIT_GAMECONTROLLER);
 
     InputHandler &inputHandler = InputHandler::getInstance();
     ResourceManager resourceManager(ConfigManager::getInstance());
@@ -35,10 +41,6 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
                                 collisionHandler, interpolator, destructor);
 
     Game game(world, renderer, physicsEngine, audioService, inputHandler);
-
-    InitAudioDevice(); // Initialize audio device
-    SetTargetFPS(60);
-    SDL_Init(SDL_INIT_GAMECONTROLLER);
 
     game.run();
 
