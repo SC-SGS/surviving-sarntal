@@ -18,8 +18,8 @@ Monster &World::getMonster() const { return monster; }
 
 Mountain &World::getMountain() const { return mountain; }
 
-bool World::isOutOfScope(RenderedEntity &entity) const {
-    bool result = entity.getPosition().x < this->minX - Mountain::CHUNK_WIDTH;
+bool World::isOutOfScope(const RenderedEntity &entity) const {
+    const bool result = entity.getPosition().x < this->minX - Mountain::CHUNK_WIDTH;
     // entity.getPosition().x > this->maxX + Mountain::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
     // entity.getPosition().y > mountain.getYPosFromX(entity.getPosition().x);
     if (result) {
@@ -28,11 +28,13 @@ bool World::isOutOfScope(RenderedEntity &entity) const {
     return result;
 }
 
+// TODO this should be hiker specific
 std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     std::list<std::shared_ptr<Item>> nearbyItems;
     const Vector &position = this->hiker.getPosition();
+    const auto adjustedHikerPosition = Vector{position.x, position.y + this->hiker.getHeight() / 2};
     for (const auto &item : *this->items) {
-        const bool inRange = item->getPosition().distanceTo(position) < HIKER_ITEM_COLLECTION_RANGE;
+        const bool inRange = item->getPosition().distanceTo(adjustedHikerPosition) < HIKER_ITEM_COLLECTION_RANGE;
         if (inRange) {
             nearbyItems.push_back(item);
         }
@@ -40,15 +42,15 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     return nearbyItems;
 }
 
-void World::addRock(Rock &rock) { this->rocks->push_back(rock); }
+void World::addRock(const Rock &rock) const { this->rocks->push_back(rock); }
 
-void World::addDestroyedRock(Vector position, floatType radius) {
+void World::addDestroyedRock(const Vector position, const floatType radius) const {
     Rock destroyedRock(position, {0, 0}, 0, 0, radius);
     destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
     this->destroyedRocks->push_back(destroyedRock);
 }
 
-std::list<Rock> &World::getRocks() { return *rocks; }
+std::list<Rock> &World::getRocks() const { return *rocks; }
 
 std::list<Rock> &World::getDestroyedRocks() const {
     destroyedRocks->remove_if([](Rock &rock) {
@@ -106,7 +108,7 @@ World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &mo
 int World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
-    const int hikerHeight = -static_cast<int>(this->mountain.getYPosFromX(this->hiker.getPosition().x));
+    const int hikerHeight = static_cast<int>(this->mountain.getYPosFromX(this->hiker.getPosition().x));
     this->gameScore = std::max(this->gameScore, hikerHeight);
 }
 

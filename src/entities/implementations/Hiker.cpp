@@ -9,9 +9,6 @@
 #include "../World.h"
 #include "spdlog/spdlog.h"
 #include <iostream>
-#include <utility>
-
-#include <memory>
 
 Hiker::Hiker(const Vector position, AudioService &audioService)
     : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
@@ -35,7 +32,16 @@ void Hiker::setWidth(const floatType width) { this->width = width; }
 
 int Hiker::getHealthPoints() const { return healthPoints; }
 
-void Hiker::setHealthPoints(const int healthPoints) { this->healthPoints = healthPoints; }
+void Hiker::setHealthPoints(const int healthPoints) {
+    if (healthPoints <= 0) {
+        this->healthPoints = 0;
+        this->isAlive = false;
+    } else if (healthPoints >= 100) {
+        this->healthPoints = 100;
+    } else {
+        this->healthPoints = healthPoints;
+    }
+}
 
 const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 

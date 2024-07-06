@@ -14,7 +14,7 @@ void Destructor::destruct() const {
 }
 
 void Destructor::destructRocks() const {
-    this->world.getRocks().remove_if([this](Rock rock) {
+    this->world.getRocks().remove_if([this](const Rock &rock) {
         bool shouldBeDestroyed = rock.getShouldBeDestroyed();
         if (shouldBeDestroyed) {
             this->world.addDestroyedRock(rock.getPosition(), rock.getRadius());
@@ -34,7 +34,7 @@ void Destructor::destructMountain() const {
 
 void Destructor::destructHiker() const {
     const bool needsToDie = this->world.getHiker().getPosition().x - this->world.getMonster().getXPosition() <= 0;
-    const bool isAlive = this->world.getHiker().getIsAlive();
+    const bool isAlive = this->world.getHiker().getHealthPoints() > 0;
     if (needsToDie || !isAlive) {
         this->world.getHiker().kill();
     }
