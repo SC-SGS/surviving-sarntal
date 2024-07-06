@@ -20,10 +20,10 @@ constexpr int MAX_GAMEPADS = 8;
 /**
  * Player size
  */
-constexpr floatType HIKER_HEIGHT = 90.6f;
-constexpr floatType HIKER_WIDTH = 60.f; // 41.1f
-constexpr floatType DUCKED_HIKER_HEIGHT = 65.9f;
-constexpr floatType DUCKED_HIKER_WIDTH = 70.f; // 47.4f;
+constexpr floatType HIKER_HEIGHT = 140.f;
+constexpr floatType HIKER_WIDTH = 90.f; // 41.1f
+constexpr floatType DUCKED_HIKER_HEIGHT = 110.f;
+constexpr floatType DUCKED_HIKER_WIDTH = 75.f; // 47.4f;
 
 /**
  * Player movement speed constants.
@@ -46,7 +46,7 @@ constexpr floatType SLOWEST_POS_SCOPE = 2.f;
 /**
  * Player items
  */
-constexpr floatType HIKER_ITEM_COLLECTION_RANGE = 200.f;
+constexpr floatType HIKER_ITEM_COLLECTION_RANGE = 110.f;
 
 constexpr int SLOTS_PER_INVENTORY = 3;
 constexpr int ITEMS_PER_SLOT = 64;
@@ -55,7 +55,8 @@ constexpr int COIN_SCORE = 500;
 
 constexpr floatType SPAWN_START_TIME = 5.0;
 
-constexpr floatType ITEM_BASE_HEIGHT = 40.; // minimal height at which items are placed above the ground
+constexpr floatType ITEM_BASE_HEIGHT =
+    80.; // minimal height at which items are placed above the ground // it's actually used as the height of the item
 constexpr floatType ITEM_MAX_HEIGHT = 200.; // max height above the terrain where items are spawned
 constexpr floatType ITEMS_PER_SECOND = .05;
 constexpr floatType INVENTORY_SLOT_SIZE = 80.f;
