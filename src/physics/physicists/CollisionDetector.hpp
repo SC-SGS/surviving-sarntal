@@ -31,7 +31,7 @@ class CollisionDetector {
      * TODO maybe later adapt to non-circular rocks and it should be used in some method that uses linked cell or sth
      *
      * @param rock1
-     * @param r2
+     * @param rock2
      * @return
      */
     static bool rocksCollide(Rock &rock1, Rock &rock2);
