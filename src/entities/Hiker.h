@@ -59,7 +59,7 @@ class Hiker : public RenderedEntity {
     bool getIsAlive() const;
     void setIsAlive(bool alive);
 
-    RenderInformation getRenderInformation() override;
+    RenderInformation getRenderInformation() const override;
 
     void turnLeft();
     void turnRight();

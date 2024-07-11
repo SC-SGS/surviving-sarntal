@@ -25,7 +25,7 @@ class Monster : public RenderedEntity {
 
     explicit Monster(Vector position);
 
-    RenderInformation getRenderInformation() override;
+    RenderInformation getRenderInformation() const override;
 
     floatType getXPosition() const;
     void setXPosition(floatType positionX);

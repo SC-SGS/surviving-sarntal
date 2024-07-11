@@ -3,8 +3,9 @@
 //
 
 #include "../Destructor.hpp"
+#include "../../../output/graphics/Renderer.h"
 
-Destructor::Destructor(World &world) : world(world) {}
+Destructor::Destructor(World &world, Renderer &renderer) : world(world), renderer(renderer) {}
 
 void Destructor::destruct() const {
     destructRocks();
@@ -17,7 +18,7 @@ void Destructor::destructRocks() const {
     this->world.getRocks().remove_if([this](const Rock &rock) {
         bool shouldBeDestroyed = rock.getShouldBeDestroyed();
         if (shouldBeDestroyed) {
-            this->world.addDestroyedRock(rock.getPosition(), rock.getRadius());
+            this->renderer.addExplosion(rock.getPosition(), rock.getRadius());
         }
         return shouldBeDestroyed || this->world.isOutOfScope(rock);
     });

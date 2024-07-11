@@ -8,7 +8,7 @@ Item::Item(ItemType itemType, Vector position) : RenderedEntity(position), itemT
 
 ItemType Item::getItemType() const { return this->itemType; }
 
-RenderInformation Item::getRenderInformation() {
+RenderInformation Item::getRenderInformation() const {
     return RenderInformation{Vector2(this->position), {0, 0}, ITEM_BASE_HEIGHT, ITEM_BASE_HEIGHT, 0, this->name};
 }
 

@@ -27,7 +27,7 @@ class Item : public RenderedEntity {
   public:
     Item(ItemType itemType, Vector position);
 
-    RenderInformation getRenderInformation() override;
+    RenderInformation getRenderInformation() const override;
 
     ItemType getItemType() const;
 

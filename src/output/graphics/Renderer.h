@@ -22,6 +22,7 @@ class Renderer {
     ~Renderer() = default;
 
     void toggleDebugMode();
+    void addExplosion(const Vector &position, float radius);
 
   private:
     // Dependencies
@@ -30,12 +31,14 @@ class Renderer {
 
     // Attributes
     Camera2D camera = {0};
-    std::unordered_map<std::string, AnimationInformation> animations;
+    std::unordered_map<int, AnimationInformation> animations;
+    AnimationInformation &getAnimationInformation(int entityId, AnimationInformation &defaultAnimation);
     std::unordered_map<std::string, int> landmarks;
     const Vector2 screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
     float shakeIntensity = 0.0f;
     Texture2D gradientTextureBackground{};
     bool debugMode = false;
+    const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
 
     // Initialize the scrolling speed
     floatType scrollingMid = 0;
@@ -49,17 +52,17 @@ class Renderer {
     void renderBackground();
     void regenerateGradientTexture();
     void renderRock(RenderedEntity &entity) const;
-    void renderHiker(RenderedEntity &hiker) const;
+    void renderHiker(RenderedEntity &hiker);
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
                                          floatType offsetY) const;
     void renderMountain(const Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
-    void renderEntities() const;
-    void animateEntity(RenderedEntity &entity) const;
-    void renderAnimation(RenderedEntity &entity) const;
+    void renderEntities();
+    void animateEntity(RenderedEntity &entity);
+    void renderAnimation(RenderedEntity &entity);
     void renderInventory() const;
     void renderItemSlot(const Inventory &inventory, int slotNumber, int startX, int startY) const;
     void renderHealthBar() const;
-    void debugRenderEntities() const;
+    void debugRenderEntities();
     void debugRenderRock(RenderedEntity &entity) const;
     void renderScore() const;
     void renderCoinScore() const;
@@ -71,7 +74,8 @@ class Renderer {
     void renderAltimeterStep(int drawY, int drawAltitude, int fontSize) const;
     int floorToNearest(int number, int placeValue) const;
     void applyRumbleEffect();
-    void renderNormalEntities() const;
+    void renderNormalEntities();
+    std::list<Rock> &getDestroyedRocks() const;
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
