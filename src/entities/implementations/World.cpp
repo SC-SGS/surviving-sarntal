@@ -2,6 +2,7 @@
 // Created by Anietta Weckauff on 06.05.24.
 //
 #include "../World.h"
+#include "../../output/graphics/Renderer.h"
 
 #include <iostream>
 #include <mutex>
@@ -44,21 +45,7 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
 
 void World::addRock(const Rock &rock) const { this->rocks->push_back(rock); }
 
-void World::addDestroyedRock(const Vector position, const floatType radius) const {
-    Rock destroyedRock(position, {0, 0}, 0, 0, radius);
-    destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
-    this->destroyedRocks->push_back(destroyedRock);
-}
-
 std::list<Rock> &World::getRocks() const { return *rocks; }
-
-std::list<Rock> &World::getDestroyedRocks() const {
-    destroyedRocks->remove_if([](Rock &rock) {
-        const auto animation = rock.getRenderInformation().animation;
-        return animation.currentFrame == animation.frames - 1;
-    });
-    return *destroyedRocks;
-}
 
 std::list<std::shared_ptr<Item>> &World::getItems() const { return *items; }
 

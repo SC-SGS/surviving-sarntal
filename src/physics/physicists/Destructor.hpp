@@ -6,17 +6,19 @@
 #define SURVIVING_SARNTAL_DESTRUCTOR_HPP
 
 #include "../../entities/World.h"
+#include "../../output/graphics/Renderer.h"
 #include "../../utilities/Singleton.hpp"
 
 class Destructor {
 
   public:
     void destruct() const;
-    explicit Destructor(World &world);
+    explicit Destructor(World &world, Renderer &renderer);
     ~Destructor() = default;
 
   private:
     World &world;
+    Renderer &renderer;
 
     /**
      * Destructs all rocks that are outside of the world borders.

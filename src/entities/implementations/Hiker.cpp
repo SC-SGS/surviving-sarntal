@@ -17,7 +17,7 @@ Hiker::Hiker(const Vector position, AudioService &audioService)
     spdlog::info("A Hiker was initialized");
 }
 
-RenderInformation Hiker::getRenderInformation() {
+RenderInformation Hiker::getRenderInformation() const {
     return RenderInformation{Vector2(position), {0, height / 2}, width, height, 0, hikerMovement.getStateString(),
                              animation};
 }

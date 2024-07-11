@@ -72,10 +72,11 @@ void Renderer::renderEntity(RenderedEntity &entity, const floatType rotation, co
     }
 }
 
-void Renderer::animateEntity(RenderedEntity &entity) const {
+void Renderer::animateEntity(RenderedEntity &entity) {
     auto info = entity.getRenderInformation();
     const auto currentTime = static_cast<floatType>(GetTime());
-    AnimationInformation &animation = info.animation;
+
+    AnimationInformation &animation = getAnimationInformation(entity.getId(), info.animation);
 
     // Check if we need to advance to the next frame
     if (currentTime >= animation.lastTime + animation.frameTime) {
@@ -85,17 +86,18 @@ void Renderer::animateEntity(RenderedEntity &entity) const {
         // Reset current time
         animation.lastTime = currentTime;
     }
-    entity.setAnimationInformation(animation);
+    animations.insert_or_assign(entity.getId(), animation);
 
     renderAnimation(entity);
 }
 
-void Renderer::renderAnimation(RenderedEntity &entity) const {
+void Renderer::renderAnimation(RenderedEntity &entity) {
     auto info = entity.getRenderInformation();
+    auto animation = getAnimationInformation(entity.getId(), info.animation);
     // Get the texture and calculate frame width
     const Texture2D texture = resourceManager.getTexture(info.texture);
-    const floatType width = static_cast<floatType>(texture.width) / static_cast<floatType>(info.animation.frames);
-    const floatType currentFrameWidth = width * static_cast<floatType>(info.animation.currentFrame);
+    const floatType width = static_cast<floatType>(texture.width) / static_cast<floatType>(animation.frames);
+    const floatType currentFrameWidth = width * static_cast<floatType>(animation.currentFrame);
 
     // Create source rectangle for the current frame
     Rectangle sourceRec = {currentFrameWidth, 0.0f, width, static_cast<floatType>(texture.height)};
@@ -108,7 +110,7 @@ void Renderer::renderAnimation(RenderedEntity &entity) const {
     this->renderEntity(entity, info.angularOffset, texture, sourceRec);
 }
 
-void Renderer::renderHiker(RenderedEntity &hiker) const {
+void Renderer::renderHiker(RenderedEntity &hiker) {
     if (hiker.getRenderInformation().texture == "walk") {
         animateEntity(hiker);
     } else {
@@ -167,7 +169,7 @@ void Renderer::renderMountain(const Mountain &mountain, Color topColor, Color bo
     }
 }
 
-void Renderer::renderEntities() const {
+void Renderer::renderEntities() {
     if (!this->debugMode)
         renderNormalEntities();
     else {
@@ -175,15 +177,14 @@ void Renderer::renderEntities() const {
     }
 }
 
-void Renderer::renderNormalEntities() const {
+void Renderer::renderNormalEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
-    auto &destroyedRocks = world.getDestroyedRocks();
     auto &monster = world.getMonster();
     const auto &mountain = world.getMountain();
 
     // Render destroyed rocks, e.g. explosions
-    for (auto &destroyedRock : destroyedRocks) {
+    for (auto &destroyedRock : getDestroyedRocks()) {
         animateEntity(destroyedRock);
     }
 
@@ -207,7 +208,7 @@ void Renderer::renderNormalEntities() const {
     renderMountain(mountain, SKYBLUE, BLUE);
 }
 
-void Renderer::debugRenderEntities() const {
+void Renderer::debugRenderEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
     auto &monster = world.getMonster();
@@ -378,6 +379,19 @@ void Renderer::applyRumbleEffect() {
     }
 }
 
+AnimationInformation &Renderer::getAnimationInformation(int entityId, AnimationInformation &defaultAnimation) {
+    if (animations.find(entityId) == animations.end()) {
+        animations[entityId] = defaultAnimation;
+    }
+    return animations[entityId];
+}
+
+void Renderer::addExplosion(const Vector &position, const float radius) {
+    Rock destroyedRock(position, {0, 0}, 0, 0, radius);
+    destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
+    this->destroyedRocks->push_back(destroyedRock);
+}
+
 // Main rendering function
 void Renderer::draw() {
     applyRumbleEffect();
@@ -465,4 +479,16 @@ Vector Renderer::transformPosition(const Vector2 &vector) const {
 
 floatType Renderer::transformYCoordinate(const floatType yCoordinate) const {
     return -yCoordinate + static_cast<floatType>(GetScreenHeight());
+}
+
+std::list<Rock> &Renderer::getDestroyedRocks() const {
+    destroyedRocks->remove_if([this](Rock &rock) {
+        auto animation = animations.find(rock.getId());
+        if (animation != animations.end()) {
+            return animation->second.currentFrame >= animation->second.frames - 1;
+        } else {
+            return false;
+        }
+    });
+    return *destroyedRocks;
 }

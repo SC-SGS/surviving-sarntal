@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     Accelerator accelerator(world);
     CollisionDetector collisionDetector(world);
     CollisionHandler collisionHandler(world, collisionDetector, audioService, renderer);
-    Destructor destructor(world);
+    Destructor destructor(world, renderer);
     Interpolator interpolator(world);
     Positioner positioner(world);
     EventProcessor eventProcessor(world, renderer);

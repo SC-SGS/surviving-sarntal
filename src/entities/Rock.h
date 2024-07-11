@@ -29,7 +29,7 @@ class Rock : public RenderedEntity {
     floatType getAngularOffset() const;
     floatType getRadius() const;
 
-    RenderInformation getRenderInformation() override;
+    RenderInformation getRenderInformation() const override;
 
     bool getShouldBeDestroyed() const;
     void setShouldBeDestroyed(bool shouldBeDestroyed);
