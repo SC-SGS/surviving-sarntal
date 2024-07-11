@@ -14,16 +14,21 @@
  * Key features of a rendered item are position and necessary render information.
  */
 class RenderedEntity {
+    static int idCounter;
+
   public:
     explicit RenderedEntity(Vector position);
 
-    virtual RenderInformation getRenderInformation();
+    virtual RenderInformation getRenderInformation() const = 0;
     void setAnimationInformation(AnimationInformation animationInformation);
 
     void setPosition(Vector &position);
     const Vector &getPosition() const;
 
+    const int &getId() const { return id; }
+
   protected:
+    int id;
     Vector position{};
     AnimationInformation animation{0, 0, 0, 0};
 };

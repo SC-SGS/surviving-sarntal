@@ -38,8 +38,6 @@ class World {
 
     std::list<Rock> &getRocks() const;
 
-    std::list<Rock> &getDestroyedRocks() const;
-
     int getCoinScore() const;
 
     int getGameScore() const;
