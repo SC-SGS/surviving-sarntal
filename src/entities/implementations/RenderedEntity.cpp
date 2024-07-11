@@ -3,12 +3,12 @@
 //
 
 #include "../RenderedEntity.h"
+#include "../World.h"
 #include <utility>
 
-RenderedEntity::RenderedEntity(Vector position) { this->position = position; }
+int RenderedEntity::idCounter = 0;
 
-// TODO once again, this should be const and there should be a setter for this if e.g. the animation is to be changed
-RenderInformation RenderedEntity::getRenderInformation() { return {Vector2(position), {0, 0}, 0, 0, 0, "", animation}; }
+RenderedEntity::RenderedEntity(Vector position) : position(position) { id = idCounter++; }
 
 void RenderedEntity::setAnimationInformation(const AnimationInformation animationInformation) {
     animation = animationInformation;

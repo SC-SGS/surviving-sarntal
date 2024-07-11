@@ -12,12 +12,12 @@ Rock::Rock(Vector position, Vector velocity, floatType angularVelocity, floatTyp
     : RenderedEntity(position), velocity(velocity), angularOffset(angularOffset), angularVelocity(angularVelocity),
       radius(radius){};
 
-RenderInformation Rock::getRenderInformation() {
+RenderInformation Rock::getRenderInformation() const {
     if (animation.frames == 0) {
         return RenderInformation{Vector2(position), {0, 0}, radius * 2.0f, radius * 2.0f, angularOffset, "rock"};
     } else {
-        return RenderInformation{Vector2(position), {0, 0},      radius * 2.0f, radius * 2.0f,
-                                 angularOffset,     "explosion", animation};
+        return RenderInformation{Vector2(position), {0, 0},      radius * 2.0f,  radius * 2.0f,
+                                 angularOffset,     "explosion", {25, 0, 0.1, 0}};
     }
 }
 
