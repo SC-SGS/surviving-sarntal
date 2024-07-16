@@ -7,165 +7,93 @@
 #include <mutex>
 #include <random>
 
-Mountain::Mountain() {
-    // create points and chunks corresponding to a simple ramp
-    floatType currentX = -MOUNTAIN_WIDTH;
-    floatType currentY = 0.;
+Mountain::Mountain() { generateMountain(); }
 
-    // only initialize a horizontal line
-    for (auto &pos : landscapeFixpointCircularArray) {
-        pos.x = currentX;
-        pos.y = currentY;
-        currentX += SECTION_WIDTH;
-    }
-}
+void Mountain::generateInitialChunk() {
+    Vector pos1 = {MOUNTAIN_START, MOUNTAIN_INITIAL_HEIGHT};
+    spdlog::info("Point generated: ({},{})", pos1.x, pos1.y);
+    floatType xRight = MOUNTAIN_START + MOUNTAIN_CHUNK_WIDTH;
+    floatType yRight = this->rand->getRandomRealNumber(MOUNTAIN_INITIAL_HEIGHT + MOUNTAIN_NEW_POINT_DELTA_MIN,
+                                                       MOUNTAIN_INITIAL_HEIGHT + MOUNTAIN_NEW_POINT_DELTA_MAX);
+    spdlog::info("Point generated: ({},{})", xRight, yRight);
+    Vector pos2 = {xRight, yRight};
 
-void Mountain::printTempDebugInfo() const {
-    IndexIntervalNew testInterval{getRelevantMountainSection(10.2, 13.6)};
-    std::cout << "Mountain test indices: " << testInterval.startIndex << ", " << testInterval.endIndex << std::endl;
-    std::cout << "left point coords: " << getVertex(testInterval.startIndex).x << ", "
-              << getVertex(testInterval.startIndex).y << std::endl;
-    std::cout << "right point coords: " << getVertex(testInterval.endIndex).x << ", "
-              << getVertex(testInterval.endIndex).y << std::endl;
-    // todo add debug log here
-}
+    floatType der = (pos2.y - pos1.y) / (pos2.x - pos1.x);
 
-Vector Mountain::getVertex(const size_t index) const {
-    return landscapeFixpointCircularArray[index % NUMBER_OF_VERTICES];
-}
-Vector Mountain::getVertex(const int index) const {
-    return landscapeFixpointCircularArray[(index + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES];
-}
+    auto *firstSplinePiece = new HermiteSpline(pos1, pos2, der, der);
 
-IndexIntervalNew Mountain::getRelevantMountainSection(const floatType minX, const floatType maxX) {
-    IndexIntervalNew relevantMountainSection{};
-    relevantMountainSection.startIndex =
-        static_cast<std::size_t>(std::floor(minX / SECTION_WIDTH)) % NUMBER_OF_VERTICES;
-    relevantMountainSection.endIndex =
-        static_cast<std::size_t>(std::ceil(maxX / SECTION_WIDTH) + 1) % NUMBER_OF_VERTICES;
-    if (relevantMountainSection.endIndex < relevantMountainSection.startIndex)
-        relevantMountainSection.endIndex += NUMBER_OF_VERTICES;
-
-    return relevantMountainSection;
-    /*floatType leftmost_x = getVertex(0).x;
-    IndexIntervalNew relevantMountainSection;
-    relevantMountainSection.startIndex =
-        (std::size_t)std::floor((minX - leftmost_x) / SECTION_WIDTH);
-    relevantMountainSection.endIndex =
-        (std::size_t)(std::ceil((maxX - leftmost_x) / SECTION_WIDTH) + 1);
-    return relevantMountainSection;*/
+    this->positions.push_back(pos1);
+    this->derivatives.push_back(der);
+    this->spline.push_back(firstSplinePiece);
+    this->positions.push_back(pos2);
+    this->derivatives.push_back(der);
 }
 
 void Mountain::generateNewChunk() {
-    spdlog::debug("Mountain chunk was generated.");
-    generateSlope();
-    generateTerrainRecursive(startOfCircularArray, startOfCircularArray + NUM_SECTIONS_PER_CHUNK - 1, 100);
-    startOfCircularArray = (startOfCircularArray + NUM_SECTIONS_PER_CHUNK) % NUMBER_OF_VERTICES;
+    Vector prevPos = this->positions.back();
+
+    floatType xNew = prevPos.x + MOUNTAIN_CHUNK_WIDTH;
+    floatType yNew = this->rand->getRandomRealNumber(prevPos.y + MOUNTAIN_NEW_POINT_DELTA_MIN,
+                                                     prevPos.y + MOUNTAIN_NEW_POINT_DELTA_MAX);
+    Vector pos = {xNew, yNew};
+    spdlog::debug("Point generated: ({},{})", xNew, yNew);
+
+    floatType prevDer = this->derivatives.back();
+
+    floatType der =
+        this->rand->getRandomRealNumber(MOUNTAIN_SLOPE - MOUNTAIN_RANDOMNESS, MOUNTAIN_SLOPE + MOUNTAIN_RANDOMNESS);
+
+    auto *nextSplinePiece = new HermiteSpline(prevPos, pos, prevDer, der);
+
+    this->spline.push_back(nextSplinePiece);
+    this->positions.push_back(pos);
+    this->derivatives.push_back(der);
 }
 
-void Mountain::generateSlope() {
-    constexpr int NUM_POINTS_TO_GENERATE = NUM_SECTIONS_PER_CHUNK;
-    const std::size_t arraySize = this->landscapeFixpointCircularArray.size();
-    const std::size_t indexRightestVertex = (this->startOfCircularArray + arraySize - 1) % arraySize;
+floatType Mountain::calculateYPos(floatType xPos) const { return this->calculateDerivative(xPos, 0); }
 
-    floatType currentX{getVertex(indexRightestVertex).x};
-    floatType currentY{getVertex(indexRightestVertex).y};
-    for (int i = 0; i < NUM_POINTS_TO_GENERATE; i++) {
-        currentX += SECTION_WIDTH;
-        currentY += SECTION_WIDTH * SLOPE;
-        landscapeFixpointCircularArray[(startOfCircularArray + i) % arraySize] = Vector{currentX, currentY};
+floatType Mountain::calculateDerivative(floatType xPos) const { return this->calculateDerivative(xPos, 1); }
+
+floatType Mountain::calculateDerivative(floatType xPos, int n) const {
+    if (!this->isInRange(xPos)) {
+        spdlog::debug("Pos {} not in range:", xPos);
+    }
+    assert(this->isInRange(xPos));
+    int index = 0;
+    while (xPos > this->positions.at(index + 1).x) {
+        index++;
+    }
+    return this->spline.at(index)->evaluateDerivative(xPos, n);
+}
+
+void Mountain::deleteLeftChunk() {
+    this->positions.erase(this->positions.cbegin());
+    this->derivatives.erase(this->derivatives.cbegin());
+    this->spline.erase(this->spline.cbegin());
+}
+
+floatType Mountain::getLeftBorder() const { return this->positions.front().x; }
+
+floatType Mountain::getRightBorder() const { return this->positions.back().x; }
+
+bool Mountain::isInRange(floatType xPos) const {
+    return this->getLeftBorder() <= xPos && this->getRightBorder() >= xPos;
+}
+
+void Mountain::generateMountain() {
+    this->generateInitialChunk();
+    for (int counter = 1; counter < MOUNTAIN_CHUNK_COUNT; counter++) {
+        this->generateNewChunk();
     }
 }
 
-IndexIntervalNew Mountain::getIndexIntervalOfEntireMountain() const {
-    IndexIntervalNew indexInterval{};
-    indexInterval.startIndex = startOfCircularArray;
-    indexInterval.endIndex = (startOfCircularArray - 1 + NUMBER_OF_VERTICES);
-    return indexInterval;
+Vector Mountain::calculateDerivativeVector(floatType xPos) const {
+    Vector vector = {1.0f, this->calculateDerivative(xPos)};
+    return vector.normalize();
 }
 
-IndexIntervalNew Mountain::getLatestChunk() const {
-    IndexIntervalNew latestChunk{};
-    latestChunk.endIndex = startOfCircularArray;
-    latestChunk.startIndex = (startOfCircularArray - NUM_SECTIONS_PER_CHUNK + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES;
-    if (latestChunk.startIndex > latestChunk.endIndex) {
-        latestChunk.endIndex += NUMBER_OF_VERTICES;
-    }
-    return latestChunk;
+Vector Mountain::calculateNormalVector(floatType xPos) const {
+    Vector derivative = this->calculateDerivativeVector(xPos);
+    Vector normal = {-1.0f * derivative.y, derivative.x};
+    return normal;
 }
-
-void Mountain::generateTerrainRecursive(const std::size_t leftIndex, const std::size_t rightIndex,
-                                        floatType displacement) {
-    if ((leftIndex + 1 == rightIndex) || (leftIndex == rightIndex)) {
-        return;
-    }
-
-    if (leftIndex + 32 >= rightIndex) {
-        displacement = 0;
-    }
-
-    const std::size_t midIndex = (leftIndex + rightIndex) / 2; // rounding down is fine
-    const floatType change = computeDisplacementChange(displacement);
-
-    updateMidpoint(leftIndex, rightIndex, midIndex, change);
-    displacement = Mountain::ROUGHNESS_TERRAIN * displacement;
-
-    generateTerrainRecursive(leftIndex, midIndex, displacement);
-    generateTerrainRecursive(midIndex, rightIndex, displacement);
-}
-
-floatType Mountain::computeDisplacementChange(const floatType displacement) {
-    std::random_device hardwareRandomGenerator;
-    std::mt19937 randomEngine(hardwareRandomGenerator());
-    std::uniform_real_distribution<floatType> distributionUsed(0.0, 1.0);
-
-    return (distributionUsed(randomEngine) * 2 - 1) * displacement;
-}
-
-void Mountain::updateMidpoint(const std::size_t leftIndex, const std::size_t rightIndex, const std::size_t midIndex,
-                              const floatType change) {
-    landscapeFixpointCircularArray[(midIndex + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y =
-        (landscapeFixpointCircularArray[(leftIndex + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y +
-         landscapeFixpointCircularArray[(rightIndex + NUMBER_OF_VERTICES) % NUMBER_OF_VERTICES].y) /
-            2 +
-        change;
-}
-
-floatType Mountain::getYPosFromX(const floatType xPos) const {
-    const IndexIntervalNew interval = Mountain::getRelevantMountainSection(xPos, xPos);
-    std::size_t closestIndices[] = {interval.startIndex, interval.endIndex};
-    auto closestLeftDistance = std::abs(this->getVertex(interval.startIndex).x - xPos);
-    auto closestRightDistance = std::abs(this->getVertex(interval.endIndex).x - xPos);
-
-    for (auto j = interval.startIndex; j < interval.endIndex; j++) {
-        const auto mountainVertex = this->getVertex(j);
-        const auto currentDistance = mountainVertex.x - xPos;
-
-        if (currentDistance < 0 && std::abs(currentDistance) < closestLeftDistance) {
-            closestIndices[0] = j;
-            closestLeftDistance = std::abs(currentDistance);
-        } else if (currentDistance > 0 && std::abs(currentDistance) < closestRightDistance) {
-            closestIndices[1] = j;
-            closestRightDistance = std::abs(currentDistance);
-        }
-    }
-
-    const auto vertexLeft = this->getVertex(closestIndices[0]);
-    const auto vertexRight = this->getVertex(closestIndices[1]);
-
-    return linearInterpolation(xPos, vertexLeft, vertexRight);
-}
-
-floatType Mountain::linearInterpolation(const floatType xPos, const Vector left, const Vector right) {
-    return ((xPos - left.x) * right.y + (right.x - xPos) * left.y) / (right.x - left.x);
-}
-
-/*void Mountain::interpolate(std::size_t leftIndex, std::size_t rightIndex) {
-    const auto leftVert = getVertex(leftIndex);
-    const auto rightVert = getVertex(rightIndex);
-    const floatType slope = (leftVert.y - rightVert.y) / (rightVert.x - leftVert.x);
-    for (int i = 1; i < rightIndex - leftIndex; i++) {
-        landscape_fixpoints_circular_array[(leftIndex + i) % NUMBER_OF_VERTICES].y =
-            static_cast<floatType>(i) * slope + getVertex(leftIndex).y;
-    }
-}*/

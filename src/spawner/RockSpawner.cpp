@@ -98,10 +98,10 @@ std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
 Vector RockSpawner::getRandSpawnPos() const {
     // const auto spawnIndex = this->world.getMountain().getLatestChunk().startIndex;
     // const auto spawnXPos = this->world.getMountain().getVertex(spawnIndex).x;
-    const auto spawnXPos = 2000.f + this->world.getMonster().getXPosition();
+    const auto spawnXPos = this->world.getMaxX() + MOUNTAIN_CHUNK_WIDTH;
     const auto randYOffset =
         static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
-    const auto spawnYPos = this->world.getMountain().getYPosFromX(spawnXPos) + randYOffset;
+    const auto spawnYPos = this->world.getMountain().calculateYPos(spawnXPos) + randYOffset;
     return Vector{spawnXPos, spawnYPos};
 }
 // NOLINTEND

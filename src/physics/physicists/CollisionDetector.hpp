@@ -63,7 +63,7 @@ class CollisionDetector {
      * @param rockPos
      * @return
      */
-    Vector getNormal(std::size_t idx, Vector rockPos) const;
+    Vector getNormal(Vector rockPos) const;
 
   private:
     World &world;

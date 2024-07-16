@@ -140,7 +140,7 @@ void Renderer::debugRenderRock(RenderedEntity &entity) const {
 
 void Renderer::renderMountain(const Mountain &mountain, Color topColor, Color bottomColor) const {
     // Retrieve the relevant section of the mountain to be displayed
-    const IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
+    // IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
     // Get lower border of screen
     const floatType lowerBorder =
         camera.target.y + (static_cast<floatType>(GetScreenHeight()) / (2.0f * camera.zoom)) + 100.0f;
@@ -151,23 +151,33 @@ void Renderer::renderMountain(const Mountain &mountain, Color topColor, Color bo
     // Define origin and rotation
     floatType rotation = 0.0f; // TODO what is this?
     // Draw the mountain
-    const int vertexOffset = 1; // TODO why these magic numberes?
-    for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
-        const Vector pos1 = transformPosition(Vector2(mountain.getVertex(i)));
-        const Vector pos2 = transformPosition(Vector2(mountain.getVertex(i + vertexOffset)));
-        // Render the mountain depending on debug mode
-        if (!this->debugMode) {
-            // Define destination rectangle (where to draw the texture, size of the texture in the destination)
-            const Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
-                                        lowerBorder - pos1.y}; // todo make so it is not so pixelated
-            DrawTexturePro(texture, sourceRec, destRec1, {0.0f, 0.0f}, rotation, WHITE);
-        } else {
-            // Draw the line
-            DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
-                     static_cast<int>(pos2.y), RED);
-        }
+    int minX = floor(this->world.getMinX());
+    int maxX = ceil(this->world.getMaxX());
+    for (int xPos = minX; xPos <= maxX; xPos++) {
+        floatType yPos = this->transformYCoordinate(mountain.calculateYPos(static_cast<floatType>(xPos)));
+        // spdlog::info("Drawing pixel ({},{})", pixel, yPos);
+        DrawCircle(xPos, static_cast<int>(yPos), 5.0f, RED);
+        // for (int yIndex = yPos - 1; yIndex > lowerBorder; yIndex--) {
+        //     DrawPixel(pixel, yIndex, GREEN);
+        // }
     }
 }
+// const int vertexOffset = 1;
+// for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
+//     Vector pos1 = mountain.getVertex(i);
+//     Vector pos2 = mountain.getVertex(i + vertexOffset);
+//     // Render the mountain depending on debug mode
+//     if (!this->debugMode) {
+//         // Define destination rectangle (where to draw the texture, size of the texture in the destination)
+//         Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
+//                               lowerBorder - pos1.y}; // todo make so it is not so pixelated
+//         DrawTexturePro(texture, sourceRec, destRec1, origin, rotation, WHITE);
+//     } else {
+//         // Draw the line
+//         DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
+//                  static_cast<int>(pos2.y), RED);
+//     }
+// }
 
 void Renderer::renderEntities() {
     if (!this->debugMode)

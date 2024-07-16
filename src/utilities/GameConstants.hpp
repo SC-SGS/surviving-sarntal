@@ -17,6 +17,27 @@ constexpr floatType PLAYER_SPAWN_OFFSET = 500;
  */
 constexpr int MAX_GAMEPADS = 8;
 
+/*
+ * Mountain
+ */
+constexpr int MOUNTAIN_VISIBLE_CHUNKS_COUNT = 16;
+constexpr int MOUNTAIN_CHUNK_BUFFER_LEFT = 2;
+constexpr int MOUNTAIN_CHUNK_BUFFER_RIGHT = 16;
+constexpr int MOUNTAIN_CHUNK_COUNT =
+    MOUNTAIN_VISIBLE_CHUNKS_COUNT + MOUNTAIN_CHUNK_BUFFER_LEFT + MOUNTAIN_CHUNK_BUFFER_RIGHT;
+constexpr floatType MOUNTAIN_CHUNK_WIDTH = 1.0 * graphics::SCREEN_WIDTH / MOUNTAIN_VISIBLE_CHUNKS_COUNT;
+constexpr floatType MOUNTAIN_WIDTH = MOUNTAIN_CHUNK_COUNT * MOUNTAIN_CHUNK_WIDTH;
+constexpr floatType MOUNTAIN_START = -MOUNTAIN_CHUNK_BUFFER_LEFT * MOUNTAIN_CHUNK_WIDTH;
+constexpr floatType MOUNTAIN_INITIAL_HEIGHT = 0;
+
+constexpr floatType MOUNTAIN_SLOPE = 0.4f;      // Determines the overall slope of the mountain
+constexpr floatType MOUNTAIN_RANDOMNESS = 1.0f; // Determines how far we can stray from the mountain slope.;
+constexpr floatType MOUNTAIN_NEW_POINT_DELTA_STANDARD = MOUNTAIN_SLOPE * MOUNTAIN_CHUNK_WIDTH;
+constexpr floatType MOUNTAIN_NEW_POINT_DELTA_MIN =
+    MOUNTAIN_NEW_POINT_DELTA_STANDARD - MOUNTAIN_RANDOMNESS * MOUNTAIN_CHUNK_WIDTH;
+constexpr floatType MOUNTAIN_NEW_POINT_DELTA_MAX =
+    MOUNTAIN_NEW_POINT_DELTA_STANDARD + MOUNTAIN_RANDOMNESS * MOUNTAIN_CHUNK_WIDTH;
+
 /**
  * Player size
  */
@@ -40,7 +61,7 @@ constexpr floatType MAX_SPEED_NEG_SLOPE = 1.5f;
 constexpr floatType MIN_SPEED_POS_SCOPE = .5f;
 // Slope constants
 constexpr floatType SLOWEST_NEG_SLOPE = -1.f;
-constexpr floatType FASTEST_NEG_SCOPE = -.5f;
+constexpr floatType FASTEST_NEG_SLOPE = -.5f;
 constexpr floatType SLOWEST_POS_SCOPE = 2.f;
 
 /**
@@ -115,7 +136,7 @@ constexpr int FONT_SIZE_ALTIMETER = 20;
 constexpr int POSITION_TO_SCORE_RATIO = 10;
 constexpr int ALTIMETER_STEPS = 10;
 
-constexpr floatType VISUAL_RUMBLE_INTENSITY = 0.4f;
+constexpr floatType VISUAL_RUMBLE_INTENSITY = 0.1f;
 constexpr floatType VISUAL_RUMBLE_DAMPENING = 0.9f;
 
 constexpr floatType TEXTURE_MID_SCALE = 5;

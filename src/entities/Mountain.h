@@ -2,6 +2,9 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
+#include "../utilities/BezierSpline.hpp"
+#include "../utilities/HermiteSpline.hpp"
+#include "../utilities/RandomGenerator.hpp"
 #include "../utilities/Singleton.hpp"
 #include "../utilities/vector.h"
 #include <array>
@@ -21,145 +24,81 @@ class Mountain {
   public:
     Mountain();
     ~Mountain() = default;
-    /**
-     * Number of Vertices explicitly stored by the mountain data structure.
-     */
-    static constexpr std::size_t NUMBER_OF_VERTICES{2048};
 
     /**
-     * Width covered by mountain generated at one point in time.
-     */
-    static constexpr floatType MOUNTAIN_WIDTH{3 * 2048.};
-
-    /**
-     * Distance between two points of mountain.
-     */
-    static constexpr floatType SECTION_WIDTH{MOUNTAIN_WIDTH / NUMBER_OF_VERTICES};
-
-    static constexpr std::size_t NUM_SECTIONS_PER_CHUNK = 128;
-
-    static constexpr floatType CHUNK_WIDTH{NUM_SECTIONS_PER_CHUNK * SECTION_WIDTH};
-
-    /**
-     * steepness of ramp generated in prototype
-     */
-    static constexpr floatType SLOPE{0.25};
-
-    /**
-     * value beween 0 and 1 (prefereably between 0.5 and 0.75)
-     */
-    static constexpr floatType ROUGHNESS_TERRAIN{0.4};
-
-    /**
-     * Generates a new Chunk and deletes oldest chunk. Updates internal data
-     * structures accordingly. This (prototype) version is only extending the
-     * slope
+     * Generate a new chunk interpolating a new random point b. For this, we add a new spline piece that respects the
+     * previous point a, and its first and second derivatives da, (da)^2.
      */
     void generateNewChunk();
 
     /**
-     * Example: Your rock x-coords go from [3.1, 4.2]. You call this function
-     * which returns [21,24]. This means that the relevant indices for you are
-     * 21, 22 and 23 (You DON'T need 24.)
-     * @param minX The leftmost x-coord relevant to you
-     * @param maxX The rightmost x-coord relevant to you
-     * @return Returns start_index and end_index of the section from minX to
-     * maxX INCLUDING start_index and EXCLUDING end_index;
+     * Removes the leftmost chunk.
      */
-    // TODO Bezeichner und Doku ändern
-    static IndexIntervalNew getRelevantMountainSection(floatType minX, floatType maxX);
-
-    /** Returns a position from a given index. The index should previously be
-     * obtained via a separate function of the mountain.
-     * @param index
-     * @return Position (consisting of x- and y-coordinate)
-     */
-    Vector getVertex(size_t index) const;
-
-    /** Returns a position from a given index. The index should previously be
-     * obtained via a separate function of the mountain.
-     * @param index
-     * @return Position (consisting of x- and y-coordinate)
-     */
-    Vector getVertex(int index) const;
+    void deleteLeftChunk();
 
     /**
-     * You can access all the points currently being held in the mountain
-     * datastructures via mountain.getVertex(a) with a in
-     * [indexInterval.start_index, indexInterval.end_index) example: the
-     * indexInterval goes from 2 to 23. Now you need to access all the points
-     * with the indices from 2 to 22
-     * @return
-     */
-    IndexIntervalNew getIndexIntervalOfEntireMountain() const;
-
-    /**
-     * @return Returns start_index and end_index of the latest generated
-     * chunk. The new chunk INCLUDES start_index and EXCLUDES the end_index. You
-     * can access the points via the getVertex-function.
-     *
-     * Start_index starts with the first new generated vertex.
-     * If you want to be precise you would have to also connect the last point
-     * of the previously loaded chunk and the chunk you just got by
-     * getLatestChunk. You can access that point via getVertex(start_index-1).
-     * However, the points might be close enough together that this is not
-     * necessary. (If this API sucks it can easily be changed)
-     */
-    IndexIntervalNew getLatestChunk() const;
-
-    /**
-     * Returns the Y coordinate of the mountain at the given x coordinate.
-     *
-     * TODO there was an offset in this function in the original, because the hiker position was its center, now its his
-     * TODO feet
-     *
-     * @param xPos the x-Coordinate
-     * @return the y coordinate on top of the mountain
-     */
-    floatType getYPosFromX(floatType xPos) const;
-
-    /**
-     * Performs simple linear interpolation
-     *
-     * TODO depending on the mountain, this should become the evaluation of a spline function etc.
-     * TODO this function is used as a linInterpolator in one place so it shoudl probably go into a util class.
+     * Calculates the yPos at the given xPos of the mountain.
      *
      * @param xPos
-     * @param left
-     * @param right
-     * @return
+     * @return yPos
      */
-    static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
-
-  private:
-    std::array<Vector, NUMBER_OF_VERTICES> landscapeFixpointCircularArray{};
-    std::size_t startOfCircularArray{0};
-    // TODO why are these denominators so weird? they do not adhere to our guidelines!
-
-    /** Generating a mountain using 2D Fractal Terrain Generation as described
-     * in this blogpost:
-     * http://nick-aschenbach.github.io/blog/2014/07/06/2d-fractal-terrain/
-     *
-     * @param leftIndex startIndex of the mountain section to be roughened
-     * @param rightIndex endIndex of the mountain section to be roughened. The
-     * Interval INCLUDES the right index
-     * @param displacement Constant defining how aggressive it should be
-     * roughened
-     */
-    void generateTerrainRecursive(std::size_t leftIndex, std::size_t rightIndex, floatType displacement);
-
-    void generateSlope();
-
-    // TODO Does this function really interpolate? What does it do, also ... it is unused
-    // void interpolate(std::size_t leftIndex, std::size_t rightIndex);
-
-    static floatType computeDisplacementChange(floatType displacement);
-
-    void updateMidpoint(std::size_t leftIndex, std::size_t rightIndex, std::size_t midIndex, floatType change);
+    floatType calculateYPos(floatType xPos) const;
 
     /**
-     * Temporary helper function, do not touch
-     * TODO I Don't know what this does and whether we need it
+     * Calculates the derivative of the mountain at the given xPos.
+     *
+     * @param xPos
+     * @return
      */
-    void printTempDebugInfo() const;
+    floatType calculateDerivative(floatType xPos) const;
+
+    /**
+     * Calculates the n-th derivative of the mountain at the given xPos.
+     *
+     * @param xPos
+     * @return
+     */
+    floatType calculateDerivative(floatType xPos, int n) const;
+
+    /**
+     * Calculates the vector corresponding to the derivative of the mountain at the given point.
+     *
+     * @param xPos
+     * @return derivative vector
+     */
+    Vector calculateDerivativeVector(floatType xPos) const;
+
+    /**
+     * Calculates the vector orthogonal to the derivative of the mountain at the given point.
+     * Based on multiplication with a rotation matrix:
+     * R =  (  0   -1  )
+     *      (  1    0  )
+     *
+     * @param xPos
+     * @return normal vector
+     */
+    Vector calculateNormalVector(floatType xPos) const;
+
+    floatType getLeftBorder() const;
+
+    floatType getRightBorder() const;
+
+    bool isInRange(floatType xPos) const;
+
+  private:
+    std::vector<Vector> positions = {};
+    std::vector<floatType> derivatives = {};
+    std::vector<HermiteSpline *> spline = {};
+    RandomGenerator *rand = &RandomGenerator::getInstance();
+
+    /**
+     * The initial chunk consists of one hermite spline with natural border conditions (Second evaluateDerivative at
+     * left and right border need to be equal).
+     */
+    void generateInitialChunk();
+
+    /**
+     * Generates the entire mountain. Generates enough chunks to fill the entire screen.
+     */
+    void generateMountain();
 };

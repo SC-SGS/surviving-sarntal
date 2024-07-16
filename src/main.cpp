@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     resourceManager.initialize();
     AudioService audioService(resourceManager);
 
-    Mountain mountain;
+    Mountain mountain = Mountain();
     floatType hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
-    Hiker hiker(Vector{hikerPositionX, mountain.getYPosFromX(hikerPositionX)}, audioService);
+    Hiker hiker(Vector{hikerPositionX, mountain.calculateYPos(hikerPositionX)}, audioService);
     Monster monster;
     Inventory inventory(audioService);
     World world(mountain, hiker, inventory, monster, audioService);
@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
 
     ItemSpawner itemSpawner(world);
     RockSpawner rockSpawner(world);
-    MountainGenerator mountainGenerator(world);
-    Spawner spawner(mountainGenerator, rockSpawner, itemSpawner);
+    Spawner spawner(mountain, rockSpawner, itemSpawner, world);
 
     PhysicsEngine physicsEngine(world, spawner, eventProcessor, accelerator, positioner, collisionDetector,
                                 collisionHandler, interpolator, destructor);

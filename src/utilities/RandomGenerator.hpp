@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RANDOMGENERATOR_HPP
 #define SURVIVING_SARNTAL_RANDOMGENERATOR_HPP
 
+#include "GameConstants.hpp"
 #include "Singleton.hpp"
 #include <iostream>
 #include <random>
@@ -16,6 +17,8 @@ class RandomGenerator : public Singleton<RandomGenerator> {
     RandomGenerator() : gen(rd()) {}
 
     int getRandomNumber(int min, int max);
+
+    floatType getRandomRealNumber(float min, float max);
 
   private:
     std::random_device rd;

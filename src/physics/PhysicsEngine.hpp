@@ -31,9 +31,9 @@ class PhysicsEngine {
 
   public:
     /**
-     * Perform N = frameTime / deltaT update steps and interpolate at the end.
+     * Perform N = frameTime / deltaT update steps and calculateYPos at the end.
      * The first of the N updates takes into consideration the inputs from the last iteration of the game loop.
-     * //TODO is it possible to interpolate the state with no return value
+     * //TODO is it possible to calculateYPos the state with no return value
      * The state of the world at the end of this method should be the state at exactly the time, the next frame is
      * rendered.
      *
