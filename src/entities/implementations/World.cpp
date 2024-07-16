@@ -20,9 +20,9 @@ Monster &World::getMonster() const { return monster; }
 Mountain &World::getMountain() const { return mountain; }
 
 bool World::isOutOfScope(const RenderedEntity &entity) const {
-    const bool result = entity.getPosition().x < this->minX - Mountain::CHUNK_WIDTH;
+    bool result = entity.getPosition().x < this->minX - MOUNTAIN_CHUNK_WIDTH;
     // entity.getPosition().x > this->maxX + Mountain::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
-    // entity.getPosition().y > mountain.getYPosFromX(entity.getPosition().x);
+    // entity.getPosition().y > mountain.interpolate(entity.getPosition().x);
     if (result) {
         spdlog::debug("A rock has left the scope of the game.");
     }
@@ -95,7 +95,7 @@ World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &mo
 int World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
-    const int hikerHeight = static_cast<int>(this->mountain.getYPosFromX(this->hiker.getPosition().x));
+    const int hikerHeight = static_cast<int>(this->mountain.calculateYPos(this->hiker.getPosition().x));
     this->gameScore = std::max(this->gameScore, hikerHeight);
 }
 

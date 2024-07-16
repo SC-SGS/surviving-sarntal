@@ -29,21 +29,22 @@ Vertex CollisionHandler::getClosestVertex(Rock &rock) const {
     const floatType xMin = pos.x - rad;
     const floatType xMax = pos.x + rad;
     const Mountain &mountain = this->world.getMountain();
-    auto interval = Mountain::getRelevantMountainSection(xMin, xMax);
-
-    auto closestIndex = interval.startIndex;
-    floatType closestDistance = mountain.getVertex(interval.startIndex).distanceTo(pos);
-
-    for (auto j = interval.startIndex; j < interval.endIndex; j++) {
-        auto mountainVertex = mountain.getVertex(j);
-        auto currentDist = mountainVertex.distanceTo(pos);
-
-        if (currentDist < closestDistance) {
-            closestDistance = currentDist;
-            closestIndex = j;
-        }
-    }
-    return Vertex({closestIndex, closestDistance});
+    // auto interval = Mountain::getRelevantMountainSection(xMin, xMax);
+    //
+    // auto closestIndex = interval.startIndex;
+    // floatType closestDistance = mountain.getVertex(interval.startIndex).distanceTo(pos);
+    //
+    // for (auto j = interval.startIndex; j < interval.endIndex; j++) {
+    //     auto mountainVertex = mountain.getVertex(j);
+    //     auto currentDist = mountainVertex.distanceTo(pos);
+    //
+    //     if (currentDist < closestDistance) {
+    //         closestDistance = currentDist;
+    //         closestIndex = j;
+    //     }
+    // }
+    return Vertex({0, 0});
+    // return Vertex({closestIndex, closestDistance});
 }
 
 void CollisionHandler::playerCollisions() const {
@@ -74,23 +75,31 @@ void CollisionHandler::rockTerrainCollisions() { // const {
     for (auto &rock : this->world.getRocks()) {
         // TODO don't create too many copies, but will be changed later anyways
         Rock virtualRock = this->getNextState(rock);
-        const auto closestVertex = this->getClosestVertex(virtualRock);
-        if (closestVertex.distance <= rock.getRadius()) {
-            this->rockTerrainCollision(rock, closestVertex);
-            // std::cout << "Collision " << closestVertex.distance << " | " << getClosestVertex(rock).distance
-            //<< std::endl;
+        // const auto closestVertex = this->getClosestVertex(virtualRock);
+        //  TODO Needs to be changed, I just want to test the mountain rendering
+        if (this->world.getMountain().isInRange(virtualRock.getPosition().x)) {
+            if (virtualRock.getPosition().y - this->world.getMountain().calculateYPos(virtualRock.getPosition().x) <
+                virtualRock.getRadius()) {
+                this->rockTerrainCollision(rock);
+            }
         }
+        // if (closestVertex.distance <= rock.getRadius()) {
+        //     this->rockTerrainCollision(rock, closestVertex);
+        //     // std::cout << "Collision " << closestVertex.distance << " | " << getClosestVertex(rock).distance
+        //     //<< std::endl;
+        // }
     }
 }
 
-void CollisionHandler::rockTerrainCollision(Rock &rock, const Vertex closestVertex) const {
+void CollisionHandler::rockTerrainCollision(Rock &rock) const {
     // TODO play terrain collision sound
     auto vel = rock.getVelocity();
     auto pos = rock.getPosition();
     const auto rad = rock.getRadius();
     floatType angularVelocity = rock.getAngularVelocity();
     floatType angularOffset = rock.getAngularOffset();
-    const auto normal = this->collisionDetector.getNormal(closestVertex.index, pos);
+    // const auto normal = this->collisionDetector.getNormal(closestVertex.index, pos);
+    const auto normal = this->collisionDetector.getNormal(pos);
     vel = vel.reflectOnNormal(normal);
     const auto mass = std::pow(rad, 2);
     const Vector parallelVector = {-normal.y, normal.x};

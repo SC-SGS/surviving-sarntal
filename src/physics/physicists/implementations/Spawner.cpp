@@ -3,17 +3,18 @@
 //
 
 #include "../Spawner.hpp"
-#include "../../../spawner/MountainGenerator.h"
 #include "../../../spawner/RockSpawner.h"
 
 #include <iostream>
 #include <mutex>
 
-Spawner::Spawner(MountainGenerator &mountainGenerator, RockSpawner &rockSpawner, ItemSpawner &itemSpawner)
-    : mountainGenerator(mountainGenerator), rockSpawner(rockSpawner), itemSpawner(itemSpawner) {}
+Spawner::Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world)
+    : mountain(mountain), rockSpawner(rockSpawner), itemSpawner(itemSpawner), world(world) {}
 
 void Spawner::spawn() const {
-    this->mountainGenerator.generateMountainChunk();
+    if (this->world.getMaxX() > this->mountain.getRightBorder() - MOUNTAIN_CHUNK_BUFFER_RIGHT * MOUNTAIN_CHUNK_WIDTH) {
+        this->mountain.generateNewChunk();
+    }
     this->rockSpawner.spawnRocks();
     this->itemSpawner.spawnItems();
 }

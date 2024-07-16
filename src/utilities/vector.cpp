@@ -43,3 +43,12 @@ Vector Vector::reflectOnNormal(const Vector &normal) const {
 }
 void Vector::setX(floatType xValue) { this->x = xValue; }
 void Vector::setY(floatType yValue) { this->y = yValue; }
+
+floatType Vector::linearInterpolation(const floatType xPos, const Vector left, const Vector right) {
+    return ((xPos - left.x) * right.y + (right.x - xPos) * left.y) / (right.x - left.x);
+}
+
+Vector Vector::normalize() const {
+    Vector current = *this;
+    return current * (1.0f / this->length());
+}
