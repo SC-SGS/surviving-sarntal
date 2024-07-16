@@ -12,7 +12,7 @@ class AudioService {
 
   public:
     ~AudioService();
-    void playSound(const std::string &soundName) const;
+    virtual void playSound(const std::string &soundName) const;
     explicit AudioService(ResourceManager &resourceManager);
 
   private:

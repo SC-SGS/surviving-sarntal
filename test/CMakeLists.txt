@@ -9,6 +9,7 @@ target_sources(test-surviving-sarntal PRIVATE ${SRC})
 
 target_include_directories(test-surviving-sarntal PUBLIC ".")
 target_link_libraries(test-surviving-sarntal PRIVATE GTest::gtest_main pthread surviving-sarntal-library)
+target_link_libraries(test-surviving-sarntal PRIVATE GTest::gmock pthread surviving-sarntal-library)
 
 # Set working directory for Visual Studio
 set_target_properties(
@@ -29,11 +30,11 @@ find_program(GENHTML_PATH genhtml)
 
 if (NOT LCOV_PATH)
     message(FATAL_ERROR "lcov not found!")
-endif()
+endif ()
 
 if (NOT GENHTML_PATH)
     message(FATAL_ERROR "genhtml not found!")
-endif()
+endif ()
 
 # Create a custom target to generate coverage report
 add_custom_target(coverage

@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
 
     InputHandler &inputHandler = InputHandler::getInstance();
     ResourceManager resourceManager(ConfigManager::getInstance());
+    resourceManager.initialize();
     AudioService audioService(resourceManager);
 
     Mountain mountain;
