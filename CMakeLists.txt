@@ -9,9 +9,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set CMake policy if version is greater than 3.24.0
-if(${CMAKE_VERSION} VERSION_GREATER "3.24.0")
+if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
     cmake_policy(SET CMP0135 NEW)
-endif()
+endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
@@ -32,9 +32,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs/cmake)
 
 # Function to remove unnecessary .clang-tidy files in libraries
 function(remove_clang_tidy target_dir)
-    if(EXISTS ${target_dir}/.clang-tidy)
+    if (EXISTS ${target_dir}/.clang-tidy)
         file(REMOVE ${target_dir}/.clang-tidy)
-    endif()
+    endif ()
 endfunction()
 
 # Include required modules
@@ -63,9 +63,9 @@ remove_clang_tidy(${spdlog_SOURCE_DIR})
 
 # Include directories
 include_directories(libs/NITE/Include /usr/include/ni)
-if(APPLE)
+if (APPLE)
     include_directories(/opt/homebrew/Cellar/sdl2/2.30.3/include)
-endif()
+endif ()
 
 # Add the src and test directories
 add_subdirectory(src)

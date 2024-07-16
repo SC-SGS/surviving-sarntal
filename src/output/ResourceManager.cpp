@@ -7,6 +7,11 @@
 #include <mutex>
 
 ResourceManager::ResourceManager(ConfigManager &configManager) : config(configManager) {
+    // this->loadTextures();
+    // this->loadMusic();
+}
+
+void ResourceManager::initialize() {
     this->loadTextures();
     this->loadMusic();
 }
