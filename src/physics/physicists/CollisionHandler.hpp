@@ -82,7 +82,7 @@ class CollisionHandler {
      * @param rock
      * @param closestVertex
      */
-    void rockTerrainCollision(Rock &rock, Vertex closestVertex) const;
+    void rockTerrainCollision(Rock &rock) const;
 
     /**
      * Yikes, this is naive.

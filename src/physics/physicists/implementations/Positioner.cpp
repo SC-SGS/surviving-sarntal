@@ -21,7 +21,7 @@ void Positioner::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; };
 void Positioner::updateMonsterPosition() const {
     const auto xPos = this->world.getMonster().getXPosition();
     const auto newXPos = xPos + KILL_BAR_VELOCITY * this->deltaT;
-    const auto newYPos = this->world.getMountain().getYPosFromX(xPos);
+    const auto newYPos = this->world.getMountain().calculateYPos(xPos);
     Vector newPos = {newXPos, newYPos};
     this->world.getMonster().setPosition(newPos);
 }
@@ -75,7 +75,7 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     const auto vel = hiker.getVelocity();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
         pos.x += knockback + AIR_MOVEMENT_SPEED_FACTOR * vel.x * this->deltaT;
-        const auto terrainY = this->world.getMountain().getYPosFromX(pos.x);
+        const auto terrainY = this->world.getMountain().calculateYPos(pos.x);
         const auto airY = pos.y + vel.y * this->deltaT;
         if (airY > terrainY) {
             pos.y = airY;
@@ -88,18 +88,18 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         // TODO this whole speedfactor shebang needs thorough examination and fiddling in later stages
     } else if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
         const auto nextXPos = vel.x * this->deltaT + pos.x;
-        const auto nextYPos = this->world.getMountain().getYPosFromX(nextXPos);
+        const auto nextYPos = this->world.getMountain().calculateYPos(nextXPos);
         Vector direction = {nextXPos - pos.x, nextYPos - pos.y};
         const floatType length = direction.length();
         const floatType slope = direction.y / direction.x;
         const floatType speedFactor = getSpeedFactor(slope);
         // TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
         pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
-        pos.y = this->world.getMountain().getYPosFromX(pos.x);
+        pos.y = this->world.getMountain().calculateYPos(pos.x);
     } else {
         // std::cout << "Knock knock mf" << std::endl;
         pos.x += knockback;
-        pos.y = this->world.getMountain().getYPosFromX(pos.x);
+        pos.y = this->world.getMountain().calculateYPos(pos.x);
     }
     if (pos.x > this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET) {
         pos.x = this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET;
@@ -111,15 +111,15 @@ floatType Positioner::getSpeedFactor(const floatType slope) {
     if (slope <= SLOWEST_NEG_SLOPE) {
         return MIN_SPEED_NEG_SLOPE;
     }
-    if (slope <= FASTEST_NEG_SCOPE) {
-        return Mountain::linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
-                                             {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE});
+    if (slope <= FASTEST_NEG_SLOPE) {
+        return Vector::linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
+                                           {FASTEST_NEG_SLOPE, MAX_SPEED_NEG_SLOPE});
     }
     if (slope <= 0) {
-        return Mountain::linearInterpolation(slope, {FASTEST_NEG_SCOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+        return Vector::linearInterpolation(slope, {FASTEST_NEG_SLOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
     }
     if (slope <= SLOWEST_POS_SCOPE) {
-        return Mountain::linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+        return Vector::linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
     }
 
     return MIN_SPEED_POS_SCOPE;
