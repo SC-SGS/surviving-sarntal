@@ -30,7 +30,10 @@ void Destructor::destructItems() const {
 }
 
 void Destructor::destructMountain() const {
-    // TODO: Implement when mountain implementation is reworked
+    if (this->world.getMinX() >
+        this->world.getMountain().getLeftBorder() + MOUNTAIN_CHUNK_BUFFER_LEFT * MOUNTAIN_CHUNK_WIDTH) {
+        this->world.getMountain().deleteLeftChunk();
+    }
 }
 
 void Destructor::destructHiker() const {

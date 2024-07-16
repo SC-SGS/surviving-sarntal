@@ -7,20 +7,20 @@
 
 #include "../../entities/World.h"
 #include "../../spawner/ItemSpawner.h"
-#include "../../spawner/MountainGenerator.h"
 #include "../../spawner/RockSpawner.h"
 
 class Spawner {
 
   public:
-    Spawner(MountainGenerator &mountainGenerator, RockSpawner &rockSpawner, ItemSpawner &itemSpawner);
+    Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world);
     ~Spawner() = default;
     void spawn() const;
 
   private:
     RockSpawner &rockSpawner;
-    MountainGenerator &mountainGenerator;
+    Mountain &mountain;
     ItemSpawner &itemSpawner;
+    World &world;
 
     /**
      * Spawn rocks for this time step.

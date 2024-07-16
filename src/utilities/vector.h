@@ -7,7 +7,8 @@
  * This struct represents a vector in two dimensional space with a x and a y coordinate.
  */
 struct Vector {
-    floatType x, y;
+    floatType x;
+    floatType y;
 
     explicit operator Vector2() const;
 
@@ -101,4 +102,21 @@ struct Vector {
     floatType length() const;
 
     Vector reflectOnNormal(Vector const &normal) const;
+
+    /**
+     * Calculates a vector with the same direction as the given one and length one.
+     *
+     * @return normalized vector
+     */
+    Vector normalize() const;
+
+    /**
+     * Performs simple linear interpolation
+     *
+     * @param xPos
+     * @param left
+     * @param right
+     * @return
+     */
+    static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
 };
