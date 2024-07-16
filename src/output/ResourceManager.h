@@ -19,8 +19,8 @@
 class ResourceManager {
 
   private:
-    void loadMusic();
-    void loadTextures();
+    virtual void loadMusic();
+    virtual void loadTextures();
 
     ConfigManager &config;
 
@@ -30,6 +30,7 @@ class ResourceManager {
 
   public:
     ~ResourceManager() = default;
+    void initialize();
     explicit ResourceManager(ConfigManager &configManager);
     void loadTexture(const std::string &name, const std::string &path);
     Texture2D getTexture(const std::string &name);
