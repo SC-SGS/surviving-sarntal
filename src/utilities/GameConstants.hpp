@@ -130,6 +130,7 @@ constexpr int HIKER_MAX_HEALTH = 100;
 constexpr int HEALTH_BAR_WIDTH = 200;
 constexpr int HEALTH_BAR_HEIGHT = 20;
 
+constexpr int CAMERA_TO_HIKER_OFFSET = 100;
 constexpr int UI_MARGIN = 20;
 constexpr int FONT_SIZE_SCORE = 30;
 constexpr int FONT_SIZE_ALTIMETER = 20;

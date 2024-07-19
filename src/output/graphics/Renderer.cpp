@@ -39,40 +39,43 @@ Renderer::Renderer(World &world, ResourceManager &resourceManager) : world(world
 void Renderer::loadLandmarks() { this->landmarks = ConfigManager::getInstance().getLandmarks(); }
 
 // Function to render an entity
-void Renderer::renderEntity(RenderedEntity &entity) const {
+void Renderer::renderEntity(const RenderedEntity &entity) const {
     renderEntity(entity, entity.getRenderInformation().angularOffset);
 }
 
-void Renderer::renderEntity(RenderedEntity &entity, const floatType rotation) const {
+void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation) const {
+    const auto info = entity.getRenderInformation();
     const Texture2D texture = resourceManager.getTexture(entity.getRenderInformation().texture);
-    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<floatType>(texture.width),
-                                 static_cast<floatType>(texture.height)}; // part of the texture used
+    auto directedWidth = static_cast<floatType>(texture.width * (info.width >= 0 ? 1 : -1));
+    // part of the texture used
+    const Rectangle sourceRec = {0.0f, 0.0f, directedWidth, static_cast<floatType>(texture.height)};
     renderEntity(entity, rotation, texture, sourceRec);
 }
 
-void Renderer::renderEntity(RenderedEntity &entity, const floatType rotation, const Texture2D &texture,
+void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation, const Texture2D &texture,
                             const Rectangle sourceRec) const {
     const auto info = entity.getRenderInformation();
     // Define the destination rectangle
     const Vector transformedPosition = this->transformPosition(info.position, info.offset);
-    const Rectangle destRec = {transformedPosition.x, transformedPosition.y, info.width, info.height};
+    const Rectangle destRec = {transformedPosition.x, transformedPosition.y, std::abs(info.width), info.height};
 
     // Define the origin for rotation.
-    const Vector2 origin = {info.width / 2, info.height / 2};
+    const Vector2 origin = {std::abs(info.width) / 2, info.height / 2};
 
     // Draw the texture if not in debug mode
     if (!this->debugMode) {
         DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
     } else {
-        DrawTexturePro(texture, sourceRec, destRec, origin, rotation, WHITE);
+        // Undo the width flip if negative
+        const int transformedWidth = static_cast<int>(info.width) * (info.width >= 0 ? 1 : -1);
         // Draw Rectangle for collision box, center with width and height
         DrawRectangleLines(static_cast<int>(destRec.x - destRec.width / 2),
-                           static_cast<int>(destRec.y - destRec.height / 2), static_cast<int>(info.width),
+                           static_cast<int>(destRec.y - destRec.height / 2), transformedWidth,
                            static_cast<int>(info.height), RED);
     }
 }
 
-void Renderer::animateEntity(RenderedEntity &entity) {
+void Renderer::animateEntity(const RenderedEntity &entity) {
     auto info = entity.getRenderInformation();
     const auto currentTime = static_cast<floatType>(GetTime());
 
@@ -91,30 +94,58 @@ void Renderer::animateEntity(RenderedEntity &entity) {
     renderAnimation(entity);
 }
 
-void Renderer::renderAnimation(RenderedEntity &entity) {
+void Renderer::renderAnimation(const RenderedEntity &entity) {
+    // Get render and animation information
     auto info = entity.getRenderInformation();
     auto animation = getAnimationInformation(entity.getId(), info.animation);
-    // Get the texture and calculate frame width
+
+    // Get the texture
     const Texture2D texture = resourceManager.getTexture(info.texture);
-    const floatType width = static_cast<floatType>(texture.width) / static_cast<floatType>(animation.frames);
-    const floatType currentFrameWidth = width * static_cast<floatType>(animation.currentFrame);
 
+    // Calculate frame width based on the texture and animation frames
+    const floatType frameWidth = static_cast<floatType>(texture.width) / static_cast<floatType>(info.animation.frames);
+    const floatType width = frameWidth * static_cast<floatType>(info.width >= 0 ? 1 : -1);
+
+    // Calculate current frame's X position in the texture
+    const floatType currentFrameX = frameWidth * static_cast<floatType>(animation.currentFrame);
+
+    // Flip horizontally if width is negative
+    floatType directedFrameX = info.width >= 0 ? currentFrameX : currentFrameX + frameWidth;
     // Create source rectangle for the current frame
-    Rectangle sourceRec = {currentFrameWidth, 0.0f, width, static_cast<floatType>(texture.height)};
-
-    // Update render information for the entity
-    info.width = width;
-    info.height = static_cast<floatType>(texture.height);
+    Rectangle sourceRec = {directedFrameX, 0.0f, width, static_cast<floatType>(texture.height)};
 
     // Render the entity with the updated frame
     this->renderEntity(entity, info.angularOffset, texture, sourceRec);
 }
 
-void Renderer::renderHiker(RenderedEntity &hiker) {
-    if (hiker.getRenderInformation().texture == "walk") {
-        animateEntity(hiker);
-    } else {
+void Renderer::renderHiker(const Hiker &hiker) {
+    HikerMovement::MovementState state = world.getHiker().getHikerMovement().getState();
+
+    switch (state) {
+    case HikerMovement::MovementState::IN_AIR:
         renderEntity(hiker);
+        break;
+    case HikerMovement::MovementState::MOVING:
+        renderWalkingHiker(hiker);
+        break;
+    case HikerMovement::MovementState::CROUCHED:
+        renderEntity(hiker);
+        break;
+    }
+}
+
+void Renderer::renderWalkingHiker(const Hiker &hiker) {
+    HikerMovement::Direction direction = world.getHiker().getHikerMovement().getDirection();
+
+    if (direction == HikerMovement::Direction::NEUTRAL) {
+        // Get the texture
+        const Texture2D texture = resourceManager.getTexture(hiker.getRenderInformation().texture);
+        const floatType width = static_cast<floatType>(texture.width) /
+                                static_cast<floatType>(hiker.getRenderInformation().animation.frames);
+        Rectangle sourceRec = {0.0f, 0.0f, width, static_cast<floatType>(texture.height)};
+        renderEntity(hiker, hiker.getRenderInformation().angularOffset, texture, sourceRec);
+    } else {
+        animateEntity(hiker);
     }
 }
 
@@ -311,7 +342,8 @@ void Renderer::renderHealthBar() const {
 }
 
 void Renderer::renderCoinScore() const {
-    const char *scoreText = (std::to_string(this->world.getCoinScore())).c_str();
+    std::string scoreString = std::to_string(this->world.getCoinScore());
+    const char *scoreText = scoreString.c_str();
     const auto centerX = GetScreenWidth() - MeasureText(scoreText, FONT_SIZE_SCORE) - 2 * UI_MARGIN;
     DrawText(scoreText, centerX, UI_MARGIN * 6, FONT_SIZE_SCORE, GOLD);
     const auto coinTexture = resourceManager.getTexture("coin");
@@ -323,17 +355,21 @@ void Renderer::renderCoinScore() const {
 }
 
 void Renderer::renderScore() const {
-    const char *scoreText = (std::to_string(this->world.getGameScore() / POSITION_TO_SCORE_RATIO) + "m").c_str();
+    std::string scoreString = std::to_string(this->world.getCoinScore());
+    const char *scoreText = scoreString.c_str();
     const auto centerX = GetScreenWidth() - MeasureText(scoreText, FONT_SIZE_SCORE) - 2 * UI_MARGIN;
     DrawText(scoreText, centerX, UI_MARGIN * 3, FONT_SIZE_SCORE, WHITE);
 }
 
 void Renderer::renderAltimeter() const {
-    constexpr int STEP_SIZE = ALTIMETER_STEPS * POSITION_TO_SCORE_RATIO; // Step size of the altimeter
-    // TODO remove - when x axis inverted
-    const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y); // Current altitude of the hiker
-    const int topAltitude = currentAltitude - GetScreenHeight() / 2;                // Top altitude of the screen
-    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;             // Bottom altitude of the screen
+    // Step size of the altimeter
+    constexpr int STEP_SIZE = ALTIMETER_STEPS * POSITION_TO_SCORE_RATIO;
+    // Current altitude of the hiker
+    const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y) + CAMERA_TO_HIKER_OFFSET;
+    // Top altitude of the screen
+    const int topAltitude = currentAltitude - GetScreenHeight() / 2;
+    // Bottom altitude of the screen
+    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2 + CAMERA_TO_HIKER_OFFSET;
 
     for (int i = floorToNearest(bottomAltitude, STEP_SIZE); i > topAltitude; i -= POSITION_TO_SCORE_RATIO) {
         const int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
@@ -342,11 +378,14 @@ void Renderer::renderAltimeter() const {
         renderAltimeterStep(drawY, drawAltitude, FONT_SIZE_ALTIMETER);
     }
 
-    for (const auto &landmark : landmarks) {
-        const int altitude = landmark.second * POSITION_TO_SCORE_RATIO;
-        const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
-        DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
-        DrawText(landmark.first.c_str(), 2 * UI_MARGIN, drawY - FONT_SIZE_ALTIMETER, FONT_SIZE_ALTIMETER, DARKGREEN);
+    if (!this->debugMode) {
+        for (const auto &landmark : landmarks) {
+            const int altitude = landmark.second * POSITION_TO_SCORE_RATIO;
+            const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
+            DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
+            DrawText(landmark.first.c_str(), 2 * UI_MARGIN, drawY - FONT_SIZE_ALTIMETER, FONT_SIZE_ALTIMETER,
+                     DARKGREEN);
+        }
     }
 }
 
@@ -413,7 +452,7 @@ void Renderer::draw() {
     renderBackground();
 
     // Adjust y-position of camera
-    camera.target.y = transformYCoordinate(world.getHiker().getRenderInformation().position.y) - 100.0f;
+    camera.target.y = transformYCoordinate(world.getHiker().getRenderInformation().position.y) - CAMERA_TO_HIKER_OFFSET;
     camera.target.x = (world.getMaxX() + world.getMinX()) / 2.0f;
 
     BeginMode2D(camera);
