@@ -46,19 +46,20 @@ class Renderer {
 
     // Helper functions
     void loadLandmarks();
-    void renderEntity(RenderedEntity &entity) const;
-    void renderEntity(RenderedEntity &entity, floatType rotation) const;
-    void renderEntity(RenderedEntity &entity, floatType rotation, const Texture2D &texture, Rectangle sourceRec) const;
+    void renderEntity(const RenderedEntity &entity) const;
+    void renderEntity(const RenderedEntity &entity, floatType rotation) const;
+    void renderEntity(const RenderedEntity &entity, floatType rotation, const Texture2D &texture,
+                      Rectangle sourceRec) const;
     void renderBackground();
     void regenerateGradientTexture();
     void renderRock(RenderedEntity &entity) const;
-    void renderHiker(RenderedEntity &hiker);
+    void renderHiker(const Hiker &hiker);
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
                                          floatType offsetY) const;
     void renderMountain(const Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
     void renderEntities();
-    void animateEntity(RenderedEntity &entity);
-    void renderAnimation(RenderedEntity &entity);
+    void animateEntity(const RenderedEntity &entity);
+    void renderAnimation(const RenderedEntity &entity);
     void renderInventory() const;
     void renderItemSlot(const Inventory &inventory, int slotNumber, int startX, int startY) const;
     void renderHealthBar() const;
@@ -76,6 +77,7 @@ class Renderer {
     void applyRumbleEffect();
     void renderNormalEntities();
     std::list<Rock> &getDestroyedRocks() const;
+    void renderWalkingHiker(const Hiker &hiker);
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H
