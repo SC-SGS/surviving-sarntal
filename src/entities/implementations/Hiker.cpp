@@ -18,8 +18,9 @@ Hiker::Hiker(const Vector position, AudioService &audioService)
 }
 
 RenderInformation Hiker::getRenderInformation() const {
-    return RenderInformation{Vector2(position), {0, height / 2}, width, height, 0, hikerMovement.getStateString(),
-                             animation};
+    floatType directedWidth = width * static_cast<float>(hikerMovement.getDirection() != HikerMovement::LEFT ? 1 : -1);
+    return RenderInformation{
+        Vector2(position), {0, height / 2}, directedWidth, height, 0, hikerMovement.getStateString(), animation};
 }
 
 floatType Hiker::getHeight() const { return height; }
