@@ -8,7 +8,7 @@
 #include <iostream>
 #include <utility>
 
-Rock::Rock(Vector position, Vector velocity, floatType angularVelocity, floatType angularOffset, float radius)
+Rock::Rock(Vector position, Vector velocity, floatType angularVelocity, floatType angularOffset, floatType radius)
     : RenderedEntity(position), velocity(velocity), angularOffset(angularOffset), angularVelocity(angularVelocity),
       radius(radius){};
 
@@ -28,7 +28,7 @@ Vector Rock::getVelocity() { return velocity; }
 floatType Rock::getRadius() const { return radius; }
 
 bool Rock::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
-void Rock::setShouldBeDestroyed(const bool shouldBeDestroyed) { this->shouldBeDestroyed = shouldBeDestroyed; }
+void Rock::setShouldBeDestroyed(const bool shouldBeDestroyedNew) { this->shouldBeDestroyed = shouldBeDestroyedNew; }
 void Rock::setAngularVelocity(const floatType newAngularVelocity) { this->angularVelocity = newAngularVelocity; }
 void Rock::setAngularOffset(const floatType newAngularOffset) { this->angularOffset = newAngularOffset; }
 floatType Rock::getAngularVelocity() const { return angularVelocity; }

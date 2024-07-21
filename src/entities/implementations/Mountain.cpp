@@ -7,14 +7,15 @@
 #include <mutex>
 #include <random>
 
-Mountain::Mountain() { generateMountain(); }
+Mountain::Mountain(MountainConstants mountainConstants) : mountainConstants(mountainConstants) { generateMountain(); }
 
 void Mountain::generateInitialChunk() {
-    Vector pos1 = {MOUNTAIN_START, MOUNTAIN_INITIAL_HEIGHT};
+    Vector pos1 = {mountainConstants.start, mountainConstants.initialHeight};
     spdlog::info("Point generated: ({},{})", pos1.x, pos1.y);
-    floatType xRight = MOUNTAIN_START + MOUNTAIN_CHUNK_WIDTH;
-    floatType yRight = this->rand->getRandomRealNumber(MOUNTAIN_INITIAL_HEIGHT + MOUNTAIN_NEW_POINT_DELTA_MIN,
-                                                       MOUNTAIN_INITIAL_HEIGHT + MOUNTAIN_NEW_POINT_DELTA_MAX);
+    floatType xRight = mountainConstants.start + mountainConstants.chunkWidth;
+    floatType yRight =
+        this->rand->getRandomRealNumber(mountainConstants.initialHeight + mountainConstants.newPointDeltaMin,
+                                        mountainConstants.initialHeight + mountainConstants.newPointDeltaMax);
     spdlog::info("Point generated: ({},{})", xRight, yRight);
     Vector pos2 = {xRight, yRight};
 
@@ -32,16 +33,16 @@ void Mountain::generateInitialChunk() {
 void Mountain::generateNewChunk() {
     Vector prevPos = this->positions.back();
 
-    floatType xNew = prevPos.x + MOUNTAIN_CHUNK_WIDTH;
-    floatType yNew = this->rand->getRandomRealNumber(prevPos.y + MOUNTAIN_NEW_POINT_DELTA_MIN,
-                                                     prevPos.y + MOUNTAIN_NEW_POINT_DELTA_MAX);
+    floatType xNew = prevPos.x + mountainConstants.chunkWidth;
+    floatType yNew = this->rand->getRandomRealNumber(prevPos.y + mountainConstants.newPointDeltaMin,
+                                                     prevPos.y + mountainConstants.newPointDeltaMax);
     Vector pos = {xNew, yNew};
     spdlog::debug("Point generated: ({},{})", xNew, yNew);
 
     floatType prevDer = this->derivatives.back();
 
-    floatType der =
-        this->rand->getRandomRealNumber(MOUNTAIN_SLOPE - MOUNTAIN_RANDOMNESS, MOUNTAIN_SLOPE + MOUNTAIN_RANDOMNESS);
+    floatType der = this->rand->getRandomRealNumber(mountainConstants.slope - mountainConstants.randomness,
+                                                    mountainConstants.slope + mountainConstants.randomness);
 
     auto *nextSplinePiece = new HermiteSpline(prevPos, pos, prevDer, der);
 
@@ -82,7 +83,7 @@ bool Mountain::isInRange(floatType xPos) const {
 
 void Mountain::generateMountain() {
     this->generateInitialChunk();
-    for (int counter = 1; counter < MOUNTAIN_CHUNK_COUNT; counter++) {
+    for (int counter = 1; counter < mountainConstants.chunkCount; counter++) {
         this->generateNewChunk();
     }
 }

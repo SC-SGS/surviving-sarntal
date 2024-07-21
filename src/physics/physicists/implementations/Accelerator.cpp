@@ -8,7 +8,8 @@
 #include <mutex>
 // TODO #include <omp.h>
 
-Accelerator::Accelerator(World &world) : world(world), deltaT(1){};
+Accelerator::Accelerator(World &world, GameConstants gameConstants)
+    : world(world), gameConstants(gameConstants), deltaT(1){};
 
 void Accelerator::accelerate() const {
     this->updateHikerVelocity();
@@ -21,10 +22,10 @@ void Accelerator::updateRockVelocities() const {
     // TODO #pragma omp parallel for
     for (auto &rock : this->world.getRocks()) {
         auto vel = rock.getVelocity();
-        vel.y += GRAVITATIONAL_CONSTANT * this->deltaT;
+        vel.y += gameConstants.physicsConstants.gravitationalConstant * this->deltaT;
         // TODO rock speed probably shouldn't be capped
-        if (vel.length() > VELOCITY_CAP) {
-            vel = (Vector)(vel * VELOCITY_CAP / vel.length());
+        if (vel.length() > gameConstants.rockConstants.velocityCap) {
+            vel = (Vector)(vel * gameConstants.rockConstants.velocityCap / vel.length());
         }
         rock.setVelocity(vel);
     }
@@ -34,7 +35,7 @@ void Accelerator::updateHikerVelocity() const {
     Hiker &hiker = this->world.getHiker();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
         hiker.setLastJump(this->world.getHiker().getHikerMovement().getLastJump() + this->deltaT);
-        hiker.accelerateY(GRAVITATIONAL_CONSTANT * this->deltaT);
+        hiker.accelerateY(gameConstants.physicsConstants.gravitationalConstant * this->deltaT);
     }
 }
 

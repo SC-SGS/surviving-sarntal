@@ -12,7 +12,8 @@
 class Spawner {
 
   public:
-    Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world);
+    Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
+            GameConstants gameConstants);
     ~Spawner() = default;
     void spawn() const;
 
@@ -21,6 +22,7 @@ class Spawner {
     Mountain &mountain;
     ItemSpawner &itemSpawner;
     World &world;
+    GameConstants gameConstants;
 
     /**
      * Spawn rocks for this time step.

@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_HIKERMOVEMENT_H
 #define SURVIVING_SARNTAL_HIKERMOVEMENT_H
 
-#include "../utilities/GameConstants.hpp"
+#include "../game/GameProperties.hpp"
 #include <string>
 
 /**

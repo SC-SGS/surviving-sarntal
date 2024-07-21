@@ -20,7 +20,7 @@ class EventProcessor {
     using AutoEventFunction = void (EventProcessor::*)() const;
 
   public:
-    explicit EventProcessor(World &world, Renderer &renderer);
+    explicit EventProcessor(World &world, Renderer &renderer, HikerConstants hikerConstants);
     ~EventProcessor() = default;
     /**
      * Performs the changes to the world caused by the user input.
@@ -44,6 +44,7 @@ class EventProcessor {
     World &world;
     Renderer &renderer;
     std::queue<GameEvent> eventQueue{};
+    HikerConstants hikerConstants;
 
     std::map<GameEvent, GameEventFunction, GameEventCompare> gameEventFunctionMappings;
 
