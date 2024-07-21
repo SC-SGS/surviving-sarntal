@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RANDOMGENERATOR_HPP
 #define SURVIVING_SARNTAL_RANDOMGENERATOR_HPP
 
-#include "GameConstants.hpp"
+#include "../game/GameProperties.hpp"
 #include "Singleton.hpp"
 #include <iostream>
 #include <random>

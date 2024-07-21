@@ -6,7 +6,6 @@
 #define SURVIVING_SARNTAL_ITEM_HPP
 
 #include "../output/graphics/renderInformation/RenderInformation.h"
-#include "../utilities/ConfigManager.hpp"
 #include "../utilities/vector.h"
 #include "RenderedEntity.h"
 #include "string"
@@ -17,6 +16,15 @@
 // todo remove no_item @aleksis
 enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2 };
 
+struct ItemDto {
+    std::string name;
+    ItemType itemType;
+    bool autoCollect;
+    bool useOnPickup;
+    bool dropOnUse;
+    int spawnWeight;
+};
+
 /**
  * This class represents an Item in the game. An item can be of type
  * Kaiserschmarrn, Coin or Duck.
@@ -25,8 +33,9 @@ enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2 };
  */
 class Item : public RenderedEntity {
   public:
-    Item(ItemType itemType, Vector position);
+    Item(ItemType itemType, Vector position, floatType baseHeight, const ItemDto &dto);
 
+    // Item(ItemDto itemDto, Vector position);
     RenderInformation getRenderInformation() const override;
 
     ItemType getItemType() const;
@@ -40,14 +49,16 @@ class Item : public RenderedEntity {
     bool shouldDropOnUse() const;
 
   private:
+    floatType baseHeight;
     ItemType itemType;
     std::string name;
     std::string audio;
     bool autoCollect = false;
     bool useOnPickup = false;
     bool dropOnUse = false;
+    int spawnWeight = 0;
 
-    void buildItem();
+    void buildItem(const ItemDto &dto);
 };
 
 #endif // SURVIVING_SARNTAL_ITEM_HPP

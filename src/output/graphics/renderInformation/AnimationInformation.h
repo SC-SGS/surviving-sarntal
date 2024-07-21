@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_ANIMATIONINFORMATION_H
 #define SURVIVING_SARNTAL_ANIMATIONINFORMATION_H
 
-#include "../../../utilities/GameConstants.hpp"
+#include "../../../game/GameProperties.hpp"
 
 struct AnimationInformation {
     int frames;

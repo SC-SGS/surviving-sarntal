@@ -52,9 +52,9 @@ class PhysicsEngine {
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
 
-    PhysicsEngine(World &world, Spawner &spawner, EventProcessor &eventProcessor, Accelerator &accelerator,
-                  Positioner &positioner, CollisionDetector &collisionDetector, CollisionHandler &collisionHandler,
-                  Interpolator &interpolator, Destructor &destructor);
+    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants physicsConstants, EventProcessor &eventProcessor,
+                  Accelerator &accelerator, Positioner &positioner, CollisionDetector &collisionDetector,
+                  CollisionHandler &collisionHandler, Interpolator &interpolator, Destructor &destructor);
 
     ~PhysicsEngine() = default;
 
@@ -68,6 +68,11 @@ class PhysicsEngine {
      * The world containing all entities.
      */
     World &world;
+
+    /**
+     * The physics constants.
+     */
+    PhysicsConstants physicsConstants;
 
     /**
      * Timestamp of last update.
@@ -119,11 +124,6 @@ class PhysicsEngine {
      * Responsible for destructing all entities that are outside of the world borders.
      */
     const Destructor &destructor;
-
-    /**
-     * The private constructor method of the PhysicsEngine.
-     * Only to be called once.
-     */
 
     /**
      * Simulates the change in the state of the world over the next deltaT time interval.

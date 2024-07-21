@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_HERMITESPLINE_HPP
 #define SURVIVING_SARNTAL_HERMITESPLINE_HPP
 
-#include "GameConstants.hpp"
+#include "../game/GameProperties.hpp"
 #include "Polynomial.hpp"
 #include "vector.h"
 

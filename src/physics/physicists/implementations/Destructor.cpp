@@ -5,7 +5,8 @@
 #include "../Destructor.hpp"
 #include "../../../output/graphics/Renderer.h"
 
-Destructor::Destructor(World &world, Renderer &renderer) : world(world), renderer(renderer) {}
+Destructor::Destructor(World &world, Renderer &renderer, GameConstants gameConstants)
+    : world(world), renderer(renderer), gameConstants(gameConstants) {}
 
 void Destructor::destruct() const {
     destructRocks();
@@ -30,8 +31,10 @@ void Destructor::destructItems() const {
 }
 
 void Destructor::destructMountain() const {
-    if (this->world.getMinX() >
-        this->world.getMountain().getLeftBorder() + MOUNTAIN_CHUNK_BUFFER_LEFT * MOUNTAIN_CHUNK_WIDTH) {
+    const floatType leftBufferedWidth = this->world.getMountain().getLeftBorder() +
+                                        (static_cast<floatType>(gameConstants.mountainConstants.chunkBufferLeft) *
+                                         gameConstants.mountainConstants.chunkWidth);
+    if (this->world.getMinX() > leftBufferedWidth) {
         this->world.getMountain().deleteLeftChunk();
     }
 }

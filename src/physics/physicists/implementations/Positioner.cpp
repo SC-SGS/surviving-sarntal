@@ -7,7 +7,8 @@
 #include <iostream>
 #include <mutex>
 
-Positioner::Positioner(World &world) : world(world), deltaT(1){};
+Positioner::Positioner(World &world, HikerConstants hikerConstants, BarriersConstants barriersConstants)
+    : world(world), hikerConstants(hikerConstants), barriersConstants(barriersConstants), deltaT(1){};
 
 void Positioner::updatePositions() const {
     this->updateMonsterPosition();
@@ -20,7 +21,7 @@ void Positioner::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; };
 
 void Positioner::updateMonsterPosition() const {
     const auto xPos = this->world.getMonster().getXPosition();
-    const auto newXPos = xPos + KILL_BAR_VELOCITY * this->deltaT;
+    const auto newXPos = xPos + barriersConstants.killBarVelocity * this->deltaT;
     const auto newYPos = this->world.getMountain().calculateYPos(xPos);
     Vector newPos = {newXPos, newYPos};
     this->world.getMonster().setPosition(newPos);
@@ -29,21 +30,18 @@ void Positioner::updateMonsterPosition() const {
 void Positioner::updateWorldBorderPosition() const {
     const auto xMin = this->world.getMinX();
     const auto xMax = this->world.getMaxX();
-    const auto delta = KILL_BAR_VELOCITY * this->deltaT;
+    const auto delta = barriersConstants.killBarVelocity * this->deltaT;
     this->world.setMinX(xMin + delta);
     this->world.setMaxX(xMax + delta);
-    // std::cout << "World border x minimum position: " << xMin << std::endl;
 }
 
 void Positioner::updateRockPositions() const {
     for (auto &rock : this->world.getRocks()) {
         auto pos = rock.getPosition();
-        // std::cout << pos.x << pos.y << std::endl;
         pos += rock.getVelocity() * this->deltaT;
         rock.setPosition(pos);
         const floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
         rock.setAngularOffset(newAngularOffset);
-        // std::cout << pos.x << pos.y << std::endl;
     }
 }
 
@@ -56,7 +54,7 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         const floatType radius = hiker.getHitInformation().radiusRock;
         const floatType rockVelocity = hiker.getHitInformation().velocityRock;
         // TODO KNOCKBACK could vary with rock type, e.g. small rocks with little damage but massive knockback
-        knockback = rockVelocity * KNOCKBACKCONST * radius;
+        knockback = rockVelocity * hikerConstants.knockBack * radius;
         int counter = hiker.getHitInformation().countingVariable;
         counter++;
         // TODO I don't like the HitInformation
@@ -74,7 +72,7 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     auto pos = hiker.getPosition();
     const auto vel = hiker.getVelocity();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
-        pos.x += knockback + AIR_MOVEMENT_SPEED_FACTOR * vel.x * this->deltaT;
+        pos.x += knockback + hikerConstants.airMovementSpeedFactor * vel.x * this->deltaT;
         const auto terrainY = this->world.getMountain().calculateYPos(pos.x);
         const auto airY = pos.y + vel.y * this->deltaT;
         if (airY > terrainY) {
@@ -97,30 +95,31 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
         pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
         pos.y = this->world.getMountain().calculateYPos(pos.x);
     } else {
-        // std::cout << "Knock knock mf" << std::endl;
         pos.x += knockback;
         pos.y = this->world.getMountain().calculateYPos(pos.x);
     }
-    if (pos.x > this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET) {
-        pos.x = this->world.getMonster().getXPosition() + PLAYER_RIGHT_BARRIER_OFFSET;
+    if (pos.x > this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset) {
+        pos.x = this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset;
     }
     hiker.setPosition(pos);
 }
 
-floatType Positioner::getSpeedFactor(const floatType slope) {
-    if (slope <= SLOWEST_NEG_SLOPE) {
-        return MIN_SPEED_NEG_SLOPE;
+floatType Positioner::getSpeedFactor(floatType slope) const {
+    if (slope <= hikerConstants.slowestNegSlope) {
+        return hikerConstants.minSpeedNegSlope;
     }
-    if (slope <= FASTEST_NEG_SLOPE) {
-        return Vector::linearInterpolation(slope, {SLOWEST_NEG_SLOPE, MIN_SPEED_NEG_SLOPE},
-                                           {FASTEST_NEG_SLOPE, MAX_SPEED_NEG_SLOPE});
+    if (slope <= hikerConstants.fastestNegSlope) {
+        return Vector::linearInterpolation(slope, {hikerConstants.slowestNegSlope, hikerConstants.minSpeedNegSlope},
+                                           {hikerConstants.fastestNegSlope, hikerConstants.maxSpeedNegSlope});
     }
     if (slope <= 0) {
-        return Vector::linearInterpolation(slope, {FASTEST_NEG_SLOPE, MAX_SPEED_NEG_SLOPE}, {0, 1});
+        return Vector::linearInterpolation(slope, {hikerConstants.fastestNegSlope, hikerConstants.maxSpeedNegSlope},
+                                           {0, 1});
     }
-    if (slope <= SLOWEST_POS_SCOPE) {
-        return Vector::linearInterpolation(slope, {0, 1}, {SLOWEST_POS_SCOPE, MIN_SPEED_POS_SCOPE});
+    if (slope <= hikerConstants.slowestPosScope) {
+        return Vector::linearInterpolation(slope, {0, 1},
+                                           {hikerConstants.slowestPosScope, hikerConstants.minSpeedPosSlope});
     }
 
-    return MIN_SPEED_POS_SCOPE;
+    return hikerConstants.minSpeedPosSlope;
 };

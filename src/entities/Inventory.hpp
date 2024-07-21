@@ -22,6 +22,7 @@ class Inventory {
     std::vector<std::vector<std::shared_ptr<Item>>> slots;
     size_t selectedSlot = 0;
     AudioService &audioService;
+    ItemsConstants itemsConstants;
 
     bool itemTypeInInventory(ItemType itemType);
     bool itemSlotAvailable();
@@ -30,8 +31,8 @@ class Inventory {
 
   public:
     int getSlotOfItem(ItemType itemType);
-    explicit Inventory(size_t slotCount, AudioService &audioService);
-    explicit Inventory(AudioService &audioService);
+    explicit Inventory(size_t slotCount, AudioService &audioService, ItemsConstants itemsConstants);
+    explicit Inventory(AudioService &audioService, ItemsConstants itemsConstants);
 
     /**
      * @brief This method returns the number of slots in the inventory.

@@ -3,7 +3,7 @@
 //
 
 #include "Gamepad.h"
-#include "../../utilities/GameConstants.hpp"
+#include "../../game/GameProperties.hpp"
 #include "raylib.h"
 #include "spdlog/spdlog.h"
 

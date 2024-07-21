@@ -11,7 +11,7 @@
 #include <iostream>
 #include <mutex>
 
-InputHandler::InputHandler() {
+InputHandler::InputHandler() : inputConstants(ConfigManager::getInstance().getGameConstants().inputConstants) {
     this->devices.push_back(new Keyboard());
     spdlog::info("Keyboard added.");
 }
@@ -34,7 +34,7 @@ std::vector<InputDevice *> InputHandler::getDevices() const { return this->devic
 
 void InputHandler::initializeGamepads() {
     BeginDrawing();
-    for (int i = 0; i < MAX_GAMEPADS; i++) {
+    for (int i = 0; i < this->inputConstants.maxGamepads; i++) {
         if (IsGamepadAvailable(i)) {
             this->devices.push_back(new Gamepad(i));
             spdlog::info("Gamepad {} added.", i);

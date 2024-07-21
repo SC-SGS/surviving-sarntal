@@ -13,10 +13,11 @@ class Accelerator {
   public:
     void accelerate() const;
     void setDeltaT(floatType deltaT);
-    explicit Accelerator(World &world);
+    explicit Accelerator(World &world, GameConstants gameConstants);
     ~Accelerator() = default;
 
   private:
+    GameConstants gameConstants;
     World &world;
 
     /**

@@ -2,11 +2,14 @@
 // Created by Anietta Weckauff on 07.07.24.
 //
 #include "../../src/entities/Monster.h"
+#include "../../src/utilities/ConfigManager.hpp"
 #include <gtest/gtest.h>
 
 class MonsterTestFixture : public ::testing::Test {
   protected:
-    Monster monster;
+    ConfigManager &configManager = ConfigManager::getInstance();
+    GameConstants gameConstants = configManager.getGameConstants();
+    Monster monster{gameConstants.hikerConstants};
 
     void SetUp() override {}
 

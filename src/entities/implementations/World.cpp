@@ -7,6 +7,13 @@
 #include <iostream>
 #include <mutex>
 
+World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+             GameConstants gameConstants)
+    : audioService(audioService), mountain(mountain), hiker(hiker), inventory(inventory), monster(monster),
+      gameConstants(gameConstants) {}
+
+World::~World() = default;
+
 floatType World::getMaxX() const { return maxX; }
 
 void World::setMaxX(const floatType maxX) { this->maxX = maxX; }
@@ -20,11 +27,9 @@ Monster &World::getMonster() const { return monster; }
 Mountain &World::getMountain() const { return mountain; }
 
 bool World::isOutOfScope(const RenderedEntity &entity) const {
-    bool result = entity.getPosition().x < this->minX - MOUNTAIN_CHUNK_WIDTH;
-    // entity.getPosition().x > this->maxX + Mountain::CHUNK_WIDTH || entity.getPosition().y < -10000 ||
-    // entity.getPosition().y > mountain.interpolate(entity.getPosition().x);
+    bool result = entity.getPosition().x < this->minX - this->gameConstants.mountainConstants.chunkWidth;
     if (result) {
-        spdlog::debug("A rock has left the scope of the game.");
+        spdlog::debug("An entity has left the scope of the game.");
     }
     return result;
 }
@@ -35,7 +40,8 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     const Vector &position = this->hiker.getPosition();
     const auto adjustedHikerPosition = Vector{position.x, position.y + this->hiker.getHeight() / 2};
     for (const auto &item : *this->items) {
-        const bool inRange = item->getPosition().distanceTo(adjustedHikerPosition) < HIKER_ITEM_COLLECTION_RANGE;
+        const bool inRange =
+            item->getPosition().distanceTo(adjustedHikerPosition) < this->gameConstants.itemsConstants.collectionRadius;
         if (inRange) {
             nearbyItems.push_back(item);
         }
@@ -68,13 +74,13 @@ void World::useItem(const ItemType itemType) {
 }
 
 void World::useKaiserschmarrn() const {
-    this->hiker.addHealthPoints(KAISERSCHMARRN_HEALTH_RESTORATION);
+    this->hiker.addHealthPoints(gameConstants.itemsConstants.kaiserschmarrnHealthRestoration);
     this->audioService.playSound("use-kaiserschmarrn");
     spdlog::debug("Used Kaiserschmarrn.");
 }
 
 void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
-    this->coinScore += COIN_SCORE;
+    this->coinScore += gameConstants.itemsConstants.coinScore;
     this->audioService.playSound("use-coin");
     spdlog::debug("Used Coin.");
 }
@@ -89,14 +95,9 @@ void World::setMinX(const floatType newMinX) { this->minX = newMinX; }
 
 int World::getCoinScore() const { return this->coinScore; }
 
-World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService)
-    : audioService(audioService), mountain(mountain), hiker(hiker), inventory(inventory), monster(monster) {}
-
 int World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
     const int hikerHeight = static_cast<int>(this->mountain.calculateYPos(this->hiker.getPosition().x));
     this->gameScore = std::max(this->gameScore, hikerHeight);
 }
-
-World::~World() = default;

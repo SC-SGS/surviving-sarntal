@@ -4,18 +4,16 @@
 #include "ItemSpawner.h"
 #include "spdlog/spdlog.h"
 
-// NOLINTBEGIN
-floatType ItemSpawner::nextSpawnTime(SPAWN_START_TIME);
-// NOLINTEND
-
-ItemSpawner::ItemSpawner(World &world) : world(world) {
-    YAML::Node items = ConfigManager::getInstance().getItems();
-    this->spawnWeightsSum = 0;
-    for (YAML::const_iterator it = items.begin(); it != items.end(); ++it) {
-        int spawnWeight = it->second["spawn-weight"].as<int>();
-        int typeId = it->second["type-id"].as<int>();
-        this->spawnWeightsSum += spawnWeight;
-        this->spawnWeights[typeId] = spawnWeight;
+ItemSpawner::ItemSpawner(World &world, GameConstants gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap)
+    : world(world), gameConstants(gameConstants), nextSpawnTime(gameConstants.itemsConstants.startSpawnTime),
+      itemDtoMap(itemDtoMap), spawnWeightsSum(static_cast<int>(itemDtoMap.size())) {
+    this->nextSpawnTime = this->gameConstants.itemsConstants.startSpawnTime;
+    const auto &items = ConfigManager::getInstance().getItems();
+    for (const auto &item : items) {
+        int itemType = item.first;
+        int itemSpawnWeight = item.second.spawnWeight;
+        this->spawnWeights[itemType] = itemSpawnWeight;
+        this->spawnWeightsSum += itemSpawnWeight;
     }
 }
 
@@ -27,14 +25,14 @@ void ItemSpawner::spawnItems() {
     const auto itemType = getNextRandomItemType();
     const auto position = getNextRandomPosition();
 
-    const Item newItem = Item(itemType, position);
+    const Item newItem = Item(itemType, position, gameConstants.itemsConstants.itemBaseHeight, itemDtoMap[itemType]);
     this->world.addItem(newItem);
     updateNextSpawnTime();
 
     spdlog::info("Spawning {0} at position (x: {1}, y: {2}).", newItem.getName(), position.x, position.y);
 }
 void ItemSpawner::updateNextSpawnTime() {
-    auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10));
+    auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10)); // todo get range from config
     nextSpawnTime = static_cast<floatType>(GetTime()) + rand;
     spdlog::debug("Next spawn time was set to: {}", nextSpawnTime);
 }
@@ -50,7 +48,7 @@ ItemType ItemSpawner::getNextRandomItemType() {
     return COIN;
 }
 Vector ItemSpawner::getNextRandomPosition() {
-    auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300));
+    auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300)); // todo get range from config
     auto xPosition = static_cast<floatType>(this->world.getMaxX() + 10);
     auto yPosition = static_cast<floatType>(this->world.getMountain().calculateYPos(xPosition)) + randYOffset;
     spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);

@@ -4,16 +4,20 @@
 
 #include "../Hiker.h"
 #include "../../output/haptics/HapticsService.hpp"
-#include "../../utilities/GameConstants.hpp"
-#include "../../utilities/vector.h"
-#include "../World.h"
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-Hiker::Hiker(const Vector position, AudioService &audioService)
-    : RenderedEntity(position), velocity({0, 0}), height(HIKER_HEIGHT), width(HIKER_WIDTH),
-      healthPoints(HIKER_MAX_HEALTH), hikerMovement(HikerMovement()), isAlive(true), audioService(audioService) {
+Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants hikerConstants)
+    : RenderedEntity(position), hikerConstants(hikerConstants), audioService(audioService) {
+
+    velocity = {0, 0};
+    height = hikerConstants.hikerHeight;
+    width = hikerConstants.hikerWidth;
+    healthPoints = hikerConstants.hikerMaxHealth;
+    hikerMovement = HikerMovement();
+    isAlive = true;
     animation = {4, 0, 0.3, 0};
+
     spdlog::info("A Hiker was initialized");
 }
 
@@ -49,16 +53,16 @@ const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 void Hiker::setHikerMovement(const HikerMovement &movement) {
     switch (movement.getState()) {
     case HikerMovement::MOVING:
-        height = HIKER_HEIGHT;
-        width = HIKER_WIDTH;
+        height = hikerConstants.hikerHeight;
+        width = hikerConstants.hikerWidth;
         break;
     case HikerMovement::CROUCHED:
-        height = DUCKED_HIKER_HEIGHT;
-        width = DUCKED_HIKER_WIDTH;
+        height = hikerConstants.crouchedHikerHeight;
+        width = hikerConstants.crouchedHikerWidth;
         break;
     case HikerMovement::IN_AIR:
-        height = HIKER_HEIGHT;
-        width = HIKER_WIDTH;
+        height = hikerConstants.hikerHeight;
+        width = hikerConstants.hikerWidth;
         break;
     }
     hikerMovement = movement;
@@ -80,7 +84,7 @@ bool Hiker::getIsAlive() const { return this->isAlive; }
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }
 void Hiker::addHealthPoints(const int points) {
-    this->setHealthPoints(std::min(this->healthPoints + points, HIKER_MAX_HEALTH));
+    this->setHealthPoints(std::min(this->healthPoints + points, hikerConstants.hikerMaxHealth));
 }
 
 void Hiker::turnLeft() { this->hikerMovement.setDirection(HikerMovement::LEFT); }
@@ -90,15 +94,15 @@ void Hiker::crouch() {
     if (this->hikerMovement.getState() == HikerMovement::MOVING) {
         this->audioService.playSound("crouch");
         this->hikerMovement.setState(HikerMovement::CROUCHED);
-        this->setHeight(DUCKED_HIKER_HEIGHT);
-        this->setWidth(DUCKED_HIKER_WIDTH);
+        this->setHeight(hikerConstants.crouchedHikerHeight);
+        this->setWidth(hikerConstants.crouchedHikerWidth);
     }
 }
 void Hiker::uncrouch() {
     if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
         hikerMovement.setState(HikerMovement::MOVING);
-        this->setHeight(HIKER_HEIGHT);
-        this->setWidth(HIKER_WIDTH);
+        this->setHeight(hikerConstants.hikerHeight);
+        this->setWidth(hikerConstants.hikerWidth);
     }
 }
 void Hiker::jump() {
@@ -124,7 +128,7 @@ void Hiker::setYVelocity(floatType yValue) { this->velocity.setY(yValue); }
 void Hiker::setLastJump(float lastJump) { this->hikerMovement.setLastJump(lastJump); }
 void Hiker::doSecondJump() {
     this->audioService.playSound("jump");
-    this->velocity.setY(JUMP_VELOCITY_CONSTANT);
+    this->velocity.setY(hikerConstants.jumpVelocity);
     if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
         this->hikerMovement.setCanJumpAgain(false);
     }

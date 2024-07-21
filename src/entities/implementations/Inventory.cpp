@@ -8,14 +8,16 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-Inventory::Inventory(size_t slotCount, AudioService &audioService) : slots(slotCount), audioService(audioService) {
+Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstants itemsConstants)
+    : slots(slotCount), audioService(audioService), itemsConstants(itemsConstants) {
     for (size_t i = 0; i < slotCount; ++i) {
         slots[i] = std::vector<std::shared_ptr<Item>>();
     }
     spdlog::info("Inventory initialized.");
 }
 
-Inventory::Inventory(AudioService &audioService) : Inventory(SLOTS_PER_INVENTORY, audioService) {}
+Inventory::Inventory(AudioService &audioService, ItemsConstants itemsConstants)
+    : Inventory(itemsConstants.slotsPerInventory, audioService, itemsConstants) {}
 
 size_t Inventory::getNumberOfSlots() const { return slots.size(); }
 
@@ -84,7 +86,7 @@ int Inventory::getNextFreeSlot() {
 }
 
 void Inventory::addItem(int slot, const std::shared_ptr<Item> &item) {
-    if (slots[slot].size() < ITEMS_PER_SLOT) {
+    if (slots[slot].size() < itemsConstants.itemsPerSlot) {
         slots[slot].push_back(item);
         this->audioService.playSound("pickup-item");
     }
@@ -93,7 +95,7 @@ void Inventory::addItem(int slot, const std::shared_ptr<Item> &item) {
 bool Inventory::canCollectItem(const std::shared_ptr<Item> &item) {
     if (itemTypeInInventory(item->getItemType())) {
         const int slot = getSlotOfItem(item->getItemType());
-        return slots[slot].size() < ITEMS_PER_SLOT;
+        return slots[slot].size() < itemsConstants.itemsPerSlot;
     } else {
         return getNextFreeSlot() != -1;
     }
