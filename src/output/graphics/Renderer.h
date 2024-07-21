@@ -18,7 +18,7 @@ class Renderer {
   public:
     void draw();
     void setShake(float intensity);
-    Renderer(World &world, ResourceManager &resourceManager);
+    Renderer(World &world, ResourceManager &resourceManager, GameConstants gameConstants);
     ~Renderer() = default;
 
     void toggleDebugMode();
@@ -28,6 +28,7 @@ class Renderer {
     // Dependencies
     World &world;
     ResourceManager &resourceManager;
+    GameConstants gameConstants;
 
     // Attributes
     Camera2D camera = {0};

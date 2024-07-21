@@ -9,9 +9,9 @@
 #include <mutex>
 
 CollisionHandler::CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
-                                   Renderer &renderer)
+                                   Renderer &renderer, GameConstants gameConstants)
     : world(world), collisionDetector(collisionDetector), audioService(audioService), renderer(renderer),
-      hapticsService(HapticsService::getInstance()), deltaT(1) {}
+      gameConstants(gameConstants), hapticsService(HapticsService::getInstance()), deltaT(1) {}
 
 void CollisionHandler::handleCollisions() {
     this->playerCollisions();
@@ -29,22 +29,8 @@ Vertex CollisionHandler::getClosestVertex(Rock &rock) const {
     const floatType xMin = pos.x - rad;
     const floatType xMax = pos.x + rad;
     const Mountain &mountain = this->world.getMountain();
-    // auto interval = Mountain::getRelevantMountainSection(xMin, xMax);
-    //
-    // auto closestIndex = interval.startIndex;
-    // floatType closestDistance = mountain.getVertex(interval.startIndex).distanceTo(pos);
-    //
-    // for (auto j = interval.startIndex; j < interval.endIndex; j++) {
-    //     auto mountainVertex = mountain.getVertex(j);
-    //     auto currentDist = mountainVertex.distanceTo(pos);
-    //
-    //     if (currentDist < closestDistance) {
-    //         closestDistance = currentDist;
-    //         closestIndex = j;
-    //     }
-    // }
+
     return Vertex({0, 0});
-    // return Vertex({closestIndex, closestDistance});
 }
 
 void CollisionHandler::playerCollisions() const {
@@ -54,7 +40,7 @@ void CollisionHandler::playerCollisions() const {
             // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
             this->audioService.playSound("rock-smash");
             this->audioService.playSound("boom");
-            const int rockDmg = rockDamage(rock);
+            const int rockDmg = this->rockDamage(rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             HapticsService::rockRumble(rockDmg);
             this->world.getHiker().setHealthPoints(this->world.getHiker().getHealthPoints() - rockDmg);
@@ -66,12 +52,16 @@ void CollisionHandler::playerCollisions() const {
     }
 }
 
-int CollisionHandler::rockDamage(Rock &rock) {
-    return static_cast<int>((std::abs(49 * (rock.getRadius() - MIN_ROCK_SIZE)) / (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + 1) *
-                            (1 + rock.getVelocity().length() / VELOCITY_CAP));
+int CollisionHandler::rockDamage(Rock &rock) const {
+    const auto relativeRockSize = std::abs(49 * (rock.getRadius() - gameConstants.rockConstants.minRockSize));
+    const auto rockSizeRange = (gameConstants.rockConstants.maxRockSize - gameConstants.rockConstants.minRockSize) + 1;
+    const auto rockSizeFactor = static_cast<int>((relativeRockSize / rockSizeRange));
+    const auto velocityFactor =
+        static_cast<int>(1 + rock.getVelocity().length() / gameConstants.rockConstants.velocityCap);
+    return rockSizeFactor * velocityFactor;
 }
 
-void CollisionHandler::rockTerrainCollisions() { // const {
+void CollisionHandler::rockTerrainCollisions() {
     for (auto &rock : this->world.getRocks()) {
         // TODO don't create too many copies, but will be changed later anyways
         Rock virtualRock = this->getNextState(rock);
@@ -83,41 +73,38 @@ void CollisionHandler::rockTerrainCollisions() { // const {
                 this->rockTerrainCollision(rock);
             }
         }
-        // if (closestVertex.distance <= rock.getRadius()) {
-        //     this->rockTerrainCollision(rock, closestVertex);
-        //     // std::cout << "Collision " << closestVertex.distance << " | " << getClosestVertex(rock).distance
-        //     //<< std::endl;
-        // }
     }
 }
 
 void CollisionHandler::rockTerrainCollision(Rock &rock) const {
-    // TODO play terrain collision sound
-    auto vel = rock.getVelocity();
+    auto vel = rock.getVelocity(); // TODO play terrain collision sound
     auto pos = rock.getPosition();
     const auto rad = rock.getRadius();
     floatType angularVelocity = rock.getAngularVelocity();
     floatType angularOffset = rock.getAngularOffset();
     // const auto normal = this->collisionDetector.getNormal(closestVertex.index, pos);
     const auto normal = this->collisionDetector.getNormal(pos);
-    vel = vel.reflectOnNormal(normal);
+    vel = vel.reflectOnNormal(normal, gameConstants.physicsConstants.rockTerrainDamping);
     const auto mass = std::pow(rad, 2);
     const Vector parallelVector = {-normal.y, normal.x};
     const auto velocityParallel = vel * parallelVector;
-    angularVelocity += static_cast<floatType>((GAMMA) * (velocityParallel - angularVelocity * rad) / mass);
-    if (angularVelocity >= MAX_ANGULAR_VELOCITY) {
-        angularVelocity = MAX_ANGULAR_VELOCITY;
+    angularVelocity +=
+        static_cast<floatType>((gameConstants.rockConstants.gamma) * (velocityParallel - angularVelocity * rad) / mass);
+    const auto maxAngularVelocity = gameConstants.rockConstants.maxAngularVelocity;
+    if (angularVelocity >= maxAngularVelocity) {
+        angularVelocity = maxAngularVelocity;
     }
-    if (angularVelocity <= -MAX_ANGULAR_VELOCITY) {
-        angularVelocity = -MAX_ANGULAR_VELOCITY;
+    if (angularVelocity <= -maxAngularVelocity) {
+        angularVelocity = -maxAngularVelocity;
     }
     angularOffset += this->deltaT * angularVelocity;
-    //  TODO maybe later explode rock here
-    rock.setVelocity(vel);
+    rock.setVelocity(vel); //  TODO maybe later explode rock here
     rock.setAngularVelocity(angularVelocity);
     rock.setAngularOffset(angularOffset);
-
-    this->renderer.setShake((rock.getVelocity().length() * rock.getRadius() * VISUAL_RUMBLE_INTENSITY) / VELOCITY_CAP);
+    auto shake =
+        (rock.getVelocity().length() * rock.getRadius() * this->gameConstants.visualConstants.rumbleIntensity) /
+        gameConstants.rockConstants.velocityCap;
+    this->renderer.setShake(shake);
 }
 
 void CollisionHandler::rockRockCollisions() {
@@ -135,7 +122,7 @@ void CollisionHandler::rockRockCollisions() {
         }
     }
 }
-
+// NOLINTBEGIN
 void CollisionHandler::rockRockCollision(Rock &rock1, Rock &rock2) {
     const floatType mass1 = powf(rock1.getRadius(), 2);
     const floatType mass2 = powf(rock1.getRadius(), 2);
@@ -151,13 +138,17 @@ void CollisionHandler::rockRockCollision(Rock &rock1, Rock &rock2) {
     floatType angularOffset2 = rock2.getAngularOffset();
     const floatType distanceSq = posDiff * posDiff;
     const floatType totalMass = mass1 + mass2;
-    vel1 -= posDiff * 2 * mass2 * (velDiff * posDiff) / (distanceSq * totalMass + EPSILON);
-    vel2 += posDiff * 2 * mass1 * (velDiff * posDiff) / (distanceSq * totalMass + EPSILON);
+    vel1 -=
+        posDiff * 2 * mass2 * (velDiff * posDiff) / (distanceSq * totalMass + gameConstants.physicsConstants.epsilon);
+    vel2 +=
+        posDiff * 2 * mass1 * (velDiff * posDiff) / (distanceSq * totalMass + gameConstants.physicsConstants.epsilon);
     const Vector normal = {pos2.y - pos1.y, pos1.x - pos2.x};
     const floatType relativeSurfaceVelocity =
         angularVelocity2 * rock2.getRadius() - angularVelocity1 * rock1.getRadius();
-    angularVelocity1 += GAMMA * std::abs((normal * vel1)) * relativeSurfaceVelocity / (2 * mass1);
-    angularVelocity2 -= GAMMA * std::abs((normal * vel2)) * relativeSurfaceVelocity / (2 * mass2);
+    angularVelocity1 +=
+        gameConstants.rockConstants.gamma * std::abs((normal * vel1)) * relativeSurfaceVelocity / (2 * mass1);
+    angularVelocity2 -=
+        gameConstants.rockConstants.gamma * std::abs((normal * vel2)) * relativeSurfaceVelocity / (2 * mass2);
     angularVelocity1 = capAngularVelocity(angularVelocity1);
     angularVelocity2 = capAngularVelocity(angularVelocity2);
     rock1.setVelocity(vel1);
@@ -167,7 +158,7 @@ void CollisionHandler::rockRockCollision(Rock &rock1, Rock &rock2) {
     rock1.setAngularOffset(angularOffset1);
     rock2.setAngularOffset(angularOffset2);
 };
-
+// NOLINTEND
 Rock CollisionHandler::getNextState(Rock &rock) const {
     const auto pos = rock.getPosition();
     const auto newPos = pos + rock.getVelocity() * this->deltaT;
@@ -175,12 +166,13 @@ Rock CollisionHandler::getNextState(Rock &rock) const {
     return {newPos, rock.getVelocity(), rock.getAngularVelocity(), newAngularOffset, rock.getRadius()};
 }
 
-floatType CollisionHandler::capAngularVelocity(const floatType angVel) {
-    if (angVel >= MAX_ANGULAR_VELOCITY) {
-        return MAX_ANGULAR_VELOCITY;
+floatType CollisionHandler::capAngularVelocity(const floatType angVel) const {
+    const auto maxAngularVelocity = gameConstants.rockConstants.maxAngularVelocity;
+    if (angVel >= maxAngularVelocity) {
+        return maxAngularVelocity;
     }
-    if (angVel <= -MAX_ANGULAR_VELOCITY) {
-        return -MAX_ANGULAR_VELOCITY;
+    if (angVel <= -maxAngularVelocity) {
+        return -maxAngularVelocity;
     }
     return angVel;
 }

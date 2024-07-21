@@ -37,9 +37,9 @@ floatType Vector::distanceTo(const Vector &other) const {
 
 floatType Vector::length() const { return this->distanceTo({0., 0.}); }
 
-Vector Vector::reflectOnNormal(const Vector &normal) const {
+Vector Vector::reflectOnNormal(const Vector &normal, const floatType rockTerrainDamping) const {
     floatType normalVelocity = std::abs(*this * normal);
-    return *this + normal * normalVelocity * (1. + ROCK_TERRAIN_DAMPING);
+    return *this + normal * normalVelocity * (1.0f + rockTerrainDamping);
 }
 void Vector::setX(floatType xValue) { this->x = xValue; }
 void Vector::setY(floatType yValue) { this->y = yValue; }

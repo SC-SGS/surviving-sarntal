@@ -7,7 +7,7 @@
 #include <mutex>
 #include <random>
 
-RockSpawner::RockSpawner(World &world) : world(world){};
+RockSpawner::RockSpawner(World &world, GameConstants gameConstants) : world(world), gameConstants(gameConstants){};
 
 void RockSpawner::spawnRocks() {
     if (!shouldSpawnRocks()) {
@@ -24,14 +24,17 @@ void RockSpawner::spawnRocks() {
 void RockSpawner::spawnRock(const size_t idxRock) {
     const std::vector<Vector> offsetsAdditionalRocks = getOffsetsAdditionalRocks();
     Vector spawnBasePos = getRandSpawnPos();
+    auto const &rockConst = this->gameConstants.rockConstants;
     const floatType rad =
-        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (MAX_ROCK_SIZE - MIN_ROCK_SIZE) + MIN_ROCK_SIZE;
+        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (rockConst.maxRockSize - rockConst.minRockSize) +
+        rockConst.minRockSize;
 
-    Vector velocity = {-MIN_SPAWN_VELOCITY - static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
-                                                 (MAX_SPAWN_VELOCITY + MIN_SPAWN_VELOCITY),
+    Vector velocity = {-rockConst.minSpawnVelocity - static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
+                                                         (rockConst.maxSpawnVelocity + rockConst.minSpawnVelocity),
                        0};
-    floatType angularVelocity = MIN_SPAWN_VELOCITY + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
-                                                         (MAX_SPAWN_ROT_VELOCITY + MIN_SPAWN_ROT_VELOCITY);
+    floatType angularVelocity =
+        rockConst.minSpawnVelocity + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+                                         (rockConst.maxSpawnRotationVelocity + rockConst.minSpawnRotationVelocity);
     floatType angularOffset = 0.0f;
 
     Vector position = {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x,
@@ -92,13 +95,17 @@ RockSpawnPhase RockSpawner::determineRockSpawnPhase() {
 }
 
 std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
-    return {{0., 0.}, {MAX_ROCK_SIZE + 5., MAX_ROCK_SIZE * 2 + 10.}, {-MAX_ROCK_SIZE - 5., MAX_ROCK_SIZE * 2 + 10.}};
+    auto &rockConst = gameConstants.rockConstants;
+    return {
+        {0., 0.},
+        {static_cast<floatType>(rockConst.maxRockSize + 5.), static_cast<floatType>(rockConst.maxRockSize * 2 + 10.)},
+        {static_cast<floatType>(-rockConst.maxRockSize - 5.), static_cast<floatType>(rockConst.maxRockSize * 2 + 10.)}};
 }
 
 Vector RockSpawner::getRandSpawnPos() const {
     // const auto spawnIndex = this->world.getMountain().getLatestChunk().startIndex;
     // const auto spawnXPos = this->world.getMountain().getVertex(spawnIndex).x;
-    const auto spawnXPos = this->world.getMaxX() + MOUNTAIN_CHUNK_WIDTH;
+    const auto spawnXPos = this->world.getMaxX() + gameConstants.mountainConstants.chunkWidth;
     const auto randYOffset =
         static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
     const auto spawnYPos = this->world.getMountain().calculateYPos(spawnXPos) + randYOffset;

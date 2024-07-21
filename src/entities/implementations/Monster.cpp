@@ -8,13 +8,18 @@
 #include <iostream>
 #include <mutex>
 
-Monster::Monster() : RenderedEntity({0.1 * graphics::SCREEN_WIDTH, 0}) { animation = {10, 0, 0.2, 0}; }
+Monster::Monster(HikerConstants hikerConstants)
+    : hikerConstants(hikerConstants), RenderedEntity({0.1 * graphics::SCREEN_WIDTH, 0}) {
+    animation = {10, 0, 0.2, 0};
+}
 
-Monster::Monster(Vector position) : RenderedEntity(position) {}
+Monster::Monster(Vector position, HikerConstants hikerConstants)
+    : hikerConstants(hikerConstants), RenderedEntity(position) {}
 
 RenderInformation Monster::getRenderInformation() const {
-    return RenderInformation{Vector2(position), {0, 100}, HIKER_WIDTH * 2.5, HIKER_HEIGHT * 2, -5,
-                             "monster",         animation};
+    const floatType monsterWidth = hikerConstants.hikerWidth * static_cast<floatType>(2.5);
+    const floatType monsterHeight = hikerConstants.hikerHeight * static_cast<floatType>(2);
+    return RenderInformation{Vector2(position), {0, 100}, monsterWidth, monsterHeight, -5, "monster", animation};
 }
 
 floatType Monster::getXPosition() const { return position.x; }

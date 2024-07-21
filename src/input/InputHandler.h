@@ -5,6 +5,8 @@
 #ifndef SURVIVING_SARNTAL_INPUTHANDLER_H
 #define SURVIVING_SARNTAL_INPUTHANDLER_H
 
+#include "../game/GameProperties.hpp"
+#include "../utilities/ConfigManager.hpp"
 #include "../utilities/Singleton.hpp"
 #include "devices/Device.h"
 #include "devices/InputDevice.h"
@@ -22,6 +24,7 @@ class InputHandler : public Singleton<InputHandler> {
 
   private:
     std::vector<InputDevice *> devices;
+    InputConstants inputConstants;
 
     /**
      * Creates the input handler with the device currently available. If both

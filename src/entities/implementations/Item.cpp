@@ -4,33 +4,24 @@
 
 #include "../Item.hpp"
 
-Item::Item(ItemType itemType, Vector position) : RenderedEntity(position), itemType(itemType) { this->buildItem(); }
+Item::Item(ItemType itemType, Vector position, floatType baseHeight, const ItemDto &dto)
+    : RenderedEntity(position), itemType(itemType), baseHeight(baseHeight) {
+    this->buildItem(dto);
+}
 
 ItemType Item::getItemType() const { return this->itemType; }
 
 RenderInformation Item::getRenderInformation() const {
-    return RenderInformation{Vector2(this->position), {0, 0}, ITEM_BASE_HEIGHT, ITEM_BASE_HEIGHT, 0, this->name};
+    return RenderInformation{Vector2(this->position), {0, 0}, this->baseHeight, this->baseHeight, 0, this->name};
 }
 
-void Item::buildItem() {
-    switch (this->itemType) {
-    case KAISERSCHMARRN:
-        this->name = "kaiserschmarrn";
-        break;
-    case COIN:
-        this->name = "coin";
-        break;
-    case DUCK_ITEM:
-        this->name = "duck";
-        break;
-    default:
-        this->name = "coin";
-    }
-
-    YAML::Node item = ConfigManager::getInstance().getItems()[this->name];
-    this->autoCollect = item["autoCollect"].as<bool>();
-    this->useOnPickup = item["useOnPickUp"].as<bool>();
-    this->dropOnUse = item["dropOnUse"].as<bool>();
+void Item::buildItem(const ItemDto &dto) {
+    this->name = dto.name;
+    this->itemType = dto.itemType;
+    this->autoCollect = dto.autoCollect;
+    this->useOnPickup = dto.useOnPickup;
+    this->dropOnUse = dto.dropOnUse;
+    this->spawnWeight = dto.spawnWeight;
 }
 
 std::string Item::getName() const { return this->name; }

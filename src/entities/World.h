@@ -26,7 +26,8 @@ class Hiker;
 class World {
 
   public:
-    World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService);
+    World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+          GameConstants gameConstants);
     ~World();
     Hiker &getHiker() const;
 
@@ -93,6 +94,7 @@ class World {
     Inventory &inventory;
     Monster &monster;
     AudioService &audioService;
+    GameConstants gameConstants;
 
     // Attributes
     floatType minX = 0;

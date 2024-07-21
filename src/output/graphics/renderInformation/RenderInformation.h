@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_RENDERINFORMATION_H
 #define SURVIVING_SARNTAL_RENDERINFORMATION_H
 
-#include "../../../utilities/GameConstants.hpp"
+#include "../../../game/GameProperties.hpp"
 #include "../../../utilities/vector.h"
 #include "AnimationInformation.h"
 #include "raylib.h"

@@ -4,7 +4,8 @@
 #include <cmath>
 #include <mutex>
 
-Renderer::Renderer(World &world, ResourceManager &resourceManager) : world(world), resourceManager(resourceManager) {
+Renderer::Renderer(World &world, ResourceManager &resourceManager, GameConstants gameConstants)
+    : world(world), resourceManager(resourceManager), gameConstants(gameConstants) {
 
     const floatType leftBorder = world.getMinX();
     const floatType rightBorder = world.getMaxX();
@@ -273,7 +274,7 @@ void Renderer::debugRenderEntities() {
         const auto centerX = static_cast<int>(transformedPosition.x) - MeasureText(itemType, FONT_SIZE) / 2;
         DrawText(itemType, centerX, static_cast<int>(transformedPosition.y), FONT_SIZE, GREEN);
         DrawCircleLines(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y),
-                        HIKER_ITEM_COLLECTION_RANGE, BLUE);
+                        gameConstants.itemsConstants.collectionRadius, BLUE);
     }
     // Render mountain
     renderMountain(mountain, SKYBLUE, BLUE);
@@ -294,14 +295,15 @@ void Renderer::renderItemSlot(const Inventory &inventory, const int slotNumber, 
     if (!inventory.slotIsEmpty(slotNumber)) {
         const auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
         const auto texture = resourceManager.getTexture(textureName);
+        const floatType inventorySlotSize = gameConstants.itemsConstants.inventorySlotSize;
         DrawTexturePro(texture, {0, 0, static_cast<floatType>(texture.width), static_cast<floatType>(texture.height)},
-                       {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * INVENTORY_SLOT_SIZE,
-                        static_cast<floatType>(startY), INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},
+                       {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * inventorySlotSize,
+                        static_cast<floatType>(startY), inventorySlotSize, inventorySlotSize},
                        {0, 0}, 0, WHITE);
         const size_t numberOfItems = inventory.getNumberOfItems(slotNumber);
         if (numberOfItems > 0) {
             DrawText(std::to_string(numberOfItems).c_str(),
-                     static_cast<int>(startX) + slotNumber * static_cast<int>(INVENTORY_SLOT_SIZE) + 5,
+                     static_cast<int>(startX) + slotNumber * static_cast<int>(inventorySlotSize) + 5,
                      static_cast<int>(startY) + 5, 20, WHITE);
         }
     }
@@ -309,20 +311,18 @@ void Renderer::renderItemSlot(const Inventory &inventory, const int slotNumber, 
 
 void Renderer::renderInventory() const {
     const auto &inventory = world.getInventory();
-
-    const int inventoryWidth = static_cast<int>(inventory.getNumberOfSlots()) * static_cast<int>(INVENTORY_SLOT_SIZE);
-    const int startX = GetScreenWidth() - inventoryWidth - UI_MARGIN;
-    const int startY = GetScreenHeight() - static_cast<int>(INVENTORY_SLOT_SIZE) - UI_MARGIN;
+    const int slotSize = static_cast<int>(gameConstants.itemsConstants.inventorySlotSize);
+    const int inventoryWidth = static_cast<int>(inventory.getNumberOfSlots()) * slotSize;
+    const int startX = GetScreenWidth() - inventoryWidth - gameConstants.visualConstants.uiMargin;
+    const int startY = GetScreenHeight() - slotSize - gameConstants.visualConstants.uiMargin;
 
     for (int i = 0; i < inventory.getNumberOfSlots(); i++) {
         // Draw Rectangle for each slot
-        DrawRectangleLines(startX + i * static_cast<int>(INVENTORY_SLOT_SIZE), startY, INVENTORY_SLOT_SIZE,
-                           INVENTORY_SLOT_SIZE, WHITE);
+        DrawRectangleLines(startX + i * slotSize, startY, slotSize, slotSize, WHITE);
 
         // Fill if slot is selected
         if (inventory.getSelectedSlot() == i) {
-            DrawRectangle(startX + i * static_cast<int>(INVENTORY_SLOT_SIZE), startY, INVENTORY_SLOT_SIZE,
-                          INVENTORY_SLOT_SIZE, Fade(WHITE, 0.3f));
+            DrawRectangle(startX + i * slotSize, startY, slotSize, slotSize, Fade(WHITE, 0.3f));
         }
         renderItemSlot(inventory, i, startX, startY);
     }
@@ -330,85 +330,101 @@ void Renderer::renderInventory() const {
 
 void Renderer::renderHealthBar() const {
     const auto &hiker = world.getHiker();
-    const floatType health = static_cast<floatType>(hiker.getHealthPoints()) / HIKER_MAX_HEALTH;
+    const auto health = static_cast<floatType>(hiker.getHealthPoints()) /
+                        static_cast<floatType>(gameConstants.hikerConstants.hikerMaxHealth);
     const int screenWidth = GetScreenWidth();
-    const int startX = screenWidth - HEALTH_BAR_WIDTH - UI_MARGIN;
-    const int startY = UI_MARGIN;
+    const int startX =
+        screenWidth - gameConstants.visualConstants.healthBarWidth - gameConstants.visualConstants.uiMargin;
+    const int startY = gameConstants.visualConstants.uiMargin;
+    const auto healthBarFill =
+        static_cast<int>(static_cast<floatType>(gameConstants.visualConstants.healthBarWidth) * health);
 
     // Draw the health bar
-    DrawRectangle(startX, startY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT, Fade(RED, 0.5f));
-    DrawRectangleLines(startX, startY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT, WHITE);
-    DrawRectangle(startX, startY, static_cast<int>(HEALTH_BAR_WIDTH * health), HEALTH_BAR_HEIGHT, GREEN);
+    DrawRectangle(startX, startY, gameConstants.visualConstants.healthBarWidth,
+                  gameConstants.visualConstants.healthBarHeight, Fade(RED, 0.5f));
+    DrawRectangleLines(startX, startY, gameConstants.visualConstants.healthBarWidth,
+                       gameConstants.visualConstants.healthBarHeight, WHITE);
+    DrawRectangle(startX, startY, healthBarFill, gameConstants.visualConstants.healthBarHeight, GREEN);
 }
 
 void Renderer::renderCoinScore() const {
     std::string scoreString = std::to_string(this->world.getCoinScore());
     const char *scoreText = scoreString.c_str();
-    const auto centerX = GetScreenWidth() - MeasureText(scoreText, FONT_SIZE_SCORE) - 2 * UI_MARGIN;
-    DrawText(scoreText, centerX, UI_MARGIN * 6, FONT_SIZE_SCORE, GOLD);
+    const auto centerX = GetScreenWidth() - MeasureText(scoreText, gameConstants.visualConstants.fontSizeScore) -
+                         2 * gameConstants.visualConstants.uiMargin;
+    DrawText(scoreText, centerX, gameConstants.visualConstants.uiMargin * 6,
+             gameConstants.visualConstants.fontSizeScore, GOLD);
     const auto coinTexture = resourceManager.getTexture("coin");
     DrawTexturePro(resourceManager.getTexture("coin"),
                    {0, 0, static_cast<floatType>(coinTexture.width), static_cast<floatType>(coinTexture.height)},
-                   {static_cast<float>(GetScreenWidth() - UI_MARGIN * 2), UI_MARGIN * 6,
-                    static_cast<float>(FONT_SIZE_SCORE), static_cast<float>(FONT_SIZE_SCORE)},
+                   {static_cast<float>(GetScreenWidth() - gameConstants.visualConstants.uiMargin * 2),
+                    static_cast<float>(gameConstants.visualConstants.uiMargin * 6),
+                    static_cast<float>(gameConstants.visualConstants.fontSizeScore),
+                    static_cast<float>(gameConstants.visualConstants.fontSizeScore)},
                    {0, 0}, 0, WHITE);
 }
 
 void Renderer::renderScore() const {
     std::string scoreString = std::to_string(this->world.getCoinScore());
     const char *scoreText = scoreString.c_str();
-    const auto centerX = GetScreenWidth() - MeasureText(scoreText, FONT_SIZE_SCORE) - 2 * UI_MARGIN;
-    DrawText(scoreText, centerX, UI_MARGIN * 3, FONT_SIZE_SCORE, WHITE);
+    const auto centerX = GetScreenWidth() - MeasureText(scoreText, gameConstants.visualConstants.fontSizeScore) -
+                         2 * gameConstants.visualConstants.uiMargin;
+    DrawText(scoreText, centerX, gameConstants.visualConstants.uiMargin * 3,
+             gameConstants.visualConstants.fontSizeScore, WHITE);
 }
 
 void Renderer::renderAltimeter() const {
-    // Step size of the altimeter
-    constexpr int STEP_SIZE = ALTIMETER_STEPS * POSITION_TO_SCORE_RATIO;
-    // Current altitude of the hiker
-    const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y) + CAMERA_TO_HIKER_OFFSET;
-    // Top altitude of the screen
-    const int topAltitude = currentAltitude - GetScreenHeight() / 2;
-    // Bottom altitude of the screen
-    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2 + CAMERA_TO_HIKER_OFFSET;
+    int stepSize = gameConstants.visualConstants.altimeterSteps *
+                   gameConstants.visualConstants.positionToScoreRatio; // Step size of the altimeter
+    // TODO remove - when x axis inverted
+    const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y); // Current altitude of the hiker
+    const int topAltitude = currentAltitude - GetScreenHeight() / 2;                // Top altitude of the screen
+    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;             // Bottom altitude of the screen
 
-    for (int i = floorToNearest(bottomAltitude, STEP_SIZE); i > topAltitude; i -= POSITION_TO_SCORE_RATIO) {
+    for (int i = floorToNearest(bottomAltitude, stepSize); i > topAltitude;
+         i -= gameConstants.visualConstants.positionToScoreRatio) {
         const int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
-        const int drawAltitude = i / POSITION_TO_SCORE_RATIO;
+        const int drawAltitude = i / gameConstants.visualConstants.positionToScoreRatio;
 
-        renderAltimeterStep(drawY, drawAltitude, FONT_SIZE_ALTIMETER);
+        renderAltimeterStep(drawY, drawAltitude, gameConstants.visualConstants.fontSizeAltimeter);
     }
 
     if (!this->debugMode) {
         for (const auto &landmark : landmarks) {
-            const int altitude = landmark.second * POSITION_TO_SCORE_RATIO;
+            const int altitude = landmark.second * gameConstants.visualConstants.positionToScoreRatio;
             const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
             DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
-            DrawText(landmark.first.c_str(), 2 * UI_MARGIN, drawY - FONT_SIZE_ALTIMETER, FONT_SIZE_ALTIMETER,
-                     DARKGREEN);
+            DrawText(landmark.first.c_str(), 2 * gameConstants.visualConstants.uiMargin,
+                     drawY - gameConstants.visualConstants.fontSizeAltimeter,
+                     gameConstants.visualConstants.fontSizeAltimeter, DARKGREEN);
         }
     }
 }
 
 void Renderer::renderAltimeterStep(const int drawY, const int drawAltitude, const int fontSize) const {
-    if (drawAltitude % ALTIMETER_STEPS == 0) {
+    if (drawAltitude % gameConstants.visualConstants.altimeterSteps == 0) {
         // right side
-        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
-        DrawText(std::to_string(drawAltitude).c_str(), GetScreenWidth() - UI_MARGIN - 30, drawY, fontSize, DARKGREEN);
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - gameConstants.visualConstants.uiMargin,
+                 drawY + fontSize / 2, DARKGREEN);
+        DrawText(std::to_string(drawAltitude).c_str(), GetScreenWidth() - gameConstants.visualConstants.uiMargin - 30,
+                 drawY, fontSize, DARKGREEN);
 
         // left side
-        DrawLine(0, drawY + fontSize / 2, UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
-        DrawText(std::to_string(drawAltitude).c_str(), UI_MARGIN + 10, drawY, fontSize, DARKGREEN);
-    } else if (drawAltitude % (ALTIMETER_STEPS / 2) == 0) {
+        DrawLine(0, drawY + fontSize / 2, gameConstants.visualConstants.uiMargin, drawY + fontSize / 2, DARKGREEN);
+        DrawText(std::to_string(drawAltitude).c_str(), gameConstants.visualConstants.uiMargin + 10, drawY, fontSize,
+                 DARKGREEN);
+    } else if (drawAltitude % (gameConstants.visualConstants.altimeterSteps / 2) == 0) {
         // right side
-        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - gameConstants.visualConstants.uiMargin,
+                 drawY + fontSize / 2, DARKGREEN);
         // left side
-        DrawLine(0, drawY + fontSize / 2, UI_MARGIN, drawY + fontSize / 2, DARKGREEN);
+        DrawLine(0, drawY + fontSize / 2, gameConstants.visualConstants.uiMargin, drawY + fontSize / 2, DARKGREEN);
     } else {
         // right side
-        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - UI_MARGIN / 2, drawY + fontSize / 2,
-                 DARKGREEN);
+        DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - gameConstants.visualConstants.uiMargin / 2,
+                 drawY + fontSize / 2, DARKGREEN);
         // left side
-        DrawLine(0, drawY + fontSize / 2, UI_MARGIN / 2, drawY + fontSize / 2, DARKGREEN);
+        DrawLine(0, drawY + fontSize / 2, gameConstants.visualConstants.uiMargin / 2, drawY + fontSize / 2, DARKGREEN);
     }
 }
 
@@ -418,7 +434,7 @@ void Renderer::applyRumbleEffect() {
     }
 
     if (shakeIntensity > 0.01f) {
-        shakeIntensity *= VISUAL_RUMBLE_DAMPENING;
+        shakeIntensity *= gameConstants.visualConstants.rumbleDampening;
         const int shakeIntensityInt = static_cast<int>(shakeIntensity);
         camera.offset.x = screenCenter.x + static_cast<float>(GetRandomValue(-shakeIntensityInt, shakeIntensityInt));
         camera.offset.y = screenCenter.y + static_cast<float>(GetRandomValue(-shakeIntensityInt, shakeIntensityInt));
@@ -452,7 +468,8 @@ void Renderer::draw() {
     renderBackground();
 
     // Adjust y-position of camera
-    camera.target.y = transformYCoordinate(world.getHiker().getRenderInformation().position.y) - CAMERA_TO_HIKER_OFFSET;
+    camera.target.y = transformYCoordinate(world.getHiker().getRenderInformation().position.y) -
+                      static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset);
     camera.target.x = (world.getMaxX() + world.getMinX()) / 2.0f;
 
     BeginMode2D(camera);
@@ -472,28 +489,30 @@ void Renderer::renderBackground() {
         return;
     }
     DrawTexture(gradientTextureBackground, 0, 0, WHITE);
-
     // Get the textures
     const Texture2D midgroundTex = resourceManager.getTexture("midground");
     const Texture2D foregroundTex = resourceManager.getTexture("foreground");
 
     scrollingMid -= 0.25f;
     scrollingFore -= 0.5f;
-    const floatType midOffsetY = static_cast<floatType>(GetScreenHeight()) -
-                                 static_cast<floatType>(midgroundTex.height) * TEXTURE_MID_SCALE; // align lower border
+
+    const auto textureMidScale = gameConstants.visualConstants.textureMidScale;
+    const auto textureForeScale = gameConstants.visualConstants.textureForeScale;
+
+    const floatType midOffsetY =
+        static_cast<floatType>(GetScreenHeight()) - static_cast<floatType>(midgroundTex.height) * textureMidScale;
     const floatType foreOffsetY =
-        static_cast<floatType>(GetScreenHeight()) -
-        static_cast<floatType>(foregroundTex.height) * TEXTURE_FORE_SCALE; // align lower border
-    if (scrollingMid <= -static_cast<floatType>(midgroundTex.width) * TEXTURE_MID_SCALE) {
+        static_cast<floatType>(GetScreenHeight()) - static_cast<floatType>(foregroundTex.height) * textureForeScale;
+    if (scrollingMid <= -static_cast<floatType>(midgroundTex.width) * textureMidScale) {
         scrollingMid = 0;
     }
-    if (scrollingFore <= -static_cast<floatType>(foregroundTex.width) * TEXTURE_FORE_SCALE) {
+    if (scrollingFore <= -static_cast<floatType>(foregroundTex.width) * textureForeScale) {
         scrollingFore = 0;
     }
     // Draw midground image repeatedly
-    drawBackgroundTextureRepeatedly(midgroundTex, scrollingMid, TEXTURE_MID_SCALE, midOffsetY);
+    drawBackgroundTextureRepeatedly(midgroundTex, scrollingMid, textureMidScale, midOffsetY);
     // Draw foreground image repeatedly
-    drawBackgroundTextureRepeatedly(foregroundTex, scrollingFore, TEXTURE_FORE_SCALE, foreOffsetY);
+    drawBackgroundTextureRepeatedly(foregroundTex, scrollingFore, textureForeScale, foreOffsetY);
 }
 
 void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture2D, const floatType scrolling,
