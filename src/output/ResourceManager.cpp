@@ -19,19 +19,19 @@ void ResourceManager::initialize() {
 void ResourceManager::loadTextures() {
     auto configTextures = config.getTextures();
 
-    for (YAML::const_iterator it = configTextures.begin(); it != configTextures.end(); ++it) {
-        auto textureName = it->first.as<std::string>();
-        auto textureLocation = it->second.as<std::string>();
+    for (auto &texture : configTextures) {
+        auto textureName = texture.first;
+        auto textureLocation = texture.second;
         this->textures[textureName] = LoadTexture(textureLocation.c_str());
     }
 }
 
 void ResourceManager::loadMusic() {
-    auto configSounds = config.getSounds();
+    std::unordered_map<std::string, std::string> configSounds = config.getSounds();
 
-    for (YAML::const_iterator it = configSounds.begin(); it != configSounds.end(); ++it) {
-        auto soundName = it->first.as<std::string>();
-        auto soundLocation = it->second.as<std::string>();
+    for (auto &configSound : configSounds) {
+        auto soundName = configSound.first;
+        auto soundLocation = configSound.second;
         this->soundEffects[soundName] = LoadSound(soundLocation.c_str());
     }
 }

@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_GAMEEVENT_H
 #define SURVIVING_SARNTAL_GAMEEVENT_H
 
-#include "../../utilities/GameConstants.hpp"
+#include "../../game/GameProperties.hpp"
 #include "Axis.h"
 #include "AxisModification.h"
 #include "EventType.h"

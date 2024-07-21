@@ -5,8 +5,8 @@
 #ifndef SURVIVING_SARNTAL_MONSTER_H
 #define SURVIVING_SARNTAL_MONSTER_H
 
+#include "../game/GameProperties.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
-#include "../utilities/GameConstants.hpp"
 #include "../utilities/Singleton.hpp"
 #include "RenderedEntity.h"
 
@@ -18,12 +18,15 @@
  */
 class Monster : public RenderedEntity {
 
+  private:
+    HikerConstants hikerConstants;
+
   public:
-    Monster();
+    explicit Monster(HikerConstants hikerConstants);
     ~Monster() = default;
     Monster(const Monster &) = delete;
 
-    explicit Monster(Vector position);
+    explicit Monster(Vector position, HikerConstants hikerConstants);
 
     RenderInformation getRenderInformation() const override;
 

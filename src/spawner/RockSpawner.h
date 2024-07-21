@@ -6,7 +6,7 @@
 #define SURVIVING_SARNTAL_ROCKSPAWNER_H
 
 #include "../entities/World.h"
-#include "../utilities/GameConstants.hpp"
+#include "../game/GameProperties.hpp"
 #include "../utilities/Singleton.hpp"
 
 /**
@@ -20,7 +20,7 @@ enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCH
 // TODO extract all the constants
 class RockSpawner {
   public:
-    explicit RockSpawner(World &world);
+    explicit RockSpawner(World &world, GameConstants gameConstants);
     ~RockSpawner() = default;
     /**
      * This method spawns rocks.
@@ -28,6 +28,7 @@ class RockSpawner {
     void spawnRocks();
 
   private:
+    GameConstants gameConstants;
     floatType lastSpawnTime{0.};
     int numberOfRocksSinceLastBatch{0};
     bool b = false;
@@ -63,7 +64,7 @@ class RockSpawner {
 
     void spawnRock(size_t idxRock);
 
-    static std::vector<Vector> getOffsetsAdditionalRocks();
+    std::vector<Vector> getOffsetsAdditionalRocks();
 
     Vector getRandSpawnPos() const;
 };

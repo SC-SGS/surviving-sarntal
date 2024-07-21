@@ -11,36 +11,45 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     SetTargetFPS(60);
     SDL_Init(SDL_INIT_GAMECONTROLLER);
 
+    // Init Services todo rename the other managers / handlers to one of these: service or manager or handler
+    ConfigManager &configManager = ConfigManager::getInstance();
     InputHandler &inputHandler = InputHandler::getInstance();
-    ResourceManager resourceManager(ConfigManager::getInstance());
+    ResourceManager resourceManager(configManager);
     resourceManager.initialize();
     AudioService audioService(resourceManager);
 
-    Mountain mountain = Mountain();
+    // Init game world
+    Mountain mountain = Mountain(configManager.getGameConstants().mountainConstants);
     floatType hikerPositionX = 0.8 * graphics::SCREEN_WIDTH;
-    Hiker hiker(Vector{hikerPositionX, mountain.calculateYPos(hikerPositionX)}, audioService);
-    Monster monster;
-    Inventory inventory(audioService);
-    World world(mountain, hiker, inventory, monster, audioService);
+    Hiker hiker(Vector{hikerPositionX, mountain.calculateYPos(hikerPositionX)}, audioService,
+                configManager.getGameConstants().hikerConstants);
+    Monster monster(configManager.getGameConstants().hikerConstants);
+    Inventory inventory(audioService, configManager.getGameConstants().itemsConstants);
+    World world(mountain, hiker, inventory, monster, audioService, configManager.getGameConstants());
 
-    Renderer renderer(world, resourceManager);
+    // Init renderer
+    Renderer renderer(world, resourceManager, configManager.getGameConstants());
 
-    Accelerator accelerator(world);
+    // Init physics
+    Accelerator accelerator(world, configManager.getGameConstants());
     CollisionDetector collisionDetector(world);
-    CollisionHandler collisionHandler(world, collisionDetector, audioService, renderer);
-    Destructor destructor(world, renderer);
+    CollisionHandler collisionHandler(world, collisionDetector, audioService, renderer,
+                                      configManager.getGameConstants());
+    Destructor destructor(world, renderer, configManager.getGameConstants());
     Interpolator interpolator(world);
-    Positioner positioner(world);
-    EventProcessor eventProcessor(world, renderer);
+    Positioner positioner(world, configManager.getGameConstants().hikerConstants,
+                          configManager.getGameConstants().barriersConstants);
+    EventProcessor eventProcessor(world, renderer, configManager.getGameConstants().hikerConstants);
+    auto items = configManager.getItems();
+    ItemSpawner itemSpawner(world, configManager.getGameConstants(), items);
+    RockSpawner rockSpawner(world, configManager.getGameConstants());
+    Spawner spawner(mountain, rockSpawner, itemSpawner, world, configManager.getGameConstants());
 
-    ItemSpawner itemSpawner(world);
-    RockSpawner rockSpawner(world);
-    Spawner spawner(mountain, rockSpawner, itemSpawner, world);
+    PhysicsEngine physicsEngine(world, spawner, configManager.getGameConstants().physicsConstants, eventProcessor,
+                                accelerator, positioner, collisionDetector, collisionHandler, interpolator, destructor);
 
-    PhysicsEngine physicsEngine(world, spawner, eventProcessor, accelerator, positioner, collisionDetector,
-                                collisionHandler, interpolator, destructor);
-
-    Game game(world, renderer, physicsEngine, audioService, inputHandler);
+    // Init game
+    Game game(world, renderer, physicsEngine, audioService, inputHandler, configManager.getGameConstants());
 
     game.run();
 

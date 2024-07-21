@@ -25,8 +25,8 @@ class CollisionHandler {
     void handleCollisions();
 
     void setDeltaT(floatType deltaT);
-    CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
-                     Renderer &renderer);
+    CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService, Renderer &renderer,
+                     GameConstants gameConstants);
     ~CollisionHandler() = default;
 
   private:
@@ -35,6 +35,7 @@ class CollisionHandler {
     CollisionDetector &collisionDetector;
     AudioService &audioService;
     Renderer &renderer;
+    GameConstants gameConstants;
 
     floatType deltaT;
     HapticsService &hapticsService;
@@ -65,7 +66,7 @@ class CollisionHandler {
      * @param rock
      * @return
      */
-    static int rockDamage(Rock &rock);
+    int rockDamage(Rock &rock) const;
 
     /**
      * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.
@@ -98,7 +99,7 @@ class CollisionHandler {
      * @param rock1
      * @param rock2
      */
-    static void rockRockCollision(Rock &rock1, Rock &rock2);
+    void rockRockCollision(Rock &rock1, Rock &rock2);
 
     /**
      * Returns the next position of a given rock with a velocity and angular velocity, disregarding any collisions that
@@ -119,7 +120,7 @@ class CollisionHandler {
      * @param angVel
      * @return
      */
-    static floatType capAngularVelocity(floatType angVel);
+    floatType capAngularVelocity(floatType angVel) const;
 };
 
 #endif // COLLISIONHANDLER_H

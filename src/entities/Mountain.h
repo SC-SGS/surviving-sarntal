@@ -22,7 +22,7 @@ struct IndexIntervalNew {
 class Mountain {
 
   public:
-    Mountain();
+    explicit Mountain(MountainConstants mountainConstants);
     ~Mountain() = default;
 
     /**
@@ -90,6 +90,7 @@ class Mountain {
     std::vector<floatType> derivatives = {};
     std::vector<HermiteSpline *> spline = {};
     RandomGenerator *rand = &RandomGenerator::getInstance();
+    MountainConstants mountainConstants;
 
     /**
      * The initial chunk consists of one hermite spline with natural border conditions (Second evaluateDerivative at

@@ -39,23 +39,23 @@ textures:
 
 items:
   kaiserschmarrn:
-    type-id: 0
+    typeId: 0
     autoCollect: false
     useOnPickUp: false
     dropOnUse: true
-    spawn-weight: 5
+    spawnWeight: 5
   coin:
-    type-id: 1
+    typeId: 1
     autoCollect: true
     useOnPickUp: true
     dropOnUse: true
-    spawn-weight: 3
+    spawnWeight: 3
   duck:
-    type-id: 2
+    typeId: 2
     autoCollect: true
     useOnPickUp: false
     dropOnUse: true
-    spawn-weight: 2
+    spawnWeight: 2
 
 landmarks:
   - name: "Statue of Liberty"
@@ -66,3 +66,87 @@ landmarks:
     height: 300
   - name: "Mount Everest"
     height: 8849
+
+gameConstants:
+  hikerConstants:
+    hikerMaxHealth: 100
+    hikerHeight: 140.0
+    hikerWidth: 90.0
+    crouchedHikerHeight: 110.0
+    crouchedHikerWidth: 75.0
+    duckSpeedFactor: 0.35
+    normalSpeed: 260.0
+    jumpVelocity: 750.0
+    airMovementSpeedFactor: 0.6
+    knockBack: 0.00005
+    minSpeedNegSlope: 0.6
+    maxSpeedNegSlope: 1.5
+    minSpeedPosSlope: 0.5
+    slowestNegSlope: -1.0
+    fastestNegSlope: -0.5
+    slowestPosScope: 2.0
+
+  itemsConstants:
+    collectionRadius: 110.0
+    slotsPerInventory: 3
+    itemsPerSlot: 64
+    kaiserschmarrnHealthRestoration: 30
+    coinScore: 500
+    startSpawnTime: 5.0
+    minSpawnTime: 2
+    maxSpawnTime: 10
+    itemBaseHeight: 80.0
+    itemMaxHeight: 200.0
+    itemsPerSecond: 0.05
+    inventorySlotSize: 80.0
+
+  rockConstants:
+    minRockSize: 25.0
+    maxRockSize: 75.0
+    velocityCap: 1200.0
+    gamma: 50.0
+    maxAngularVelocity: 1000.0
+    minSpawnVelocity: 1.0
+    maxSpawnVelocity: 1000.0
+    minSpawnRotationVelocity: 0.1
+    maxSpawnRotationVelocity: 100.0
+    rockTimePeriodDifficult: 1.0
+    rockTimePeriodMedium: 5.0
+    rockTimePeriodEasy: 2.0
+    timeBetweenRockSpawns: 5.0
+    numOfRocksToSpawn: 10
+
+  physicsConstants:
+    gravitationalConstant: -1000.0
+    epsilon: 0.001
+    rockTerrainDamping: 0.8
+    physicsDeltaT: 0.01
+
+  inputConstants:
+    maxGamepads: 8
+
+  visualConstants:
+    uiMargin: 20
+    fontSizeScore: 30
+    fontSizeAltimeter: 20
+    healthBarWidth: 200
+    healthBarHeight: 20
+    positionToScoreRatio: 10
+    altimeterSteps: 10
+    rumbleIntensity: 0.4
+    rumbleDampening: 0.9
+    textureMidScale: 5.0
+    textureForeScale: 7.0
+    cameraToHikerOffset: 100
+
+  barriersConstants:
+    killBarVelocity: 100.0
+    playerRightBarrierOffset: 1280.0
+
+  mountainConstants:
+    visibleChunksCount: 16
+    chunkBufferLeft: 2
+    chunkBufferRight: 16
+    initialHeight: 0
+    slope: 0.4
+    randomness: 1.0

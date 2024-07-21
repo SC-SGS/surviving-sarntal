@@ -11,7 +11,7 @@
 class Positioner {
 
   public:
-    explicit Positioner(World &world);
+    explicit Positioner(World &world, HikerConstants hikerConstants, BarriersConstants barriersConstants);
     ~Positioner() = default;
     void updatePositions() const;
 
@@ -20,6 +20,8 @@ class Positioner {
   private:
     World &world;
     floatType deltaT;
+    HikerConstants hikerConstants;
+    BarriersConstants barriersConstants;
 
     /**
      * Use movement equations to update rock positions.
@@ -50,7 +52,7 @@ class Positioner {
      * @param slope
      * @return the speed factor
      */
-    static floatType getSpeedFactor(floatType slope);
+    floatType getSpeedFactor(floatType slope) const;
 };
 
 #endif // POSITIONER_H

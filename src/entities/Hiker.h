@@ -34,7 +34,7 @@ struct HitInformation {
 class Hiker : public RenderedEntity {
 
   public:
-    explicit Hiker(Vector position, AudioService &audioService);
+    explicit Hiker(Vector position, AudioService &audioService, HikerConstants hikerConstants);
     floatType getHeight() const;
     void setHeight(floatType height);
 
@@ -84,7 +84,11 @@ class Hiker : public RenderedEntity {
     void kill();
 
   private:
+    // Dependencies
     AudioService &audioService;
+    HikerConstants hikerConstants;
+
+    // Attributes
     Vector velocity{};
     floatType height{};
     floatType width{};
@@ -93,6 +97,8 @@ class Hiker : public RenderedEntity {
     bool isHit{};
     HitInformation hitInformation{};
     bool isAlive{};
+
+    // Helper functions
     void doSecondJump();
 };
 

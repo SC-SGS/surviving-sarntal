@@ -14,62 +14,76 @@ class HikerTestFixture : public ::testing::Test {
     void SetUp() override {}
 
     void TearDown() override {}
+    ConfigManager &configManager = ConfigManager::getInstance();
+    GameConstants gameConstants = configManager.getGameConstants();
 };
 
 // test
 
 TEST_F(HikerTestFixture, AddHealthPointsTest) {
-    MockResourceManager mockResourceManager(ConfigManager::getInstance());
+    MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
-    Hiker hiker(Vector{0, 0}, mockAudioService);
+    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+
     hiker.setHealthPoints(30);
     hiker.addHealthPoints(20);
+
     EXPECT_EQ(hiker.getHealthPoints(), 50);
 }
 
 TEST_F(HikerTestFixture, CrouchTest) {
-    MockResourceManager mockResourceManager(ConfigManager::getInstance());
+    MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("crouch")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("crouch")).Times(1);
-    Hiker hiker(Vector{0, 0}, mockAudioService);
+    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+
     hiker.crouch();
+
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::CROUCHED);
-    EXPECT_EQ(hiker.getHeight(), DUCKED_HIKER_HEIGHT);
-    EXPECT_EQ(hiker.getWidth(), DUCKED_HIKER_WIDTH);
+    EXPECT_EQ(hiker.getHeight(), gameConstants.hikerConstants.crouchedHikerHeight);
+    EXPECT_EQ(hiker.getWidth(), gameConstants.hikerConstants.crouchedHikerWidth);
 }
 
 TEST_F(HikerTestFixture, UncrouchTest) {
-    MockResourceManager mockResourceManager(ConfigManager::getInstance());
+    MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
-    Hiker hiker(Vector{0, 0}, mockAudioService);
+    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+
     hiker.uncrouch();
+
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::MOVING);
-    EXPECT_EQ(hiker.getHeight(), HIKER_HEIGHT);
-    EXPECT_EQ(hiker.getWidth(), HIKER_WIDTH);
+    EXPECT_EQ(hiker.getHeight(), gameConstants.hikerConstants.hikerHeight);
+    EXPECT_EQ(hiker.getWidth(), gameConstants.hikerConstants.hikerWidth);
 }
 
 TEST_F(HikerTestFixture, JumpOnceTest) {
-    MockResourceManager mockResourceManager(ConfigManager::getInstance());
+    MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(1);
-    Hiker hiker(Vector{0, 0}, mockAudioService);
+    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+
     hiker.jump();
+
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::IN_AIR);
-    EXPECT_EQ(hiker.getVelocity().y, JUMP_VELOCITY_CONSTANT);
+    EXPECT_EQ(hiker.getVelocity().y, gameConstants.hikerConstants.jumpVelocity);
     EXPECT_EQ(hiker.getHikerMovement().getCanJumpAgain(), true);
 }
 
 TEST_F(HikerTestFixture, JumpTwiceTest) {
-    MockResourceManager mockResourceManager(ConfigManager::getInstance());
+    MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(2);
-    Hiker hiker(Vector{0, 0}, mockAudioService);
+    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+
     hiker.jump();
+
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::IN_AIR);
-    EXPECT_EQ(hiker.getVelocity().y, JUMP_VELOCITY_CONSTANT);
+    EXPECT_EQ(hiker.getVelocity().y, gameConstants.hikerConstants.jumpVelocity);
+
     hiker.jump();
+
     EXPECT_EQ(hiker.getHikerMovement().getCanJumpAgain(), false);
 }

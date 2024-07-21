@@ -3,12 +3,10 @@
 //
 
 #include "../EventProcessor.hpp"
-#include "../../../game/Game.hpp"
-
-#include <iostream>
 #include <mutex>
 
-EventProcessor::EventProcessor(World &world, Renderer &renderer) : world(world), renderer(renderer) {
+EventProcessor::EventProcessor(World &world, Renderer &renderer, HikerConstants hikerConstants)
+    : world(world), renderer(renderer), hikerConstants(hikerConstants) {
     gameEventFunctionMappings = {
         {{AXIS_MODIFICATION, ITEM_SWITCH, 0, false}, &EventProcessor::switchItem},
         {{AXIS_MODIFICATION, MOVEMENT_X, 0, false}, &EventProcessor::moveX},
@@ -75,11 +73,7 @@ void EventProcessor::pickAutoCollectableItems() const {
     }
 }
 
-void EventProcessor::dropItem(GameEvent event) const {
-    if (!this->world.getInventory().selectedSlotIsEmpty()) {
-        this->world.getInventory().removeSelectedItem();
-    }
-}
+void EventProcessor::dropItem(GameEvent event) const { this->world.getInventory().removeSelectedItem(); }
 
 void EventProcessor::useItem(const GameEvent event) const {
     if (!this->world.getInventory().selectedSlotIsEmpty()) {
@@ -98,9 +92,7 @@ void EventProcessor::specialAbility(const GameEvent event) const {
     // TODO: implement
 }
 
-void EventProcessor::toggleDebug(const GameEvent event) const { // NOLINT(*-convert-member-functions-to-static)
-    this->renderer.toggleDebugMode();
-}
+void EventProcessor::toggleDebug(const GameEvent event) const { this->renderer.toggleDebugMode(); }
 
 void EventProcessor::fullscreen(const GameEvent event) const {
     // TODO: implement
@@ -112,9 +104,9 @@ void EventProcessor::switchItem(const GameEvent event) const {
 
 void EventProcessor::moveX(const GameEvent event) const {
     const floatType xFactor = event.axisValue;
-    floatType speed = NORMAL_SPEED;
+    floatType speed = hikerConstants.normalSpeed;
     if (this->world.getHiker().getHikerMovement().getState() == HikerMovement::CROUCHED) {
-        speed *= DUCK_SPEED_FACTOR;
+        speed *= hikerConstants.duckSpeedFactor;
     }
     this->world.getHiker().setXVelocity(speed * xFactor);
 }
