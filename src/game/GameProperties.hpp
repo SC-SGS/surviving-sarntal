@@ -104,6 +104,8 @@ struct VisualConstants {
     floatType textureMidScale;
     floatType textureForeScale;
     int cameraToHikerOffset;
+    int mountainGradientHeight;
+    int mountainResolution;
 };
 
 struct BarriersConstants {
