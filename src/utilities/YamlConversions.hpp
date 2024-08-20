@@ -129,6 +129,8 @@ template <> struct convert<VisualConstants> {
         visualConstants.textureMidScale = node["textureMidScale"].as<floatType>();
         visualConstants.textureForeScale = node["textureForeScale"].as<floatType>();
         visualConstants.cameraToHikerOffset = node["cameraToHikerOffset"].as<int>();
+        visualConstants.mountainResolution = node["mountainResolution"].as<int>();
+        visualConstants.mountainGradientHeight = node["mountainGradientHeight"].as<int>();
 
         return true;
     }
