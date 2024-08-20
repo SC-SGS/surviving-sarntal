@@ -138,6 +138,8 @@ gameConstants:
     textureMidScale: 5.0
     textureForeScale: 7.0
     cameraToHikerOffset: 100
+    mountainGradientHeight: 300
+    mountainResolution: 10
 
   barriersConstants:
     killBarVelocity: 100.0

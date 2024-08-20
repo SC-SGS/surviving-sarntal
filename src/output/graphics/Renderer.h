@@ -9,6 +9,7 @@
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
+#include "renderers/MountainRenderer.h"
 #include <cmath>
 
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
@@ -18,7 +19,8 @@ class Renderer {
   public:
     void draw();
     void setShake(float intensity);
-    Renderer(World &world, ResourceManager &resourceManager, GameConstants gameConstants);
+    Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
+             GameConstants gameConstants);
     ~Renderer() = default;
 
     void toggleDebugMode();
@@ -31,7 +33,7 @@ class Renderer {
     GameConstants gameConstants;
 
     // Attributes
-    Camera2D camera = {0};
+    Camera2D &camera;
     std::unordered_map<int, AnimationInformation> animations;
     AnimationInformation &getAnimationInformation(int entityId, AnimationInformation &defaultAnimation);
     std::unordered_map<std::string, int> landmarks;
@@ -40,6 +42,7 @@ class Renderer {
     Texture2D gradientTextureBackground{};
     bool debugMode = false;
     const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
+    MountainRenderer &mountainRenderer;
 
     // Initialize the scrolling speed
     floatType scrollingMid = 0;
@@ -57,7 +60,6 @@ class Renderer {
     void renderHiker(const Hiker &hiker);
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
                                          floatType offsetY) const;
-    void renderMountain(const Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE) const;
     void renderEntities();
     void animateEntity(const RenderedEntity &entity);
     void renderAnimation(const RenderedEntity &entity);
@@ -68,13 +70,9 @@ class Renderer {
     void debugRenderRock(RenderedEntity &entity) const;
     void renderScore() const;
     void renderCoinScore() const;
-    Vector transformPosition(const Vector2 &vector, const Vector2 &offset) const;
-    Vector transformPosition(const Vector2 &vector) const;
-    floatType transformYCoordinate(floatType yCoordinate) const;
     void renderHUD() const;
     void renderAltimeter() const;
     void renderAltimeterStep(int drawY, int drawAltitude, int fontSize) const;
-    int floorToNearest(int number, int placeValue) const;
     void applyRumbleEffect();
     void renderNormalEntities();
     std::list<Rock> &getDestroyedRocks() const;

@@ -1,11 +1,15 @@
 #include "Renderer.h"
 #include "raylib.h"
 
+#include "GraphicsUtil.h"
+#include "rlgl.h"
+#include "vector"
 #include <cmath>
-#include <mutex>
 
-Renderer::Renderer(World &world, ResourceManager &resourceManager, GameConstants gameConstants)
-    : world(world), resourceManager(resourceManager), gameConstants(gameConstants) {
+Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
+                   GameConstants gameConstants)
+    : world(world), resourceManager(resourceManager), camera(camera), mountainRenderer(mountainRenderer),
+      gameConstants(gameConstants) {
 
     const floatType leftBorder = world.getMinX();
     const floatType rightBorder = world.getMaxX();
@@ -57,7 +61,7 @@ void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotati
                             const Rectangle sourceRec) const {
     const auto info = entity.getRenderInformation();
     // Define the destination rectangle
-    const Vector transformedPosition = this->transformPosition(info.position, info.offset);
+    const Vector transformedPosition = GraphicsUtil::transformPosition(info.position, info.offset);
     const Rectangle destRec = {transformedPosition.x, transformedPosition.y, std::abs(info.width), info.height};
 
     // Define the origin for rotation.
@@ -154,7 +158,7 @@ void Renderer::renderRock(RenderedEntity &entity) const {
     renderEntity(entity, entity.getRenderInformation().angularOffset);
 }
 void Renderer::debugRenderRock(RenderedEntity &entity) const {
-    const auto transformedPosition = transformPosition(entity.getRenderInformation().position);
+    const auto transformedPosition = GraphicsUtil::transformPosition(entity.getRenderInformation().position);
 
     // Draw Circle for collision box
     DrawCircleLines(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y),
@@ -169,47 +173,6 @@ void Renderer::debugRenderRock(RenderedEntity &entity) const {
     // Draw the line
     DrawLine(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y), endX, endY, RED);
 }
-
-void Renderer::renderMountain(const Mountain &mountain, Color topColor, Color bottomColor) const {
-    // Retrieve the relevant section of the mountain to be displayed
-    // IndexIntervalNew indexInterval = mountain.getIndexIntervalOfEntireMountain();
-    // Get lower border of screen
-    const floatType lowerBorder =
-        camera.target.y + (static_cast<floatType>(GetScreenHeight()) / (2.0f * camera.zoom)) + 100.0f;
-    // Load the texture
-    const Texture2D texture = resourceManager.getTexture("mountain");
-    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<floatType>(texture.width),
-                                 static_cast<floatType>(texture.height)};
-    // Define origin and rotation
-    floatType rotation = 0.0f; // TODO what is this?
-    // Draw the mountain
-    int minX = floor(this->world.getMinX());
-    int maxX = ceil(this->world.getMaxX());
-    for (int xPos = minX; xPos <= maxX; xPos++) {
-        floatType yPos = this->transformYCoordinate(mountain.calculateYPos(static_cast<floatType>(xPos)));
-        // spdlog::info("Drawing pixel ({},{})", pixel, yPos);
-        DrawCircle(xPos, static_cast<int>(yPos), 5.0f, RED);
-        // for (int yIndex = yPos - 1; yIndex > lowerBorder; yIndex--) {
-        //     DrawPixel(pixel, yIndex, GREEN);
-        // }
-    }
-}
-// const int vertexOffset = 1;
-// for (size_t i = indexInterval.startIndex; i < indexInterval.endIndex - vertexOffset; i += vertexOffset) {
-//     Vector pos1 = mountain.getVertex(i);
-//     Vector pos2 = mountain.getVertex(i + vertexOffset);
-//     // Render the mountain depending on debug mode
-//     if (!this->debugMode) {
-//         // Define destination rectangle (where to draw the texture, size of the texture in the destination)
-//         Rectangle destRec1 = {pos1.x, pos1.y, pos2.x - pos1.x,
-//                               lowerBorder - pos1.y}; // todo make so it is not so pixelated
-//         DrawTexturePro(texture, sourceRec, destRec1, origin, rotation, WHITE);
-//     } else {
-//         // Draw the line
-//         DrawLine(static_cast<int>(pos1.x), static_cast<int>(pos1.y), static_cast<int>(pos2.x),
-//                  static_cast<int>(pos2.y), RED);
-//     }
-// }
 
 void Renderer::renderEntities() {
     if (!this->debugMode)
@@ -247,7 +210,7 @@ void Renderer::renderNormalEntities() {
     }
 
     // Render mountain
-    renderMountain(mountain, SKYBLUE, BLUE);
+    mountainRenderer.renderMountain(mountain, WHITE, SKYBLUE);
 }
 
 void Renderer::debugRenderEntities() {
@@ -267,7 +230,7 @@ void Renderer::debugRenderEntities() {
              static_cast<int>(monster.getRenderInformation().position.x), GetScreenHeight(), RED);
     // Render Items
     for (const auto &item : world.getItems()) {
-        const auto transformedPosition = transformPosition(item->getRenderInformation().position);
+        const auto transformedPosition = GraphicsUtil::transformPosition(item->getRenderInformation().position);
         renderEntity(*item);
         constexpr auto FONT_SIZE = 20; // TODO magic number alert
         const auto itemType = item->getRenderInformation().texture.c_str();
@@ -277,7 +240,7 @@ void Renderer::debugRenderEntities() {
                         gameConstants.itemsConstants.collectionRadius, BLUE);
     }
     // Render mountain
-    renderMountain(mountain, SKYBLUE, BLUE);
+    mountainRenderer.renderMountain(mountain, WHITE, SKYBLUE);
 }
 
 void Renderer::renderHUD() const {
@@ -365,7 +328,8 @@ void Renderer::renderCoinScore() const {
 }
 
 void Renderer::renderScore() const {
-    std::string scoreString = std::to_string(this->world.getCoinScore());
+    std::string scoreString =
+        std::to_string(this->world.getGameScore() / gameConstants.visualConstants.positionToScoreRatio) + "m";
     const char *scoreText = scoreString.c_str();
     const auto centerX = GetScreenWidth() - MeasureText(scoreText, gameConstants.visualConstants.fontSizeScore) -
                          2 * gameConstants.visualConstants.uiMargin;
@@ -376,25 +340,27 @@ void Renderer::renderScore() const {
 void Renderer::renderAltimeter() const {
     int stepSize = gameConstants.visualConstants.altimeterSteps *
                    gameConstants.visualConstants.positionToScoreRatio; // Step size of the altimeter
-    // TODO remove - when x axis inverted
+
     const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y); // Current altitude of the hiker
     const int topAltitude = currentAltitude - GetScreenHeight() / 2;                // Top altitude of the screen
     const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;             // Bottom altitude of the screen
 
-    for (int i = floorToNearest(bottomAltitude, stepSize); i > topAltitude;
+    for (int i = GraphicsUtil::floorToNearest(bottomAltitude, stepSize) + stepSize; i > topAltitude;
          i -= gameConstants.visualConstants.positionToScoreRatio) {
         const int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
-        const int drawAltitude = i / gameConstants.visualConstants.positionToScoreRatio;
+        const int drawAltitude = (i + gameConstants.visualConstants.cameraToHikerOffset) /
+                                 gameConstants.visualConstants.positionToScoreRatio;
 
         renderAltimeterStep(drawY, drawAltitude, gameConstants.visualConstants.fontSizeAltimeter);
     }
 
     if (!this->debugMode) {
         for (const auto &landmark : landmarks) {
-            const int altitude = landmark.second * gameConstants.visualConstants.positionToScoreRatio;
+            const int altitude = (landmark.second - 1) * gameConstants.visualConstants.positionToScoreRatio -
+                                 gameConstants.visualConstants.cameraToHikerOffset;
             const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
             DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
-            DrawText(landmark.first.c_str(), 2 * gameConstants.visualConstants.uiMargin,
+            DrawText(landmark.first.c_str(), 4 * gameConstants.visualConstants.uiMargin,
                      drawY - gameConstants.visualConstants.fontSizeAltimeter,
                      gameConstants.visualConstants.fontSizeAltimeter, DARKGREEN);
         }
@@ -468,7 +434,7 @@ void Renderer::draw() {
     renderBackground();
 
     // Adjust y-position of camera
-    camera.target.y = transformYCoordinate(world.getHiker().getRenderInformation().position.y) -
+    camera.target.y = GraphicsUtil::transformYCoordinate(world.getHiker().getRenderInformation().position.y) -
                       static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset);
     camera.target.x = (world.getMaxX() + world.getMinX()) / 2.0f;
 
@@ -532,22 +498,7 @@ void Renderer::regenerateGradientTexture() {
     UnloadImage(verticalGradient);
 }
 
-int Renderer::floorToNearest(const int number, const int placeValue) const {
-    return (number / placeValue) * placeValue;
-}
 void Renderer::toggleDebugMode() { this->debugMode = !this->debugMode; }
-
-Vector Renderer::transformPosition(const Vector2 &vector, const Vector2 &offset) const {
-    const auto transformedVector = transformPosition(vector);
-    return Vector{transformedVector.x - offset.x, transformedVector.y - offset.y};
-}
-Vector Renderer::transformPosition(const Vector2 &vector) const {
-    return Vector{vector.x, transformYCoordinate(vector.y)};
-}
-
-floatType Renderer::transformYCoordinate(const floatType yCoordinate) const {
-    return -yCoordinate + static_cast<floatType>(GetScreenHeight());
-}
 
 std::list<Rock> &Renderer::getDestroyedRocks() const {
     destroyedRocks->remove_if([this](Rock &rock) {
