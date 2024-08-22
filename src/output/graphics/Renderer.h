@@ -6,6 +6,9 @@
 #define SURVIVING_SARNTAL_RENDERER_H
 
 #include "../../entities/World.h"
+#include "../../spawner/rock_spawning/Polygon.h"
+#include "../../spawner/rock_spawning/PolygonGenerator.h"
+#include "../../spawner/rock_spawning/PolygonRenderer.h"
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
@@ -20,7 +23,7 @@ class Renderer {
     void draw();
     void setShake(float intensity);
     Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-             GameConstants gameConstants);
+             GameConstants gameConstants, PolygonRenderer &polygonRenderer);
     ~Renderer() = default;
 
     void toggleDebugMode();
@@ -77,6 +80,12 @@ class Renderer {
     void renderNormalEntities();
     std::list<Rock> &getDestroyedRocks() const;
     void renderWalkingHiker(const Hiker &hiker);
+    void renderPolygon();
+    PolygonGenerator polygonGenerator{};
+    PolygonRenderer &polygonRenderer;
+    Vector center = {static_cast<floatType>(graphics::SCREEN_WIDTH) / 2,
+                     static_cast<floatType>(graphics::SCREEN_HEIGHT) / 3};
+    Polygon polygon = polygonGenerator.generatePolygon(100, 100, center);
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

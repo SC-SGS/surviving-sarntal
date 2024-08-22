@@ -52,3 +52,4 @@ Vector Vector::normalize() const {
     Vector current = *this;
     return current * (1.0f / this->length());
 }
+bool Vector::operator<(const Vector &other) const { return x < other.x || (x == other.x && y < other.y); }
