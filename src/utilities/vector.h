@@ -117,4 +117,6 @@ struct Vector {
      * @return
      */
     static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
+
+    bool operator<(const Vector &other) const;
 };

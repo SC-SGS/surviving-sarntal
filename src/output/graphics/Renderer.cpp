@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "../../spawner/rock_spawning/PolygonGenerator.h"
 #include "raylib.h"
 
 #include "GraphicsUtil.h"
@@ -7,9 +8,9 @@
 #include <cmath>
 
 Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-                   GameConstants gameConstants)
+                   GameConstants gameConstants, PolygonRenderer &polygonRenderer)
     : world(world), resourceManager(resourceManager), camera(camera), mountainRenderer(mountainRenderer),
-      gameConstants(gameConstants) {
+      gameConstants(gameConstants), polygonRenderer(polygonRenderer) {
 
     const floatType leftBorder = world.getMinX();
     const floatType rightBorder = world.getMaxX();
@@ -441,6 +442,7 @@ void Renderer::draw() {
     BeginMode2D(camera);
 
     renderEntities();
+    renderPolygon();
 
     EndMode2D();
     renderHUD();
@@ -510,4 +512,16 @@ std::list<Rock> &Renderer::getDestroyedRocks() const {
         }
     });
     return *destroyedRocks;
+}
+void Renderer::renderPolygon() {
+    for (auto vertice : polygon.getVertices()) {
+        std::cout << vertice.x << std::endl;
+        std::cout << vertice.y << std::endl;
+        std::cout << "||" << std::endl;
+    }
+    // polygonRenderer.renderPolygonOutline(polygon);
+    // polygonRenderer.renderPolygon(polygon);
+    polygonRenderer.renderTexturedPolygon(polygon);
+    polygon.rotate(2);
+    polygon.move(3, -3);
 }
