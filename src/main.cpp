@@ -27,11 +27,13 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     Inventory inventory(audioService, configManager.getGameConstants().itemsConstants);
     World world(mountain, hiker, inventory, monster, audioService, configManager.getGameConstants());
 
+    PolygonRenderer polygonRenderer(resourceManager);
     Camera2D camera = {0};
 
     // Init renderer
     MountainRenderer mountainRenderer(camera, configManager.getGameConstants());
-    Renderer renderer(world, resourceManager, camera, mountainRenderer, configManager.getGameConstants());
+    Renderer renderer(world, resourceManager, camera, mountainRenderer, configManager.getGameConstants(),
+                      polygonRenderer);
 
     // Init physics
     Accelerator accelerator(world, configManager.getGameConstants());
