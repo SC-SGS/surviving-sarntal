@@ -70,6 +70,7 @@ class Hiker : public RenderedEntity {
     void uncrouch();
     void jump();
     void setHikerMoving();
+    void setHikerInAir();
 
     void moveToRight(floatType deltaX);
     void moveToLeft(floatType deltaX);

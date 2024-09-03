@@ -18,22 +18,22 @@ class MountainRenderer {
      * Renders the mountain with the given colors in a gradient from top to bottom.
      * The gradient depth is defined by the visual constants.
      * Going deeper into the mountain the color will be constantly the bottom color.
-     * @param mountain
+     * @param terr
      * @param topColor is the color at the top of the mountain
      * @param bottomColor is the color at the bottom of the mountain
      */
-    void renderMountain(const Mountain &mountain, Color topColor = WHITE, Color bottomColor = BLUE);
+    void renderMountain(const Terrain &terr, Color topColor = WHITE, Color bottomColor = BLUE);
 
   private:
     Camera2D &camera;
     GameConstants gameConstants;
 
-    void updateVertices(const Mountain &mountain, Color topColor, Color bottomColor);
+    void updateVertices(const Terrain &terrain, Color topColor, Color bottomColor);
     floatType calculateLowerBorder() const;
-    void updateVerticesAndColors(const Mountain &mountain, Color topColor, Color bottomColor, int startX);
+    void updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor, int startX);
     void removeOutOfBoundsVerticesAndColors(int newMinX);
     void updateBorders(int newMinX, int newMaxX);
-    void addNewVerticesAndColors(const Mountain &mountain, Color topColor, Color bottomColor);
+    void addNewVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor);
 
     /**
      * Creates the triangles for the mountain mesh.
@@ -59,7 +59,7 @@ class MountainRenderer {
     int maxX = 0;
 
     Vector3 normalizeColor(const Color &color) const;
-    void addVertexAndColor(const Mountain &mountain, Color topColor, Color bottomColor, int xPos);
+    void addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, int xPos);
     void updateIndices(int indexToRemove);
 
     /**

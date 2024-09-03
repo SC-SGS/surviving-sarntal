@@ -7,9 +7,9 @@
 #include <iostream>
 #include <mutex>
 
-World::World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+World::World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
              GameConstants gameConstants)
-    : audioService(audioService), mountain(mountain), hiker(hiker), inventory(inventory), monster(monster),
+    : terrain(terrain), hiker(hiker), inventory(inventory), monster(monster), audioService(audioService),
       gameConstants(gameConstants) {}
 
 World::~World() = default;
@@ -24,10 +24,11 @@ Inventory &World::getInventory() const { return inventory; }
 
 Monster &World::getMonster() const { return monster; }
 
-Mountain &World::getMountain() const { return mountain; }
+Terrain &World::getTerrain() const { return terrain; }
 
 bool World::isOutOfScope(const RenderedEntity &entity) const {
-    bool result = entity.getPosition().x < this->minX - this->gameConstants.mountainConstants.chunkWidth;
+    bool result = entity.getPosition().x < this->minX - this->gameConstants.terrainConstants.bufferLeft ||
+                  entity.getPosition().x > this->maxX + this->gameConstants.terrainConstants.bufferRight;
     if (result) {
         spdlog::debug("An entity has left the scope of the game.");
     }
@@ -98,6 +99,6 @@ int World::getCoinScore() const { return this->coinScore; }
 int World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
-    const int hikerHeight = static_cast<int>(this->mountain.calculateYPos(this->hiker.getPosition().x));
+    const int hikerHeight = static_cast<int>(this->hiker.getPosition().y);
     this->gameScore = std::max(this->gameScore, hikerHeight);
 }

@@ -35,6 +35,8 @@ struct HikerConstants {
     floatType slowestNegSlope;
     floatType fastestNegSlope;
     floatType slowestPosScope;
+
+    floatType maxClimbableSlope;
 };
 
 struct ItemsConstants {
@@ -74,6 +76,8 @@ struct RockConstants {
     floatType rockTimePeriodEasy;
     floatType timeBetweenRockSpawns;
     int numOfRocksToSpawn;
+
+    floatType spawnOffsetX;
 };
 
 struct PhysicsConstants {
@@ -113,6 +117,21 @@ struct BarriersConstants {
     floatType playerRightBarrierOffset;
 };
 
+struct TerrainConstants {
+    floatType bufferLeft;
+    floatType bufferRight;
+    floatType biomeWidth;
+
+    floatType renderingResolution;
+    floatType collisionDetectionResolution;
+    floatType generationCheckingRange;
+
+    floatType minimalBasePointDistance;
+    floatType minimalBasePolylineAngle;
+    floatType maximalSlopeHikerClearance;
+    floatType hikerClearanceTolerance;
+};
+
 struct MountainConstants {
     int visibleChunksCount = 16;
     int chunkBufferLeft = 2;
@@ -124,11 +143,12 @@ struct MountainConstants {
     floatType start = static_cast<floatType>(-chunkBufferLeft) * chunkWidth;
     floatType initialHeight = 0.0;
 
-    floatType slope = 0.4;
+    floatType slope = 0.4f;
     floatType randomness = 1.0;
     floatType newPointDeltaStandard = slope * chunkWidth;
     floatType newPointDeltaMin = newPointDeltaStandard - (randomness * chunkWidth);
     floatType newPointDeltaMax = newPointDeltaStandard + (randomness * chunkWidth);
+    floatType linStepSize = 0.5f;
 };
 
 struct GameConstants {
@@ -140,6 +160,7 @@ struct GameConstants {
     VisualConstants visualConstants{};
     BarriersConstants barriersConstants{};
     MountainConstants mountainConstants{};
+    TerrainConstants terrainConstants{};
 };
 
 #endif // SURVIVING_SARNTAL_GAMEPROPERTIES_HPP

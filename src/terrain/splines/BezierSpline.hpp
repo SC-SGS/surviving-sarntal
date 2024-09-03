@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_BEZIERSPLINE_HPP
 #define SURVIVING_SARNTAL_BEZIERSPLINE_HPP
 
-#include "../game/GameProperties.hpp"
+#include "../../game/GameProperties.hpp"
 #include "Polynomial.hpp"
 
 class BezierSpline {

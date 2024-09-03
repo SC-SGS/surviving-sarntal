@@ -119,6 +119,7 @@ void Hiker::jump() {
     }
 }
 void Hiker::setHikerMoving() { this->hikerMovement.setState(HikerMovement::MOVING); }
+void Hiker::setHikerInAir() { this->hikerMovement.setState(HikerMovement::IN_AIR); }
 void Hiker::moveToRight(floatType deltaX) { this->position.setX(this->position.x + deltaX); }
 void Hiker::moveToLeft(floatType deltaX) { this->position.setX(this->position.x - deltaX); }
 void Hiker::accelerateX(floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
