@@ -8,16 +8,14 @@
 #include <iostream>
 #include <mutex>
 
-Spawner::Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
+Spawner::Spawner(Terrain &terrain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
                  GameConstants gameConstants)
-    : mountain(mountain), rockSpawner(rockSpawner), itemSpawner(itemSpawner), world(world),
-      gameConstants(gameConstants) {}
+    : terrain(terrain), rockSpawner(rockSpawner), itemSpawner(itemSpawner), world(world), gameConstants(gameConstants) {
+}
 
 void Spawner::spawn() const {
-    if (this->world.getMaxX() >
-        this->mountain.getRightBorder() - static_cast<floatType>(gameConstants.mountainConstants.chunkBufferRight) *
-                                              gameConstants.mountainConstants.chunkWidth) {
-        this->mountain.generateNewChunk();
+    if (this->world.getMaxX() > this->terrain.getRightBorder() - gameConstants.terrainConstants.bufferRight) {
+        this->terrain.generateBiome(BiomeType::MOUNTAIN, gameConstants.terrainConstants.biomeWidth);
     }
     this->rockSpawner.spawnRocks();
     this->itemSpawner.spawnItems();

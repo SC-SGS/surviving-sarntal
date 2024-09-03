@@ -23,16 +23,6 @@ void CollisionHandler::handleCollisions() {
 
 void CollisionHandler::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 
-Vertex CollisionHandler::getClosestVertex(Rock &rock) const {
-    const auto pos = rock.getPosition();
-    const floatType rad = rock.getRadius();
-    const floatType xMin = pos.x - rad;
-    const floatType xMax = pos.x + rad;
-    const Mountain &mountain = this->world.getMountain();
-
-    return Vertex({0, 0});
-}
-
 void CollisionHandler::playerCollisions() const {
     // TODO parallelize and make efficient with linked cell or sth
     for (auto &rock : this->world.getRocks()) {
@@ -65,25 +55,30 @@ void CollisionHandler::rockTerrainCollisions() {
     for (auto &rock : this->world.getRocks()) {
         // TODO don't create too many copies, but will be changed later anyways
         Rock virtualRock = this->getNextState(rock);
-        // const auto closestVertex = this->getClosestVertex(virtualRock);
+        Line flightPath = {rock.getPosition(), virtualRock.getPosition()};
+        std::vector<Intersection> intersections = this->world.getTerrain().getAllIntersections(flightPath);
         //  TODO Needs to be changed, I just want to test the mountain rendering
-        if (this->world.getMountain().isInRange(virtualRock.getPosition().x)) {
-            if (virtualRock.getPosition().y - this->world.getMountain().calculateYPos(virtualRock.getPosition().x) <
-                virtualRock.getRadius()) {
-                this->rockTerrainCollision(rock);
-            }
+        if (!intersections.empty()) {
+            Intersection intersection = intersections.front();
+            this->rockTerrainCollision(rock, intersection);
         }
+        // if (this->world.getMountain().isInRange(virtualRock.getPosition().x)) {
+        //    if (virtualRock.getPosition().y - this->world.getMountain().calculateYPos(virtualRock.getPosition().x) <
+        //        virtualRock.getRadius()) {
+        //        this->rockTerrainCollision(rock);
+        //    }
+        //}
     }
 }
 
-void CollisionHandler::rockTerrainCollision(Rock &rock) const {
+void CollisionHandler::rockTerrainCollision(Rock &rock, Intersection &intersection) const {
     auto vel = rock.getVelocity(); // TODO play terrain collision sound
     auto pos = rock.getPosition();
     const auto rad = rock.getRadius();
     floatType angularVelocity = rock.getAngularVelocity();
     floatType angularOffset = rock.getAngularOffset();
     // const auto normal = this->collisionDetector.getNormal(closestVertex.index, pos);
-    const auto normal = this->collisionDetector.getNormal(pos);
+    const auto normal = intersection.normalAtIntersection;
     vel = vel.reflectOnNormal(normal, gameConstants.physicsConstants.rockTerrainDamping);
     const auto mass = std::pow(rad, 2);
     const Vector parallelVector = {-normal.y, normal.x};

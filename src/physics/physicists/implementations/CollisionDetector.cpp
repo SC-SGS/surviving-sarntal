@@ -44,9 +44,10 @@ bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
 };
 
 Vector CollisionDetector::getNormal(const Vector rockPos) const {
-    Vector normal = this->world.getMountain().calculateNormalVector(rockPos.x);
-    // if (normal.y < 0) {
-    //     normal = normal * -1.f;
-    // }
-    return normal;
+    // Vector normal = this->world.getMountain().calculateNormalVector(rockPos.x);
+    //  if (normal.y < 0) {
+    //      normal = normal * -1.f;
+    //  }
+    // return normal;
+    return {0, 0};
 }
