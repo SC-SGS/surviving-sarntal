@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_YAMLCONVERSIONS_HPP
 
 #include "../game/GameProperties.hpp"
+#include "raylib.h"
 #include <yaml-cpp/yaml.h>
 
 namespace YAML {
@@ -31,6 +32,7 @@ template <> struct convert<HikerConstants> {
         hikerConstants.slowestNegSlope = node["slowestNegSlope"].as<floatType>();
         hikerConstants.fastestNegSlope = node["fastestNegSlope"].as<floatType>();
         hikerConstants.slowestPosScope = node["slowestPosScope"].as<floatType>();
+        hikerConstants.maxClimbableSlope = node["maxClimbableSlope"].as<floatType>();
 
         return true;
     }
@@ -79,6 +81,7 @@ template <> struct convert<RockConstants> {
         rockConstants.rockTimePeriodEasy = node["rockTimePeriodEasy"].as<floatType>();
         rockConstants.timeBetweenRockSpawns = node["timeBetweenRockSpawns"].as<floatType>();
         rockConstants.numOfRocksToSpawn = node["numOfRocksToSpawn"].as<int>();
+        rockConstants.spawnOffsetX = node["spawnOffsetX"].as<floatType>();
 
         return true;
     }
@@ -166,6 +169,30 @@ template <> struct convert<MountainConstants> {
     }
 };
 
+template <> struct convert<TerrainConstants> {
+    static bool decode(const Node &node, TerrainConstants &terrainConstants) {
+        if (!node.IsMap()) {
+            return false;
+        }
+
+        terrainConstants.renderingResolution = node["renderingResolution"].as<floatType>();
+        terrainConstants.collisionDetectionResolution = node["collisionDetectionResolution"].as<floatType>();
+        terrainConstants.biomeWidth = node["biomeWidth"].as<floatType>();
+
+        terrainConstants.generationCheckingRange = node["generationCheckingRange"].as<floatType>();
+        terrainConstants.minimalBasePointDistance = node["minimalBasePointDistance"].as<floatType>();
+        terrainConstants.minimalBasePolylineAngle = PI * (node["minimalBasePolylineAngle"].as<floatType>() / 180.0f);
+        terrainConstants.maximalSlopeHikerClearance =
+            PI * (node["maximalSlopeHikerClearance"].as<floatType>() / 180.0f);
+        terrainConstants.hikerClearanceTolerance = node["hikerClearanceTolerance"].as<floatType>();
+
+        terrainConstants.bufferLeft = node["bufferLeft"].as<floatType>();
+        terrainConstants.bufferRight = node["bufferRight"].as<floatType>();
+
+        return true;
+    }
+};
+
 template <> struct convert<GameConstants> {
     static bool decode(const Node &node, GameConstants &gameConstants) {
         if (!node.IsMap()) {
@@ -179,6 +206,7 @@ template <> struct convert<GameConstants> {
         gameConstants.inputConstants = node["inputConstants"].as<InputConstants>();
         gameConstants.visualConstants = node["visualConstants"].as<VisualConstants>();
         gameConstants.barriersConstants = node["barriersConstants"].as<BarriersConstants>();
+        gameConstants.terrainConstants = node["terrainConstants"].as<TerrainConstants>();
 
         return true;
     }

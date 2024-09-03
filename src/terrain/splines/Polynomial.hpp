@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_POLYNOMIAL_HPP
 #define SURVIVING_SARNTAL_POLYNOMIAL_HPP
 
-#include "../game/GameProperties.hpp"
+#include "../../game/GameProperties.hpp"
 #include <vector>
 
 /**

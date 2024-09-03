@@ -24,4 +24,6 @@ RenderInformation Monster::getRenderInformation() const {
 
 floatType Monster::getXPosition() const { return position.x; }
 
+floatType Monster::getYPosition() const { return position.y; }
+
 void Monster::setXPosition(floatType positionX) { position.x = positionX; }

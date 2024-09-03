@@ -12,14 +12,14 @@
 class Spawner {
 
   public:
-    Spawner(Mountain &mountain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
+    Spawner(Terrain &terrain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
             GameConstants gameConstants);
     ~Spawner() = default;
     void spawn() const;
 
   private:
     RockSpawner &rockSpawner;
-    Mountain &mountain;
+    Terrain &terrain;
     ItemSpawner &itemSpawner;
     World &world;
     GameConstants gameConstants;

@@ -11,7 +11,7 @@ Destructor::Destructor(World &world, Renderer &renderer, GameConstants gameConst
 void Destructor::destruct() const {
     destructRocks();
     destructItems();
-    destructMountain();
+    destructTerrain();
     destructHiker();
 }
 
@@ -30,13 +30,14 @@ void Destructor::destructItems() const {
         [this](const std::shared_ptr<Item> &item) { return this->world.isOutOfScope(*item); });
 }
 
-void Destructor::destructMountain() const {
-    const floatType leftBufferedWidth = this->world.getMountain().getLeftBorder() +
-                                        (static_cast<floatType>(gameConstants.mountainConstants.chunkBufferLeft) *
-                                         gameConstants.mountainConstants.chunkWidth);
-    if (this->world.getMinX() > leftBufferedWidth) {
-        this->world.getMountain().deleteLeftChunk();
-    }
+void Destructor::destructTerrain() const {
+    this->world.getTerrain().removeBiome(this->world.getMinX() - this->gameConstants.terrainConstants.bufferLeft);
+    // const floatType leftBufferedWidth = this->world.getMountain().getLeftBorder() +
+    //                                     (static_cast<floatType>(gameConstants.mountainConstants.chunkBufferLeft) *
+    //                                      gameConstants.mountainConstants.chunkWidth);
+    // if (this->world.getMinX() > leftBufferedWidth) {
+    //     this->world.getMountain().deleteLeftChunk();
+    // }
 }
 
 void Destructor::destructHiker() const {

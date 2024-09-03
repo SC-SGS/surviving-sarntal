@@ -31,6 +31,7 @@ class Monster : public RenderedEntity {
     RenderInformation getRenderInformation() const override;
 
     floatType getXPosition() const;
+    floatType getYPosition() const;
     void setXPosition(floatType positionX);
 };
 

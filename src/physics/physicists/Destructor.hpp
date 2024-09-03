@@ -25,14 +25,16 @@ class Destructor {
      * Destructs all rocks that are outside of the world borders.
      */
     void destructRocks() const;
+
     /**
      * Destructs all items that are outside of the world borders.
      */
     void destructItems() const;
+
     /**
-     * Destruct chunks of the mountain that are outside of the world borders;
+     * Destruct biomes of the terrain that are outside of the world borders;
      */
-    void destructMountain() const;
+    void destructTerrain() const;
 
     /**
      * Kill hiker if necessary.

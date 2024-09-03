@@ -187,7 +187,7 @@ void Renderer::renderNormalEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
     auto &monster = world.getMonster();
-    const auto &mountain = world.getMountain();
+    const auto &terrain = world.getTerrain();
 
     // Render destroyed rocks, e.g. explosions
     for (auto &destroyedRock : getDestroyedRocks()) {
@@ -211,14 +211,14 @@ void Renderer::renderNormalEntities() {
     }
 
     // Render mountain
-    mountainRenderer.renderMountain(mountain, WHITE, SKYBLUE);
+    mountainRenderer.renderMountain(terrain, WHITE, SKYBLUE);
 }
 
 void Renderer::debugRenderEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
     auto &monster = world.getMonster();
-    const auto &mountain = world.getMountain();
+    const auto &terrain = world.getTerrain();
     // Render hiker
     renderHiker(hiker);
     // Render rocks
@@ -241,7 +241,7 @@ void Renderer::debugRenderEntities() {
                         gameConstants.itemsConstants.collectionRadius, BLUE);
     }
     // Render mountain
-    mountainRenderer.renderMountain(mountain, WHITE, SKYBLUE);
+    mountainRenderer.renderMountain(terrain, WHITE, SKYBLUE);
 }
 
 void Renderer::renderHUD() const {

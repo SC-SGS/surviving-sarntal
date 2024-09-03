@@ -41,14 +41,6 @@ class CollisionHandler {
     HapticsService &hapticsService;
 
     /**
-     * Returns the closest Vertex to a rock on the mountain
-     *
-     * @param rock
-     * @return
-     */
-    Vertex getClosestVertex(Rock &rock) const;
-
-    /**
      * Tests whether a player collides with the rock and updates his state accordingly.
      * The rock is exploded on impact.
      * TODO nice particle simulation on impact
@@ -83,7 +75,7 @@ class CollisionHandler {
      * @param rock
      * @param closestVertex
      */
-    void rockTerrainCollision(Rock &rock) const;
+    void rockTerrainCollision(Rock &rock, Intersection &intersection) const;
 
     /**
      * Yikes, this is naive.
