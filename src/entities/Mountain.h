@@ -2,8 +2,8 @@
 // Created by Aleksis Vezenkov on 02.05.24.
 //
 
-#include "../utilities/BezierSpline.hpp"
-#include "../utilities/HermiteSpline.hpp"
+#include "../terrain/splines/BezierSpline.hpp"
+#include "../terrain/splines/HermiteSpline.hpp"
 #include "../utilities/RandomGenerator.hpp"
 #include "../utilities/Singleton.hpp"
 #include "../utilities/vector.h"

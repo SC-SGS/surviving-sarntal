@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_WORLD_H
 #define SURVIVING_SARNTAL_WORLD_H
 
+#include "../terrain/Terrain.hpp"
 #include "../utilities/Singleton.hpp"
 #include "Hiker.h"
 #include "Inventory.hpp"
@@ -26,7 +27,7 @@ class Hiker;
 class World {
 
   public:
-    World(Mountain &mountain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+    World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
           GameConstants gameConstants);
     ~World();
     Hiker &getHiker() const;
@@ -35,7 +36,7 @@ class World {
 
     Monster &getMonster() const;
 
-    Mountain &getMountain() const;
+    Terrain &getTerrain() const;
 
     std::list<Rock> &getRocks() const;
 
@@ -89,7 +90,7 @@ class World {
 
   private:
     // Dependencies
-    Mountain &mountain;
+    Terrain &terrain;
     Hiker &hiker;
     Inventory &inventory;
     Monster &monster;

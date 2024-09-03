@@ -50,7 +50,7 @@ ItemType ItemSpawner::getNextRandomItemType() {
 Vector ItemSpawner::getNextRandomPosition() {
     auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300)); // todo get range from config
     auto xPosition = static_cast<floatType>(this->world.getMaxX() + 10);
-    auto yPosition = static_cast<floatType>(this->world.getMountain().calculateYPos(xPosition)) + randYOffset;
+    auto yPosition = static_cast<floatType>(this->world.getTerrain().getMaxHeight(xPosition)) + randYOffset;
     spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);
     return Vector{xPosition, yPosition};
 }

@@ -21,7 +21,7 @@ void Mountain::generateInitialChunk() {
 
     floatType der = (pos2.y - pos1.y) / (pos2.x - pos1.x);
 
-    auto *firstSplinePiece = new HermiteSpline(pos1, pos2, der, der);
+    auto *firstSplinePiece = new HermiteSpline(pos1.x, pos2.x, pos1.y, pos2.y, der, der);
 
     this->positions.push_back(pos1);
     this->derivatives.push_back(der);
@@ -44,7 +44,7 @@ void Mountain::generateNewChunk() {
     floatType der = this->rand->getRandomRealNumber(mountainConstants.slope - mountainConstants.randomness,
                                                     mountainConstants.slope + mountainConstants.randomness);
 
-    auto *nextSplinePiece = new HermiteSpline(prevPos, pos, prevDer, der);
+    auto *nextSplinePiece = new HermiteSpline(prevPos.x, pos.x, prevPos.y, pos.y, prevDer, der);
 
     this->spline.push_back(nextSplinePiece);
     this->positions.push_back(pos);
