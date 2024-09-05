@@ -198,15 +198,15 @@ bool Biome::placeStructure(AxisAlignedBoundingBox spacelimit, Structure *structu
 void Biome::placeStructures() {}
 
 std::vector<Intersection> Biome::getAllIntersections(Line &line) {
-    assert(this->boundingBox.intersects(line));
+    assert(this->boundingBox.intersectsOrIsIn(line));
     std::vector<Intersection> intersections = {};
-    if (this->groundCollisionDetection->getBoundingBox().intersects(line)) {
+    if (this->groundCollisionDetection->getBoundingBox().intersectsOrIsIn(line)) {
         std::vector<Intersection> additionalIntersections =
             this->groundCollisionDetection->calculateIntersections(line);
         intersections.insert(intersections.end(), additionalIntersections.cbegin(), additionalIntersections.cend());
     }
     for (auto component : this->componentsCollisionDetection) {
-        if (component->getBoundingBox().intersects(line)) {
+        if (component->getBoundingBox().intersectsOrIsIn(line)) {
             std::vector<Intersection> additionalIntersections = component->calculateIntersections(line);
             intersections.insert(intersections.end(), additionalIntersections.cbegin(), additionalIntersections.cend());
         }

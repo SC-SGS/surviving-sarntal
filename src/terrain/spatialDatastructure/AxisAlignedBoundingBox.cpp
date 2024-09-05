@@ -20,4 +20,16 @@ bool AxisAlignedBoundingBox::isIn(Vector point) const {
     return false;
 }
 
-bool AxisAlignedBoundingBox::intersects(Line &line) const { return this->isIn(line.start) || this->isIn(line.end); }
+bool AxisAlignedBoundingBox::intersects(Line &line) const {
+    Line left = {minMin, {minMin.x, maxMax.y}};
+    Line right = {{maxMax.x, minMin.y}, maxMax};
+    Line bottom = {minMin, {maxMax.x, minMin.y}};
+    Line top = {{minMin.x, maxMax.y}, maxMax};
+
+    return left.calculateIntersection(line).has_value() || right.calculateIntersection(line).has_value() ||
+           bottom.calculateIntersection(line).has_value() || top.calculateIntersection(line).has_value();
+}
+
+bool AxisAlignedBoundingBox::isIn(Line &line) const { return this->isIn(line.start) && this->isIn(line.end); }
+
+bool AxisAlignedBoundingBox::intersectsOrIsIn(Line &line) const { return this->isIn(line) || this->intersects(line); }
