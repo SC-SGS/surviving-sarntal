@@ -29,12 +29,28 @@ struct AxisAlignedBoundingBox {
     bool isIn(Vector point) const;
 
     /**
-     * Checks whether the given point intersects this bounding box.
+     * Checks whether the given line is completely inside this bounding box.
      *
-     * @param point
+     * @param line
+     * @return
+     */
+    bool isIn(Line &line) const;
+
+    /**
+     * Checks whether the given line intersects this bounding box.
+     *
+     * @param line
      * @return
      */
     bool intersects(Line &line) const;
+
+    /**
+     * Checks whether the given line intersects this bounding box or is completely inside it.
+     *
+     * @param line
+     * @return
+     */
+    bool intersectsOrIsIn(Line &line) const;
 };
 
 #endif // SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP
