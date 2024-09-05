@@ -44,7 +44,7 @@ build-job:       # This job runs in the build stage, which runs first.
     untracked: true
     expire_in: 1 hour
   script:
-    - cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+    - cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DENABLE_COVERAGE=ON -DCOVERAGE_DIR_NAME="coverage"
     - cmake --build cmake-build-debug
 
 test-job:
@@ -52,15 +52,15 @@ test-job:
   script:
     - ctest --test-dir cmake-build-debug/test --rerun-failed --output-on-failure
     - cmake --build cmake-build-debug --target coverage
-    - COVERAGE=$(lcov --summary cmake-build-debug/coverage/coverage.info | awk '/lines/ {print $2}')
+    - COVERAGE=$(lcov --summary cmake-build-debug/../coverage/coverage.info | awk '/lines/ {print $2}')
     - echo "Line coverage $COVERAGE" # print coverage value to cli
-    - lcov --summary cmake-build-debug/coverage/coverage.info | awk '/lines/ {if ($4 < 80) exit 1}' # fail pipeline if necessary
+    - lcov --summary cmake-build-debug/../coverage/coverage.info | awk '/lines/ {if ($4 < 80) exit 1}' # fail pipeline if necessary
   dependencies:
     - build-job
   artifacts:
     paths:
       - cmake-build-debug/src/surviving-sarntal
-      - cmake-build-debug/coverage/report  # Include coverage report artifacts
+      - coverage/report  # Include coverage report artifacts
     expire_in: 1 hour
 
 clang-tidy:
