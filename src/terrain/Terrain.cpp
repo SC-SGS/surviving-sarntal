@@ -15,7 +15,7 @@ std::vector<Intersection> Terrain::getAllIntersections(Line &line) {
     std::vector<Intersection> intersections = {};
     bool atLeastOneBiomeIntersects = false;
     for (Biome *biome : this->biomes) {
-        if (biome->getBoundingBox().intersects(line)) {
+        if (biome->getBoundingBox().intersectsOrIsIn(line)) {
             std::vector<Intersection> additionalIntersections = biome->getAllIntersections(line);
             intersections.insert(intersections.end(), additionalIntersections.cbegin(), additionalIntersections.cend());
             atLeastOneBiomeIntersects = true;
