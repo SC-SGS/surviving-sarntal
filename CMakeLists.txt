@@ -13,6 +13,12 @@ if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif ()
 
+# Create an option for enabling coverage support (for developers)
+option(ENABLE_COVERAGE "Enable coverage report generation" OFF)
+
+# Variable for optional custom coverage folder name
+set(COVERAGE_DIR_NAME "" CACHE STRING "Optional custom name for the coverage folder")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
@@ -64,8 +70,17 @@ remove_clang_tidy(${spdlog_SOURCE_DIR})
 # Include directories
 include_directories(libs/NITE/Include /usr/include/ni)
 if (APPLE)
-    include_directories(/opt/homebrew/Cellar/sdl2/2.30.3/include)
+    execute_process(
+            COMMAND bash -c "brew info sdl2 | grep 'Cellar/sdl2' | awk '{print $1}'"
+            OUTPUT_VARIABLE SDL2_PATH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if (NOT SDL2_PATH)
+        message(FATAL_ERROR "SDL2 location could not be found. Make sure you have install sdl2 with homebrew or run the user_setup.sh script again.")
+    endif()
+    include_directories(${SDL2_PATH}/include)
 endif ()
+
 
 # Add the src and test directories
 add_subdirectory(src)

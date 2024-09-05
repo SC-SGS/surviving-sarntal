@@ -8,3 +8,4 @@ out/
 kinect/
 /UML/plant_UML
 .DB_Store
+coverage*
