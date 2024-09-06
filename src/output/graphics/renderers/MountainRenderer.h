@@ -22,7 +22,9 @@ class MountainRenderer {
      * @param topColor is the color at the top of the mountain
      * @param bottomColor is the color at the bottom of the mountain
      */
-    void renderMountain(const Terrain &terr, Color topColor = WHITE, Color bottomColor = BLUE);
+    void renderMountain(const Terrain &terr, Color topColor = WHITE, Color bottomColor = BLUE, bool debug = false);
+
+    void debugRenderMountain();
 
   private:
     Camera2D &camera;
@@ -30,9 +32,9 @@ class MountainRenderer {
 
     void updateVertices(const Terrain &terrain, Color topColor, Color bottomColor);
     floatType calculateLowerBorder() const;
-    void updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor, int startX);
-    void removeOutOfBoundsVerticesAndColors(int newMinX);
-    void updateBorders(int newMinX, int newMaxX);
+    void updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor, floatType startX);
+    void removeOutOfBoundsVerticesAndColors(floatType newMinX);
+    void updateBorders(floatType newMinX, floatType newMaxX);
     void addNewVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor);
 
     /**
@@ -55,11 +57,11 @@ class MountainRenderer {
     std::vector<Vector2> vertices;
     std::vector<Vector3> colors;
     std::vector<int> indices;
-    int minX = 0;
-    int maxX = 0;
+    floatType minX = 0;
+    floatType maxX = 0;
 
     Vector3 normalizeColor(const Color &color) const;
-    void addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, int xPos);
+    void addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, floatType xPos);
     void updateIndices(int indexToRemove);
 
     /**
