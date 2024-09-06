@@ -71,13 +71,13 @@ landmarks:
 gameConstants:
   hikerConstants:
     hikerMaxHealth: 100
-    hikerHeight: 140.0
-    hikerWidth: 90.0
-    crouchedHikerHeight: 110.0
-    crouchedHikerWidth: 75.0
+    hikerHeight: 1.8
+    hikerWidth: 1.15
+    crouchedHikerHeight: 1.42
+    crouchedHikerWidth: 0.96
     duckSpeedFactor: 0.35
-    normalSpeed: 260.0
-    jumpVelocity: 750.0
+    normalSpeed: 2.6
+    jumpVelocity: 7.5
     airMovementSpeedFactor: 0.6
     knockBack: 0.00005
     minSpeedNegSlope: 0.6
@@ -89,7 +89,7 @@ gameConstants:
     maxClimbableSlope: 4.0
 
   itemsConstants:
-    collectionRadius: 110.0
+    collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
     kaiserschmarrnHealthRestoration: 30
@@ -97,19 +97,19 @@ gameConstants:
     startSpawnTime: 5.0
     minSpawnTime: 2
     maxSpawnTime: 10
-    itemBaseHeight: 80.0
-    itemMaxHeight: 200.0
+    itemBaseHeight: 1
+    itemMaxHeight: 2.6
     itemsPerSecond: 0.05
     inventorySlotSize: 80.0
 
   rockConstants:
-    minRockSize: 25.0
-    maxRockSize: 75.0
+    minRockSize: 0.32
+    maxRockSize: 1
     velocityCap: 1200.0
     gamma: 50.0
     maxAngularVelocity: 1000.0
-    minSpawnVelocity: 1.0
-    maxSpawnVelocity: 1000.0
+    minSpawnVelocity: 0.01
+    maxSpawnVelocity: 10.0
     minSpawnRotationVelocity: 0.1
     maxSpawnRotationVelocity: 100.0
     rockTimePeriodDifficult: 1.0
@@ -117,10 +117,10 @@ gameConstants:
     rockTimePeriodEasy: 2.0
     timeBetweenRockSpawns: 5.0
     numOfRocksToSpawn: 10
-    spawnOffsetX: 50.0
+    spawnOffsetX: 0.5
 
   physicsConstants:
-    gravitationalConstant: -1000.0
+    gravitationalConstant: -9.81
     epsilon: 0.001
     rockTerrainDamping: 0.8
     physicsDeltaT: 0.01
@@ -140,13 +140,13 @@ gameConstants:
     rumbleDampening: 0.9
     textureMidScale: 5.0
     textureForeScale: 7.0
-    cameraToHikerOffset: 100
+    cameraToHikerOffset: 1
     mountainGradientHeight: 300
     mountainResolution: 10
 
   barriersConstants:
-    killBarVelocity: 100.0
-    playerRightBarrierOffset: 1280.0
+    killBarVelocity: 1.0
+    playerRightBarrierOffset: 15.0
 
   mountainConstants:
     visibleChunksCount: 16
@@ -158,15 +158,15 @@ gameConstants:
     linStepSize: 0.5
 
   terrainConstants:
-    bufferLeft: 500.0
-    bufferRight: 500.0
-    biomeWidth: 10000.0
+    bufferLeft: 5.0
+    bufferRight: 5.0
+    biomeWidth: 100.0
 
-    renderingResolution: 2.0
-    collisionDetectionResolution: 10.0
+    renderingResolution: 0.02
+    collisionDetectionResolution: 0.1
 
-    generationCheckingRange: 500.0
-    minimalBasePointDistance: 100.0
+    generationCheckingRange: 5.0
+    minimalBasePointDistance: 1.0
     minimalBasePolylineAngle: 30.0 #in degrees
     maximalSlopeHikerClearance: 85.0 #in degrees
     hikerClearanceTolerance: 1.5 #multiplier for hiker width and height

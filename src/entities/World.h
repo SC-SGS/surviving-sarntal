@@ -52,8 +52,6 @@ class World {
      */
     void addRock(const Rock &rock) const;
 
-    void addDestroyedRock(Vector position, floatType radius) const;
-
     std::list<std::shared_ptr<Item>> &getItems() const;
 
     /**
@@ -99,13 +97,12 @@ class World {
 
     // Attributes
     floatType minX = 0;
-    floatType maxX = graphics::SCREEN_WIDTH;
+    floatType maxX = graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO;
 
     int coinScore = 0;
     int gameScore = 0;
 
     const std::unique_ptr<std::list<Rock>> rocks = std::make_unique<std::list<Rock>>();
-    const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
 };

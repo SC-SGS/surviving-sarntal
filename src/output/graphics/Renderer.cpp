@@ -12,8 +12,8 @@ Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &cam
     : world(world), resourceManager(resourceManager), camera(camera), mountainRenderer(mountainRenderer),
       gameConstants(gameConstants), polygonRenderer(polygonRenderer) {
 
-    const floatType leftBorder = world.getMinX();
-    const floatType rightBorder = world.getMaxX();
+    const floatType leftBorder = world.getMinX() * graphics::UNIT_TO_PIXEL_RATIO;
+    const floatType rightBorder = world.getMaxX() * graphics::UNIT_TO_PIXEL_RATIO;
 
     // Calculate the world width
     const floatType worldWidth = rightBorder - leftBorder;
@@ -24,8 +24,8 @@ Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &cam
 
     // Calculate the visible width and height
     const floatType visibleWidth = rightBorder - leftBorder;
-    const floatType visibleHeight =
-        visibleWidth * (static_cast<floatType>(GetScreenHeight()) / static_cast<floatType>(GetScreenWidth()));
+    const floatType ratio = static_cast<floatType>(GetScreenHeight()) / static_cast<floatType>(GetScreenWidth());
+    const floatType visibleHeight = visibleWidth * ratio;
 
     // Calculate the center of the camera view based on the borders
     const floatType centerX = (leftBorder + rightBorder) / 2.0f;
@@ -50,8 +50,9 @@ void Renderer::renderEntity(const RenderedEntity &entity) const {
 }
 
 void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation) const {
-    const auto info = entity.getRenderInformation();
-    const Texture2D texture = resourceManager.getTexture(entity.getRenderInformation().texture);
+    auto info = entity.getRenderInformation();
+
+    const Texture2D texture = resourceManager.getTexture(info.texture);
     auto directedWidth = static_cast<floatType>(texture.width * (info.width >= 0 ? 1 : -1));
     // part of the texture used
     const Rectangle sourceRec = {0.0f, 0.0f, directedWidth, static_cast<floatType>(texture.height)};
@@ -60,7 +61,10 @@ void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotati
 
 void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation, const Texture2D &texture,
                             const Rectangle sourceRec) const {
-    const auto info = entity.getRenderInformation();
+    auto info = entity.getRenderInformation();
+    info.width *= graphics::UNIT_TO_PIXEL_RATIO;
+    info.height *= graphics::UNIT_TO_PIXEL_RATIO;
+
     // Define the destination rectangle
     const Vector transformedPosition = GraphicsUtil::transformPosition(info.position, info.offset);
     const Rectangle destRec = {transformedPosition.x, transformedPosition.y, std::abs(info.width), info.height};
@@ -163,11 +167,11 @@ void Renderer::debugRenderRock(RenderedEntity &entity) const {
 
     // Draw Circle for collision box
     DrawCircleLines(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y),
-                    entity.getRenderInformation().width / 2, RED);
+                    (entity.getRenderInformation().width * graphics::UNIT_TO_PIXEL_RATIO) / 2, RED);
 
     // Calculate the end points of the line to detect rotation
     const floatType rotation = entity.getRenderInformation().angularOffset;
-    const floatType radius = entity.getRenderInformation().width / 2;
+    const floatType radius = entity.getRenderInformation().width * graphics::UNIT_TO_PIXEL_RATIO / 2;
     const int endX = static_cast<int>(transformedPosition.x + radius * std::cos(rotation));
     const int endY = static_cast<int>(transformedPosition.y + radius * std::sin(rotation));
 
@@ -187,7 +191,6 @@ void Renderer::renderNormalEntities() {
     auto &hiker = world.getHiker();
     auto &rocks = world.getRocks();
     auto &monster = world.getMonster();
-    const auto &terrain = world.getTerrain();
 
     // Render destroyed rocks, e.g. explosions
     for (auto &destroyedRock : getDestroyedRocks()) {
@@ -209,9 +212,6 @@ void Renderer::renderNormalEntities() {
     for (const auto &item : world.getItems()) {
         renderEntity(*item);
     }
-
-    // Render mountain
-    mountainRenderer.renderMountain(terrain, WHITE, SKYBLUE);
 }
 
 void Renderer::debugRenderEntities() {
@@ -226,9 +226,10 @@ void Renderer::debugRenderEntities() {
         debugRenderRock(rock);
     }
     // Render monster
-    DrawLine(static_cast<int>(monster.getRenderInformation().position.x),
+    DrawLine(static_cast<int>(monster.getRenderInformation().position.x * graphics::UNIT_TO_PIXEL_RATIO),
              static_cast<int>(camera.target.y - (0.5 * GetScreenHeight())),
-             static_cast<int>(monster.getRenderInformation().position.x), GetScreenHeight(), RED);
+             static_cast<int>(monster.getRenderInformation().position.x * graphics::UNIT_TO_PIXEL_RATIO),
+             GetScreenHeight(), RED);
     // Render Items
     for (const auto &item : world.getItems()) {
         const auto transformedPosition = GraphicsUtil::transformPosition(item->getRenderInformation().position);
@@ -238,10 +239,8 @@ void Renderer::debugRenderEntities() {
         const auto centerX = static_cast<int>(transformedPosition.x) - MeasureText(itemType, FONT_SIZE) / 2;
         DrawText(itemType, centerX, static_cast<int>(transformedPosition.y), FONT_SIZE, GREEN);
         DrawCircleLines(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y),
-                        gameConstants.itemsConstants.collectionRadius, BLUE);
+                        gameConstants.itemsConstants.collectionRadius * graphics::UNIT_TO_PIXEL_RATIO, BLUE);
     }
-    // Render mountain
-    mountainRenderer.renderMountain(terrain, WHITE, SKYBLUE);
 }
 
 void Renderer::renderHUD() const {
@@ -329,8 +328,7 @@ void Renderer::renderCoinScore() const {
 }
 
 void Renderer::renderScore() const {
-    std::string scoreString =
-        std::to_string(this->world.getGameScore() / gameConstants.visualConstants.positionToScoreRatio) + "m";
+    std::string scoreString = std::to_string(this->world.getGameScore()) + "m";
     const char *scoreText = scoreString.c_str();
     const auto centerX = GetScreenWidth() - MeasureText(scoreText, gameConstants.visualConstants.fontSizeScore) -
                          2 * gameConstants.visualConstants.uiMargin;
@@ -340,24 +338,26 @@ void Renderer::renderScore() const {
 
 void Renderer::renderAltimeter() const {
     int stepSize = gameConstants.visualConstants.altimeterSteps *
-                   gameConstants.visualConstants.positionToScoreRatio; // Step size of the altimeter
+                   static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO); // Step size of the altimeter
 
-    const int currentAltitude = static_cast<int>(world.getHiker().getPosition().y); // Current altitude of the hiker
-    const int topAltitude = currentAltitude - GetScreenHeight() / 2;                // Top altitude of the screen
-    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;             // Bottom altitude of the screen
+    const int currentAltitude =
+        static_cast<int>(world.getHiker().getPosition().y *
+                         static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO)); // Current altitude of the hiker
+    const int topAltitude = currentAltitude - GetScreenHeight() / 2;       // Top altitude of the screen
+    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;    // Bottom altitude of the screen
 
     for (int i = GraphicsUtil::floorToNearest(bottomAltitude, stepSize) + stepSize; i > topAltitude;
-         i -= gameConstants.visualConstants.positionToScoreRatio) {
+         i -= static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO)) {
         const int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
-        const int drawAltitude = (i + gameConstants.visualConstants.cameraToHikerOffset) /
-                                 gameConstants.visualConstants.positionToScoreRatio;
+        const int drawAltitude =
+            (i + gameConstants.visualConstants.cameraToHikerOffset) / static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO);
 
         renderAltimeterStep(drawY, drawAltitude, gameConstants.visualConstants.fontSizeAltimeter);
     }
 
     if (!this->debugMode) {
         for (const auto &landmark : landmarks) {
-            const int altitude = (landmark.second - 1) * gameConstants.visualConstants.positionToScoreRatio -
+            const int altitude = (landmark.second - 1) * static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO) -
                                  gameConstants.visualConstants.cameraToHikerOffset;
             const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
             DrawLine(0, drawY, GetScreenWidth(), drawY, DARKGREEN);
@@ -435,16 +435,20 @@ void Renderer::draw() {
     renderBackground();
 
     // Adjust y-position of camera
-    camera.target.y = GraphicsUtil::transformYCoordinate(world.getHiker().getRenderInformation().position.y) -
-                      static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset);
-    camera.target.x = (world.getMaxX() + world.getMinX()) / 2.0f;
+    camera.target.y =
+        GraphicsUtil::transformYCoordinate(world.getHiker().getRenderInformation().position.y +
+                                           static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset));
+    camera.target.x = (world.getMaxX() + world.getMinX()) * graphics::UNIT_TO_PIXEL_RATIO / 2.0f;
 
     BeginMode2D(camera);
 
     renderEntities();
     renderPolygon();
 
+    mountainRenderer.renderMountain(world.getTerrain(), WHITE, SKYBLUE, debugMode);
+
     EndMode2D();
+
     renderHUD();
 
     EndDrawing();

@@ -48,8 +48,10 @@ ItemType ItemSpawner::getNextRandomItemType() {
     return COIN;
 }
 Vector ItemSpawner::getNextRandomPosition() {
-    auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(50, 300)); // todo get range from config
-    auto xPosition = static_cast<floatType>(this->world.getMaxX() + 10);
+    int minY = static_cast<int>(gameConstants.itemsConstants.itemBaseHeight);
+    int maxY = static_cast<int>(gameConstants.itemsConstants.itemMaxHeight);
+    auto randYOffset = static_cast<floatType>(randomGenerator.getRandomNumber(minY, maxY));
+    auto xPosition = static_cast<floatType>(this->world.getMaxX() + 1);
     auto yPosition = static_cast<floatType>(this->world.getTerrain().getMaxHeight(xPosition)) + randYOffset;
     spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);
     return Vector{xPosition, yPosition};
