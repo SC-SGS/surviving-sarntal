@@ -345,8 +345,8 @@ bool Biome::fulfillsMinimalBasePolylineAngle(const StaticPolyline *currentBasePo
 }
 
 Camera2D Biome::setUpGenerationRendering() const {
-    const floatType leftBorder = -50.0f;
-    const floatType rightBorder = 10200.f;
+    const floatType leftBorder = -0.02f * this->terrainConstants.biomeWidth;
+    const floatType rightBorder = 1.02f * this->terrainConstants.biomeWidth;
 
     // Calculate the world width
     const floatType worldWidth = rightBorder - leftBorder;
@@ -431,28 +431,37 @@ void Biome::generationRendering(Ground *newGround, const StaticPolyline *groundP
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
-    Vector delta = {50.0f, 50.0f};
+    Vector delta = {0.5f, 0.5f};
     Vector2 basePointRendering = Biome::transformPosition(newGround->getBasePoints()->getStartPoint() + delta);
     DrawRectangle(basePointRendering.x, basePointRendering.y - this->hikerConstants.hikerHeight,
                   this->hikerConstants.hikerWidth, this->hikerConstants.hikerHeight, GREEN);
-    for (Vector point : groundPolyRepresentation->getPoints()) {
+    rlBegin(RL_LINES);
+    rlColor3f(1.0f, 0.0f, 0.0f);
+    for (int i = 0; i < groundPolyRepresentation->getPoints().size() - 2; i++) {
+        Vector point = groundPolyRepresentation->getPoints().at(i);
+        Vector nextPoint = groundPolyRepresentation->getPoints().at(i + 1);
+
         Vector2 renderingPoint = Biome::transformPosition(point);
-        DrawCircle(static_cast<int>(renderingPoint.x), static_cast<int>(renderingPoint.y), 4.0f, RED);
+        Vector2 renderingToPoint = Biome::transformPosition(nextPoint);
+
+        rlVertex2f(renderingPoint.x, renderingPoint.y);
+        rlVertex2f(renderingToPoint.x, renderingToPoint.y);
     }
+    rlEnd();
     StaticPolyline const *basePoints = newGround->getBasePoints();
     for (Vector point : basePoints->getPoints()) {
         Vector2 renderingPoint = Biome::transformPosition(point);
-        DrawCircle(static_cast<int>(renderingPoint.x), static_cast<int>(renderingPoint.y), 7.0f, GREEN);
+        DrawCircle(static_cast<int>(renderingPoint.x), static_cast<int>(renderingPoint.y), 0.07f, GREEN);
     }
     Vector minPoint = oldPoint + phase.avgDirection.rotateByAngle(minAngle);
     Vector maxPoint = oldPoint + phase.avgDirection.rotateByAngle(maxAngle);
     Vector2 oldPointRendering = Biome::transformPosition(oldPoint);
     Vector2 minPointRendering = Biome::transformPosition(minPoint);
     Vector2 maxPointRendering = Biome::transformPosition(maxPoint);
-    DrawLineEx(oldPointRendering, minPointRendering, 4.0f, BROWN);
-    DrawLineEx(oldPointRendering, maxPointRendering, 4.0f, SKYBLUE);
+    DrawLineEx(oldPointRendering, minPointRendering, 0.04f, BROWN);
+    DrawLineEx(oldPointRendering, maxPointRendering, 0.04f, SKYBLUE);
     Vector2 newPointRendering = Biome::transformPosition(newPoint);
-    DrawLineEx(oldPointRendering, newPointRendering, 5.0f, ORANGE);
+    DrawLineEx(oldPointRendering, newPointRendering, 0.05f, ORANGE);
     EndMode2D();
     EndDrawing();
 }

@@ -105,7 +105,7 @@ std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
 Vector RockSpawner::getRandSpawnPos() const {
     const auto spawnXPos = this->world.getMaxX() + gameConstants.rockConstants.spawnOffsetX;
     const auto randYOffset =
-        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (400 - 300) + 300; // TODO these should be constants
+        static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (4 - 3) + 3; // TODO these should be constants
     const auto spawnYPos = this->world.getTerrain().getMaxHeight(spawnXPos) + randYOffset;
     return Vector{spawnXPos, spawnYPos};
 }

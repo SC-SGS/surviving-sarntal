@@ -78,7 +78,8 @@ floatType Mountain::getLeftBorder() const { return this->positions.front().x; }
 floatType Mountain::getRightBorder() const { return this->positions.back().x; }
 
 bool Mountain::isInRange(floatType xPos) const {
-    return this->getLeftBorder() <= xPos && this->getRightBorder() >= xPos;
+    return std::floor(this->getLeftBorder() * 1000.0) / 1000.0 <= xPos &&
+           std::ceil(this->getRightBorder() * 1000.0) / 1000.0 >= xPos;
 }
 
 void Mountain::generateMountain() {
