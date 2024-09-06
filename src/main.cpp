@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     // Mountain mountain = Mountain(configManager.getGameConstants().mountainConstants);
     auto terrain =
         Terrain(configManager.getGameConstants().hikerConstants, configManager.getGameConstants().terrainConstants);
-    floatType hikerPositionX = 0.3 * graphics::SCREEN_WIDTH;
+    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
     Hiker hiker(Vector{hikerPositionX, hikerPositionY}, audioService, configManager.getGameConstants().hikerConstants);
     Monster monster(configManager.getGameConstants().hikerConstants);

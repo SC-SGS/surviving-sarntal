@@ -7,16 +7,29 @@
 MountainRenderer::MountainRenderer(Camera2D &camera, GameConstants gameConstants)
     : camera(camera), gameConstants(gameConstants) {}
 
-void MountainRenderer::renderMountain(const Terrain &terrain, Color topColor, Color bottomColor) {
+void MountainRenderer::renderMountain(const Terrain &terrain, Color topColor, Color bottomColor, bool debug) {
     StaticPolyline *ground = terrain.getPolyRepresentationOfGroundRendering();
     for (Vector point : ground->getPoints()) {
-        floatType pointTransformedY = GraphicsUtil::transformYCoordinate(point.y);
-        Vector pointTransformed = {point.x, pointTransformedY};
+        Vector pointTransformed = GraphicsUtil::transformPosition(Vector2(point));
         DrawCircle(static_cast<int>(pointTransformed.x), static_cast<int>(pointTransformed.y), 2.0f, RED);
     }
     // updateVertices(terrain, topColor, bottomColor);
-    // drawMountainMesh();
-    // drawMountainBase(bottomColor);
+    //    if (!debug) {
+    //        // drawMountainMesh();
+    //        // drawMountainBase(bottomColor);
+    //    } else {
+    //        // debugRenderMountain();
+    //    };
+}
+
+void MountainRenderer::debugRenderMountain() {
+    rlBegin(RL_LINES);
+    rlColor3f(1.0f, 0.0f, 0.0f);
+    for (int i = 0; i < vertices.size() - 2; i += 2) {
+        rlVertex2f(vertices[i].x, vertices[i].y);
+        rlVertex2f(vertices[i + 2].x, vertices[i + 2].y);
+    }
+    rlEnd();
 }
 
 void MountainRenderer::drawMountainMesh() const {
@@ -49,8 +62,8 @@ void MountainRenderer::drawBaseTriangle(int index, Vector3 normalizedColor) cons
 }
 
 void MountainRenderer::updateVertices(const Terrain &terrain, Color topColor, Color bottomColor) {
-    int newMinX = floor(terrain.getLeftBorder());
-    int newMaxX = ceil(terrain.getRightBorder());
+    floatType newMinX = static_cast<float>(floor(terrain.getLeftBorder())) * graphics::UNIT_TO_PIXEL_RATIO;
+    floatType newMaxX = static_cast<float>(ceil(terrain.getRightBorder())) * graphics::UNIT_TO_PIXEL_RATIO;
 
     if (newMinX != minX || newMaxX != maxX) {
         removeOutOfBoundsVerticesAndColors(newMinX);
@@ -60,7 +73,7 @@ void MountainRenderer::updateVertices(const Terrain &terrain, Color topColor, Co
     }
 }
 
-void MountainRenderer::removeOutOfBoundsVerticesAndColors(int newMinX) {
+void MountainRenderer::removeOutOfBoundsVerticesAndColors(floatType newMinX) {
     auto iterator = std::find_if(vertices.begin(), vertices.end(),
                                  [newMinX](const Vector2 &vertex) { return vertex.x >= static_cast<float>(newMinX); });
 
@@ -80,14 +93,14 @@ void MountainRenderer::updateIndices(int indexToRemove) {
     std::for_each(indices.begin(), indices.end(), [indexToRemove](int &index) { index -= indexToRemove; });
 }
 
-void MountainRenderer::updateBorders(int newMinX, int newMaxX) {
+void MountainRenderer::updateBorders(floatType newMinX, floatType newMaxX) {
     minX = newMinX;
     maxX = newMaxX;
 }
 
 void MountainRenderer::addNewVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor) {
     int step = gameConstants.visualConstants.mountainResolution;
-    int startX = vertices.empty() ? minX : static_cast<int>(vertices.back().x) + step;
+    floatType startX = vertices.empty() ? minX : vertices.back().x + static_cast<float>(step);
     updateVerticesAndColors(terrain, topColor, bottomColor, startX);
 }
 
@@ -96,20 +109,22 @@ floatType MountainRenderer::calculateLowerBorder() const {
            static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset);
 }
 
-void MountainRenderer::updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor, int startX) {
-    int step = gameConstants.visualConstants.mountainResolution;
-    for (int xPos = startX; xPos <= maxX; xPos += step) {
+void MountainRenderer::updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor,
+                                               floatType startX) {
+    auto step = static_cast<floatType>(gameConstants.visualConstants.mountainResolution);
+    for (floatType xPos = startX; xPos <= maxX; xPos += step) { // NOLINT(*-flp30-c)
         addVertexAndColor(terrain, topColor, bottomColor, xPos);
     }
 }
 
-void MountainRenderer::addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, int xPos) {
-    // floatType yPos = GraphicsUtil::transformYCoordinate(terrain.calculateYPos(static_cast<floatType>(xPos)));
-    // vertices.emplace_back(Vector2{static_cast<float>(xPos), static_cast<float>(yPos)});
-    // colors.push_back(normalizeColor(topColor));
-    // vertices.emplace_back(Vector2{static_cast<float>(xPos),
-    //                               yPos + static_cast<float>(gameConstants.visualConstants.mountainGradientHeight)});
-    // colors.push_back(normalizeColor(bottomColor));
+void MountainRenderer::addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, floatType xPos) {
+    // floatType yPos = GraphicsUtil::transformYCoordinate(
+    //         terrain.calculateYPos(static_cast<floatType>(xPos) / graphics::UNIT_TO_PIXEL_RATIO));
+    //  vertices.emplace_back(Vector2{static_cast<float>(xPos), static_cast<float>(yPos)});
+    //  colors.push_back(normalizeColor(topColor));
+    //  vertices.emplace_back(Vector2{static_cast<float>(xPos),
+    //                                yPos + static_cast<float>(gameConstants.visualConstants.mountainGradientHeight)});
+    //  colors.push_back(normalizeColor(bottomColor));
 }
 
 void MountainRenderer::createTriangles() {

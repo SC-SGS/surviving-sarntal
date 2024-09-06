@@ -10,6 +10,7 @@ typedef float floatType;
 namespace graphics {
 constexpr int SCREEN_WIDTH = 1600;
 constexpr int SCREEN_HEIGHT = 900;
+constexpr float UNIT_TO_PIXEL_RATIO = 77.5;
 }; // namespace graphics
 
 struct HikerConstants {
@@ -138,7 +139,8 @@ struct MountainConstants {
     int chunkBufferRight = 16;
     int chunkCount = visibleChunksCount + chunkBufferLeft + chunkBufferRight;
 
-    floatType chunkWidth = static_cast<floatType>(1.0 * graphics::SCREEN_WIDTH / visibleChunksCount);
+    floatType chunkWidth = static_cast<floatType>(
+        1.0 * graphics::SCREEN_WIDTH / (static_cast<float>(visibleChunksCount) * graphics::UNIT_TO_PIXEL_RATIO));
     floatType width = static_cast<floatType>(chunkCount) * chunkWidth;
     floatType start = static_cast<floatType>(-chunkBufferLeft) * chunkWidth;
     floatType initialHeight = 0.0;
