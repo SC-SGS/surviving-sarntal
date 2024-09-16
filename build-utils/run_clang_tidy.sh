@@ -25,7 +25,7 @@ print_message() {
 # Generate compile_commands.json if it doesn't exist
 if [ ! -f "$BUILD_DIR/compile_commands.json" ]; then
     print_message $YELLOW "Generating compile_commands.json..."
-    cmake -B $BUILD_DIR
+    source build-utils/build.sh
     if [ $? -eq 0 ]; then
         print_message $GREEN "Successfully generated compile_commands.json"
     else

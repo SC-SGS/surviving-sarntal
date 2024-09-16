@@ -22,6 +22,8 @@ struct HikerConstants {
     floatType crouchedHikerHeight;
     floatType crouchedHikerWidth;
 
+    floatType mass;
+
     // Hiker movement speed
     floatType duckSpeedFactor;
     floatType normalSpeed;
@@ -125,12 +127,15 @@ struct TerrainConstants {
 
     floatType renderingResolution;
     floatType collisionDetectionResolution;
+    floatType collisionDetectionPreFilteringTolerance;
     floatType generationCheckingRange;
 
     floatType minimalBasePointDistance;
     floatType minimalBasePolylineAngle;
     floatType maximalSlopeHikerClearance;
     floatType hikerClearanceTolerance;
+    floatType maximalOverhangDepth;
+    floatType maximalOverhangHeight;
 };
 
 struct MountainConstants {

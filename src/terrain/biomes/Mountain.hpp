@@ -9,11 +9,12 @@
 class Mountain : public Biome {
   public:
     Mountain(Vector basePoint, Vector baseDerivative, floatType startT, floatType length, HikerConstants hikerConstants,
-             TerrainConstants terrainConstants);
+             TerrainConstants terrainConstants, bool renderGeneration);
     ~Mountain() override = default;
 
   private:
     const static std::vector<TerrainPhase> mountainPhaseChoices;
+    const static TerrainPhase mountainFirstPhase;
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAIN_HPP

@@ -44,17 +44,17 @@ void StaticPolyline::addPoint(Vector point) {
     this->boundingBox = {minMin, maxMax};
 }
 
-void StaticPolyline::addPolyline(StaticPolyline *polyline) {
-    for (Vector point : polyline->getPoints()) {
+void StaticPolyline::addPolyline(const StaticPolyline &polyline) {
+    for (Vector point : polyline.getPoints()) {
         this->addPoint(point);
     }
 }
 
-bool StaticPolyline::intersectsWithoutFirstPoint(StaticPolyline *other) const {
-    assert(this->endPoint == other->startPoint);
-    for (int index = 1; index < other->getPoints().size() - 1; index++) {
-        Vector start = other->getPoints().at(index);
-        Vector end = other->getPoints().at(index + 1);
+bool StaticPolyline::intersectsWithoutFirstPoint(const StaticPolyline &other) const {
+    assert(this->endPoint == other.startPoint);
+    for (int index = 1; index < other.getPoints().size() - 1; index++) {
+        Vector start = other.getPoints().at(index);
+        Vector end = other.getPoints().at(index + 1);
         if (this->intersects({start, end})) {
             return true;
         }

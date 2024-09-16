@@ -8,11 +8,14 @@ MountainRenderer::MountainRenderer(Camera2D &camera, GameConstants gameConstants
     : camera(camera), gameConstants(gameConstants) {}
 
 void MountainRenderer::renderMountain(const Terrain &terrain, Color topColor, Color bottomColor, bool debug) {
-    StaticPolyline *ground = terrain.getPolyRepresentationOfGroundRendering();
-    for (Vector point : ground->getPoints()) {
-        Vector pointTransformed = GraphicsUtil::transformPosition(Vector2(point));
-        DrawCircle(static_cast<int>(pointTransformed.x), static_cast<int>(pointTransformed.y), 2.0f, RED);
+    std::vector<std::shared_ptr<StaticPolyline>> ground = terrain.getPolyRepresentationOfGroundRendering();
+    for (const auto &biomeGround : ground) {
+        for (const Vector &point : biomeGround->getPoints()) {
+            Vector pointTransformed = GraphicsUtil::transformPosition(Vector2(point));
+            DrawCircle(static_cast<int>(pointTransformed.x), static_cast<int>(pointTransformed.y), 2.0f, RED);
+        }
     }
+
     // updateVertices(terrain, topColor, bottomColor);
     //    if (!debug) {
     //        // drawMountainMesh();

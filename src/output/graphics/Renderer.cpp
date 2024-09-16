@@ -1,10 +1,8 @@
 #include "Renderer.h"
-#include "../../spawner/rock_spawning/PolygonGenerator.h"
+#include "../../spawner/PolygonGenerator.h"
 #include "raylib.h"
 
 #include "GraphicsUtil.h"
-#include "rlgl.h"
-#include "vector"
 #include <cmath>
 
 Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
@@ -46,7 +44,7 @@ void Renderer::loadLandmarks() { this->landmarks = ConfigManager::getInstance().
 
 // Function to render an entity
 void Renderer::renderEntity(const RenderedEntity &entity) const {
-    renderEntity(entity, entity.getRenderInformation().angularOffset);
+    renderEntity(entity, entity.getRenderInformation().rotationAngle);
 }
 
 void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation) const {
@@ -125,7 +123,7 @@ void Renderer::renderAnimation(const RenderedEntity &entity) {
     Rectangle sourceRec = {directedFrameX, 0.0f, width, static_cast<floatType>(texture.height)};
 
     // Render the entity with the updated frame
-    this->renderEntity(entity, info.angularOffset, texture, sourceRec);
+    this->renderEntity(entity, info.rotationAngle, texture, sourceRec);
 }
 
 void Renderer::renderHiker(const Hiker &hiker) {
@@ -153,16 +151,17 @@ void Renderer::renderWalkingHiker(const Hiker &hiker) {
         const floatType width = static_cast<floatType>(texture.width) /
                                 static_cast<floatType>(hiker.getRenderInformation().animation.frames);
         Rectangle sourceRec = {0.0f, 0.0f, width, static_cast<floatType>(texture.height)};
-        renderEntity(hiker, hiker.getRenderInformation().angularOffset, texture, sourceRec);
+        renderEntity(hiker, hiker.getRenderInformation().rotationAngle, texture, sourceRec);
     } else {
         animateEntity(hiker);
     }
 }
 
-void Renderer::renderRock(RenderedEntity &entity) const {
-    renderEntity(entity, entity.getRenderInformation().angularOffset);
-}
-void Renderer::debugRenderRock(RenderedEntity &entity) const {
+void Renderer::renderRock(const Rock &rock) const { polygonRenderer.renderTexturedPolygon(rock); }
+
+void Renderer::debugRenderRock(const Rock &rock) const {
+    polygonRenderer.renderPolygonOutline(rock);
+    /*
     const auto transformedPosition = GraphicsUtil::transformPosition(entity.getRenderInformation().position);
 
     // Draw Circle for collision box
@@ -172,11 +171,14 @@ void Renderer::debugRenderRock(RenderedEntity &entity) const {
     // Calculate the end points of the line to detect rotation
     const floatType rotation = entity.getRenderInformation().angularOffset;
     const floatType radius = entity.getRenderInformation().width * graphics::UNIT_TO_PIXEL_RATIO / 2;
+    const floatType rotation = entity.getRenderInformation().rotationAngle;
+    const floatType radius = entity.getRenderInformation().width / 2;
     const int endX = static_cast<int>(transformedPosition.x + radius * std::cos(rotation));
     const int endY = static_cast<int>(transformedPosition.y + radius * std::sin(rotation));
 
     // Draw the line
     DrawLine(static_cast<int>(transformedPosition.x), static_cast<int>(transformedPosition.y), endX, endY, RED);
+    */
 }
 
 void Renderer::renderEntities() {
@@ -202,7 +204,7 @@ void Renderer::renderNormalEntities() {
 
     // Render rocks
     for (auto &rock : rocks) {
-        renderEntity(rock);
+        renderRock(rock);
     }
 
     // Render monster
@@ -215,9 +217,9 @@ void Renderer::renderNormalEntities() {
 }
 
 void Renderer::debugRenderEntities() {
-    auto &hiker = world.getHiker();
-    auto &rocks = world.getRocks();
-    auto &monster = world.getMonster();
+    const auto &hiker = world.getHiker();
+    const auto &rocks = world.getRocks();
+    const auto &monster = world.getMonster();
     const auto &terrain = world.getTerrain();
     // Render hiker
     renderHiker(hiker);
@@ -418,8 +420,10 @@ AnimationInformation &Renderer::getAnimationInformation(int entityId, AnimationI
     return animations[entityId];
 }
 
-void Renderer::addExplosion(const Vector &position, const float radius) {
-    Rock destroyedRock(position, {0, 0}, 0, 0, radius);
+void Renderer::addExplosion(const Rock &rock) const {
+    // TODO the explosion needs to fit the bounding box
+    Rock destroyedRock(rock.getPosition(), rock.getBodySpaceVertices(), rock.getTextureCoordinates(), 0.0f, 0.0f,
+                       DynamicProperties());
     destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
     this->destroyedRocks->push_back(destroyedRock);
 }
@@ -443,7 +447,6 @@ void Renderer::draw() {
     BeginMode2D(camera);
 
     renderEntities();
-    renderPolygon();
 
     mountainRenderer.renderMountain(world.getTerrain(), WHITE, SKYBLUE, debugMode);
 
@@ -516,16 +519,4 @@ std::list<Rock> &Renderer::getDestroyedRocks() const {
         }
     });
     return *destroyedRocks;
-}
-void Renderer::renderPolygon() {
-    for (auto vertice : polygon.getVertices()) {
-        std::cout << vertice.x << std::endl;
-        std::cout << vertice.y << std::endl;
-        std::cout << "||" << std::endl;
-    }
-    // polygonRenderer.renderPolygonOutline(polygon);
-    // polygonRenderer.renderPolygon(polygon);
-    polygonRenderer.renderTexturedPolygon(polygon);
-    polygon.rotate(2);
-    polygon.move(3, -3);
 }

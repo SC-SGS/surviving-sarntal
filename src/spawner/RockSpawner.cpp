@@ -3,6 +3,9 @@
 //
 
 #include "RockSpawner.h"
+
+#include "PolygonGenerator.h"
+
 #include <iostream>
 #include <mutex>
 #include <random>
@@ -32,15 +35,19 @@ void RockSpawner::spawnRock(const size_t idxRock) {
     Vector velocity = {-rockConst.minSpawnVelocity - static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) *
                                                          (rockConst.maxSpawnVelocity + rockConst.minSpawnVelocity),
                        0};
-    floatType angularVelocity =
-        rockConst.minSpawnVelocity + static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
-                                         (rockConst.maxSpawnRotationVelocity + rockConst.minSpawnRotationVelocity);
+    floatType angularVelocity = rockConst.minSpawnRotationVelocity +
+                                static_cast<float>(std::rand() / (1.0 * RAND_MAX)) *
+                                    (rockConst.maxSpawnRotationVelocity - rockConst.minSpawnRotationVelocity);
     floatType angularOffset = 0.0f;
 
     Vector position = {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x,
                        spawnBasePos.y + offsetsAdditionalRocks[idxRock].y};
 
-    Rock newRock(position, velocity, angularVelocity, angularOffset, rad);
+    PolygonGenerator polyGen;
+    DynamicPolygon poly = polyGen.generatePolygon(100, rockConst.maxRockSize, position, 1.0f);
+    DynamicProperties dynamicProperties{position, 0, velocity, 1};
+    Rock newRock(position, poly.getBodySpaceVertices(), poly.getTextureCoordinates(), poly.getMass(),
+                 poly.getMomentOfInertia(), dynamicProperties);
 
     this->world.addRock(newRock);
     spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);

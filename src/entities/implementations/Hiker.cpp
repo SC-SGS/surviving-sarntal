@@ -8,7 +8,7 @@
 #include <iostream>
 
 Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants hikerConstants)
-    : RenderedEntity(position), hikerConstants(hikerConstants), audioService(audioService) {
+    : RenderedEntity(position), audioService(audioService), hikerConstants(hikerConstants) {
 
     velocity = {0, 0};
     height = hikerConstants.hikerHeight;
@@ -17,6 +17,10 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
     hikerMovement = HikerMovement();
     isAlive = true;
     animation = {4, 0, 0.3, 0};
+    Vector center = position + Vector({0, hikerConstants.hikerHeight / 2.0f});
+    floatType halfHeight = this->hikerConstants.hikerHeight / 2;
+    floatType halfWidth = this->hikerConstants.hikerWidth / 2;
+    std::vector<Vector> vertices = {{-halfWidth, -halfHeight}, {halfWidth, -halfHeight}, {halfWidth}, {}};
 
     spdlog::info("A Hiker was initialized");
 }

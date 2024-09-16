@@ -44,7 +44,7 @@ void PhysicsEngine::setDeltaT(const floatType deltaT) {
     this->collisionHandler.setDeltaT(deltaT);
 }
 
-void PhysicsEngine::updateTimeStep() const {
+void PhysicsEngine::updateTimeStep() {
     this->spawner.spawn();
     this->eventProcessor.processEvents();
     this->accelerator.accelerate();

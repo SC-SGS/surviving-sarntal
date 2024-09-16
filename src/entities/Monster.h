@@ -23,7 +23,7 @@ class Monster : public RenderedEntity {
 
   public:
     explicit Monster(HikerConstants hikerConstants);
-    ~Monster() = default;
+    ~Monster() override = default;
     Monster(const Monster &) = delete;
 
     explicit Monster(Vector position, HikerConstants hikerConstants);

@@ -38,10 +38,10 @@ void Positioner::updateWorldBorderPosition() const {
 void Positioner::updateRockPositions() const {
     for (auto &rock : this->world.getRocks()) {
         auto pos = rock.getPosition();
-        pos += rock.getVelocity() * this->deltaT;
+        pos += rock.getLinearMomentum() * this->deltaT;
         rock.setPosition(pos);
-        const floatType newAngularOffset = rock.getAngularOffset() + rock.getAngularVelocity() * this->deltaT;
-        rock.setAngularOffset(newAngularOffset);
+        const floatType newAngularOffset = rock.getRotationAngle() + rock.getAngularMomentum() * this->deltaT;
+        rock.setRotationAngleRad(newAngularOffset);
     }
 }
 
@@ -70,95 +70,60 @@ void Positioner::updateHikerPosition() const { // NOLINT(*-function-size)
     }
     auto pos = hiker.getPosition();
     const auto vel = hiker.getVelocity();
+    Vector knockbackVector = {knockback, 0.0f};
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
-        Vector knockbackVector = {knockback, 0.0f};
+        spdlog::debug("in air");
+        // check collision lower point of hiker
         Vector newPos = pos + vel * this->deltaT + knockbackVector;
         Line intersectionLine = {pos, newPos};
-        std::vector<Intersection> intersections = this->world.getTerrain().getAllIntersections(intersectionLine);
-        if (!intersections.empty() && intersections.front().intersection != pos) {
-            pos = intersections.front().intersection;
+        std::vector<std::shared_ptr<Intersection>> intersections =
+            this->world.getTerrain().getAllIntersections(intersectionLine);
+        // check collision upper point of hiker
+        Vector heightDelta = {0.0f, hikerConstants.hikerHeight};
+        Vector upperHikerBound = pos + heightDelta;
+        Vector newUpperPos = newPos + heightDelta;
+        Line upperIntersectionLine = {upperHikerBound, newUpperPos};
+        std::vector<std::shared_ptr<Intersection>> upperHikerBoundIntersections =
+            this->world.getTerrain().getAllIntersections(upperIntersectionLine);
+
+        if (!intersections.empty() && intersections.front()->intersection != pos) {
+            pos = intersections.front()->intersection;
             hiker.setYVelocity(0.f);
             hiker.setHikerMoving();
             hiker.setLastJump(0.0);
+            // } else if (!upperHikerBoundIntersections.empty() && intersections.front()->intersection != pos +
+            // heightDelta) {
+            //    pos = {upperHikerBoundIntersections.front()->intersection.x,
+            //           upperHikerBoundIntersections.front()->intersection.y - hikerConstants.hikerHeight};
+            //    hiker.setYVelocity(-0.01f);
         } else {
             pos = newPos;
         }
-        // pos.x += knockback + hikerConstants.airMovementSpeedFactor * vel.x * this->deltaT;
-        //  const auto terrainY = this->world.getMountain().calculateYPos(pos.x);
-        //  const auto airY = pos.y + vel.y * this->deltaT;
-        //  if (airY > terrainY) {
-        //      pos.y = airY;
-        //  } else {
-        //      pos.y = terrainY;
-        //      hiker.setYVelocity(0.f);
-        //      hiker.setHikerMoving();
-        //      hiker.setLastJump(0.0);
-        //  }
-        //   TODO this whole speedfactor shebang needs thorough examination and fiddling in later stages
-    } else if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
-        const auto oldPos = pos;
-        const auto nextXPos = vel.x * this->deltaT + pos.x;
-        const auto nextYPos = this->world.getTerrain().mapHeightToTerrain({nextXPos, oldPos.y});
-        Vector newPos = {nextXPos, nextYPos};
-
-        const auto direction = newPos - oldPos;
+    } else {
+        Vector newPos = this->calculateTheoreticalNextHikerPosition(knockbackVector);
+        Vector direction = newPos - pos;
 
         if (direction.x == 0 || direction.computeSlope() > this->hikerConstants.maxClimbableSlope) {
             if (direction.y < 0) {
+                spdlog::debug("falling off terrain");
                 // Fall off terrain
                 pos.x = newPos.x;
-                pos.y = oldPos.y;
                 hiker.setHikerInAir();
                 hiker.setLastJump(0.0);
             } else {
+                spdlog::debug("standing still");
                 // Stand still
+                // TODO: Slide downhill
             }
         } else {
+            spdlog::debug("moving along terrain");
             // Move along terrain
-            const floatType length = direction.length();
-            const floatType speedFactor = getSpeedFactor(direction.computeSlope());
-            // TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
-            pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
-            pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
-        }
-        // if(direction.y < 0 && direction.computeSlope() > this->hikerConstants.maxClimbableSlope) {
-        //
-        // } else if(direction.computeSlope() > this->hikerConstants.maxClimbableSlope) {
-        //     //Stand still
-        //
-        // } else {
-        //     //Move along terrain
-        //     const floatType length = direction.length();
-        //     const floatType speedFactor = getSpeedFactor(direction.computeSlope());
-        //     // TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
-        //     pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
-        //     pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
-        // }
-        // if(-this->hikerConstants.maxClimbableSlope < direction.computeSlope() && direction.computeSlope() <
-        // this->hikerConstants.maxClimbableSlope) {
-        //
-        //}
-
-        // if (direction.x > 0 && direction.computeSlope() < this->hikerConstants.maxClimbableSlope) {
-        //     const floatType length = direction.length();
-        //     const floatType speedFactor = getSpeedFactor(direction.computeSlope());
-        //     //// TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
-        //     pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
-        //     pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
-        // }
-
-        // const auto nextYPos = this->world.getMountain().calculateYPos(nextXPos);
-        // Vector direction = {nextXPos - pos.x, nextYPos - pos.y};
-        // const floatType length = direction.length();
-        // const floatType slope = direction.y / direction.x;
-        // const floatType speedFactor = getSpeedFactor(slope);
-        //// TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
-        // pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
-        // pos.y = this->world.getMountain().calculateYPos(pos.x);
-    } else {
-        if (knockback != 0) {
-            pos.x += knockback;
-            pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
+            // const floatType length = direction.length();
+            // const floatType speedFactor = getSpeedFactor(direction.computeSlope());
+            //// TODO this speed formula is sus, lets' just give him a constant speed (length of vel vector)
+            // pos.x += (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback;
+            // pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
+            pos = newPos;
         }
     }
     if (pos.x > this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset) {
@@ -186,4 +151,34 @@ floatType Positioner::getSpeedFactor(floatType slope) const {
     }
 
     return hikerConstants.minSpeedPosSlope;
+}
+
+Vector Positioner::calculateTheoreticalNextHikerPosition(const Vector knockback) const {
+    Hiker &hiker = this->world.getHiker();
+    const auto vel = hiker.getVelocity();
+    const auto oldPos = hiker.getPosition();
+    floatType nextXPos;
+    floatType nextYPos;
+    spdlog::debug("Hiker direction: {}", hiker.getHikerMovement().getDirection());
+    if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
+        nextXPos = vel.x * this->deltaT + oldPos.x;
+        nextYPos = this->world.getTerrain().mapHeightToTerrain({nextXPos, oldPos.y});
+        Vector newPos = {nextXPos, nextYPos};
+
+        auto direction = newPos - oldPos;
+        const floatType length = direction.length();
+        const floatType speedFactor = getSpeedFactor(direction.computeSlope());
+        nextXPos = oldPos.x + (this->deltaT * std::abs(vel.x * speedFactor) / length) * direction.x + knockback.x;
+        nextYPos = this->world.getTerrain().mapHeightToTerrain({nextXPos, oldPos.y + knockback.y});
+    } else {
+        if (knockback.x != 0) {
+            nextXPos = oldPos.x + knockback.x;
+            nextYPos = this->world.getTerrain().mapHeightToTerrain({nextXPos, oldPos.y + knockback.y});
+        } else {
+            nextXPos = oldPos.x;
+            nextYPos = oldPos.y;
+        }
+    }
+    Vector newPos = {nextXPos, nextYPos};
+    return newPos;
 };

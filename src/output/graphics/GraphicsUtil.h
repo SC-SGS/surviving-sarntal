@@ -20,6 +20,7 @@ class GraphicsUtil {
 
     /**
      * Transforms a vector to a position on the screen.
+     * TODO this takes a Vector2 (Raylib) and returns a Vector...
      * @param vector is the vector to be transformed
      * @return a vector representing the position on the screen
      */
