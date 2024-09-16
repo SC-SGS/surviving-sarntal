@@ -13,7 +13,7 @@
 
 class ClosedComponent : public Component<StaticPolygon> {
   public:
-    ClosedComponent(StaticPolygon *polygon, TerrainConstants terrainConstants);
+    ClosedComponent(std::shared_ptr<StaticPolygon> polygon, TerrainConstants &terrainConstants);
 
     floatType getLeftBorder();
 

@@ -23,7 +23,9 @@ const std::vector<TerrainPhase> Mountain::mountainPhaseChoices = {
     // overhang
     {{-2.5f, 0.0f}, 0.5f, 5}};
 
+const TerrainPhase Mountain::mountainFirstPhase = {{3.0f, 0.5f}, 0.0f, 3};
+
 Mountain::Mountain(Vector basePoint, Vector baseDerivative, floatType startT, floatType length,
-                   HikerConstants hikerConstants, TerrainConstants terrainConstants)
-    : Biome(Mountain::mountainPhaseChoices, basePoint, baseDerivative, startT, length, hikerConstants,
-            terrainConstants) {}
+                   HikerConstants hikerConstants, TerrainConstants terrainConstants, bool renderGeneration)
+    : Biome(Mountain::mountainPhaseChoices, Mountain::mountainFirstPhase, basePoint, baseDerivative, startT, length,
+            hikerConstants, terrainConstants, renderGeneration) {}

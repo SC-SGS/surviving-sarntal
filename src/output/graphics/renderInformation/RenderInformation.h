@@ -12,7 +12,7 @@
 #include <string>
 
 /**
- * This struct contains all the information necessary for rendering an entity
+ * This struct contains all the information necessary for rendering a rectangular entity
  * of our game world.
  */
 struct RenderInformation {
@@ -20,7 +20,7 @@ struct RenderInformation {
     Vector2 offset = {0, 0};
     floatType width;
     floatType height;
-    floatType angularOffset;
+    floatType rotationAngle;
     std::string texture;
     AnimationInformation animation = {0, 0, 0, 0};
 };

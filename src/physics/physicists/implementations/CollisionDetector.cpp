@@ -11,15 +11,15 @@ void CollisionDetector::detectCollisions() const {}
 
 bool CollisionDetector::rocksCollide(Rock &rock1, Rock &rock2) {
     const Vector pos1 = rock1.getPosition();
-    const floatType rad1 = rock1.getRadius();
+    const floatType rad1 = rock1.getBoundingBox().width / 2;
     const Vector pos2 = rock2.getPosition();
-    const floatType rad2 = rock2.getRadius();
+    const floatType rad2 = rock2.getBoundingBox().width / 2;
     return (pos1.distanceTo(pos2) <= rad1 + rad2);
 }
 
 bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
     const auto rockPosition = rock.getPosition();
-    const auto rad = rock.getRadius();
+    const auto rad = rock.getBoundingBox().width / 2;
     // hiker position is at his feet, but here we use the center of mass (center of the rectangle) as position
     const auto pos = this->world.getHiker().getPosition();
     const auto adjustedHikerPosition = Vector{pos.x, pos.y + this->world.getHiker().getHeight() / 2};

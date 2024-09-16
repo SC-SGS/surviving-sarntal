@@ -87,7 +87,7 @@ class PhysicsEngine {
     /**
      * Responsible for spawning entities at the start of each step.
      */
-    const Spawner &spawner;
+    Spawner &spawner;
 
     /**
      * The event processor, changing the world state based on a given list of Input events.
@@ -128,7 +128,7 @@ class PhysicsEngine {
     /**
      * Simulates the change in the state of the world over the next deltaT time interval.
      */
-    void updateTimeStep() const;
+    void updateTimeStep();
 };
 
 #endif // PHYSICSENGINE_H

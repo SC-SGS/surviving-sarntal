@@ -99,6 +99,8 @@ int World::getCoinScore() const { return this->coinScore; }
 int World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
-    const int hikerHeight = static_cast<int>(this->hiker.getPosition().y);
-    this->gameScore = std::max(this->gameScore, hikerHeight);
+    // const int hikerHeight = static_cast<int>(this->hiker.getPosition().y);
+    // this->gameScore = std::max(this->gameScore, hikerHeight);
+    const int hikerXDistance = static_cast<int>(this->hiker.getPosition().x);
+    this->gameScore = std::max(this->gameScore, hikerXDistance);
 }

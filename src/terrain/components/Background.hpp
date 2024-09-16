@@ -8,7 +8,7 @@
 #include "Splineoid.hpp"
 #include <string>
 struct Background {
-    Splineoid *border;
+    std::unique_ptr<Splineoid> border;
     std::string texture;
 };
 

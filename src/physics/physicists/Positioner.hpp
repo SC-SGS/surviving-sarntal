@@ -34,6 +34,13 @@ class Positioner {
     void updateHikerPosition() const;
 
     /**
+     * Calculate the theoretical next hiker position if the hiker is moving or neutral.
+     *
+     * @return
+     */
+    Vector calculateTheoreticalNextHikerPosition(Vector knockback) const;
+
+    /**
      * Moves the monster forward so that it always aligns with the left screen border.
      */
     void updateMonsterPosition() const;

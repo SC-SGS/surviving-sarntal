@@ -32,8 +32,6 @@ StaticPolygon::StaticPolygon(std::vector<Vector> &points) : StaticPolyObject(poi
     this->center = sum / static_cast<floatType>(points.size());
 }
 
-const AxisAlignedBoundingBox &StaticPolygon::getBoundingBox() const { return boundingBox; }
-
 bool StaticPolygon::isIn(const Vector &point) const { return false; }
 Vector StaticPolygon::getCenter() const { return {}; }
 void StaticPolygon::calculateCenter() {}

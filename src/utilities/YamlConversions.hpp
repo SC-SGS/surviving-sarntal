@@ -21,6 +21,7 @@ template <> struct convert<HikerConstants> {
         hikerConstants.hikerWidth = node["hikerWidth"].as<floatType>();
         hikerConstants.crouchedHikerHeight = node["crouchedHikerHeight"].as<floatType>();
         hikerConstants.crouchedHikerWidth = node["crouchedHikerWidth"].as<floatType>();
+        hikerConstants.mass = node["mass"].as<floatType>();
         hikerConstants.duckSpeedFactor = node["duckSpeedFactor"].as<floatType>();
         hikerConstants.normalSpeed = node["normalSpeed"].as<floatType>();
         hikerConstants.jumpVelocity = node["jumpVelocity"].as<floatType>();
@@ -178,6 +179,8 @@ template <> struct convert<TerrainConstants> {
         terrainConstants.renderingResolution = node["renderingResolution"].as<floatType>();
         terrainConstants.collisionDetectionResolution = node["collisionDetectionResolution"].as<floatType>();
         terrainConstants.biomeWidth = node["biomeWidth"].as<floatType>();
+        terrainConstants.collisionDetectionPreFilteringTolerance =
+            node["collisionDetectionPreFilteringTolerance"].as<floatType>();
 
         terrainConstants.generationCheckingRange = node["generationCheckingRange"].as<floatType>();
         terrainConstants.minimalBasePointDistance = node["minimalBasePointDistance"].as<floatType>();
@@ -185,6 +188,8 @@ template <> struct convert<TerrainConstants> {
         terrainConstants.maximalSlopeHikerClearance =
             PI * (node["maximalSlopeHikerClearance"].as<floatType>() / 180.0f);
         terrainConstants.hikerClearanceTolerance = node["hikerClearanceTolerance"].as<floatType>();
+        terrainConstants.maximalOverhangDepth = node["maximalOverhangDepth"].as<floatType>();
+        terrainConstants.maximalOverhangHeight = node["maximalOverhangHeight"].as<floatType>();
 
         terrainConstants.bufferLeft = node["bufferLeft"].as<floatType>();
         terrainConstants.bufferRight = node["bufferRight"].as<floatType>();

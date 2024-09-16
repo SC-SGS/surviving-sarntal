@@ -52,7 +52,12 @@ TEST_F(WorldTestFixture, IsOutOfScopeTest) {
 
 TEST_F(WorldTestFixture, AddRockTest) {
     EXPECT_TRUE(world->getRocks().empty());
-    Rock rock = {{0, 0}, {1, 2}, 0.1, 0.1, 3};
+    const Rock rock = {{0, 0},
+                       std::vector<Vector>{{-2, -4 / 3.0}, {1, -4 / 3.0}, {1, 8 / 3.0}},
+                       {{0, 0}, {1, 0}, {0, 1}, {0, 0}},
+                       1,
+                       0,
+                       DynamicProperties()};
     world->addRock(rock);
     EXPECT_TRUE(world->getRocks().size() == 1);
 }

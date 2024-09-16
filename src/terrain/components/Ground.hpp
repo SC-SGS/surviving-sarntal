@@ -10,8 +10,8 @@
 #include "Component.hpp"
 class Ground : public Component<StaticPolyline> {
   public:
-    Ground(StaticPolyline *polyline, std::vector<Vector> *derivatives, floatType startT,
-           TerrainConstants terrainConstants);
+    Ground(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives, floatType startT,
+           const TerrainConstants &terrainConstants);
 
     /**
      * Adds a 2D-Spline to the end of the given ground that starts at the currently last point.
@@ -19,7 +19,7 @@ class Ground : public Component<StaticPolyline> {
      * @param newPoint
      * @param newDerivative
      */
-    void addTerrain(Vector newPoint, Vector newDerivative);
+    void addTerrain(Vector &newPoint, Vector &newDerivative);
 
     /**
      * Adds a 2D-spline representation of the given polyline using the given derivatives at the individual points to
@@ -28,15 +28,16 @@ class Ground : public Component<StaticPolyline> {
      * @param polyline
      * @param derivatives
      */
-    void addTerrain(const StaticPolyline *polyline, const std::vector<Vector> *derivatives);
+    void addTerrain(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives);
 
-    /**
-     * Merges the given ground to the rights side of this one, if the startPoint of the new ground matches the end point
-     * of this ground and the derivatives at the specified locations match as well.
-     *
-     * @param ground
-     */
-    void addTerrain(const Ground &ground);
+    ///**
+    // * Merges the given ground to the rights side of this one, if the startPoint of the new ground matches the end
+    // point
+    // * of this ground and the derivatives at the specified locations match as well.
+    // *
+    // * @param ground
+    // */
+    // void addTerrain(const Ground &ground);
 
     /**
      * Returns the part of the polyline that would be added to the polynomial representation of the ground if the new
@@ -47,8 +48,8 @@ class Ground : public Component<StaticPolyline> {
      * @param resolution
      * @return
      */
-    StaticPolyline *getPolyRepresentationLastPointToNewPoint(Vector newPoint, Vector newDerivative,
-                                                             floatType resolution) const;
+    std::shared_ptr<StaticPolyline> getPolyRepresentationLastPointToNewPoint(Vector &newPoint, Vector &newDerivative,
+                                                                             floatType resolution) const;
 
     Vector evaluate(floatType relativeT) const override;
 
@@ -57,7 +58,7 @@ class Ground : public Component<StaticPolyline> {
      *
      * @return
      */
-    StaticPolyline *getPolyRepresentationForGeneration() const;
+    std::shared_ptr<StaticPolyline> getPolyRepresentationForGeneration() const;
 
     /**
      * Computes the relative T value of the ground for the given x-pos. This will be the left T value of the spline
@@ -77,7 +78,7 @@ class Ground : public Component<StaticPolyline> {
      */
     floatType getMaxT(floatType maxX);
 
-    const std::vector<Vector> *getDerivatives() const;
+    std::shared_ptr<std::vector<Vector>> getDerivatives() const;
     floatType getEndT() const;
 
     /**
@@ -88,8 +89,8 @@ class Ground : public Component<StaticPolyline> {
     void removeLastBasepoints(int count);
 
   private:
-    std::vector<Vector> derivatives;
-    std::vector<TwoDimensionalHermiteSpline> splines = {};
+    std::shared_ptr<std::vector<Vector>> derivatives;
+    std::vector<std::unique_ptr<TwoDimensionalHermiteSpline>> splines = {};
 };
 
 #endif // SURVIVING_SARNTAL_GROUND_HPP
