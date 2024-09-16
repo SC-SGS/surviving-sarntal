@@ -8,21 +8,25 @@
 #include "../../entities/World.h"
 #include "../../spawner/ItemSpawner.h"
 #include "../../spawner/RockSpawner.h"
+#include <future>
 
 class Spawner {
 
   public:
     Spawner(Terrain &terrain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
-            GameConstants gameConstants);
+            GameConstants &gameConstants);
     ~Spawner() = default;
-    void spawn() const;
+    void spawn();
 
   private:
     RockSpawner &rockSpawner;
     Terrain &terrain;
     ItemSpawner &itemSpawner;
     World &world;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
+
+    bool generating = false;
+    std::future<std::shared_ptr<Biome>> generatingThread;
 
     /**
      * Spawn rocks for this time step.

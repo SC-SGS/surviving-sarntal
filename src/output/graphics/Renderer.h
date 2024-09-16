@@ -6,14 +6,11 @@
 #define SURVIVING_SARNTAL_RENDERER_H
 
 #include "../../entities/World.h"
-#include "../../spawner/rock_spawning/Polygon.h"
-#include "../../spawner/rock_spawning/PolygonGenerator.h"
-#include "../../spawner/rock_spawning/PolygonRenderer.h"
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
 #include "renderers/MountainRenderer.h"
-#include <cmath>
+#include "renderers/PolygonRenderer.h"
 
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 
@@ -27,7 +24,7 @@ class Renderer {
     ~Renderer() = default;
 
     void toggleDebugMode();
-    void addExplosion(const Vector &position, float radius);
+    void addExplosion(const Rock &rock) const;
 
   private:
     // Dependencies
@@ -59,7 +56,7 @@ class Renderer {
                       Rectangle sourceRec) const;
     void renderBackground();
     void regenerateGradientTexture();
-    void renderRock(RenderedEntity &entity) const;
+    void renderRock(const Rock &rock) const;
     void renderHiker(const Hiker &hiker);
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
                                          floatType offsetY) const;
@@ -70,7 +67,7 @@ class Renderer {
     void renderItemSlot(const Inventory &inventory, int slotNumber, int startX, int startY) const;
     void renderHealthBar() const;
     void debugRenderEntities();
-    void debugRenderRock(RenderedEntity &entity) const;
+    void debugRenderRock(const Rock &rock) const;
     void renderScore() const;
     void renderCoinScore() const;
     void renderHUD() const;
@@ -80,12 +77,7 @@ class Renderer {
     void renderNormalEntities();
     std::list<Rock> &getDestroyedRocks() const;
     void renderWalkingHiker(const Hiker &hiker);
-    void renderPolygon();
-    PolygonGenerator polygonGenerator{};
     PolygonRenderer &polygonRenderer;
-    Vector center = {static_cast<floatType>(graphics::SCREEN_WIDTH) / 2,
-                     static_cast<floatType>(graphics::SCREEN_HEIGHT) / 3};
-    Polygon polygon = polygonGenerator.generatePolygon(100, 100, center);
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

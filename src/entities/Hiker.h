@@ -98,6 +98,9 @@ class Hiker : public RenderedEntity {
     bool isHit{};
     HitInformation hitInformation{};
     bool isAlive{};
+    // DynamicPolygon boundingBoxWalking;
+    // DynamicPolygon boundingBoxCrouched;
+    // DynamicPolygon boundingBoxJumping;
 
     // Helper functions
     void doSecondJump();

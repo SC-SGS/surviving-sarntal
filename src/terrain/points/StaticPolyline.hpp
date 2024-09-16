@@ -25,7 +25,7 @@ class StaticPolyline : public StaticPolyObject {
      * Adds all points from the given polyline to the end of this one.
      * @param polyline
      */
-    void addPolyline(StaticPolyline *polyline);
+    void addPolyline(const StaticPolyline &polyline);
 
     /**
      * Checks whether the given polyline intersects this one.
@@ -35,7 +35,7 @@ class StaticPolyline : public StaticPolyObject {
      * @param other
      * @return
      */
-    bool intersectsWithoutFirstPoint(StaticPolyline *other) const;
+    bool intersectsWithoutFirstPoint(const StaticPolyline &other) const;
 
     const Vector &getStartPoint() const;
     const Vector &getEndPoint() const;

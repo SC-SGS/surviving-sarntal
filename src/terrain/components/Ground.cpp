@@ -7,40 +7,37 @@
 #include "../../utilities/Singleton.hpp"
 #include <cassert>
 
-Ground::Ground(StaticPolyline *polyline, std::vector<Vector> *derivatives, const floatType startT,
-               TerrainConstants terrainConstants)
-    : Component(polyline, terrainConstants), derivatives(*derivatives) {
+Ground::Ground(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives,
+               floatType startT, const TerrainConstants &terrainConstants)
+    : Component(polyline, terrainConstants), derivatives(std::make_unique<std::vector<Vector>>(derivatives)) {
     std::vector<Vector> initialPoint = {polyline->getStartPoint()};
-    std::vector<Vector> initialDerivative = {derivatives->front()};
-    this->derivatives = initialDerivative;
-    this->polyObject = StaticPolyline(initialPoint);
+    std::vector<Vector> initialDerivative = {derivatives.front()};
+    this->derivatives = std::make_shared<std::vector<Vector>>(initialDerivative);
+    this->polyObject = std::make_unique<StaticPolyline>(initialPoint);
     this->endPoint = polyline->getStartPoint();
+    this->startT = startT;
+    this->endT = startT;
+    this->relativeTs.push_back(startT);
     this->addTerrain(polyline, derivatives);
 }
 
-void Ground::addTerrain(Vector newPoint, Vector newDerivative) {
+void Ground::addTerrain(Vector &newPoint, Vector &newDerivative) {
     Vector prevPoint = this->endPoint;
-    Vector prevDerivative = this->derivatives.back();
+    Vector prevDerivative = this->derivatives->back();
     floatType prevT = this->endT;
     floatType newT = prevT + prevPoint.distanceTo(newPoint);
-    auto spline = TwoDimensionalHermiteSpline(prevT, newT, prevPoint, newPoint, prevDerivative, newDerivative);
-    this->splines.push_back(spline);
-    this->derivatives.push_back(newDerivative);
-    this->polyObject.addPoint(newPoint);
+    auto spline =
+        std::make_unique<TwoDimensionalHermiteSpline>(prevT, newT, prevPoint, newPoint, prevDerivative, newDerivative);
+    this->splines.push_back(std::move(spline));
+    this->derivatives->push_back(newDerivative);
+    this->polyObject->addPoint(newPoint);
     this->endT = newT;
+    this->relativeTs.push_back(newT);
     this->endPoint = newPoint;
-
-    // std::vector<Vector> newPointsRendering = this->getPolyRepresentationLastPointToNewPoint(newPoint,newDerivative,
-    // terrainConstants.renderingResolution)->getPoints(); newPointsRendering.erase(newPointsRendering.cbegin());
-    // std::vector<Vector> newPointsCollisionDetection = this->getPolyRepresentationLastPointToNewPoint(newPoint,
-    // newDerivative, terrainConstants.collisionDetectionResolution)->getPoints();
-    // newPointsCollisionDetection.erase(newPointsCollisionDetection.cbegin());
-    // this->polyRepresentationRendering.addPolyline(new Polyline(newPointsRendering));
-    // this->polyRepresentationCollisionDetection.addPolyline(new Polyline(newPointsCollisionDetection));
 }
 
-void Ground::addTerrain(const StaticPolyline *polyline, const std::vector<Vector> *derivatives) {
-    assert(polyline->getPoints().size() == derivatives->size());
+void Ground::addTerrain(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives) {
+    assert(polyline->getPoints().size() == derivatives.size());
     assert(polyline->getPoints().front() == this->endPoint);
 
     // floatType currentT = this->endT;
@@ -48,7 +45,7 @@ void Ground::addTerrain(const StaticPolyline *polyline, const std::vector<Vector
         // Vector prevPoint = polyline->getPoints().at(counter - 1);
         // Vector prevDerivative = derivatives->at(counter - 1);
         Vector newPoint = polyline->getPoints().at(counter);
-        Vector newDerivative = derivatives->at(counter);
+        Vector newDerivative = derivatives.at(counter);
         this->addTerrain(newPoint, newDerivative);
 
         // floatType prevT = currentT;
@@ -76,9 +73,7 @@ floatType Ground::getEndT() const { return endT; }
 //     this->startPoint = this->splines.front().getLeftPos();
 // }
 
-void Ground::addTerrain(const Ground &ground) { this->addTerrain(ground.getBasePoints(), ground.getDerivatives()); }
-
-const std::vector<Vector> *Ground::getDerivatives() const { return &derivatives; }
+std::shared_ptr<std::vector<Vector>> Ground::getDerivatives() const { return this->derivatives; }
 
 Vector Ground::evaluate(floatType relativeT) const {
     assert(this->startT <= relativeT && relativeT <= this->endT);
@@ -86,37 +81,38 @@ Vector Ground::evaluate(floatType relativeT) const {
     floatType currentT;
     do {
         index++;
-        currentT = this->splines.at(index).getRightT();
+        currentT = this->splines.at(index)->getRightT();
     } while (relativeT > currentT);
-    return this->splines.at(index).evaluate(relativeT);
+    return this->splines.at(index)->evaluate(relativeT);
 }
 
 floatType Ground::getMinT(floatType minX) {
     assert(this->getBasePoints()->getStartPoint().x < minX && minX < this->getBasePoints()->getEndPoint().x);
     int index = 0;
-    while (this->splines.at(index).getRightPos().x < minX) {
+    while (this->splines.at(index)->getRightPos().x < minX) {
         index++;
     }
-    return this->splines.at(index).getLeftT();
+    return this->splines.at(index)->getLeftT();
 }
 
 floatType Ground::getMaxT(floatType maxX) {
     assert(this->getBasePoints()->getStartPoint().x < maxX && maxX < this->getBasePoints()->getEndPoint().x);
     auto index = static_cast<int>(this->getBasePoints()->getPoints().size() - 1);
-    while (this->splines.at(index).getLeftPos().x > maxX) {
+    while (this->splines.at(index)->getLeftPos().x > maxX) {
         index--;
     }
-    return this->splines.at(index).getRightT();
+    return this->splines.at(index)->getRightT();
 }
-StaticPolyline *Ground::getPolyRepresentationLastPointToNewPoint(Vector newPoint, Vector newDerivative,
-                                                                 floatType resolution) const {
+
+std::shared_ptr<StaticPolyline>
+Ground::getPolyRepresentationLastPointToNewPoint(Vector &newPoint, Vector &newDerivative, floatType resolution) const {
     floatType currentT = this->endT + this->endPoint.distanceTo(newPoint);
-    auto spline = TwoDimensionalHermiteSpline(this->endT, currentT, this->endPoint, newPoint, this->derivatives.back(),
+    auto spline = TwoDimensionalHermiteSpline(this->endT, currentT, this->endPoint, newPoint, this->derivatives->back(),
                                               newDerivative);
     return spline.getPolyrepresentation(resolution);
 }
 
-StaticPolyline *Ground::getPolyRepresentationForGeneration() const {
+std::shared_ptr<StaticPolyline> Ground::getPolyRepresentationForGeneration() const {
     int index = 0;
     while (index < this->getBasePoints()->getPoints().size() &&
            this->getBasePoints()->getPoints().at(index).distanceTo(this->endPoint) >
@@ -128,22 +124,23 @@ StaticPolyline *Ground::getPolyRepresentationForGeneration() const {
     }
 
     std::vector<Vector> points = {};
-    floatType relativeT = this->splines.at(index).getLeftT();
+    floatType relativeT = this->splines.at(index)->getLeftT();
     while (relativeT < this->endT) {
         points.push_back(this->evaluate(relativeT));
         relativeT += this->terrainConstants.renderingResolution;
     }
     points.push_back(this->endPoint);
-    return new StaticPolyline(points);
+    return std::make_shared<StaticPolyline>(points);
 }
 
 void Ground::removeLastBasepoints(int count) {
     assert(this->splines.size() >= count);
     for (int counter = 0; counter < count; counter++) {
         this->splines.erase(this->splines.cend());
-        this->derivatives.erase(this->derivatives.cend());
+        this->derivatives->erase(this->derivatives->cend());
+        this->relativeTs.erase(this->relativeTs.cend());
     }
-    this->polyObject.removeLastPoints(count);
-    this->endPoint = this->polyObject.getEndPoint();
-    this->endT = this->splines.back().getRightT();
+    this->polyObject->removeLastPoints(count);
+    this->endPoint = this->polyObject->getEndPoint();
+    this->endT = this->splines.back()->getRightT();
 }

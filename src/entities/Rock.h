@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_ROCK_H
 
 #include "../utilities/vector.h"
+#include "DynamicPolygon.h"
 
 #include "RenderedEntity.h"
 
@@ -13,21 +14,11 @@
  * This class represents a rock in the game. A rock is simulated by a certain point (position) with a radius
  * and the attributes velocity and rotation.
  */
-// TODO struct might be better for performance?
-// TODO what about destructors, as in the programming concept in c++?
-class Rock : public RenderedEntity {
+class Rock : public DynamicPolygon {
   public:
-    Rock(Vector position, Vector velocity, floatType angularVelocity, floatType angularOffset, floatType radius);
-    ~Rock() = default;
-
-    void setVelocity(Vector &newVelocity);
-    void setAngularVelocity(floatType newAngularVelocity);
-    void setAngularOffset(floatType newAngularOffset);
-
-    Vector getVelocity();
-    floatType getAngularVelocity() const;
-    floatType getAngularOffset() const;
-    floatType getRadius() const;
+    Rock(const Vector &position, const std::vector<Vector> &vertices, const std::vector<Vector2> &textureCoordinates,
+         floatType mass, floatType momentOfInertia, const DynamicProperties &dynamicProperties);
+    ~Rock() override = default;
 
     RenderInformation getRenderInformation() const override;
 
@@ -35,10 +26,6 @@ class Rock : public RenderedEntity {
     void setShouldBeDestroyed(bool shouldBeDestroyedNew);
 
   private:
-    Vector velocity{};
-    floatType angularVelocity;
-    floatType angularOffset;
-    floatType radius;
     bool shouldBeDestroyed = false;
 };
 

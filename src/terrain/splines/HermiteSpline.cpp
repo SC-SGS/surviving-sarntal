@@ -5,10 +5,10 @@
 #include "HermiteSpline.hpp"
 #include "spdlog/spdlog.h"
 
-const Polynomial HermiteSpline::polynomialLeftValue = *(new Polynomial({2, -3, 0, 1}));
-const Polynomial HermiteSpline::polynomialRightValue = *(new Polynomial({-2, 3, 0, 0}));
-const Polynomial HermiteSpline::polynomialLeftDer = *(new Polynomial({1, -2, 1, 0}));
-const Polynomial HermiteSpline::polynomialRightDer = *(new Polynomial({1, -1, 0, 0}));
+const Polynomial HermiteSpline::polynomialLeftValue = Polynomial({2, -3, 0, 1});
+const Polynomial HermiteSpline::polynomialRightValue = Polynomial({-2, 3, 0, 0});
+const Polynomial HermiteSpline::polynomialLeftDer = Polynomial({1, -2, 1, 0});
+const Polynomial HermiteSpline::polynomialRightDer = Polynomial({1, -1, 0, 0});
 
 HermiteSpline::HermiteSpline(floatType leftT, floatType rightT, floatType leftValue, floatType rightValue,
                              floatType leftDer, floatType rightDer)

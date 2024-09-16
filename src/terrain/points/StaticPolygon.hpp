@@ -25,12 +25,9 @@ class StaticPolygon : public StaticPolyObject {
 
     Vector getCenter() const;
 
-    const AxisAlignedBoundingBox &getBoundingBox() const;
-
   private:
     Vector center = {};
     Vector basepoint = {}; // Point outside the polygon
-    AxisAlignedBoundingBox boundingBox = {};
 
     void calculateCenter();
 };

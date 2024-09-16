@@ -9,13 +9,13 @@ StaticPolyObject::StaticPolyObject(std::vector<Vector> &points) : points(points)
 
 const std::vector<Vector> &StaticPolyObject::getPoints() const { return points; }
 
-std::vector<Intersection> StaticPolyObject::calculateIntersections(const Line &line) const {
-    std::vector<Intersection> intersections = {};
+std::vector<std::shared_ptr<Intersection>> StaticPolyObject::calculateIntersections(const Line &line) const {
+    std::vector<std::shared_ptr<Intersection>> intersections = {};
     for (int index = 0; index < this->points.size() - 1; index++) {
         Line linePiece = {this->points.at(index), this->points.at(index + 1)};
         std::optional<Intersection> intersection = linePiece.calculateIntersection(line);
         if (intersection.has_value()) {
-            intersections.push_back(intersection.value());
+            intersections.push_back(std::make_shared<Intersection>(intersection.value()));
         }
     }
     return intersections;
@@ -28,14 +28,15 @@ bool StaticPolyObject::intersects(const Line &line) const {
     for (int index = 0; index < this->points.size() - 1; index++) {
         Vector firstPoint = this->points.at(index);
         Vector secondPoint = this->points.at(index + 1);
-        if (Vector::getIntersection(firstPoint, secondPoint, line.start, line.end).has_value()) {
+        Line sectionLine = {firstPoint, secondPoint};
+        if (line.calculateIntersection(sectionLine).has_value()) {
             return true;
         }
     }
     return false;
 }
 
-bool StaticPolyObject::intersects(const StaticPolyObject *other) const {
+bool StaticPolyObject::intersects(const std::shared_ptr<StaticPolyObject> &other) const {
     for (int index = 0; index < other->getPoints().size() - 1; index++) {
         Vector start = other->getPoints().at(index);
         Vector end = other->getPoints().at(index + 1);
@@ -46,13 +47,13 @@ bool StaticPolyObject::intersects(const StaticPolyObject *other) const {
     return false;
 }
 
-StaticPolyObject::StaticPolyObject(StaticPolyObject *polyObject, Vector delta) {
-    std::vector<Vector> newPoints = {};
-    for (Vector point : polyObject->getPoints()) {
-        newPoints.push_back(point + delta);
-    }
-    this->points = newPoints;
-}
+// StaticPolyObject::StaticPolyObject(StaticPolyObject *polyObject, Vector delta) {
+//     std::vector<Vector> newPoints = {};
+//     for (Vector point : polyObject->getPoints()) {
+//         newPoints.push_back(point + delta);
+//     }
+//     this->points = newPoints;
+// }
 
 AxisAlignedBoundingBox StaticPolyObject::getBoundingBox() const { return this->boundingBox; }
 

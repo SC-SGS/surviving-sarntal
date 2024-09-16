@@ -12,11 +12,11 @@
 class Splineoid : public ClosedComponent {
   public:
     explicit Splineoid(
-        StaticPolygon *polygon, const std::vector<Vector> &derivatives,
-        TerrainConstants terrainConstants); // TODO: Use C2-smooth hermite splines with natural border conditions
+        std::shared_ptr<StaticPolygon> polygon, const std::vector<Vector> &derivatives,
+        TerrainConstants &terrainConstants); // TODO: Use C2-smooth hermite splines with natural border conditions
 
   private:
-    std::vector<TwoDimensionalHermiteSpline> splines = {};
+    std::unique_ptr<std::vector<TwoDimensionalHermiteSpline>> splines = {};
 
     Vector evaluate(floatType relativeT) const override;
 };
