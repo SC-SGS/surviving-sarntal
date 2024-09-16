@@ -17,6 +17,7 @@ class RenderedEntity {
     static int idCounter;
 
   public:
+    virtual ~RenderedEntity() = default;
     explicit RenderedEntity(Vector position);
 
     virtual RenderInformation getRenderInformation() const = 0;

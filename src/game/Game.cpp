@@ -38,6 +38,10 @@ void Game::run() {
             }
             drawEndScreen();
         }
+        // Debug terrain deletion
+        if (world.getTerrain().getPolyRepresentationOfGroundRendering().size() > 3) {
+            spdlog::debug("Terrain has more than 3 biomes active at the same time.");
+        }
     }
 }
 void Game::drawEndScreen() {

@@ -19,7 +19,8 @@ void Destructor::destructRocks() const {
     this->world.getRocks().remove_if([this](const Rock &rock) {
         bool shouldBeDestroyed = rock.getShouldBeDestroyed();
         if (shouldBeDestroyed) {
-            this->renderer.addExplosion(rock.getPosition(), rock.getRadius());
+            // TODO we can make the explosion fit the bounding box perfectly
+            this->renderer.addExplosion(rock);
         }
         return shouldBeDestroyed || this->world.isOutOfScope(rock);
     });

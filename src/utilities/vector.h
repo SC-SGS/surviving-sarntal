@@ -2,7 +2,6 @@
 
 #include "../game/GameProperties.hpp"
 #include "raylib.h"
-#include <cmath>
 #include <optional>
 /**
  * This struct represents a vector in two dimensional space with a x and a y coordinate.
@@ -11,6 +10,16 @@ struct Vector {
     floatType x;
     floatType y;
 
+    /**
+     * Construct a vector from a given Raylib vector
+     *
+     * @param raylibVector
+     */
+    static Vector fromRaylibVector2(const Vector2 &raylibVector);
+
+    /**
+     * construct a Raylib vector from this vector.
+     */
     explicit operator Vector2() const;
 
     /**
@@ -24,20 +33,6 @@ struct Vector {
      * @param yValue
      */
     void setY(floatType yValue);
-
-    /**
-     * This method returns whether the other vector is equal to this one.
-     * @param other
-     * @return is equal
-     */
-    bool operator==(Vector const &other) const;
-
-    /**
-     * This method returns whether the other vector is not equal to this one.
-     * @param other
-     * @return is not equal
-     */
-    bool operator!=(const Vector &other) const;
 
     /**
      * This method returns a new vector which is the addition of the current and the given vector.
@@ -151,6 +146,41 @@ struct Vector {
     static floatType linearInterpolation(floatType xPos, Vector left, Vector right);
 
     bool operator<(const Vector &other) const;
+    bool operator!=(const Vector &other) const;
+    bool operator==(const Vector &other) const;
+
+    /**
+     * Dot Product. Commutative.
+     * @param other
+     * @return
+     */
+    floatType dot(const Vector &other) const;
+
+    /**
+     * Cross Product. Non-commutative.
+     *
+     * @param other
+     * @return
+     */
+    floatType cross(const Vector &other) const;
+
+    /**
+     * Checks whether this vector is equal to another vector within a given relative error of eps.
+     * The error is always relative to the vector with the bigger length.
+     *
+     * @param other
+     * @param eps
+     * @return
+     */
+    bool approxEq(const Vector &other, floatType eps) const;
+
+    /**
+     * Returns the projection of this vector onto the other vector.
+     *
+     * @param other
+     * @return
+     */
+    Vector projectOn(const Vector &other) const;
 
     /**
      * Rotates this vector by the angle given in radians. Uses the rotation matrix:
@@ -180,47 +210,10 @@ struct Vector {
     Vector randomRotation(floatType randomness) const;
 
     /**
-     * Checks whether the lines given by the start- and endpoints intersect.
-     *
-     * @param firstStartpoint
-     * @param firstEndpoint
-     * @param secondStartpoint
-     * @param secondEndpoint
-     * @return
-     */
-    static bool intersects(Vector firstStartpoint, Vector firstEndpoint, Vector secondStartpoint,
-                           Vector secondEndpoint);
-
-    /**
-     * Returns the intersection points of the lines given by the start- and endpoints.
-     * Precondition: The given lines NEED to intersect.
-     *
-     * @param firstStartpoint
-     * @param firstEndpoint
-     * @param secondStartpoint
-     * @param secondEndpoint
-     * @return
-     */
-    static Vector intersectionPoint(Vector firstStartpoint, Vector firstEndpoint, Vector secondStartpoint,
-                                    Vector secondEndpoint);
-
-    /**
-     * Returns the intersection points of the lines given by the start- and endpoints if that intersection exists.
-     *
-     * @param firstStartpoint
-     * @param firstEndpoint
-     * @param secondStartpoint
-     * @param secondEndpoint
-     * @return
-     */
-    static std::optional<Vector> getIntersection(Vector firstStartpoint, Vector firstEndpoint, Vector secondStartpoint,
-                                                 Vector secondEndpoint);
-
-    /**
      * Returns the angle between {0, 1} and this vector. Positive, if this vector is in counterclockwise direction of
      * {0, 1}, negative else.
+     * TODO the denominator is a bit unclear
      *
-     * @param first
      * @return
      */
     floatType getRelativeAngle() const;
@@ -230,9 +223,10 @@ struct Vector {
      * direction of the first vector, negative else.
      *
      * @param first
+     * @param second
      * @return
      */
-    static floatType getRelativeAngle(Vector first, Vector second);
+    static floatType getRelativeAngle(const Vector &first, const Vector &second);
 
     /**
      * Returns a random angle that is in the range Pi*[-randomness, randomness].
@@ -248,13 +242,6 @@ struct Vector {
      * @return
      */
     static floatType mapAngleToRange(floatType angle);
-
-    /**
-     * Converts this vector to a Vector2 used by raylib.
-     *
-     * @return
-     */
-    Vector2 convertToRaylibRepresentation();
 
     /**
      * Returns a vector with length 1, pointing in the direction specified by the angle counterclockwise from (1,0)

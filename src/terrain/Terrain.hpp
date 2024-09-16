@@ -22,10 +22,18 @@ class Terrain {
      * IMPORTANT: The given length is the length the new biome will have AT LEAST. The biome will generate points until
      * the length is reached or exceeded.
      *
-     * @param newBiome
+     * @param biomeType
      * @param length rough length of the new terrain to generate.
      */
-    void generateBiome(BiomeType newBiome, floatType length);
+    std::shared_ptr<Biome> generateBiome(BiomeType biomeType, floatType length);
+
+    /**
+     * Adds the given biome to this terrain.
+     * IMPORTANT: The start of the given biome must fit to the end of the existing terrain.
+     *
+     * @param biome
+     */
+    void addBiome(const std::shared_ptr<Biome> &biome);
 
     /**
      * Removes all complete biomes left of the specified xPos.
@@ -61,7 +69,7 @@ class Terrain {
      *
      * @return list of all intersections
      */
-    std::vector<Intersection> getAllIntersections(Line &line);
+    std::vector<std::shared_ptr<Intersection>> getAllIntersections(Line &line);
 
     /**
      * Computes the xPos at the end of the terrain.
@@ -87,15 +95,15 @@ class Terrain {
      */
     floatType getMinHeight() const;
 
-    std::vector<StaticPolygon *> getPolyRepresentationOfAllComponentsRendering() const;
+    std::vector<std::shared_ptr<StaticPolygon>> getPolyRepresentationOfAllComponentsRendering() const;
 
-    StaticPolyline *getPolyRepresentationOfGroundRendering() const;
+    std::vector<std::shared_ptr<StaticPolyline>> getPolyRepresentationOfGroundRendering() const;
 
-    std::vector<StaticPolygon *> getPolyRepresentationOfAllComponentsCollisionDetection() const;
+    // std::vector<StaticPolygon *> getPolyRepresentationOfAllComponentsCollisionDetection() const;
 
-    StaticPolyline *getPolyRepresentationOfGroundCollisionDetection() const;
+    // StaticPolyline *getPolyRepresentationOfGroundCollisionDetection() const;
 
-    StaticPolyline *getBasepoints() const;
+    std::shared_ptr<StaticPolyline> getBasepoints() const;
 
     /**
      * Creates an empty terrain with the specified dimensions
@@ -115,7 +123,7 @@ class Terrain {
      * @param resolution
      * @return List of all approximated components
      */
-    std::vector<StaticPolygon *> getPolyRepresentationOfAllComponents(floatType resolution) const;
+    std::vector<std::shared_ptr<StaticPolygon>> getPolyRepresentationOfAllComponents(floatType resolution) const;
 
     /**
      * Approximates the ground with a polygon of the given resolution.
@@ -123,11 +131,11 @@ class Terrain {
      * @param resolution
      * @return
      */
-    StaticPolyline *getPolyRepresentationOfGround(floatType resolution) const;
+    std::shared_ptr<StaticPolyline> getPolyRepresentationOfGround(floatType resolution) const;
 
     void recalculateBoundingBox();
 
-    std::vector<Biome *> biomes;
+    std::vector<std::shared_ptr<Biome>> biomes;
     AxisAlignedBoundingBox boundingBox = {};
 
     HikerConstants hikerConstants;
@@ -140,7 +148,7 @@ class Terrain {
      *
      * @param line
      */
-    static void sortIntersections(Line &line, std::vector<Intersection> &intersections);
+    static void sortIntersections(Line &line, std::vector<std::shared_ptr<Intersection>> &intersections);
 };
 
 #endif // SURVIVING_SARNTAL_TERRAIN_HPP

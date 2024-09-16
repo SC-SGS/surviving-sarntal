@@ -25,11 +25,11 @@ class TwoDimensionalHermiteSpline : public Spline<Vector> {
      * @param resolution
      * @return
      */
-    StaticPolyline *getPolyrepresentation(floatType resolution) const;
+    std::shared_ptr<StaticPolyline> getPolyrepresentation(floatType resolution) const;
 
   private:
-    HermiteSpline *xSpline;
-    HermiteSpline *ySpline;
+    std::unique_ptr<HermiteSpline> xSpline;
+    std::unique_ptr<HermiteSpline> ySpline;
     Vector start;
     Vector end;
     Vector startDer;

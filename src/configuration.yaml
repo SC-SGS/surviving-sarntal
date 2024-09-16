@@ -37,6 +37,7 @@ textures:
   foreground: "../../assets/layers/clouds_mg_1.png"
   mountain: "../../assets/layers/mountain.png"
   rockRectangle: "../../assets/texture/rock.png"
+  default: "../../assets/texture/default.png"
 
 items:
   kaiserschmarrn:
@@ -75,9 +76,10 @@ gameConstants:
     hikerWidth: 1.15
     crouchedHikerHeight: 1.42
     crouchedHikerWidth: 0.96
+    mass: 80.0
     duckSpeedFactor: 0.35
     normalSpeed: 2.6
-    jumpVelocity: 7.5
+    jumpVelocity: 10.0
     airMovementSpeedFactor: 0.6
     knockBack: 0.00005
     minSpeedNegSlope: 0.6
@@ -106,12 +108,12 @@ gameConstants:
     minRockSize: 0.32
     maxRockSize: 1
     velocityCap: 1200.0
-    gamma: 50.0
-    maxAngularVelocity: 1000.0
+    gamma: 1.0
+    maxAngularVelocity: 1.0
     minSpawnVelocity: 0.01
     maxSpawnVelocity: 10.0
     minSpawnRotationVelocity: 0.1
-    maxSpawnRotationVelocity: 100.0
+    maxSpawnRotationVelocity: 1.0
     rockTimePeriodDifficult: 1.0
     rockTimePeriodMedium: 5.0
     rockTimePeriodEasy: 2.0
@@ -122,7 +124,7 @@ gameConstants:
   physicsConstants:
     gravitationalConstant: -9.81
     epsilon: 0.001
-    rockTerrainDamping: 0.8
+    rockTerrainDamping: 0.08
     physicsDeltaT: 0.01
 
   inputConstants:
@@ -158,15 +160,18 @@ gameConstants:
     linStepSize: 0.5
 
   terrainConstants:
-    bufferLeft: 5.0
-    bufferRight: 5.0
+    bufferLeft: 25.0
+    bufferRight: 25.0
     biomeWidth: 100.0
 
-    renderingResolution: 0.02
+    renderingResolution: 0.1
     collisionDetectionResolution: 0.1
+    collisionDetectionPreFilteringTolerance: 0.2
 
     generationCheckingRange: 5.0
     minimalBasePointDistance: 1.0
     minimalBasePolylineAngle: 30.0 #in degrees
     maximalSlopeHikerClearance: 85.0 #in degrees
     hikerClearanceTolerance: 1.5 #multiplier for hiker width and height
+    maximalOverhangDepth: 7.0
+    maximalOverhangHeight: 5.0

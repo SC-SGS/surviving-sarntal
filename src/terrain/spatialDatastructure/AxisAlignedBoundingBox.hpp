@@ -18,7 +18,14 @@ struct AxisAlignedBoundingBox {
      * @param other
      * @return new bounding box, that includes the space of both old ones
      */
-    AxisAlignedBoundingBox merge(AxisAlignedBoundingBox other) const;
+    AxisAlignedBoundingBox merge(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Extends this Bounding box by extending the outline with this point if necessary.
+     *
+     * @param point
+     */
+    void extend(const Vector &point);
 
     /**
      * Checks whether the given point is inside this bounding box.
@@ -26,7 +33,7 @@ struct AxisAlignedBoundingBox {
      * @param point
      * @return
      */
-    bool isIn(Vector point) const;
+    bool isIn(const Vector &point) const;
 
     /**
      * Checks whether the given line is completely inside this bounding box.
@@ -34,7 +41,7 @@ struct AxisAlignedBoundingBox {
      * @param line
      * @return
      */
-    bool isIn(Line &line) const;
+    bool isIn(const Line &line) const;
 
     /**
      * Checks whether the given line intersects this bounding box.
@@ -42,7 +49,7 @@ struct AxisAlignedBoundingBox {
      * @param line
      * @return
      */
-    bool intersects(Line &line) const;
+    bool intersects(const Line &line) const;
 
     /**
      * Checks whether the given line intersects this bounding box or is completely inside it.
@@ -50,7 +57,98 @@ struct AxisAlignedBoundingBox {
      * @param line
      * @return
      */
-    bool intersectsOrIsIn(Line &line) const;
+    bool intersectsOrIsIn(const Line &line) const;
+
+    /**
+     * Computes the minimal bounding box surrounding the given line.
+     *
+     * @param line
+     * @return
+     */
+    static AxisAlignedBoundingBox getBoundingBox(const Line &line);
+
+    /**
+     * Computes the minimal bounding box surrounding the given line and adds the tolerance to each direction.
+     *
+     * @param line
+     * @param tolerance
+     * @return
+     */
+    static AxisAlignedBoundingBox getBoundingBoxWithTolerance(const Line &line, floatType tolerance);
+
+    /**
+     * Compares the bounding boxes by their borders in x-Direction.
+     * This AABB is smaller than the given one, if the left border of this AABB is smaller than the left border of the
+     * other.
+     *
+     * @param other
+     * @return
+     */
+    bool isSmallerLeftBorder(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in x-Direction.
+     * This AABB is smaller than the given one, if the right border of this AABB is smaller than the right border of the
+     * other.
+     *
+     * @param other
+     * @return
+     */
+    bool isSmallerRightBorder(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in y-Direction.
+     * This AABB is smaller than the given one, if the lower border of this AABB is smaller than the lower border of the
+     * other.
+     *
+     * @param other
+     * @return
+     */
+    bool isSmallerY(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in y-Direction.
+     * This AABB is greater than the given one, if the upper border of this AABB is greater than the upper border of the
+     * other.
+     *
+     * @param other
+     * @return
+     */
+    bool isGreaterY(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in x-Direction.
+     * This AABB overlaps with the other, if the left border of this AABB is smaller than the left border of the other
+     * and the right border of this AABB is greater than the left border of the other AABB OR the right border of this
+     * AABB is greater than the right border of the other and the left border of this AABB is smaller than the right
+     * border of the other.
+     *
+     * @param other
+     * @return
+     */
+    bool overlapsX(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in y-Direction.
+     * This AABB overlaps with the other, if the lower border of this AABB is smaller than the lower border of the other
+     * and the upper border of this AABB is greater than the lower border of the other AABB OR the upper border of this
+     * AABB is greater than the upper border of the other and the lower border of this AABB is smaller than the upper
+     * border of the other.
+     *
+     * @param other
+     * @return
+     */
+    bool overlapsY(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Compares the bounding boxes by their borders in x- and y-Direction.
+     *
+     * @param other
+     * @return true if the bounding boxes overlap in x- and y-direction
+     */
+    bool overlaps(const AxisAlignedBoundingBox &other) const;
+
+    bool operator==(const AxisAlignedBoundingBox &other) const;
 };
 
 #endif // SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP
