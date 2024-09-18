@@ -40,13 +40,13 @@ bool AxisAlignedBoundingBox::intersectsOrIsIn(const Line &line) const {
 
 AxisAlignedBoundingBox AxisAlignedBoundingBox::getBoundingBox(const Line &line) {
     return {{std::min(line.start.x, line.end.x), std::min(line.start.y, line.end.y)},
-            {std::max(line.start.x, line.end.x), std::max(line.start.y, line.end.y)}};
+            {std::fmax(line.start.x, line.end.x), std::fmax(line.start.y, line.end.y)}};
 }
 
 AxisAlignedBoundingBox AxisAlignedBoundingBox::getBoundingBoxWithTolerance(const Line &line,
                                                                            const floatType tolerance) {
     return {{std::min(line.start.x, line.end.x) - tolerance, std::min(line.start.y, line.end.y) - tolerance},
-            {std::max(line.start.x, line.end.x) + tolerance, std::max(line.start.y, line.end.y) + tolerance}};
+            {std::fmax(line.start.x, line.end.x) + tolerance, std::fmax(line.start.y, line.end.y) + tolerance}};
 }
 
 bool AxisAlignedBoundingBox::isSmallerLeftBorder(const AxisAlignedBoundingBox &other) const {

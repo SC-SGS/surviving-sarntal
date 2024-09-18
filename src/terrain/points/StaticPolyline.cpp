@@ -65,7 +65,8 @@ bool StaticPolyline::intersectsWithoutFirstPoint(const StaticPolyline &other) co
 void StaticPolyline::removeLastPoints(int count) {
     assert(this->points.size() > count);
     for (int counter = 0; counter < count; counter++) {
-        this->points.erase(this->points.cend());
+        auto pointsIt = std::prev(this->points.end());
+        this->points.erase(pointsIt);
     }
     this->endPoint = this->points.back();
     this->recalculateBoundingBox();
