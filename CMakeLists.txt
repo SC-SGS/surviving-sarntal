@@ -55,17 +55,20 @@ FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.ta
 FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-1.14.0.tar.gz)
 FetchContent_Declare(yaml-cpp URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/yaml-cpp-0.8.0.tar.gz)
 FetchContent_Declare(spdlog URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog-1.13.0.tar.gz)
+FetchContent_Declare(poly2tri URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/poly2tri-master.zip)
 
 FetchContent_MakeAvailable(raylib)
 FetchContent_MakeAvailable(googletest)
 FetchContent_MakeAvailable(yaml-cpp)
 FetchContent_MakeAvailable(spdlog)
+FetchContent_MakeAvailable(poly2tri)
 
 # Remove unnecessary .clang-tidy files from fetched libraries
 remove_clang_tidy(${raylib_SOURCE_DIR})
 remove_clang_tidy(${googletest_SOURCE_DIR})
 remove_clang_tidy(${yaml-cpp_SOURCE_DIR})
 remove_clang_tidy(${spdlog_SOURCE_DIR})
+remove_clang_tidy(${poly2tri_SOURCE_DIR})
 
 # Include directories
 include_directories(libs/NITE/Include /usr/include/ni)

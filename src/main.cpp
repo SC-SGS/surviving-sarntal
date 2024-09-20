@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     Camera2D camera = {0};
 
     // Init renderer
-    MountainRenderer mountainRenderer(camera, gameConstants);
+    MountainRenderer mountainRenderer(camera, gameConstants, resourceManager);
     Renderer renderer(world, resourceManager, camera, mountainRenderer, gameConstants, polygonRenderer);
 
     // Init physics

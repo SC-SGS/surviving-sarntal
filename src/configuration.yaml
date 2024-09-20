@@ -33,9 +33,9 @@ textures:
   explosion: "../../assets/texture/explosion.png"
   helicopter: "../../assets/texture/helicopter.png"
   monster: "../../assets/texture/killbar.png"
-  midground: "../../assets/layers/glacial_mountains.png"
+  midground: "../../assets/layers/mountainBackground.png"
   foreground: "../../assets/layers/clouds_mg_1.png"
-  mountain: "../../assets/layers/mountain.png"
+  mountain: "../../assets/layers/mountain3.png"
   rockRectangle: "../../assets/texture/rock.png"
   default: "../../assets/texture/default.png"
 
@@ -140,7 +140,7 @@ gameConstants:
     altimeterSteps: 10
     rumbleIntensity: 0.4
     rumbleDampening: 0.9
-    textureMidScale: 5.0
+    textureMidScale: 1.0
     textureForeScale: 7.0
     cameraToHikerOffset: 1
     mountainGradientHeight: 300

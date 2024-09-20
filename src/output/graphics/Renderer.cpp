@@ -371,6 +371,7 @@ void Renderer::renderAltimeter() const {
 }
 
 void Renderer::renderAltimeterStep(const int drawY, const int drawAltitude, const int fontSize) const {
+    rlSetLineWidth(1);
     if (drawAltitude % gameConstants.visualConstants.altimeterSteps == 0) {
         // right side
         DrawLine(GetScreenWidth(), drawY + fontSize / 2, GetScreenWidth() - gameConstants.visualConstants.uiMargin,
