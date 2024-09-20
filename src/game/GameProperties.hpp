@@ -5,6 +5,9 @@
 #ifndef SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 #define SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 
+#include <iostream>
+#include <vector>
+
 typedef float floatType;
 
 namespace graphics {
@@ -79,6 +82,8 @@ struct RockConstants {
     floatType rockTimePeriodEasy;
     floatType timeBetweenRockSpawns;
     int numOfRocksToSpawn;
+    floatType minRockDensity;
+    floatType maxRockDensity;
 
     floatType spawnOffsetX;
 };
@@ -158,6 +163,31 @@ struct MountainConstants {
     floatType linStepSize = 0.5f;
 };
 
+struct RockSpawnerConstants {
+
+    /**
+     * A list that contains the factor that determinse
+     */
+    std::vector<floatType> velocityDifficultyFactor;
+
+    /**
+     * A list that contains the x position at which the spawning phase should start at.
+     * The index of the value represents the difficulty level. For example 1 -> EASY difficulty.
+     *
+     */
+    std::vector<floatType> spawningPhase;
+
+    /**
+     *
+     */
+    std::vector<floatType> rockSpawnTimeInterval;
+
+    /**
+     *
+     */
+    std::vector<floatType> rockTypePhase;
+};
+
 struct GameConstants {
     HikerConstants hikerConstants{};
     ItemsConstants itemsConstants{};
@@ -168,6 +198,7 @@ struct GameConstants {
     BarriersConstants barriersConstants{};
     MountainConstants mountainConstants{};
     TerrainConstants terrainConstants{};
+    RockSpawnerConstants rockSpawnerConstants{};
 };
 
 #endif // SURVIVING_SARNTAL_GAMEPROPERTIES_HPP

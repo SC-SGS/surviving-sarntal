@@ -4,7 +4,7 @@
 #include "ItemSpawner.h"
 #include "spdlog/spdlog.h"
 
-ItemSpawner::ItemSpawner(World &world, GameConstants gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap)
+ItemSpawner::ItemSpawner(World &world, GameConstants &gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap)
     : world(world), gameConstants(gameConstants), nextSpawnTime(gameConstants.itemsConstants.startSpawnTime),
       itemDtoMap(itemDtoMap), spawnWeightsSum(static_cast<int>(itemDtoMap.size())) {
     this->nextSpawnTime = this->gameConstants.itemsConstants.startSpawnTime;

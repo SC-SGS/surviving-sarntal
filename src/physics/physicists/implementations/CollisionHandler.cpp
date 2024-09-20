@@ -9,7 +9,7 @@
 #include <mutex>
 
 CollisionHandler::CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
-                                   Renderer &renderer, GameConstants gameConstants)
+                                   Renderer &renderer, GameConstants &gameConstants)
     : world(world), collisionDetector(collisionDetector), audioService(audioService), renderer(renderer),
       gameConstants(gameConstants), hapticsService(HapticsService::getInstance()), deltaT(1) {}
 
@@ -26,18 +26,19 @@ void CollisionHandler::setDeltaT(const floatType deltaT) { this->deltaT = deltaT
 void CollisionHandler::playerCollisions() const {
     // TODO parallelize and make efficient with linked cell or sth
     for (auto &rock : this->world.getRocks()) {
-        if (this->collisionDetector.isPlayerHitByRock(rock)) {
+        if (this->collisionDetector.isPlayerHitByRock(*rock)) {
             // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
             this->audioService.playSound("rock-smash");
             this->audioService.playSound("boom");
-            const int rockDmg = this->rockDamage(rock);
+            const int rockDmg = this->rockDamage(*rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             HapticsService::rockRumble(rockDmg);
             this->world.getHiker().setHealthPoints(this->world.getHiker().getHealthPoints() - rockDmg);
             this->world.getHiker().setIsHit(true);
             // TODO knockback issue
-            this->world.getHiker().setHitInformation({rock.getBoundingBox().width / 2, rock.getLinearMomentum().x, 0});
-            rock.setShouldBeDestroyed(true);
+            this->world.getHiker().setHitInformation(
+                {rock->getBoundingBox().width / 2, rock->getLinearMomentum().x, 0});
+            rock->setShouldBeDestroyed(true);
         }
     }
 }
@@ -55,14 +56,14 @@ int CollisionHandler::rockDamage(Rock &rock) const {
 void CollisionHandler::rockTerrainCollisions() {
     for (auto &rock : this->world.getRocks()) {
         // TODO don't create too many copies, but will be changed later anyways
-        Rock virtualRock = this->getNextState(rock);
-        Line flightPath = {rock.getPosition(), virtualRock.getPosition()};
+        Rock virtualRock = this->getNextState(*rock);
+        Line flightPath = {rock->getPosition(), virtualRock.getPosition()};
         std::vector<std::shared_ptr<Intersection>> intersections =
             this->world.getTerrain().getAllIntersections(flightPath);
         //  TODO Needs to be changed, I just want to test the mountain rendering
         if (!intersections.empty()) {
             Intersection &intersection = *intersections.front();
-            this->rockTerrainCollision(rock, intersection);
+            this->rockTerrainCollision(*rock, intersection);
         }
         // if (this->world.getMountain().isInRange(virtualRock.getPosition().x)) {
         //    if (virtualRock.getPosition().y - this->world.getMountain().calculateYPos(virtualRock.getPosition().x) <
@@ -108,11 +109,11 @@ void CollisionHandler::rockRockCollisions() {
     for (auto &rock1 : this->world.getRocks()) {
         for (auto &rock2 : this->world.getRocks()) {
             // TODO remove unnecessary copies as far as possible
-            Rock vRock1 = this->getNextState(rock1);
-            Rock vRock2 = this->getNextState(rock2);
+            Rock vRock1 = this->getNextState(*rock1);
+            Rock vRock2 = this->getNextState(*rock2);
             if (CollisionDetector::rocksCollide(vRock1, vRock2)) {
                 // TODO play rock collision sounds
-                rockRockCollision(rock1, rock2);
+                rockRockCollision(*rock1, *rock2);
 
                 // TODO maybe explode rocks
             }
@@ -162,8 +163,13 @@ Rock CollisionHandler::getNextState(Rock &rock) const {
     const floatType newAngularOffset = rock.getRotationAngle() + rock.getAngularMomentum() * this->deltaT;
     // TODO we need not copy the BodySpaceVertices and Texture Coordinates each time, a dynamic attribute object would
     // be better
-    return {newPos,         rock.getBodySpaceVertices(), rock.getTextureCoordinates(),
-            rock.getMass(), rock.getMomentOfInertia(),   rock.getDynamicProperties()};
+    return {newPos,
+            rock.getBodySpaceVertices(),
+            rock.getTextureCoordinates(),
+            rock.getMass(),
+            rock.getDensity(),
+            rock.getMomentOfInertia(),
+            rock.getDynamicProperties()};
 }
 
 floatType CollisionHandler::capAngularVelocity(const floatType angVel) const {

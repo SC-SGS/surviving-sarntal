@@ -8,7 +8,7 @@
 #include <mutex>
 // TODO #include <omp.h>
 
-Accelerator::Accelerator(World &world, GameConstants gameConstants)
+Accelerator::Accelerator(World &world, GameConstants &gameConstants)
     : world(world), gameConstants(gameConstants), deltaT(1){};
 
 void Accelerator::accelerate() const {
@@ -21,13 +21,13 @@ void Accelerator::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 void Accelerator::updateRockVelocities() const {
     // TODO #pragma omp parallel for
     for (auto &rock : this->world.getRocks()) {
-        auto vel = rock.getLinearMomentum();
+        auto vel = rock->getLinearMomentum();
         vel.y += gameConstants.physicsConstants.gravitationalConstant * this->deltaT;
         // TODO rock speed probably shouldn't be capped
         if (vel.length() > gameConstants.rockConstants.velocityCap) {
             vel = (Vector)(vel * gameConstants.rockConstants.velocityCap / vel.length());
         }
-        rock.setLinearMomentum(vel);
+        rock->setLinearMomentum(vel);
     }
 }
 

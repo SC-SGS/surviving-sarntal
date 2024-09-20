@@ -39,9 +39,9 @@ void PolygonRenderer::renderPolygonOutline(const DynamicPolygon &polygon) const 
     }
 }
 
-void PolygonRenderer::renderTexturedPolygon(const DynamicPolygon &polygon) const {
-    const Texture2D texture = resourceManager.getTexture(polygon.getRenderInformation().texture);
-    std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
+void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicPolygon> &polygon) const {
+    const Texture2D texture = resourceManager.getTexture(polygon->getRenderInformation().texture);
+    std::vector<Vector> vertices = polygon->getWorldSpaceVertices();
     for (Vector &vertex : vertices) {
         vertex = GraphicsUtil::transformPosition(Vector2(vertex));
     }
@@ -55,9 +55,9 @@ void PolygonRenderer::renderTexturedPolygon(const DynamicPolygon &polygon) const
         DrawLineEx({point1.x, point1.y}, {point2.x, point2.y}, 4, BLACK);
     }
 
-    const std::vector<Vector2> &texCoords = polygon.getTextureCoordinates();
+    const std::vector<Vector2> &texCoords = polygon->getTextureCoordinates();
 
-    const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
+    const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon->getPosition()));
     const Vector2 rlCentroid = {centroid.x, centroid.y};
 
     // render textured polygon

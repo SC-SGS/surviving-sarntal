@@ -6,7 +6,7 @@
 #include "biomes/Mountain.hpp"
 #include "spdlog/spdlog.h"
 
-Terrain::Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants)
+Terrain::Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants)
     : hikerConstants(hikerConstants), terrainConstants(terrainConstants) {
     this->generateInitial();
 }
