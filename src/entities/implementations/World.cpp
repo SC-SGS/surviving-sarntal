@@ -8,7 +8,7 @@
 #include <mutex>
 
 World::World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
-             GameConstants gameConstants)
+             GameConstants &gameConstants)
     : terrain(terrain), hiker(hiker), inventory(inventory), monster(monster), audioService(audioService),
       gameConstants(gameConstants) {}
 
@@ -50,9 +50,9 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     return nearbyItems;
 }
 
-void World::addRock(const Rock &rock) const { this->rocks->push_back(rock); }
+void World::addRock(const std::shared_ptr<Rock> &rock) const { this->rocks->push_back(rock); }
 
-std::list<Rock> &World::getRocks() const { return *rocks; }
+std::list<std::shared_ptr<Rock>> &World::getRocks() const { return *rocks; }
 
 std::list<std::shared_ptr<Item>> &World::getItems() const { return *items; }
 

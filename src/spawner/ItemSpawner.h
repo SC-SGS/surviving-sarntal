@@ -16,7 +16,7 @@
 class ItemSpawner {
 
   public:
-    explicit ItemSpawner(World &world, GameConstants gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap);
+    explicit ItemSpawner(World &world, GameConstants &gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap);
     ~ItemSpawner() = default;
     /**
      * This method spawns items.
@@ -30,7 +30,7 @@ class ItemSpawner {
     RandomGenerator &randomGenerator = RandomGenerator::getInstance();
 
     // Attributes
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
     floatType nextSpawnTime;
     int spawnWeightsSum;
     /**

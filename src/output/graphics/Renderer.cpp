@@ -6,7 +6,7 @@
 #include <cmath>
 
 Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-                   GameConstants gameConstants, PolygonRenderer &polygonRenderer)
+                   GameConstants &gameConstants, PolygonRenderer &polygonRenderer)
     : world(world), resourceManager(resourceManager), camera(camera), mountainRenderer(mountainRenderer),
       gameConstants(gameConstants), polygonRenderer(polygonRenderer) {
 
@@ -157,7 +157,7 @@ void Renderer::renderWalkingHiker(const Hiker &hiker) {
     }
 }
 
-void Renderer::renderRock(const Rock &rock) const { polygonRenderer.renderTexturedPolygon(rock); }
+void Renderer::renderRock(const std::shared_ptr<Rock> &rock) const { polygonRenderer.renderTexturedPolygon(rock); }
 
 void Renderer::debugRenderRock(const Rock &rock) const {
     polygonRenderer.renderPolygonOutline(rock);
@@ -225,7 +225,7 @@ void Renderer::debugRenderEntities() {
     renderHiker(hiker);
     // Render rocks
     for (auto &rock : rocks) {
-        debugRenderRock(rock);
+        debugRenderRock(*rock);
     }
     // Render monster
     DrawLine(static_cast<int>(monster.getRenderInformation().position.x * graphics::UNIT_TO_PIXEL_RATIO),
@@ -423,7 +423,7 @@ AnimationInformation &Renderer::getAnimationInformation(int entityId, AnimationI
 
 void Renderer::addExplosion(const Rock &rock) const {
     // TODO the explosion needs to fit the bounding box
-    Rock destroyedRock(rock.getPosition(), rock.getBodySpaceVertices(), rock.getTextureCoordinates(), 0.0f, 0.0f,
+    Rock destroyedRock(rock.getPosition(), rock.getBodySpaceVertices(), rock.getTextureCoordinates(), 0.0f, 0.0f, 0.0f,
                        DynamicProperties());
     destroyedRock.setAnimationInformation({25, 0, 0.1, 0});
     this->destroyedRocks->push_back(destroyedRock);

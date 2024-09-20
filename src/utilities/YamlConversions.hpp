@@ -75,6 +75,8 @@ template <> struct convert<RockConstants> {
         rockConstants.maxAngularVelocity = node["maxAngularVelocity"].as<floatType>();
         rockConstants.minSpawnVelocity = node["minSpawnVelocity"].as<floatType>();
         rockConstants.maxSpawnVelocity = node["maxSpawnVelocity"].as<floatType>();
+        rockConstants.minRockDensity = node["minRockDensity"].as<floatType>();
+        rockConstants.maxRockDensity = node["maxRockDensity"].as<floatType>();
         rockConstants.minSpawnRotationVelocity = node["minSpawnRotationVelocity"].as<floatType>();
         rockConstants.maxSpawnRotationVelocity = node["maxSpawnRotationVelocity"].as<floatType>();
         rockConstants.rockTimePeriodDifficult = node["rockTimePeriodDifficult"].as<floatType>();
@@ -198,6 +200,21 @@ template <> struct convert<TerrainConstants> {
     }
 };
 
+template <> struct convert<RockSpawnerConstants> {
+    static bool decode(const Node &node, RockSpawnerConstants &rockSpawnerConstants) {
+        if (!node.IsMap()) {
+            return false;
+        }
+
+        rockSpawnerConstants.velocityDifficultyFactor = node["velocityDifficultyFactor"].as<std::vector<floatType>>();
+        rockSpawnerConstants.spawningPhase = node["spawningPhase"].as<std::vector<floatType>>();
+        rockSpawnerConstants.rockSpawnTimeInterval = node["rockSpawnTimeInterval"].as<std::vector<floatType>>();
+        rockSpawnerConstants.rockTypePhase = node["rockTypePhase"].as<std::vector<floatType>>();
+
+        return true;
+    }
+};
+
 template <> struct convert<GameConstants> {
     static bool decode(const Node &node, GameConstants &gameConstants) {
         if (!node.IsMap()) {
@@ -212,6 +229,7 @@ template <> struct convert<GameConstants> {
         gameConstants.visualConstants = node["visualConstants"].as<VisualConstants>();
         gameConstants.barriersConstants = node["barriersConstants"].as<BarriersConstants>();
         gameConstants.terrainConstants = node["terrainConstants"].as<TerrainConstants>();
+        gameConstants.rockSpawnerConstants = node["rockSpawnerConstants"].as<RockSpawnerConstants>();
 
         return true;
     }

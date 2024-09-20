@@ -5,7 +5,7 @@
 #include "../Destructor.hpp"
 #include "../../../output/graphics/Renderer.h"
 
-Destructor::Destructor(World &world, Renderer &renderer, GameConstants gameConstants)
+Destructor::Destructor(World &world, Renderer &renderer, GameConstants &gameConstants)
     : world(world), renderer(renderer), gameConstants(gameConstants) {}
 
 void Destructor::destruct() const {
@@ -16,13 +16,13 @@ void Destructor::destruct() const {
 }
 
 void Destructor::destructRocks() const {
-    this->world.getRocks().remove_if([this](const Rock &rock) {
-        bool shouldBeDestroyed = rock.getShouldBeDestroyed();
+    this->world.getRocks().remove_if([this](const std::shared_ptr<Rock> &rock) {
+        bool shouldBeDestroyed = rock->getShouldBeDestroyed();
         if (shouldBeDestroyed) {
             // TODO we can make the explosion fit the bounding box perfectly
-            this->renderer.addExplosion(rock);
+            this->renderer.addExplosion(*rock);
         }
-        return shouldBeDestroyed || this->world.isOutOfScope(rock);
+        return shouldBeDestroyed || this->world.isOutOfScope(*rock);
     });
 }
 

@@ -5,7 +5,7 @@
 #include "MountainRenderer.h"
 #include "poly2tri/poly2tri.h"
 
-MountainRenderer::MountainRenderer(Camera2D &camera, GameConstants gameConstants, ResourceManager &resourceManager)
+MountainRenderer::MountainRenderer(Camera2D &camera, GameConstants &gameConstants, ResourceManager &resourceManager)
     : camera(camera), gameConstants(gameConstants) {
     mountainTexture = resourceManager.getTexture("mountain");
     // Alle Optionen: TEXTURE_WRAP_REPEAT, TEXTURE_WRAP_CLAMP, TEXTURE_WRAP_MIRROR_REPEAT

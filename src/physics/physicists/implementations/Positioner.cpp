@@ -7,7 +7,7 @@
 #include <iostream>
 #include <mutex>
 
-Positioner::Positioner(World &world, HikerConstants hikerConstants, BarriersConstants barriersConstants)
+Positioner::Positioner(World &world, HikerConstants &hikerConstants, BarriersConstants &barriersConstants)
     : world(world), hikerConstants(hikerConstants), barriersConstants(barriersConstants), deltaT(1){};
 
 void Positioner::updatePositions() const {
@@ -37,11 +37,11 @@ void Positioner::updateWorldBorderPosition() const {
 
 void Positioner::updateRockPositions() const {
     for (auto &rock : this->world.getRocks()) {
-        auto pos = rock.getPosition();
-        pos += rock.getLinearMomentum() * this->deltaT;
-        rock.setPosition(pos);
-        const floatType newAngularOffset = rock.getRotationAngle() + rock.getAngularMomentum() * this->deltaT;
-        rock.setRotationAngleRad(newAngularOffset);
+        auto pos = rock->getPosition();
+        pos += rock->getLinearMomentum() * this->deltaT;
+        rock->setPosition(pos);
+        const floatType newAngularOffset = rock->getRotationAngle() + rock->getAngularMomentum() * this->deltaT;
+        rock->setRotationAngleRad(newAngularOffset);
     }
 }
 

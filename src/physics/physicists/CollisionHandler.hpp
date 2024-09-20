@@ -26,7 +26,7 @@ class CollisionHandler {
 
     void setDeltaT(floatType deltaT);
     CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService, Renderer &renderer,
-                     GameConstants gameConstants);
+                     GameConstants &gameConstants);
     ~CollisionHandler() = default;
 
   private:
@@ -35,7 +35,7 @@ class CollisionHandler {
     CollisionDetector &collisionDetector;
     AudioService &audioService;
     Renderer &renderer;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     floatType deltaT;
     HapticsService &hapticsService;

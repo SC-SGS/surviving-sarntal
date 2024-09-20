@@ -32,7 +32,7 @@ class PolygonRenderer {
      * This method renders a polygon by filling it with a texture.
      * @param polygon
      */
-    void renderTexturedPolygon(const DynamicPolygon &polygon) const;
+    void renderTexturedPolygon(const std::shared_ptr<DynamicPolygon> &polygon) const;
 
     /**
      *  Draws a textured polygon, defined by vertex and texture coordinates.
