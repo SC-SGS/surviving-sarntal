@@ -7,12 +7,13 @@
 
 #include "../../../entities/World.h"
 #include "../GraphicsUtil.h"
+#include "poly2tri/common/shapes.h"
 #include "raylib.h"
 #include "rlgl.h"
 
 class MountainRenderer {
   public:
-    explicit MountainRenderer(Camera2D &camera, GameConstants gameConstants);
+    explicit MountainRenderer(Camera2D &camera, GameConstants gameConstants, ResourceManager &resourceManager);
 
     /**
      * Renders the mountain with the given colors in a gradient from top to bottom.
@@ -30,63 +31,20 @@ class MountainRenderer {
     Camera2D &camera;
     GameConstants gameConstants;
 
-    void updateVertices(const Terrain &terrain, Color topColor, Color bottomColor);
-    floatType calculateLowerBorder() const;
-    void updateVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor, floatType startX);
-    void removeOutOfBoundsVerticesAndColors(floatType newMinX);
-    void updateBorders(floatType newMinX, floatType newMaxX);
-    void addNewVerticesAndColors(const Terrain &terrain, Color topColor, Color bottomColor);
+    void updateVertices(const Terrain &terrain);
 
-    /**
-     * Creates the triangles for the mountain mesh.
-     * The triangles are created by connecting the vertices in the correct order.
-     * The triangles are created in a zig-zag pattern to create a smooth mountain mesh.
-     * The triangles are created in a counter-clockwise order.
-     * These triangles then look like this:
-     * 0 *-----* 2
-     *   |    /|
-     *   |   / |
-     *   |  /  |
-     *   | /   |
-     *   |/    |
-     * 1 *-----* 3
-     *
-     * Therefore the indices are: 0, 1, 2 for the first triangle and 1, 3, 2 for the second triangle.
-     */
-    void createTriangles();
     std::vector<Vector2> vertices;
     std::vector<Vector3> colors;
     std::vector<int> indices;
     floatType minX = 0;
     floatType maxX = 0;
-
-    Vector3 normalizeColor(const Color &color) const;
-    void addVertexAndColor(const Terrain &terrain, Color topColor, Color bottomColor, floatType xPos);
-    void updateIndices(int indexToRemove);
-
-    /**
-     * Draws a mesh of the base of the mountain in a single color.
-     * @param index is the index of the lower vertex the 2 triangles should be attached to.
-     * @param normalizedColor is the color of the base triangle
-     * The mesh then looks like this:
-  v[i-1] *-----* v[i+1]
-     *   |    /|
-     *   |   / |
-     *   |  /  |    This is the top mesh that is not affected
-     *   | /   |
-     *   |/    |
-    v[i] *-----* v[i+2]
-     *   |    /|
-     *   |   / |
-     *   |  /  |    This is the bottom mesh that is generated
-     *   | /   |
-     *   |/    |
-     *   *-----*
-     * This is the lower border
-     */
-    void drawBaseTriangle(int index, Vector3 normalizedColor) const;
-    void drawMountainBase(Color bottomColor) const;
     void drawMountainMesh() const;
+
+    void drawSurface(const Terrain &terrain) const;
+
+    Texture2D mountainTexture{};
+    bool verticesNeedUpdate = true; // Flag to indicate if triangulation is needed
+    std::vector<p2t::Point *> createPolylinePoints(const std::shared_ptr<StaticPolyline> &ground);
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAINRENDERER_H
