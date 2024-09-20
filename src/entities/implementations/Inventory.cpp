@@ -8,7 +8,7 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstants itemsConstants)
+Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstants &itemsConstants)
     : slots(slotCount), audioService(audioService), itemsConstants(itemsConstants) {
     for (size_t i = 0; i < slotCount; ++i) {
         slots[i] = std::vector<std::shared_ptr<Item>>();
@@ -16,7 +16,7 @@ Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstant
     spdlog::info("Inventory initialized.");
 }
 
-Inventory::Inventory(AudioService &audioService, ItemsConstants itemsConstants)
+Inventory::Inventory(AudioService &audioService, ItemsConstants &itemsConstants)
     : Inventory(itemsConstants.slotsPerInventory, audioService, itemsConstants) {}
 
 size_t Inventory::getNumberOfSlots() const { return slots.size(); }

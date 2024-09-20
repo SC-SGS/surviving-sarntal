@@ -13,7 +13,7 @@
 
 class MountainRenderer {
   public:
-    explicit MountainRenderer(Camera2D &camera, GameConstants gameConstants, ResourceManager &resourceManager);
+    explicit MountainRenderer(Camera2D &camera, GameConstants &gameConstants, ResourceManager &resourceManager);
 
     /**
      * Renders the mountain with the given colors in a gradient from top to bottom.
@@ -29,7 +29,7 @@ class MountainRenderer {
 
   private:
     Camera2D &camera;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     void updateVertices(const Terrain &terrain);
 

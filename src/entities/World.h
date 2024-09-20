@@ -28,7 +28,7 @@ class World {
 
   public:
     World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
-          GameConstants gameConstants);
+          GameConstants &gameConstants);
     ~World();
     Hiker &getHiker() const;
 
@@ -38,7 +38,7 @@ class World {
 
     Terrain &getTerrain() const;
 
-    std::list<Rock> &getRocks() const;
+    std::list<std::shared_ptr<Rock>> &getRocks() const;
 
     int getCoinScore() const;
 
@@ -50,7 +50,7 @@ class World {
      * This method adds a rock to the game by adding it to the list of rocks.
      * @param rock
      */
-    void addRock(const Rock &rock) const;
+    void addRock(const std::shared_ptr<Rock> &rock) const;
 
     std::list<std::shared_ptr<Item>> &getItems() const;
 
@@ -93,7 +93,7 @@ class World {
     Inventory &inventory;
     Monster &monster;
     AudioService &audioService;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     // Attributes
     floatType minX = 0;
@@ -102,7 +102,8 @@ class World {
     int coinScore = 0;
     int gameScore = 0;
 
-    const std::unique_ptr<std::list<Rock>> rocks = std::make_unique<std::list<Rock>>();
+    const std::unique_ptr<std::list<std::shared_ptr<Rock>>> rocks =
+        std::make_unique<std::list<std::shared_ptr<Rock>>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
 };

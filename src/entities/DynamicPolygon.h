@@ -36,10 +36,11 @@ class DynamicPolygon : public RenderedEntity {
     const std::vector<Vector> bodySpaceVertices;
     const std::vector<Vector2> textureCoordinates;
     const floatType mass;
+    const floatType density;
     // TODO inertia tensor or moment of inertia in each step
     const floatType momentOfInertia;
 
-    floatType calculateDensityBasedOnMass(const std::vector<Vector> &vertices, floatType mass) const;
+    floatType calculateDensity(const std::vector<Vector> &vertices, floatType mass) const;
     floatType calculateMomentOfInertia(const std::vector<Vector> &vertices, floatType mass) const;
 
   public:
@@ -65,8 +66,8 @@ class DynamicPolygon : public RenderedEntity {
      * @throw std::invalid_argument if the conditions above are not met
      */
     DynamicPolygon(const Vector &position, const std::vector<Vector> &vertices,
-                   const std::vector<Vector2> &textureCoordinates, floatType mass, floatType momentOfInertia,
-                   const DynamicProperties &dynamicProperties);
+                   const std::vector<Vector2> &textureCoordinates, floatType mass, floatType density,
+                   floatType momentOfInertia, const DynamicProperties &dynamicProperties);
 
     /**
      * This is a simplified constructor for Dynamic Polygon that is only used
@@ -79,6 +80,7 @@ class DynamicPolygon : public RenderedEntity {
 
     floatType getRotationAngle() const;
     floatType getMass() const;
+    floatType getDensity() const;
     floatType getMomentOfInertia() const;
 
     /**

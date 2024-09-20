@@ -13,13 +13,13 @@ class Destructor {
 
   public:
     void destruct() const;
-    explicit Destructor(World &world, Renderer &renderer, GameConstants gameConstants);
+    explicit Destructor(World &world, Renderer &renderer, GameConstants &gameConstants);
     ~Destructor() = default;
 
   private:
     World &world;
     Renderer &renderer;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     /**
      * Destructs all rocks that are outside of the world borders.

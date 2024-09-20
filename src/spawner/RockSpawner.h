@@ -10,9 +10,9 @@
 #include "../utilities/Singleton.hpp"
 
 /**
- * Rock spawning phases that can occur during the game.
+ * Rock spawning phases that determine the spawn velocity and spawn time interval.
  */
-enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCHES, EXPLOSIVE_BATCHES };
+enum RockSpawnDifficulty { EEEEEASY = 0, EASY = 1, MEDIUM = 2, HARD = 3, I_WANT_MOMY = 4 };
 
 /**
  * This class is responsible for spawning rocks based on the current phase and state of the game.
@@ -20,7 +20,7 @@ enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCH
 // TODO extract all the constants
 class RockSpawner {
   public:
-    explicit RockSpawner(World &world, GameConstants gameConstants);
+    explicit RockSpawner(World &world, GameConstants &gameConstants);
     ~RockSpawner() = default;
     /**
      * This method spawns rocks.
@@ -28,11 +28,12 @@ class RockSpawner {
     void spawnRocks();
 
   private:
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
     floatType lastSpawnTime{0.};
     int numberOfRocksSinceLastBatch{0};
     bool b = false;
-    RockSpawnPhase rockSpawnPhase = VERY_BEGINNING;
+    RockSpawnDifficulty rockSpawnDifficulty = EEEEEASY;
+    RandomGenerator *randomGenerator = &RandomGenerator::getInstance();
 
     World &world;
 
@@ -46,19 +47,25 @@ class RockSpawner {
     int computeNumRocksToSpawn();
 
     /**
-     * Determines the time between rock spawns based on the current rock spawn
-     * phase.
+     * Determines the time between rock spawns based on the current rock spawn difficulty.
      * @param rockSpawnPhase
      * @return time between rock spawns
      */
     floatType rockSpawnTimeFromPhase();
 
     /**
-     * Determines the current rock spawn phase based on the game time.
-     * @param gameTime
-     * @return rock spawn phase
+     * Determines the current rock spawn difficulty based on how far the hiker has
+     * progressed in the game (measured in the horizontal distance).
+     * @return rock spawn difficulty
      */
-    static RockSpawnPhase determineRockSpawnPhase();
+    RockSpawnDifficulty determineRockSpawnDifficulty() const;
+
+    /**
+     * Determines the current rock type based on how far the hiker has
+     * progressed in the game (measured in the horizontal distance).
+     * @return rock spawn difficulty
+     */
+    RockType determineRockTypePhase();
 
     bool shouldSpawnRocks();
 
@@ -66,7 +73,47 @@ class RockSpawner {
 
     std::vector<Vector> getOffsetsAdditionalRocks();
 
+    /**
+     * This method generates a random radius between maxRockSize/2 und maxRockSize.
+     * @return random radius
+     */
+    floatType getRandRadius() const;
+
+    /**
+     * This method generates a random position where a rock is spawned.
+     * @return random position
+     */
     Vector getRandSpawnPos() const;
+
+    /**
+     * This method generates a random velocity based on the current rock spawn phase.
+     * @return random velocity
+     */
+    Vector getRandVelocity() const;
+
+    /**
+     * This method generates a random number that is used as the number of points
+     * for generating a polygon.
+     * @return random number of points
+     */
+    int getRandPointNumber() const;
+
+    /**
+     * This method generates a random density value.
+     * @return random density
+     */
+    floatType getRandDensity() const;
+
+    /**
+     *
+     * @return
+     */
+    void createRock(Vector &position, DynamicPolygon &polygon, DynamicProperties &dynamicProperties);
+
+    Vector getRockSpawnPosition(size_t idxRock);
+    DynamicPolygon getRandDynamicPolygon(Vector position);
+    floatType determineDifficultyFactor() const;
+    floatType determineLowerBoundVelocity() const;
 };
 
 #endif // SURVIVING_SARNTAL_ROCKSPAWNER_H

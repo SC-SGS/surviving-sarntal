@@ -52,7 +52,7 @@ class PhysicsEngine {
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
 
-    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants physicsConstants, EventProcessor &eventProcessor,
+    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants, EventProcessor &eventProcessor,
                   Accelerator &accelerator, Positioner &positioner, CollisionDetector &collisionDetector,
                   CollisionHandler &collisionHandler, Interpolator &interpolator, Destructor &destructor);
 
@@ -72,7 +72,7 @@ class PhysicsEngine {
     /**
      * The physics constants.
      */
-    PhysicsConstants physicsConstants;
+    PhysicsConstants &physicsConstants;
 
     /**
      * Timestamp of last update.

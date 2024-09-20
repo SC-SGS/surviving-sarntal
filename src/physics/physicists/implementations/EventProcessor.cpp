@@ -5,7 +5,7 @@
 #include "../EventProcessor.hpp"
 #include <mutex>
 
-EventProcessor::EventProcessor(World &world, Renderer &renderer, HikerConstants hikerConstants)
+EventProcessor::EventProcessor(World &world, Renderer &renderer, HikerConstants &hikerConstants)
     : world(world), renderer(renderer), hikerConstants(hikerConstants) {
     gameEventFunctionMappings = {
         {{AXIS_MODIFICATION, ITEM_SWITCH, 0, false}, &EventProcessor::switchItem},

@@ -15,7 +15,7 @@ class Game {
 
   public:
     Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
-         InputHandler &inputHandler, GameConstants gameConstants);
+         InputHandler &inputHandler, GameConstants &gameConstants);
     ~Game() = default;
     void run();
 
@@ -33,7 +33,7 @@ class Game {
     PhysicsEngine &physicsEngine;
     AudioService &audioService;
     InputHandler &inputHandler;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     static void drawEndScreen();
 };

@@ -8,7 +8,7 @@
 #include <mutex>
 
 Game::Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
-           InputHandler &inputHandler, GameConstants gameConstants)
+           InputHandler &inputHandler, GameConstants &gameConstants)
     : world(world), renderer(renderer), physicsEngine(physicsEngine), audioService(audioService),
       inputHandler(inputHandler), gameConstants(gameConstants) {
     spdlog::info("Game initialized.");
