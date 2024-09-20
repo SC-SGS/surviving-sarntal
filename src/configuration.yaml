@@ -37,6 +37,11 @@ textures:
   foreground: "../../assets/layers/clouds_mg_1.png"
   mountain: "../../assets/layers/mountain3.png"
   rockRectangle: "../../assets/texture/rock.png"
+  lavaRock: "../../assets/texture/lavaRock.png"
+  iceRock: "../../assets/texture/iceRock.png"
+  heavyRock: "../../assets/texture/heavyRock.png"
+  snowRock: "../../assets/texture/snowRock.png"
+  crystalRock: "../../assets/texture/crystalRock.png"
   default: "../../assets/texture/default.png"
 
 items:
@@ -106,7 +111,7 @@ gameConstants:
 
   rockConstants:
     minRockSize: 0.32
-    maxRockSize: 1
+    maxRockSize: 1.0
     velocityCap: 1200.0
     gamma: 1.0
     maxAngularVelocity: 1.0
@@ -120,6 +125,8 @@ gameConstants:
     timeBetweenRockSpawns: 5.0
     numOfRocksToSpawn: 10
     spawnOffsetX: 0.5
+    minRockDensity: 1.0
+    maxRockDensity: 3.0
 
   physicsConstants:
     gravitationalConstant: -9.81
@@ -175,3 +182,12 @@ gameConstants:
     hikerClearanceTolerance: 1.5 #multiplier for hiker width and height
     maximalOverhangDepth: 7.0
     maximalOverhangHeight: 5.0
+
+  rockSpawnerConstants:
+    # All based on difficulty [EEEASY, EASY, MEDIUM, HARD, I_WANT_MOMY]
+    velocityDifficultyFactor: [ 0.0, 0.25, 0.5, 0.75, 1.0 ]
+    spawningPhase: [ 60.0, 150.0, 250.0, 500.0, 1000.0 ]
+    rockSpawnTimeInterval: [ 8.0, 7.0, 5.0, 3.0, 2.0 ]
+
+    # Based on rock type
+    rockTypePhase: [ 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 ]

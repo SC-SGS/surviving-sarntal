@@ -15,7 +15,7 @@
 
 class Terrain {
   public:
-    Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants);
+    Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants);
 
     /**
      * Generates a biome of the given type on the right side of the currently existing terrain.
@@ -138,8 +138,8 @@ class Terrain {
     std::vector<std::shared_ptr<Biome>> biomes;
     AxisAlignedBoundingBox boundingBox = {};
 
-    HikerConstants hikerConstants;
-    TerrainConstants terrainConstants;
+    HikerConstants &hikerConstants;
+    TerrainConstants &terrainConstants;
 
     void generateInitial();
 

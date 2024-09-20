@@ -22,7 +22,7 @@ DynamicPolygon PolygonGenerator::generatePolygon(const int numberPoints, const f
     const std::vector<Vector2> textureCoordinates = determineTextureCoordinates(bodySpaceVertices);
     const floatType mass = calculateAreaBodySpace(bodySpaceVertices) * density;
     const floatType momentOfInertia = calculateInertiaRotCentroidBodySpace(bodySpaceVertices, density);
-    return {position, bodySpaceVertices, textureCoordinates, mass, momentOfInertia, DynamicProperties()};
+    return {position, bodySpaceVertices, textureCoordinates, mass, density, momentOfInertia, DynamicProperties()};
 }
 
 std::vector<Vector> PolygonGenerator::generatePoints(const int numberPoints, const floatType maxRadius) const {

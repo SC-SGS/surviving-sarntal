@@ -10,8 +10,15 @@
 #include <utility>
 
 Rock::Rock(const Vector &position, const std::vector<Vector> &vertices, const std::vector<Vector2> &textureCoordinates,
-           const floatType mass, const floatType momentOfInertia, const DynamicProperties &dynamicProperties)
-    : DynamicPolygon(position, vertices, textureCoordinates, mass, momentOfInertia, dynamicProperties) {}
+           const floatType mass, const floatType density, const floatType momentOfInertia,
+           const DynamicProperties &dynamicProperties)
+    : DynamicPolygon(position, vertices, textureCoordinates, mass, density, momentOfInertia, dynamicProperties),
+      type(NORMAL_ROCK) {}
+
+Rock::Rock(Vector position, const DynamicPolygon &polygon, DynamicProperties properties, RockType rockType)
+    : DynamicPolygon(position, polygon.getBodySpaceVertices(), polygon.getTextureCoordinates(), polygon.getMass(),
+                     polygon.getDensity(), polygon.getMomentOfInertia(), properties),
+      type(rockType) {}
 
 RenderInformation Rock::getRenderInformation() const {
     if (animation.frames == 0) {
@@ -20,7 +27,7 @@ RenderInformation Rock::getRenderInformation() const {
                                  0.f,
                                  0.f,
                                  this->dynamicProperties.rotationAngleRad * static_cast<floatType>(180.0f / M_PI),
-                                 "rockRectangle"};
+                                 this->getTextureName()};
     } else {
         return RenderInformation{Vector2(this->position),
                                  {0, 0},
@@ -32,5 +39,21 @@ RenderInformation Rock::getRenderInformation() const {
     }
 }
 
+std::string Rock::getTextureName() const {
+    switch (this->type) {
+    case NORMAL_ROCK:
+        return "rockRectangle";
+    case SNOW_ROCK:
+        return "snowRock";
+    case ICE_ROCK:
+        return "iceRock";
+    case HEAVY_ROCK:
+        return "heavyRock";
+    case LAVA_ROCK:
+        return "lavaRock";
+    case CRYSTAL_ROCK:
+        return "crystalRock";
+    }
+}
 bool Rock::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }
 void Rock::setShouldBeDestroyed(const bool shouldBeDestroyedNew) { this->shouldBeDestroyed = shouldBeDestroyedNew; }

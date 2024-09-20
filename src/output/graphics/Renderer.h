@@ -20,7 +20,7 @@ class Renderer {
     void draw();
     void setShake(float intensity);
     Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-             GameConstants gameConstants, PolygonRenderer &polygonRenderer);
+             GameConstants &gameConstants, PolygonRenderer &polygonRenderer);
     ~Renderer() = default;
 
     void toggleDebugMode();
@@ -30,7 +30,7 @@ class Renderer {
     // Dependencies
     World &world;
     ResourceManager &resourceManager;
-    GameConstants gameConstants;
+    GameConstants &gameConstants;
 
     // Attributes
     Camera2D &camera;
@@ -56,7 +56,7 @@ class Renderer {
                       Rectangle sourceRec) const;
     void renderBackground();
     void regenerateGradientTexture();
-    void renderRock(const Rock &rock) const;
+    void renderRock(const std::shared_ptr<Rock> &rock) const;
     void renderHiker(const Hiker &hiker);
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
                                          floatType offsetY) const;

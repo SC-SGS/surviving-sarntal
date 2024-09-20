@@ -11,7 +11,7 @@
 class Positioner {
 
   public:
-    explicit Positioner(World &world, HikerConstants hikerConstants, BarriersConstants barriersConstants);
+    explicit Positioner(World &world, HikerConstants &hikerConstants, BarriersConstants &barriersConstants);
     ~Positioner() = default;
     void updatePositions() const;
 
@@ -20,8 +20,8 @@ class Positioner {
   private:
     World &world;
     floatType deltaT;
-    HikerConstants hikerConstants;
-    BarriersConstants barriersConstants;
+    HikerConstants &hikerConstants;
+    BarriersConstants &barriersConstants;
 
     /**
      * Use movement equations to update rock positions.

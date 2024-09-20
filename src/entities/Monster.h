@@ -19,10 +19,10 @@
 class Monster : public RenderedEntity {
 
   private:
-    HikerConstants hikerConstants;
+    HikerConstants &hikerConstants;
 
   public:
-    explicit Monster(HikerConstants hikerConstants);
+    explicit Monster(HikerConstants &hikerConstants);
     ~Monster() override = default;
     Monster(const Monster &) = delete;
 

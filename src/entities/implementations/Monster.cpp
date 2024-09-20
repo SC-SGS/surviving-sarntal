@@ -8,7 +8,7 @@
 #include <iostream>
 #include <mutex>
 
-Monster::Monster(HikerConstants hikerConstants)
+Monster::Monster(HikerConstants &hikerConstants)
     : hikerConstants(hikerConstants),
       RenderedEntity({0.1 * (graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO), 0}) {
     animation = {10, 0, 0.2, 0};

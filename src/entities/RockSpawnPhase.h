@@ -1,4 +1,4 @@
 //
 // Created by Aleksis Vezenkov on 02.05.24.
 //
-enum RockSpawnPhase { VERY_BEGINNING, IRREGULAR_ROCKS, REGULAR_ROCKS, ROCK_BATCHES, EXPLOSIVE_BATCHES };
+enum RockSpawnDifficulty { EEEEEASY, EASY, MEDIUM, HARD, I_WANT_MOMY };

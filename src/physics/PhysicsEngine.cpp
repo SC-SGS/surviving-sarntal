@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <mutex>
-PhysicsEngine::PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants physicsConstants,
+PhysicsEngine::PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants,
                              EventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
                              CollisionDetector &collisionDetector, CollisionHandler &collisionHandler,
                              Interpolator &interpolator, Destructor &destructor)
