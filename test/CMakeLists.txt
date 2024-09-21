@@ -41,7 +41,7 @@ if (ENABLE_COVERAGE)
                 OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         set(COVERAGE_DIR_NAME "coverage_${current_time}")
-    endif()
+    endif ()
 
     # Generate a timestamp for the coverage directory name
     execute_process(
@@ -69,5 +69,5 @@ if (ENABLE_COVERAGE)
     # Apply coverage flags to the test target
     target_compile_options(test-surviving-sarntal PRIVATE -fprofile-arcs -ftest-coverage)
     target_link_options(test-surviving-sarntal PRIVATE --coverage)
-endif()
+endif ()
 

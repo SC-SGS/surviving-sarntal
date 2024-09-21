@@ -6,8 +6,8 @@
 #include "biomes/Mountain.hpp"
 #include "spdlog/spdlog.h"
 
-Terrain::Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants)
-    : hikerConstants(hikerConstants), terrainConstants(terrainConstants) {
+Terrain::Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager)
+    : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
     this->generateInitial();
 }
 
@@ -34,7 +34,7 @@ void Terrain::generateInitial() {
     const floatType startT = 0;
     auto initialBiome =
         std::make_shared<Biome>(Mountain(basePoint, baseDerivative, startT, this->terrainConstants.biomeWidth,
-                                         this->hikerConstants, this->terrainConstants, true));
+                                         this->hikerConstants, this->terrainConstants, this->resourceManager, true));
     this->biomes.push_back(initialBiome);
     this->boundingBox = initialBiome->getBoundingBox();
 }
@@ -48,7 +48,7 @@ std::shared_ptr<Biome> Terrain::generateBiome(BiomeType biomeType, floatType len
     switch (biomeType) {
     case BiomeType::MOUNTAIN:
         biome = std::make_shared<Mountain>(basePoint, baseDerivative, startT, length, this->hikerConstants,
-                                           this->terrainConstants, false);
+                                           this->terrainConstants, this->resourceManager, false);
         spdlog::info("New biome of type MOUNTAIN generated. Length: {}",
                      this->biomes.back()->getGround()->getBasePoints()->getEndPoint().x -
                          this->biomes.back()->getGround()->getBasePoints()->getStartPoint().x);
@@ -210,11 +210,12 @@ floatType Terrain::mapHeightToTerrain(Vector point) {
 }
 
 Terrain Terrain::getEmptyTerrain(HikerConstants hikerConstants, TerrainConstants terrainConstants,
-                                 AxisAlignedBoundingBox boundingBox) {
-    return {hikerConstants, terrainConstants, boundingBox};
+                                 ResourceManager &resourceManager, AxisAlignedBoundingBox boundingBox) {
+    return {hikerConstants, terrainConstants, resourceManager, boundingBox};
 }
 
-Terrain::Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, AxisAlignedBoundingBox boundingBox)
-    : hikerConstants(hikerConstants), terrainConstants(terrainConstants) {
+Terrain::Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, ResourceManager &resourceManager,
+                 AxisAlignedBoundingBox boundingBox)
+    : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
     this->boundingBox = boundingBox;
 }

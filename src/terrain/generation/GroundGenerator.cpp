@@ -8,10 +8,11 @@
 #include "GenerationAngleCalculator.hpp"
 GroundGenerator::GroundGenerator(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase,
                                  Vector basePoint, Vector baseDerivative, floatType startT, floatType length,
-                                 HikerConstants &hikerConstants, TerrainConstants &terrainConstants, bool render)
+                                 HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
+                                 ResourceManager &resourceManager, bool render)
     : terrainConstants(terrainConstants), hikerConstants(hikerConstants), render(render),
-      generationRenderer(std::make_unique<GenerationRenderer>(hikerConstants, terrainConstants)), basePoint(basePoint),
-      baseDerivative(baseDerivative), startT(startT), length(length), phaseChoices(phaseChoices),
+      generationRenderer(std::make_unique<GenerationRenderer>(hikerConstants, terrainConstants, resourceManager)),
+      basePoint(basePoint), baseDerivative(baseDerivative), startT(startT), length(length), phaseChoices(phaseChoices),
       firstPhase(firstPhase), terrainPhase(firstPhase), lastPoint(basePoint) {}
 
 std::shared_ptr<Ground> GroundGenerator::generateGround() {

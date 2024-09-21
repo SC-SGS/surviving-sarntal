@@ -12,11 +12,11 @@
 
 Biome::Biome(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase, Vector &basePoint,
              Vector &baseDerivative, floatType startT, floatType length, HikerConstants &hikerConstants,
-             TerrainConstants &terrainConstants, bool renderGeneration)
+             TerrainConstants &terrainConstants, ResourceManager &resourceManager, bool renderGeneration)
     : phaseChoices(phaseChoices), firstPhase(firstPhase), leftBorder(basePoint.x), rightBorder(basePoint.x + length),
       hikerConstants(hikerConstants), terrainConstants(terrainConstants) {
     auto groundGenerator = GroundGenerator(this->phaseChoices, this->firstPhase, basePoint, baseDerivative, startT,
-                                           length, hikerConstants, terrainConstants, renderGeneration);
+                                           length, hikerConstants, terrainConstants, resourceManager, renderGeneration);
     this->ground = groundGenerator.generateGround();
     this->rightBorder = this->ground->getBasePoints()->getEndPoint().x;
     this->updatePolyRepresentations();
