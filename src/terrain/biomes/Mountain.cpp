@@ -26,6 +26,7 @@ const std::vector<TerrainPhase> Mountain::mountainPhaseChoices = {
 const TerrainPhase Mountain::mountainFirstPhase = {{3.0f, 0.5f}, 0.0f, 3};
 
 Mountain::Mountain(Vector basePoint, Vector baseDerivative, floatType startT, floatType length,
-                   HikerConstants hikerConstants, TerrainConstants terrainConstants, bool renderGeneration)
+                   HikerConstants hikerConstants, TerrainConstants terrainConstants, ResourceManager &resourceManager,
+                   bool renderGeneration)
     : Biome(Mountain::mountainPhaseChoices, Mountain::mountainFirstPhase, basePoint, baseDerivative, startT, length,
-            hikerConstants, terrainConstants, renderGeneration) {}
+            hikerConstants, terrainConstants, resourceManager, renderGeneration) {}
