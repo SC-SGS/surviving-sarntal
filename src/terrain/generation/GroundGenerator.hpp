@@ -15,7 +15,7 @@ class GroundGenerator {
   public:
     GroundGenerator(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase, Vector basePoint,
                     Vector baseDerivative, floatType startT, floatType length, HikerConstants &hikerConstants,
-                    TerrainConstants &terrainConstants, bool render);
+                    TerrainConstants &terrainConstants, ResourceManager &resourceManager, bool render);
     ~GroundGenerator() = default;
 
     /**

@@ -15,7 +15,7 @@
 
 class Terrain {
   public:
-    Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants);
+    Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager);
 
     /**
      * Generates a biome of the given type on the right side of the currently existing terrain.
@@ -111,10 +111,11 @@ class Terrain {
      * @return
      */
     static Terrain getEmptyTerrain(HikerConstants hikerConstants, TerrainConstants terrainConstants,
-                                   AxisAlignedBoundingBox boundingBox);
+                                   ResourceManager &resourceManager, AxisAlignedBoundingBox boundingBox);
 
   private:
-    Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, AxisAlignedBoundingBox boundingBox);
+    Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, ResourceManager &resourceManager,
+            AxisAlignedBoundingBox boundingBox);
 
     /**
      * Approximates all components of the terrain with polygons of the given resolution and returns a list of all of
@@ -140,6 +141,7 @@ class Terrain {
 
     HikerConstants &hikerConstants;
     TerrainConstants &terrainConstants;
+    ResourceManager &resourceManager;
 
     void generateInitial();
 

@@ -9,7 +9,7 @@
 class Mountain : public Biome {
   public:
     Mountain(Vector basePoint, Vector baseDerivative, floatType startT, floatType length, HikerConstants hikerConstants,
-             TerrainConstants terrainConstants, bool renderGeneration);
+             TerrainConstants terrainConstants, ResourceManager &resourceManager, bool renderGeneration);
     ~Mountain() override = default;
 
   private:

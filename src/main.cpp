@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
 
     // Init game world
     GameConstants gameConstants = configManager.getGameConstants();
-    auto terrain = Terrain(gameConstants.hikerConstants, gameConstants.terrainConstants);
+    auto terrain = Terrain(gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager);
     floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
     Hiker hiker(Vector{hikerPositionX, hikerPositionY}, audioService, gameConstants.hikerConstants);

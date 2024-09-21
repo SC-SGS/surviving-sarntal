@@ -12,6 +12,7 @@ class WorldTestFixture : public ::testing::Test {
     std::unique_ptr<World> world;
     ConfigManager &configManager = ConfigManager::getInstance();
     GameConstants gameConstants = configManager.getGameConstants();
+    ResourceManager resourceManager = ResourceManager(configManager);
 
     void SetUp() override {
         MockResourceManager mockResourceManager(ConfigManager::getInstance());
@@ -20,7 +21,7 @@ class WorldTestFixture : public ::testing::Test {
         ON_CALL(mockAudioService, playSound("use-coin")).WillByDefault(::testing::Return());
         ON_CALL(mockAudioService, playSound("use-duck")).WillByDefault(::testing::Return());
         Terrain terrain = Terrain::getEmptyTerrain(gameConstants.hikerConstants, gameConstants.terrainConstants,
-                                                   {{0.0, 0.0}, {10.0, 10.0}});
+                                                   resourceManager, {{0.0, 0.0}, {10.0, 10.0}});
         Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
         Monster monster(gameConstants.hikerConstants);
         Inventory inventory(mockAudioService, gameConstants.itemsConstants);
@@ -76,7 +77,7 @@ TEST_F(WorldTestFixture, UseKaiserschmarrnTest) {
     ON_CALL(mockAudioService, playSound("use-kaiserschmarrn")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("use-kaiserschmarrn")).Times(1);
     Terrain terrain = Terrain::getEmptyTerrain(gameConstants.hikerConstants, gameConstants.terrainConstants,
-                                               {{0.0, 0.0}, {10.0, 10.0}});
+                                               resourceManager, {{0.0, 0.0}, {10.0, 10.0}});
     Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
     Monster monster(gameConstants.hikerConstants);
     Inventory inventory(mockAudioService, gameConstants.itemsConstants);
@@ -93,7 +94,7 @@ TEST_F(WorldTestFixture, UseCoinTest) {
     ON_CALL(mockAudioService, playSound("use-coin")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("use-coin")).Times(1);
     Terrain terrain = Terrain::getEmptyTerrain(gameConstants.hikerConstants, gameConstants.terrainConstants,
-                                               {{0.0, 0.0}, {10.0, 10.0}});
+                                               resourceManager, {{0.0, 0.0}, {10.0, 10.0}});
     Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
     Monster monster(gameConstants.hikerConstants);
     Inventory inventory(mockAudioService, gameConstants.itemsConstants);
@@ -109,7 +110,7 @@ TEST_F(WorldTestFixture, UseDuckTest) {
     ON_CALL(mockAudioService, playSound("use-duck")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("use-duck")).Times(1);
     Terrain terrain = Terrain::getEmptyTerrain(gameConstants.hikerConstants, gameConstants.terrainConstants,
-                                               {{0.0, 0.0}, {10.0, 10.0}});
+                                               resourceManager, {{0.0, 0.0}, {10.0, 10.0}});
     Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
     Monster monster(gameConstants.hikerConstants);
     Inventory inventory(mockAudioService, gameConstants.itemsConstants);

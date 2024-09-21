@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_BIOME_HPP
 #define SURVIVING_SARNTAL_BIOME_HPP
 
+#include "../../output/ResourceManager.h"
 #include "../collisionDetection/CollisionDetectionRepresentation.hpp"
 #include "../components/Background.hpp"
 #include "../components/Ground.hpp"
@@ -18,7 +19,7 @@ class Biome {
   public:
     Biome(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase, Vector &basePoint,
           Vector &baseDerivative, floatType startT, floatType length, HikerConstants &hikerConstants,
-          TerrainConstants &terrainConstants, bool renderGeneration);
+          TerrainConstants &terrainConstants, ResourceManager &resourceManager, bool renderGeneration);
     virtual ~Biome() = default;
 
     std::shared_ptr<Ground> getGround();
