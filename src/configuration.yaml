@@ -43,6 +43,7 @@ textures:
   snowRock: "../../assets/texture/snowRock.png"
   crystalRock: "../../assets/texture/crystalRock.png"
   default: "../../assets/texture/default.png"
+  terrainGenerationBackground: "../../assets/texture/terrainGenerationBackground.png"
 
 items:
   kaiserschmarrn:

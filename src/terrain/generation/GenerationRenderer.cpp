@@ -4,8 +4,9 @@
 
 #include "GenerationRenderer.hpp"
 #include "rlgl.h"
-GenerationRenderer::GenerationRenderer(HikerConstants &hikerConstants, TerrainConstants &terrainConstants)
-    : terrainConstants(terrainConstants), hikerConstants(hikerConstants) {}
+GenerationRenderer::GenerationRenderer(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
+                                       ResourceManager &resourceManager)
+    : terrainConstants(terrainConstants), hikerConstants(hikerConstants), resourceManager(resourceManager) {}
 
 const void GenerationRenderer::render( // NOLINT [readability-function-size,-warnings-as-errors]
     const std::shared_ptr<Ground> &newGround, const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
@@ -14,7 +15,8 @@ const void GenerationRenderer::render( // NOLINT [readability-function-size,-war
         std::max(0, static_cast<int>(newGround->getBasePoints()->getPoints().size() - 2)));
     Camera2D camera = this->setUpRendering();
     BeginDrawing();
-    ClearBackground(BLACK);
+    // ClearBackground(BLACK);
+    this->renderBackground();
     BeginMode2D(camera);
     Vector delta = {0.5f, 0.5f};
     Vector2 basePointRendering =
@@ -22,7 +24,7 @@ const void GenerationRenderer::render( // NOLINT [readability-function-size,-war
     DrawRectangle(static_cast<int>(basePointRendering.x),
                   static_cast<int>(basePointRendering.y - this->hikerConstants.hikerHeight),
                   static_cast<int>(this->hikerConstants.hikerWidth), static_cast<int>(this->hikerConstants.hikerHeight),
-                  GREEN);
+                  RED);
     rlBegin(RL_LINES);
     rlColor3f(1.0f, 0.0f, 0.0f);
     for (int i = 0; i < groundPolyRepresentation->getPoints().size() - 2; i++) {
@@ -39,17 +41,17 @@ const void GenerationRenderer::render( // NOLINT [readability-function-size,-war
     const std::shared_ptr<StaticPolyline> basePoints = newGround->getBasePoints();
     for (Vector point : basePoints->getPoints()) {
         Vector2 renderingPoint = GenerationRenderer::transformPosition(point);
-        DrawCircle(static_cast<int>(renderingPoint.x), static_cast<int>(renderingPoint.y), 0.07f, GREEN);
+        DrawCircle(static_cast<int>(renderingPoint.x), static_cast<int>(renderingPoint.y), 0.25f, WHITE);
     }
     Vector minPoint = oldPoint + phase.avgDirection.rotateByAngle(minAngle);
     Vector maxPoint = oldPoint + phase.avgDirection.rotateByAngle(maxAngle);
     Vector2 oldPointRendering = GenerationRenderer::transformPosition(oldPoint);
     Vector2 minPointRendering = GenerationRenderer::transformPosition(minPoint);
     Vector2 maxPointRendering = GenerationRenderer::transformPosition(maxPoint);
-    DrawLineEx(oldPointRendering, minPointRendering, 0.04f, BROWN);
-    DrawLineEx(oldPointRendering, maxPointRendering, 0.04f, SKYBLUE);
+    DrawLineEx(oldPointRendering, minPointRendering, 0.15f, RED);
+    DrawLineEx(oldPointRendering, maxPointRendering, 0.15f, RED);
     Vector2 newPointRendering = GenerationRenderer::transformPosition(newPoint);
-    DrawLineEx(oldPointRendering, newPointRendering, 0.05f, ORANGE);
+    DrawLineEx(oldPointRendering, newPointRendering, 0.15f, RED);
     EndMode2D();
     EndDrawing();
 }
@@ -90,4 +92,12 @@ Vector2 GenerationRenderer::transformPosition(Vector position) {
     floatType yValue = -position.y;
     return {xValue, yValue};
     // return {position.x, -position.y + static_cast<floatType>(GetScreenHeight())/camera.zoom};
+}
+
+void GenerationRenderer::renderBackground() {
+    Texture2D backgroundTexture = resourceManager.getTexture("terrainGenerationBackground");
+    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT};
+    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT};
+
+    DrawTexturePro(backgroundTexture, sourceRec, destRec, {0, 0}, 0, WHITE);
 }
