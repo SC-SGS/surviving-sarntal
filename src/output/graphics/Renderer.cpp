@@ -521,3 +521,35 @@ std::list<Rock> &Renderer::getDestroyedRocks() const {
     });
     return *destroyedRocks;
 }
+
+void Renderer::reset() {
+    const floatType leftBorder = world.getMinX() * graphics::UNIT_TO_PIXEL_RATIO;
+    const floatType rightBorder = world.getMaxX() * graphics::UNIT_TO_PIXEL_RATIO;
+
+    // Calculate the world width
+    const floatType worldWidth = rightBorder - leftBorder;
+
+    // Calculate the zoom level so that the world width fits the screen width
+    const auto screenWidth = static_cast<floatType>(GetScreenWidth());
+    const floatType zoom = screenWidth / worldWidth;
+
+    // Calculate the visible width and height
+    const floatType visibleWidth = rightBorder - leftBorder;
+    const floatType ratio = static_cast<floatType>(GetScreenHeight()) / static_cast<floatType>(GetScreenWidth());
+    const floatType visibleHeight = visibleWidth * ratio;
+
+    // Calculate the center of the camera view based on the borders
+    const floatType centerX = (leftBorder + rightBorder) / 2.0f;
+    const floatType centerY = visibleHeight / 2.0f;
+
+    // Initialize the camera
+    camera.target = {centerX, centerY};
+    camera.offset = screenCenter;
+    camera.rotation = 0.0f;
+    camera.zoom = zoom;
+
+    loadLandmarks();
+
+    regenerateGradientTexture();
+}
+MountainRenderer &Renderer::getMountainRenderer() { return mountainRenderer; }

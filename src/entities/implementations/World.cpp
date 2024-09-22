@@ -104,3 +104,28 @@ void World::updateGameScore() {
     const int hikerXDistance = static_cast<int>(this->hiker.getPosition().x);
     this->gameScore = std::max(this->gameScore, hikerXDistance);
 }
+
+void World::reset() {
+    this->terrain.reset();
+    this->resetAttributes();
+    this->resetHiker();
+    this->resetMonster();
+}
+
+void World::resetHiker() {
+    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH_IN_METER);
+    floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX) + 0.1f;
+    Vector pos = {hikerPositionX, hikerPositionY};
+    this->hiker.reset(pos);
+}
+
+void World::resetMonster() const { this->getMonster().setXPosition(0.1 * graphics::SCREEN_WIDTH_IN_METER); }
+
+void World::resetAttributes() {
+    this->setMinX(0);
+    this->setMaxX(graphics::SCREEN_WIDTH_IN_METER);
+    this->coinScore = 0;
+    this->items->clear();
+    this->rocks->clear();
+    this->inventory.reset();
+}

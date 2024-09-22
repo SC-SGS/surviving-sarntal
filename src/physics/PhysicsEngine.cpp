@@ -8,7 +8,7 @@
 #include <iostream>
 #include <mutex>
 PhysicsEngine::PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants,
-                             EventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
+                             GameEventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
                              CollisionDetector &collisionDetector, CollisionHandler &collisionHandler,
                              Interpolator &interpolator, Destructor &destructor)
     : world(world), accumulator(0.f), timeLastUpdate(0.f), spawner(spawner), physicsConstants(physicsConstants),

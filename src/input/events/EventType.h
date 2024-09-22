@@ -18,7 +18,8 @@ enum EventType {
     TOGGLE_DEBUG,
     // EVENT_COUNT, // can be used for iteration  over all events
     AXIS_MODIFICATION,
-    NO_EVENT
+    NO_EVENT,
+    SELECT_BUTTON
 };
 
 #endif // SURVIVING_SARNTAL_EVENTTYPE_H
