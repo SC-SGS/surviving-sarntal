@@ -44,8 +44,8 @@ TEST_F(WorldTestFixture, IsOutOfScopeTest) {
     Vector position = {-gameConstants.terrainConstants.bufferLeft - 5, world->getHiker().getPosition().y};
     hiker.setPosition(position);
     EXPECT_TRUE(world->isOutOfScope(hiker));
-    Vector position2 = {graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO,
-                        graphics::SCREEN_HEIGHT / graphics::UNIT_TO_PIXEL_RATIO};
+    Vector position2 = {graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO,
+                        graphics::SCREEN_HEIGHT_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO};
     Item item = {KAISERSCHMARRN, position2, gameConstants.itemsConstants.itemBaseHeight,
                  configManager.getItems()[KAISERSCHMARRN]};
     EXPECT_FALSE(world->isOutOfScope(item));

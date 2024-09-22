@@ -110,11 +110,20 @@ class Terrain {
      *
      * @return
      */
-    static Terrain getEmptyTerrain(HikerConstants hikerConstants, TerrainConstants terrainConstants,
+    static Terrain getEmptyTerrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
                                    ResourceManager &resourceManager, AxisAlignedBoundingBox boundingBox);
 
+    void reset();
+
   private:
-    Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, ResourceManager &resourceManager,
+    std::vector<std::shared_ptr<Biome>> biomes;
+    AxisAlignedBoundingBox boundingBox = {};
+
+    HikerConstants &hikerConstants;
+    TerrainConstants &terrainConstants;
+    ResourceManager &resourceManager;
+
+    Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager,
             AxisAlignedBoundingBox boundingBox);
 
     /**
@@ -135,13 +144,6 @@ class Terrain {
     std::shared_ptr<StaticPolyline> getPolyRepresentationOfGround(floatType resolution) const;
 
     void recalculateBoundingBox();
-
-    std::vector<std::shared_ptr<Biome>> biomes;
-    AxisAlignedBoundingBox boundingBox = {};
-
-    HikerConstants &hikerConstants;
-    TerrainConstants &terrainConstants;
-    ResourceManager &resourceManager;
 
     void generateInitial();
 

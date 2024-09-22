@@ -12,7 +12,7 @@
 #include "physicists/CollisionDetector.hpp"
 #include "physicists/CollisionHandler.hpp"
 #include "physicists/Destructor.hpp"
-#include "physicists/EventProcessor.hpp"
+#include "physicists/GameEventProcessor.hpp"
 #include "physicists/Interpolator.hpp"
 #include "physicists/Positioner.hpp"
 #include "physicists/Spawner.hpp"
@@ -52,9 +52,10 @@ class PhysicsEngine {
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
 
-    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants, EventProcessor &eventProcessor,
-                  Accelerator &accelerator, Positioner &positioner, CollisionDetector &collisionDetector,
-                  CollisionHandler &collisionHandler, Interpolator &interpolator, Destructor &destructor);
+    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants,
+                  GameEventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
+                  CollisionDetector &collisionDetector, CollisionHandler &collisionHandler, Interpolator &interpolator,
+                  Destructor &destructor);
 
     ~PhysicsEngine() = default;
 
@@ -92,7 +93,7 @@ class PhysicsEngine {
     /**
      * The event processor, changing the world state based on a given list of Input events.
      */
-    EventProcessor &eventProcessor;
+    GameEventProcessor &eventProcessor;
 
     /**
      * The force calculator, calculating the forces and accelerations of every movable entity.

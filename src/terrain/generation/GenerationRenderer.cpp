@@ -96,8 +96,8 @@ Vector2 GenerationRenderer::transformPosition(Vector position) {
 
 void GenerationRenderer::renderBackground() {
     Texture2D backgroundTexture = resourceManager.getTexture("terrainGenerationBackground");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT};
+    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
 
     DrawTexturePro(backgroundTexture, sourceRec, destRec, {0, 0}, 0, WHITE);
 }

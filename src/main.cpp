@@ -1,4 +1,5 @@
 #include "game/Game.hpp"
+#include "menu/MenuEventProcessor.h"
 #include "spawner/PolygonGenerator.h"
 #include "spdlog/fmt/bundled/chrono.h"
 #include "spdlog/spdlog.h"
@@ -11,7 +12,7 @@ Vector2 transformCoordinatesTesting(floatType minY, floatType maxY, Vector posit
 int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warnings-as-errors]
     spdlog::set_level(spdlog::level::debug);
     testIntersection();
-    InitWindow(graphics::SCREEN_WIDTH, graphics::SCREEN_HEIGHT, "Surviving Sarntal");
+    InitWindow(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL, "Surviving Sarntal");
 
     InitAudioDevice(); // Initialize audio device
     SetTargetFPS(60);
@@ -27,7 +28,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     // Init game world
     GameConstants gameConstants = configManager.getGameConstants();
     auto terrain = Terrain(gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager);
-    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO);
+    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
     Hiker hiker(Vector{hikerPositionX, hikerPositionY}, audioService, gameConstants.hikerConstants);
     Monster monster(gameConstants.hikerConstants);
@@ -36,6 +37,10 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
 
     PolygonRenderer polygonRenderer(resourceManager);
     Camera2D camera = {0};
+
+    MenuEngine menuEngine(resourceManager);
+    FullMenuRenderer menuRenderer(menuEngine);
+    MenuEventProcessor menuEventProcessor(menuEngine);
 
     // Init renderer
     MountainRenderer mountainRenderer(camera, gameConstants, resourceManager);
@@ -48,7 +53,7 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     Destructor destructor(world, renderer, gameConstants);
     Interpolator interpolator(world);
     Positioner positioner(world, gameConstants.hikerConstants, gameConstants.barriersConstants);
-    EventProcessor eventProcessor(world, renderer, gameConstants.hikerConstants);
+    GameEventProcessor eventProcessor(world, renderer, gameConstants.hikerConstants, menuEngine);
     auto items = configManager.getItems();
     ItemSpawner itemSpawner(world, gameConstants, items);
     RockSpawner rockSpawner(world, gameConstants);
@@ -58,7 +63,8 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
                                 collisionDetector, collisionHandler, interpolator, destructor);
 
     // Init game
-    Game game(world, renderer, physicsEngine, audioService, inputHandler, gameConstants);
+    Game game(world, renderer, menuRenderer, menuEngine, menuEventProcessor, physicsEngine, audioService, inputHandler,
+              gameConstants);
 
     game.run();
 

@@ -26,8 +26,6 @@ class Monster : public RenderedEntity {
     ~Monster() override = default;
     Monster(const Monster &) = delete;
 
-    explicit Monster(Vector position, HikerConstants hikerConstants);
-
     RenderInformation getRenderInformation() const override;
 
     floatType getXPosition() const;

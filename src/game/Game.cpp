@@ -7,60 +7,96 @@
 #include "spdlog/spdlog.h"
 #include <mutex>
 
-Game::Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
+Game::Game(World &world, Renderer &renderer, FullMenuRenderer &menuRenderer, MenuEngine &menuEngine,
+           MenuEventProcessor &menuEventProcessor, PhysicsEngine &physicsEngine, AudioService &audioService,
            InputHandler &inputHandler, GameConstants &gameConstants)
-    : world(world), renderer(renderer), physicsEngine(physicsEngine), audioService(audioService),
+    : world(world), renderer(renderer), menuRenderer(menuRenderer), menuEngine(menuEngine),
+      menuEventProcessor(menuEventProcessor), physicsEngine(physicsEngine), audioService(audioService),
       inputHandler(inputHandler), gameConstants(gameConstants) {
     spdlog::info("Game initialized.");
 }
 
 void Game::run() {
-    // game loop
     audioService.playSound("background-music");
-    bool playedEndSound = false;
+    // bool playedEndSound = false;
 
     while (!WindowShouldClose()) {
-        if (GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized()) {
-            this->inputHandler.initializeGamepads();
-            if (this->inputHandler.gamepadsInitialized()) {
-                spdlog::info("Gamepads initialized at time {}", GetTime());
-            }
-        } else if (this->world.getHiker().getIsAlive()) {
-            // this->inputHandler.update();
-            std::queue<GameEvent> events = this->inputHandler.getEvents();
-            this->physicsEngine.update(events);
-            this->renderer.draw();
-            this->world.updateGameScore();
-        } else {
-            if (!playedEndSound) {
-                audioService.playSound("game-over");
-                playedEndSound = true;
-            }
-            drawEndScreen();
+        bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
+        if (needToInitGamePads) {
+            initializeGamepads();
         }
-        // Debug terrain deletion
-        if (world.getTerrain().getPolyRepresentationOfGroundRendering().size() > 3) {
-            spdlog::debug("Terrain has more than 3 biomes active at the same time.");
-        }
+        this->gameLoop();
     }
 }
-void Game::drawEndScreen() {
 
-    const char *message = "Busted!";
-    int fontSize = 40;
+void Game::gameLoop() {
+    if (!menuEngine.isGamePlayRunning()) {
+        this->checkPlayAgainClicked();
+        runMenu();
+        return;
+    }
+    bool gamePlayRunning = this->world.getHiker().getIsAlive() && !gamePaused;
+    if (gamePlayRunning) {
+        this->checkPause();
+        runGameplay();
+    } else {
+        endGameplay();
+    }
+}
 
-    // Calculate the text width and height
-    int textWidth = MeasureText(message, fontSize);
-    int textHeight = fontSize; // Ascent + Descent, but raylib doesn't provide this separately, so using font size
+void Game::checkPause() {
+    if (!menuEngine.isGamePlayRunning()) {
+        gamePaused = true;
+    }
+}
 
-    // Calculate the positions
-    int posX = (graphics::SCREEN_WIDTH - textWidth) / 2;
-    int posY = (graphics::SCREEN_HEIGHT - textHeight) / 2;
+void Game::initializeGamepads() {
+    this->inputHandler.initializeGamepads();
+    if (this->inputHandler.gamepadsInitialized()) {
+        spdlog::info("Gamepads initialized at time {}", GetTime());
+    }
+}
 
-    BeginDrawing();
+void Game::runMenu() {
+    std::queue<GameEvent> events = this->inputHandler.getEvents();
+    this->menuEventProcessor.addEvents(events);
+    this->menuEventProcessor.processEvents();
+    this->menuEventProcessor.clearRepeatedEvents();
+    this->menuRenderer.render();
+}
 
-    ClearBackground(RAYWHITE);
-    DrawText(message, posX, posY, fontSize, RED);
+void Game::runGameplay() {
+    // this->inputHandler.update();
+    std::queue<GameEvent> events = this->inputHandler.getEvents();
+    this->physicsEngine.update(events);
+    this->renderer.draw();
+    this->world.updateGameScore();
+}
 
-    EndDrawing();
+void Game::endGameplay() {
+    if (!playedEndSound) {
+        audioService.playSound("game-over");
+        playedEndSound = true;
+    }
+    menuEngine.setGameplayRunning(false);
+    menuEngine.switchTo(END_SCREEN);
+}
+
+void Game::resetGame() {
+    playedEndSound = false;
+    this->world.reset();
+    this->renderer.reset();
+    this->renderer.getMountainRenderer().reset();
+}
+
+void Game::checkPlayAgainClicked() {
+    if (menuEngine.getPlayAgainClicked()) {
+        this->resetGame();
+        menuEngine.setPlayAgainClicked(false);
+    }
+}
+
+void Game::pause() {
+    this->gamePaused = true;
+    // this->world.pause();
 }

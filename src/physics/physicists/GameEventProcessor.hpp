@@ -8,49 +8,48 @@
 #include "../../entities/World.h"
 #include "../../input/InputHandler.h"
 #include "../../input/events/GameEvent.h"
+#include "../../menu/EventProcessor.h"
+#include "../../menu/MenuEngine.h"
+#include "../../menu/MenuRenderer.h"
 #include "../../output/graphics/Renderer.h"
 #include "../../utilities/Singleton.hpp"
 
 #include <list>
 #include <queue>
 
-class EventProcessor {
+class GameEventProcessor : public EventProcessor {
 
-    using GameEventFunction = void (EventProcessor::*)(GameEvent) const;
-    using AutoEventFunction = void (EventProcessor::*)() const;
+    // using GameEventFunction = void (GameEventProcessor::*)(GameEvent) const;
+    // using AutoEventFunction = void (GameEventProcessor::*)() const;
 
   public:
-    explicit EventProcessor(World &world, Renderer &renderer, HikerConstants &hikerConstants);
-    ~EventProcessor() = default;
+    explicit GameEventProcessor(World &world, Renderer &renderer, HikerConstants &hikerConstants,
+                                MenuEngine &menuEngine);
+    ~GameEventProcessor() = default;
     /**
      * Performs the changes to the world caused by the user input.
      */
-    void processEvents();
+    // void processEvents();
 
     /**
      * Adds new events to the queue.
      *
      * @param eventQueue
      */
-    void addEvents(std::queue<GameEvent> &eventQueue);
+    // void addEvents(std::queue<GameEvent> &eventQueue);
 
     /**
      * Clears events executed repetedly from the event queue.
      */
-    void clearRepeatedEvents();
+    // void clearRepeatedEvents();
 
   private:
     // Dependencies
     World &world;
     Renderer &renderer;
-    std::queue<GameEvent> eventQueue{};
+    MenuEngine &menuEngine;
     HikerConstants &hikerConstants;
 
-    std::map<GameEvent, GameEventFunction, GameEventCompare> gameEventFunctionMappings;
-
-    std::list<AutoEventFunction> autoEventFunctions;
-
-    // TODO pls doc
     /**
      * Puts the Hiker into the crouched state.
      *
@@ -99,7 +98,7 @@ class EventProcessor {
      * This method pauses the game.
      * @param event
      */
-    void pause(GameEvent event) const;
+    void pause(GameEvent event);
 
     void specialAbility(GameEvent event) const;
 

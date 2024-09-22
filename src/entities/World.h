@@ -86,6 +86,8 @@ class World {
 
     bool isOutOfScope(const RenderedEntity &entity) const;
 
+    void reset();
+
   private:
     // Dependencies
     Terrain &terrain;
@@ -97,7 +99,7 @@ class World {
 
     // Attributes
     floatType minX = 0;
-    floatType maxX = graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO;
+    floatType maxX = graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO;
 
     int coinScore = 0;
     int gameScore = 0;
@@ -106,6 +108,10 @@ class World {
         std::make_unique<std::list<std::shared_ptr<Rock>>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
+    void resetTerrain();
+    void resetHiker();
+    void resetMonster() const;
+    void resetAttributes();
 };
 
 #endif // SURVIVING_SARNTAL_WORLD_H
