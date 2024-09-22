@@ -83,6 +83,7 @@ class Hiker : public RenderedEntity {
     void addHealthPoints(int points);
 
     void kill();
+    void reset(Vector &position);
 
   private:
     // Dependencies

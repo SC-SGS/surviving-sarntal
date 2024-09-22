@@ -20,8 +20,15 @@ Keyboard::Keyboard() : InputDevice(-1, DEVICE_KEYBOARD) {
                       {{KEY_F11, TRIGGER_PRESSED}, {FULLSCREEN, NO_AXIS, 0, false}},
                       {{KEY_P, TRIGGER_PRESSED}, {TOGGLE_DEBUG, NO_AXIS, 0, false}},
                       {{KEY_BACKSPACE, TRIGGER_PRESSED}, {PAUSE, NO_AXIS, 0, false}},
+                      {{KEY_ENTER, TRIGGER_PRESSED}, {SELECT_BUTTON, NO_AXIS, 0, false}},
+                      //{{KEY_S, TRIGGER_PRESSED}, {SETTINGS, NO_AXIS, 0, false}},
+                      //{{KEY_I, TRIGGER_PRESSED}, {INSTRUCTIONS, NO_AXIS, 0, false}},
+                      //{{KEY_M, TRIGGER_PRESSED}, {MENU, NO_AXIS, 0, false}},
 
                       // Virtual axis modifications
+                      {{KEY_RIGHT, TRIGGER_PRESSED}, {AXIS_MODIFICATION, BUTTON_SWITCH, 1, false}},
+                      {{KEY_LEFT, TRIGGER_PRESSED}, {AXIS_MODIFICATION, BUTTON_SWITCH, -1, false}},
+
                       {{KEY_TAB, TRIGGER_PRESSED}, {AXIS_MODIFICATION, ITEM_SWITCH, 1, false}},
                       {{KEY_D, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, 1, true}},
                       {{KEY_A, TRIGGER_DOWN}, {AXIS_MODIFICATION, MOVEMENT_X, -1, true}},

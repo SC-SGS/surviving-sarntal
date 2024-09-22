@@ -4,6 +4,9 @@
 
 #ifndef GAME_HPP
 #define GAME_HPP
+#include "../menu/FullMenuRenderer.h"
+#include "../menu/MenuEventProcessor.h"
+#include "../menu/MenuRenderer.h"
 #include "../output/audio/AudioService.hpp"
 #include "../output/graphics/Renderer.h"
 #include "../physics/PhysicsEngine.hpp"
@@ -14,7 +17,8 @@
 class Game {
 
   public:
-    Game(World &world, Renderer &renderer, PhysicsEngine &physicsEngine, AudioService &audioService,
+    Game(World &world, Renderer &renderer, FullMenuRenderer &menuRenderer, MenuEngine &menuEngine,
+         MenuEventProcessor &menuEventProcessor, PhysicsEngine &physicsEngine, AudioService &audioService,
          InputHandler &inputHandler, GameConstants &gameConstants);
     ~Game() = default;
     void run();
@@ -26,16 +30,31 @@ class Game {
     void playRound() const;
 
     bool debugMode = false;
+    bool gameplayStarted = false;
+    void pause();
 
   private:
     World &world;
     Renderer &renderer;
+    FullMenuRenderer &menuRenderer;
+    MenuEngine &menuEngine;
+    MenuEventProcessor &menuEventProcessor;
     PhysicsEngine &physicsEngine;
     AudioService &audioService;
     InputHandler &inputHandler;
     GameConstants &gameConstants;
 
-    static void drawEndScreen();
+    void gameLoop();
+    void initializeGamepads();
+    void runMenu();
+    void runGameplay();
+    void endGameplay();
+    void resetGame();
+    void checkPlayAgainClicked();
+
+    bool playedEndSound = false;
+    bool gamePaused = false;
+    void checkPause();
 };
 
 #endif // GAME_HPP

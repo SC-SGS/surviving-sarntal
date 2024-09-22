@@ -134,3 +134,5 @@ void MountainRenderer::drawSurface(const Terrain &terrain) const {
         rlEnd();
     }
 }
+
+void MountainRenderer::reset() { verticesNeedUpdate = true; }
