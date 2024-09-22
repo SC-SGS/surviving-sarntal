@@ -26,6 +26,9 @@ class Renderer {
     void toggleDebugMode();
     void addExplosion(const Rock &rock) const;
 
+    void reset();
+    MountainRenderer &getMountainRenderer();
+
   private:
     // Dependencies
     World &world;

@@ -146,3 +146,9 @@ void Hiker::kill() {
     this->velocity = {0, 0};
     HapticsService::deathRumble();
 }
+
+void Hiker::reset(Vector &position) {
+    this->setIsAlive(true);
+    this->setHealthPoints(this->hikerConstants.hikerMaxHealth);
+    this->setPosition(position);
+}

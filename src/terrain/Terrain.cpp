@@ -209,13 +209,18 @@ floatType Terrain::mapHeightToTerrain(Vector point) {
     }
 }
 
-Terrain Terrain::getEmptyTerrain(HikerConstants hikerConstants, TerrainConstants terrainConstants,
+Terrain Terrain::getEmptyTerrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
                                  ResourceManager &resourceManager, AxisAlignedBoundingBox boundingBox) {
     return {hikerConstants, terrainConstants, resourceManager, boundingBox};
 }
 
-Terrain::Terrain(HikerConstants hikerConstants, TerrainConstants terrainConstants, ResourceManager &resourceManager,
+Terrain::Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager,
                  AxisAlignedBoundingBox boundingBox)
     : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
     this->boundingBox = boundingBox;
+}
+
+void Terrain::reset() {
+    this->biomes.clear();
+    this->generateInitial();
 }

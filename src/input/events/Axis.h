@@ -12,6 +12,7 @@ enum Axis {
     SECONDARY_Y,
     // one can switch to the next item or previous one
     ITEM_SWITCH,
+    BUTTON_SWITCH,
     AXIS_COUNT, // can be used for iteration over axes
     NO_AXIS
 };

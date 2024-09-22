@@ -110,6 +110,7 @@ class Inventory {
     void switchItemSlot(int offset);
 
     size_t getNumberOfItems(size_t slot) const;
+    void reset();
 };
 
 #endif // SURVIVING_SARNTAL_INVENTORY_HPP

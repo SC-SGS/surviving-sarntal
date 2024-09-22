@@ -27,6 +27,8 @@ class MountainRenderer {
 
     void debugRenderMountain();
 
+    void reset();
+
   private:
     Camera2D &camera;
     GameConstants &gameConstants;

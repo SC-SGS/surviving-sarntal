@@ -133,3 +133,8 @@ std::shared_ptr<Item> Inventory::getItem(size_t slot) const {
         throw std::runtime_error("The slot is emtpy or the slot number is too high and no item could be retrieved.");
     }
 }
+void Inventory::reset() {
+    for (auto &slot : slots) {
+        slot.clear();
+    }
+}

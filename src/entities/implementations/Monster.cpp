@@ -10,12 +10,9 @@
 
 Monster::Monster(HikerConstants &hikerConstants)
     : hikerConstants(hikerConstants),
-      RenderedEntity({0.1 * (graphics::SCREEN_WIDTH / graphics::UNIT_TO_PIXEL_RATIO), 0}) {
+      RenderedEntity({0.1 * (graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO), 0}) {
     animation = {10, 0, 0.2, 0};
 }
-
-Monster::Monster(Vector position, HikerConstants hikerConstants)
-    : hikerConstants(hikerConstants), RenderedEntity(position) {}
 
 RenderInformation Monster::getRenderInformation() const {
     const floatType monsterWidth = hikerConstants.hikerWidth * static_cast<floatType>(2.5);
