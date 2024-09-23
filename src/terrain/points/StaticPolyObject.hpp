@@ -15,16 +15,8 @@
 class StaticPolyObject {
   public:
     explicit StaticPolyObject(std::vector<Vector> &points);
+    StaticPolyObject(std::vector<Vector> &points, int index);
     ~StaticPolyObject() = default;
-
-    ///**
-    // * Initializes a new PolyObject based on the points of the previous one, where all points are shifted by the given
-    // * delta.
-    // *
-    // * @param polyObject
-    // * @param delta
-    // */
-    // StaticPolyObject(StaticPolyObject *polyObject, Vector delta);
 
     /**
      * Determines whether the given line intersects this poly object
@@ -43,19 +35,29 @@ class StaticPolyObject {
     /**
      * Calculates a List of all intersections of the given line with this poly object
      *
-     * @param start
-     * @param end
+     * @param line
      * @return
      */
     std::vector<std::shared_ptr<Intersection>> calculateIntersections(const Line &line) const;
 
-    const std::vector<Vector> &getPoints() const;
+    /**
+     * Calculates a List of all intersections of the this poly object with the given one.
+     *
+     * @param other
+     * @return
+     */
+    std::vector<std::shared_ptr<Intersection>>
+    calculateIntersections(const std::shared_ptr<StaticPolyObject> &other) const;
+
+    const virtual std::vector<Vector> &getPoints() const;
 
     AxisAlignedBoundingBox getBoundingBox() const;
 
+    const std::optional<int> &getIndex() const;
+
   protected:
     std::vector<Vector> points;
-
+    std::optional<int> index = std::nullopt;
     AxisAlignedBoundingBox boundingBox{};
 
     void recalculateBoundingBox();

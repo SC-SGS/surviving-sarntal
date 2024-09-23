@@ -43,13 +43,6 @@ if (ENABLE_COVERAGE)
         set(COVERAGE_DIR_NAME "coverage_${current_time}")
     endif ()
 
-    # Generate a timestamp for the coverage directory name
-    execute_process(
-            COMMAND date "+%Y-%m-%d_%H-%M-%S"
-            OUTPUT_VARIABLE current_time
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
     # Create a custom target to generate coverage report
     add_custom_target(coverage
             COMMAND rm -rf ${CMAKE_BINARY_DIR}/../${COVERAGE_DIR_NAME}

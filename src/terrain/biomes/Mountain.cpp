@@ -15,10 +15,10 @@ const std::vector<TerrainPhase> Mountain::mountainPhaseChoices = {
     {{2.0f, 1.4f}, 0.5f, 8},
 
     // steep downhill
-    {{2.0f, -1.4f}, 0.5f, 8},
+    {{2.0f, -1.4f}, 0.5f, 5},
 
     // slightly downhill
-    {{3.0f, -0.6f}, 0.6f, 10},
+    {{3.0f, -0.6f}, 0.6f, 8},
 
     // overhang
     {{-2.5f, 0.0f}, 0.5f, 5}};

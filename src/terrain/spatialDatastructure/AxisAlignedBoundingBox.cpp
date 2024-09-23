@@ -99,3 +99,11 @@ void AxisAlignedBoundingBox::extend(const Vector &point) {
         this->minMin.y = point.y;
     }
 }
+
+AxisAlignedBoundingBox AxisAlignedBoundingBox::moveByDelta(Vector delta) const {
+    return {this->minMin + delta, this->maxMax + delta};
+}
+
+AxisAlignedBoundingBox AxisAlignedBoundingBox::transform(const Rectangle &rectangle) {
+    return {{rectangle.x, rectangle.y}, {rectangle.x + rectangle.width, rectangle.y + rectangle.height}};
+}

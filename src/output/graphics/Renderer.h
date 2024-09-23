@@ -29,6 +29,7 @@ class Renderer {
 
     void toggleDebugMode();
     void addExplosion(const Rock &rock) const;
+    Camera2D &getCamera();
 
     void reset();
     MountainRenderer &getMountainRenderer();

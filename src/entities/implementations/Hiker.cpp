@@ -17,10 +17,13 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
     hikerMovement = HikerMovement();
     isAlive = true;
     animation = {4, 0, 0.3, 0};
-    Vector center = position + Vector({0, hikerConstants.hikerHeight / 2.0f});
+    this->walkingHitBoxDelta = {0, hikerConstants.hikerHeight / 2.0f};
+    Vector center = position + this->walkingHitBoxDelta;
     floatType halfHeight = this->hikerConstants.hikerHeight / 2;
     floatType halfWidth = this->hikerConstants.hikerWidth / 2;
-    std::vector<Vector> vertices = {{-halfWidth, -halfHeight}, {halfWidth, -halfHeight}, {halfWidth}, {}};
+    // TODO: Nice hitbox, currently this is just a diamond shape
+    std::vector<Vector> vertices = {{0, -halfHeight}, {halfHeight / 4, 0}, {0, halfHeight}, {-halfHeight / 4, 0}};
+    this->boundingBoxWalking = std::make_shared<DynamicPolygon>(center, vertices, this->hikerConstants.mass);
 
     spdlog::info("A Hiker was initialized");
 }
@@ -52,6 +55,20 @@ void Hiker::setHealthPoints(const int healthPoints) {
     }
 }
 
+void Hiker::addHealthPoints(const int points) {
+    this->setHealthPoints(std::min(this->healthPoints + points, hikerConstants.hikerMaxHealth));
+}
+
+void Hiker::doDamagePoints(const int damagePoints) {
+    if (!this->hasShield()) {
+        this->setHealthPoints(std::max(this->healthPoints - damagePoints, 0));
+    }
+}
+
+void Hiker::setShield(double time) { this->shieldTime = GetTime() + time; }
+
+bool Hiker::hasShield() const { return this->shieldTime > GetTime(); }
+
 const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 
 void Hiker::setHikerMovement(const HikerMovement &movement) {
@@ -72,9 +89,9 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
     hikerMovement = movement;
 }
 
-const HitInformation &Hiker::getHitInformation() const { return hitInformation; }
+const std::vector<HitInformation> &Hiker::getHitInformation() const { return hitInformation; }
 
-void Hiker::setHitInformation(const struct HitInformation &hit) { hitInformation = hit; }
+void Hiker::setHitInformation(const std::vector<HitInformation> &hits) { hitInformation = hits; }
 
 bool Hiker::getIsHit() const { return isHit; }
 
@@ -87,9 +104,6 @@ void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
 bool Hiker::getIsAlive() const { return this->isAlive; }
 
 void Hiker::setIsAlive(bool alive) { isAlive = alive; }
-void Hiker::addHealthPoints(const int points) {
-    this->setHealthPoints(std::min(this->healthPoints + points, hikerConstants.hikerMaxHealth));
-}
 
 void Hiker::turnLeft() { this->hikerMovement.setDirection(HikerMovement::LEFT); }
 void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT); }
@@ -152,3 +166,48 @@ void Hiker::reset(Vector &position) {
     this->setHealthPoints(this->hikerConstants.hikerMaxHealth);
     this->setPosition(position);
 }
+
+AxisAlignedBoundingBox Hiker::getBoundingBoxMovement(const Vector movement) const {
+    AxisAlignedBoundingBox polyBoundingBox =
+        AxisAlignedBoundingBox::transform(this->getCurrentBoundingBox()->getBoundingBox());
+    AxisAlignedBoundingBox startBox = polyBoundingBox;
+    AxisAlignedBoundingBox endBox = polyBoundingBox.moveByDelta(movement);
+    return startBox.merge(endBox);
+}
+
+floatType Hiker::computeSpeedFactor(Vector movement) const {
+    if (movement.x == 0) {
+        return 0.0;
+    }
+    floatType slope = movement.computeSlope();
+    floatType speedFactor;
+    if (movement.y < 0) { // Downhill
+        speedFactor = std::fmin(this->hikerConstants.maxSpeedNegSlope,
+                                this->hikerConstants.normalSpeed +
+                                    (slope / this->hikerConstants.maxClimbableSlope) *
+                                        (this->hikerConstants.maxSpeedNegSlope - this->hikerConstants.normalSpeed));
+    } else { // Uphill
+        speedFactor = std::fmax(
+            0.0f, ((this->hikerConstants.maxClimbableSlope - slope) / this->hikerConstants.maxClimbableSlope) *
+                      this->hikerConstants.normalSpeed);
+    }
+    return speedFactor;
+}
+
+std::shared_ptr<DynamicPolygon> Hiker::getCurrentBoundingBox() const { return this->boundingBoxWalking; }
+
+void Hiker::setPosition(Vector &position) {
+    RenderedEntity::setPosition(position);
+    Vector boundingBoxWalkingPosition = position + this->walkingHitBoxDelta;
+    this->boundingBoxWalking->setPosition(boundingBoxWalkingPosition);
+}
+
+std::shared_ptr<StaticPolygon> Hiker::getCurrentBoundingBoxStatic() const {
+    std::vector<Vector> vertices = this->boundingBoxWalking->getBodySpaceVertices();
+    for (auto &point : vertices) {
+        point += this->boundingBoxWalking->getPosition();
+    }
+    return std::make_shared<StaticPolygon>(vertices);
+}
+
+void Hiker::addHitInformation(const HitInformation &hit) { this->hitInformation.push_back(hit); }
