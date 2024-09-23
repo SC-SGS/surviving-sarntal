@@ -64,6 +64,10 @@ std::list<std::shared_ptr<Rock>> &World::getRocks() const { return *rocks; }
 
 std::list<std::shared_ptr<Item>> &World::getItems() const { return *items; }
 
+void World::clearAllItems() { this->items->clear(); }
+
+void World::clearAllRocks() { this->rocks->clear(); }
+
 void World::addItem(const Item &item) const { items->push_back(std::make_unique<Item>(item)); }
 
 void World::useItem(const ItemType itemType) {
@@ -96,6 +100,7 @@ void World::useCoin() { // NOLINT(*-convert-member-functions-to-static)
 
 void World::useDuck() { // NOLINT(*-convert-member-functions-to-static)
     this->audioService.playSound("use-duck");
+    this->hiker.setShield(gameConstants.itemsConstants.shieldTime);
     spdlog::debug("Used Duck.");
 }
 

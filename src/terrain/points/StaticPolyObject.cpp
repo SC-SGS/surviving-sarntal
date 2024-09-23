@@ -47,14 +47,6 @@ bool StaticPolyObject::intersects(const std::shared_ptr<StaticPolyObject> &other
     return false;
 }
 
-// StaticPolyObject::StaticPolyObject(StaticPolyObject *polyObject, Vector delta) {
-//     std::vector<Vector> newPoints = {};
-//     for (Vector point : polyObject->getPoints()) {
-//         newPoints.push_back(point + delta);
-//     }
-//     this->points = newPoints;
-// }
-
 AxisAlignedBoundingBox StaticPolyObject::getBoundingBox() const { return this->boundingBox; }
 
 void StaticPolyObject::recalculateBoundingBox() {
@@ -75,4 +67,23 @@ void StaticPolyObject::recalculateBoundingBox() {
         }
     }
     this->boundingBox = {minMin, maxMax};
+}
+
+StaticPolyObject::StaticPolyObject(std::vector<Vector> &points, int index) : points(points), index(index) {
+    this->recalculateBoundingBox();
+}
+
+const std::optional<int> &StaticPolyObject::getIndex() const { return index; }
+
+std::vector<std::shared_ptr<Intersection>>
+StaticPolyObject::calculateIntersections(const std::shared_ptr<StaticPolyObject> &other) const {
+    std::vector<std::shared_ptr<Intersection>> intersections = {};
+    for (int index = 0; index < other->getPoints().size() - 1; index++) {
+        Vector start = other->getPoints().at(index);
+        Vector end = other->getPoints().at(index + 1);
+        Line linePiece = {start, end};
+        std::vector<std::shared_ptr<Intersection>> newIntersections = this->calculateIntersections(linePiece);
+        intersections.insert(intersections.cend(), newIntersections.cbegin(), newIntersections.cend());
+    }
+    return intersections;
 }

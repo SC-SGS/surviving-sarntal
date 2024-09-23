@@ -43,9 +43,6 @@ void InputHandler::initializeGamepads() {
     EndDrawing();
 }
 bool InputHandler::gamepadsInitialized() const {
-    if (std::any_of(this->devices.cbegin(), this->devices.cend(),
-                    [](InputDevice const *device) { return device->getDevice() == DEVICE_GAMEPAD; })) {
-        return true;
-    }
-    return false;
+    return std::any_of(this->devices.cbegin(), this->devices.cend(),
+                       [](InputDevice const *device) { return device->getDevice() == DEVICE_GAMEPAD; });
 }

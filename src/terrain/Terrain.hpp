@@ -99,9 +99,13 @@ class Terrain {
 
     std::vector<std::shared_ptr<StaticPolyline>> getPolyRepresentationOfGroundRendering() const;
 
-    // std::vector<StaticPolygon *> getPolyRepresentationOfAllComponentsCollisionDetection() const;
-
-    // StaticPolyline *getPolyRepresentationOfGroundCollisionDetection() const;
+    /**
+     * Returns all sections of this terrain that overlap the given bounding box
+     *
+     * @param boundingBox
+     * @return relevant terrain sections as polylines
+     */
+    std::vector<std::shared_ptr<StaticPolyline>> getTerrainSections(const AxisAlignedBoundingBox &boundingBox) const;
 
     std::shared_ptr<StaticPolyline> getBasepoints() const;
 
@@ -116,6 +120,15 @@ class Terrain {
                                    AxisAlignedBoundingBox boundingBox);
 
     void reset();
+
+    /**
+     * Chacks whether the given polygon collides with the terrain.
+     *
+     * @param poly
+     * @return
+     */
+    std::vector<std::shared_ptr<Intersection>>
+    calculateCollisionsWithPolygon(const std::shared_ptr<StaticPolygon> &poly) const;
 
   private:
     std::vector<std::shared_ptr<Biome>> biomes;

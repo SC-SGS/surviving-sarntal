@@ -31,7 +31,30 @@ void CollisionHandler::handleCollisions() {
 
 void CollisionHandler::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 
+// void CollisionHandler::playerCollisions() const {
+// NEW:
+// TODO parallelize and make efficient with linked cell or sth
+// for (auto &rock : this->world.getRocks()) {
+//     CollisionObject collision =
+//         CollisionDetector::polygonsCollide(rock, *this->world.getHiker().getCurrentBoundingBox());
+//     if(collision.isCollision) {
+//         // TODO player hit sound and rock explosion (texture, later actual explosion) should be somewhere else
+//         this->audioService.playSound("rock-smash");
+//         this->audioService.playSound("boom");
+//         const int rockDmg = this->rockDamage(rock);
+//         spdlog::debug("Player has hit with rock damage: {}", rockDmg);
+//         HapticsService::rockRumble(rockDmg);
+//         this->world.getHiker().doDamagePoints(rockDmg);
+//         this->world.getHiker().setIsHit(true);
+//         // TODO knockback issue
+//         this->world.getHiker().addHitInformation(this->computeHitInformation(rock));
+//         rock.setShouldBeDestroyed(true);
+//     }
+// }
+// }
+
 void CollisionHandler::playerCollisions() const {
+    // OLD:
     // TODO parallelize and make efficient with linked cell or sth
     for (auto &rock : this->world.getRocks()) {
         if (this->collisionDetector.isPlayerHitByRock(*rock)) {
@@ -41,11 +64,10 @@ void CollisionHandler::playerCollisions() const {
             const int rockDmg = this->rockDamage(*rock);
             spdlog::debug("Player has hit with rock damage: {}", rockDmg);
             HapticsService::rockRumble(rockDmg);
-            this->world.getHiker().setHealthPoints(this->world.getHiker().getHealthPoints() - rockDmg);
+            this->world.getHiker().doDamagePoints(rockDmg);
             this->world.getHiker().setIsHit(true);
             // TODO knockback issue
-            this->world.getHiker().setHitInformation(
-                {rock->getBoundingBox().width / 2, rock->getLinearMomentum().x, 0});
+            this->world.getHiker().addHitInformation(this->computeHitInformation(rock));
             rock->setShouldBeDestroyed(true);
         }
     }
@@ -189,4 +211,11 @@ floatType CollisionHandler::capAngularVelocity(const floatType angVel) const {
         return -maxAngularVelocity;
     }
     return angVel;
+}
+
+HitInformation CollisionHandler::computeHitInformation(std::shared_ptr<Rock> &rock) const {
+    Vector linearMomentum = rock->getLinearMomentum();
+    Vector knockback = linearMomentum / this->gameConstants.hikerConstants.mass;
+    int steps = static_cast<int>(knockback.length());
+    return {knockback, steps, 0};
 }

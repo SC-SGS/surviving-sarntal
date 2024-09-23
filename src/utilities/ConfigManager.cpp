@@ -72,3 +72,5 @@ std::unordered_map<std::string, std::string> ConfigManager::extractMap(std::stri
 
     return map;
 }
+
+bool ConfigManager::isInDevMode() { return this->config["run-dev-mode"].as<bool>(); }

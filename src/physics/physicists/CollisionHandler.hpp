@@ -64,6 +64,14 @@ class CollisionHandler {
     int rockDamage(Rock &rock) const;
 
     /**
+     * Calculates the hit information for a rock if this rock was to hit the hiker.
+     *
+     * @param rock
+     * @return
+     */
+    HitInformation computeHitInformation(std::shared_ptr<Rock> &rock) const;
+
+    /**
      * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.
      * TODO this is bad and will be changed with spline mountain; also needs lookahead and some analytic methods
      */

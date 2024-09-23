@@ -21,7 +21,7 @@ ItemSpawner::ItemSpawner(World &world, GameConstants &gameConstants, std::unorde
 }
 
 void ItemSpawner::spawnItems() {
-    if (GetTime() < nextSpawnTime) {
+    if (GetTime() < nextSpawnTime || !this->gameConstants.itemsConstants.spawnItems) {
         return;
     }
 

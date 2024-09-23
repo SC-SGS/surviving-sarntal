@@ -35,19 +35,18 @@ struct HikerConstants {
     floatType jumpVelocity;
     floatType airMovementSpeedFactor;
     floatType knockBack;
-
-    floatType minSpeedNegSlope;
     floatType maxSpeedNegSlope;
-    floatType minSpeedPosSlope;
 
-    floatType slowestNegSlope;
-    floatType fastestNegSlope;
-    floatType slowestPosScope;
-
+    // Terrain interaction
     floatType maxClimbableSlope;
+    floatType terrainCollisionDampening; // Factor by which the reflected velocity of the hiker is dampened, when they
+                                         // hit the terrain.
+    floatType friction;
 };
 
 struct ItemsConstants {
+    bool spawnItems;
+    floatType shieldTime;
     floatType collectionRadius;
     int slotsPerInventory;
     int itemsPerSlot;
@@ -65,6 +64,8 @@ struct ItemsConstants {
 };
 
 struct RockConstants {
+    bool spawnRocks;
+
     // Rock size
     floatType minRockSize;
     floatType maxRockSize;

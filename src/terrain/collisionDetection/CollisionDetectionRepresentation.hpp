@@ -34,7 +34,18 @@ class CollisionDetectionRepresentation {
      * @param boundingBox
      * @return relevant sections of the collision detection representation
      */
-    std::vector<std::shared_ptr<StaticPolyline>> calculateRelevantSections(AxisAlignedBoundingBox &boundingBox);
+    std::vector<std::shared_ptr<StaticPolyline>> calculateRelevantSections(const AxisAlignedBoundingBox &boundingBox);
+
+    /**
+     * Calculates the relevant parts of this collision detection representation within the given bounding box and adds
+     * parts outside the bounding box to get a continuous line. All sections are then returned in the order in which
+     * they are in the original terrain.
+     *
+     * @param boundingBox
+     * @return relevant sections of the collision detection representation in order and continuous
+     */
+    std::vector<std::shared_ptr<StaticPolyline>>
+    calculateRelevantSectionsContinuous(const AxisAlignedBoundingBox &boundingBox);
 
   private:
     std::vector<std::shared_ptr<StaticPolyline>> polylineSectionsSortedT;
@@ -56,7 +67,7 @@ class CollisionDetectionRepresentation {
     std::vector<std::shared_ptr<StaticPolyline>>
     calculateRelevantSectionsX(const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,
                                IsSmallerComparator isSmallerComparator,
-                               AxisAlignedBoundingBox &boundingBox);
+                               const AxisAlignedBoundingBox &boundingBox);
 };
 
 #endif // SURVIVING_SARNTAL_COLLISIONDETECTIONREPRESENTATION_HPP
