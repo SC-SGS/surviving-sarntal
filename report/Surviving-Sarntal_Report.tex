@@ -1,0 +1,425 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[a4paper,12pt]{llncs}
+%
+\usepackage{makeidx}  % allows for indexgeneration
+\makeindex
+%
+%
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}      % chnage the used langauge here!!!
+\usepackage[T1]{fontenc}
+%
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+% correct colors for the hyperrefs
+\usepackage[plainpages=false,hypertexnames=true,pdfnewwindow=true,backref=page,colorlinks=true,citecolor=blue,linkcolor=black,urlcolor=blue,filecolor=blue]{hyperref}
+%
+% additional (maybe useful) packages
+\usepackage{amssymb}                % more math symbols
+\usepackage{amsmath}                % better equations
+\usepackage{booktabs}               % better tables
+\usepackage[dvipsnames]{xcolor}     % more colors
+\usepackage{spverbatim}             % verbatim with automatic line breaks
+\usepackage{dsfont}                 % math fonts
+\usepackage{csquotes}               % correct "" based on the used language
+\usepackage{listings}               % source code
+\usepackage{tikz}                   % custom (vector) graphics
+\usetikzlibrary{shapes, arrows.meta, positioning, decorations.pathreplacing, trees, patterns, calligraphy}
+%
+% pseudo-code
+\usepackage{algorithm} 
+\usepackage{algpseudocode} 
+\newcommand{\algorithmautorefname}{Algorithmus}
+%
+%
+% page format ===============================================================
+\hoffset=-1.25truecm
+\setlength{\topmargin}{0.0cm}
+\setlength{\textheight}{23.0cm}
+\setlength{\footskip}{1.5cm}
+\setlength{\textwidth}{15.4cm}
+\setlength{\evensidemargin}{1.5cm}
+\setlength{\oddsidemargin}{1.5cm}
+\setlength{\parskip}{1ex}
+\setlength{\parindent}{0pt}
+\setlength{\marginparwidth}{1.4cm}
+\setlength{\marginparsep}{1mm}
+
+\pagestyle{plain}
+
+% LstListing-Format ==========================================================
+\lstdefinestyle{cpp}{
+  language=C++,
+  basicstyle=\small\ttfamily,
+  frame=tb,
+  xleftmargin=\parindent,
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  commentstyle=\color{ForestGreen},
+  framexleftmargin=5pt,
+  framexrightmargin=5pt,
+  framextopmargin=5pt,
+  framexbottommargin=5pt,
+  literate={~}{$\sim$}1
+}
+
+% macro definitions ==========================================================
+% numbers -------------------------------------------------------------
+\newcommand{\N}{{\mathbb{N}}}
+\newcommand{\R}{{\mathbb{R}}}
+\newcommand{\C}{{\mathbb{C}}}
+\newcommand{\Z}{{\mathbb{Z}}}
+\newcommand{\Q}{{\mathbb{Q}}}
+\renewcommand{\O}{{\mathcal{O}}}
+\newcommand\norm[1]{\lVert#1\rVert}
+\renewcommand\qed{$\hfill\square$}
+\newcommand\scprod[2]{\langle #1 , #2 \rangle}
+\usepackage{wrapfig}
+\usepackage{url}
+\usepackage{xurl}
+%
+%
+\def\myverzeichnis{.}
+%
+\numberwithin{equation}{section}
+%
+%
+% images -----------------------------------------------------------------------
+% #1 filename;  #2 Label;  #3 caption;  #4 short-caption
+\newcommand{\image}[4]{%
+  \begin{figure}[htbp]%
+    \begin{center}%
+      \includegraphics{#1}%
+      \caption[#4]{#3}%
+      \label{#2}%
+    \end{center}%
+  \end{figure}%
+}
+
+% image with a specific width -----------------------------------------------------------------
+% #1 filename;  #2 width;  #3 Label;  #4 caption;  #5 short-caption
+\newcommand{\imagewithwidth}[5]{
+  \begin{figure}[htbp]%
+    \begin{center}%
+      \includegraphics[width=#2]{#1}%
+      \caption[#5]{#4}%
+      \label{#3}%
+    \end{center}%
+  \end{figure}
+}
+
+% ============================================================================
+\begin{document}
+
+% =========== Das war der Vorspann, jetzt geht's los! ========================
+
+% ============================================================================
+% =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
+% ============================================================================
+%
+\author{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
+\index{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
+%
+% Das Institut wird fuer den Betreuer missbraucht ...
+\institute{{\bf Betreuer:} Carme Homs-Pons}
+\authorrunning{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
+\title{Towards real-time physics in a 2D survival-based game}
+%
+%
+\maketitle              % typeset the header of the contribution
+\thispagestyle{empty}
+%
+%
+\begin{abstract}
+  \textcolor{red}{\textbf{// TODO}}
+  This project builds up on the outcome of a project that took place in the Ferienakademie 2023
+  course \glqq{}Let's play! Simulated Physics for Games\grqq{} organised by Prof. Hans-Joachim Bungartz and
+  Prof. Miriam Schulte. The participants of the course1 created the \glqq Surviving Sarntal\grqq{} game, the
+  starting point of this project.
+  \glqq Surviving Sarntal\grqq{} is a single-player survival-based game where the player is a hiker who goes
+  up a mountain while avoiding rock-fall. The game has fun visuals, including a very unique kill-bar.
+  The player can choose between keyboard input and game-pad input to interact with the game.
+  The code is written in C++ and follows the entity component system (ECS) architectural pattern.
+  The raylib library is used for the visuals.
+\end{abstract}
+%
+% Introduction -----------------------------------------------------------------
+\section{Introduction}
+
+%
+%
+% Methodology ------------------------------------------------------------------
+\section{Methodology}
+\begin{itemize}
+  \item Arbeitsweise: Scrum und andere Techniken
+  \item Umgebung, Installation, \dots
+  \item DevOps
+  \item Quality Assurance
+  \item Tranformation des alten Spiels
+\end{itemize}
+
+% Results ----------------------------------------------------------------------
+\section{The Game}
+
+\subsection{Goal of The Game}
+
+\subsection{Entities}
+
+\subsection{The Terrain}
+
+\section{The Game Loop}
+
+main Loop
+
+\subsection{Input}
+
+- short explanation of libs and how and when processed (maybe howto)
+
+
+\subsection{Real-Time Rigid Body Physics}
+
+\subsubsection{The Physics Loop}
+
+\subsubsection{Spawning}
+
+\subsubsection{Destructing}
+
+\subsubsection{Entity Movement}
+
+\subsubsection{Collision Detection}
+
+\subsubsection{Collision Resolution}
+
+%\vspace{-\abovedisplayskip}
+\begin{definition}
+  \textbf{Ein Beispiel Konzept} Lorem Ipsum dolor irgendwas.
+  %Ein iteratives Verfahren heißt \textbf{konsistent}, falls die richtige Lösung nicht weiter transformiert wird.
+  %Wenn das Verfahren für beliebige initiale Approximationen gegen die korrekte Lösung strebt, heißt es \textbf{konvergent}.
+  %\vspace{-\belowdisplayskip}
+\end{definition}
+%\vspace{-\belowdisplayskip}
+%Iterative Methoden bieten sich insbesondere an, wenn das zu lösende LGS Ergebnis einer Diskretisierungsaufgabe ist und die exakte Lösung selbst nur eine Annäherung an die zugrundeliegende Aufgabenstellung darstellt \cite{numLGS}.
+Eine Citation sieht so aus Barrett et al. \cite{templates} zwei Arten von iterativen Methoden.
+
+%\vspace{-\abovedisplayskip}
+{\flushleft\begin{definition} \textbf{Ein Algorithmus (pls don't delete, I need that as ref)}\\
+%\noindent\begin{minipage}{0.35\textwidth}
+%  \begin{align}
+%    r_{(0)} &= b - Ax_{(0)}\\ 
+%    \alpha_{i} \notag&= \frac{\norm{r_{(i)}}_{2}^{2}}{\norm{r_{(i)}}_{A}^{2}} \\
+%    &= \frac{r_{(i)}^{T}r_{(i)}}{r_{(i)}^{T}Ar_{(i)}}\\
+%    x_{(i+1)} &= x_{(i)} + \alpha_{i}r_{(i)}\\
+%    r_{(i+1)} &= b - Ax_{(i+1)}\label{eq:r}\\
+%    &= r_{(i)} - \alpha_{i}Ar_{(i)}\label{eq:r_Alternativ}
+%  \end{align}
+%\end{minipage}
+%\qquad
+%\quad
+%\begin{minipage}{0.55\textwidth}
+%\vspace{-\abovedisplayskip}
+\centering
+\begin{minipage}{0.65\textwidth}
+  \vspace{-\abovedisplayskip}
+  \begin{algorithm}[H]
+  \caption{The Steepest Descent Method}\label{alg:steep}
+  \hspace*{\algorithmicindent} \textbf{Input:} $A\in\R^{n\times n}, \, b, x\in\R^{n}, \, i_{max}\in\N^{+}, \, \epsilon\in\R^{+}$\\
+  \hspace*{\algorithmicindent} \textbf{Output:} $x\in\R^n, \, Ax = b' \text{ mit } \Delta b:=b'-b\leq\epsilon\norm{b}_{2}$
+    \begin{algorithmic}[1]
+    \Procedure{SteepestDescent}{$A, \, b, \, x, \, i_{max}, \, \epsilon$}
+    \State $i \gets 0; \quad r \gets b - Ax; \quad \tau \gets r^{T}r; \quad stopCrit \gets \epsilon^{2}\norm{b}_{2}^{2}$ 
+  %  \State $r \gets b - Ax$ 
+  %  \State $\tau \gets r^{T}r$
+  %  \State $stopCrit \gets \epsilon^{2}\norm{b}_{2}^{2}$
+    \While{$(i < i_{max}$ \textbf{and} $\tau > stopCrit)$}
+    \State $q \gets Ar; \quad \alpha \gets \frac{\tau}{r^{T}q}; \quad x \gets x + \alpha r$
+  %  \State $\alpha \gets \frac{\tau}{r^{T}q}$
+  %  \State $x \gets x + \alpha r$
+    \If{$n>100$ \textbf{and} $i \text{\textbf{ mod }} \lfloor \sqrt{n} \rfloor = 0$}
+      \State $r \gets b-Ax$\label{alg:steep:r}
+    \Else 
+      \State $r = r - \alpha q$\label{alg:steep:r_Alternativ}
+    \EndIf
+    \State $\tau \gets r^{T}r$
+    \State $i \gets i+1$
+    \EndWhile
+    \State \Return $x$
+    \EndProcedure
+    \end{algorithmic}
+  \end{algorithm}
+\end{minipage}
+%\vspace{-2\belowdisplayskip}
+\end{definition}}
+\vspace{\belowdisplayskip}
+
+\begin{corollary}\label{cor:steep}
+  Oh partigano, portami via.
+\end{corollary}
+%\vspace{-\belowdisplayskip}
+%
+
+\subsection{Rendering}
+
+- short explanation of algorithms and libs 
+
+%
+% Conclusion -------------------------------------------------------------------
+\section{Conclusion / Discussion}
+%
+% Future Work ------------------------------------------------------------------
+\section{Future Work}
+- open issues, Todos and ideas
+%
+% Appendix ---------------------------------------------------------------------
+\appendix
+%
+\section{Angaben zur Reproduzierbarkeit usw.}
+\label{Anhang}
+Die verwendeten Software-Versionen (Python, NumPy, SciPy, ProbNum), weitere Plots sowie die Implementierungen finden sich in dem folgenden Git-Repository (Read-only access):
+\url{https://gitfront.io/r/B-Aheimer/voAnN37ECCoS/Iterative-Loeser-fuer-LGS-Seminararbeit/}.
+Für alle Randomisierungen wurde ein Random Number Generator mit festgelegtem Seed bereitgestellt.
+
+
+% LaTeX-Tips für uns -----------------------------------------------------------
+%
+%NICHT LÖSCHEN!
+%
+%
+%\subsection{Anmerkungen zur Einleitung}
+%Hier kommt noch mehr Text. 
+%Wir verweisen dazu auf \cite{thisdocument}.
+%
+%% Formulas -----------------------------------------------------------------
+%Eine schöne Formel ist
+%\[ u(\vec{x}) = \sum_{i=1}^N \alpha_i \varphi_i(\vec{x}) \,, \]
+%aber das geht auch inline als $u(\vec{x}) = \sum_{i=1}^N \alpha_i \varphi_i(\vec{x})$, also mitten im Text.
+%
+%Es können auch Formeln dargstellt werden, die über mehrere Zeilen gehen, aber trotzdem schön zueinander ausgerichtet sind:
+%\begin{align*}
+%    f(x) &= a \cdot (1 + b) \\
+%         &= a + ab
+%\end{align*}
+%
+%% Images/Graphics -----------------------------------------------------------------
+%Was noch fehlt ist ein Bild, z.B.\ das aus \autoref{fig:grid1} oder \autoref{fig:grid2}. 
+%Wir können dazu prima die tollen Makros, die oben im Vorspann definiert wurden, verwenden.
+%Beispielsweise mit folgenden Befehlen:
+%\begin{spverbatim}
+%\image{figures/grid_l2.png}{fig:grid1}{Dies ist ein sogenanntes dünnes Gitter zum Level 2.}{Die Kurzform lasse ich meistens leer}
+%\imagewithwidth{figures/grid_l2.png}{2cm}{fig:grid2}{Dies ist ein sogenanntes dünnes Gitter zum Level 2 in 2cm Breite.}{}
+%\end{spverbatim}
+%
+%Die Bilder werden automatisch nach vernünftigen Kriterien platziert, daher immer im Text mit \verb!\autoref{}! drauf verweisen (bei den Beispielen mit \verb!\autoref{fig:grid1}! und \verb!\autoref{fig:grid2}!).
+%\image{figures/grid_l2.png}{fig:grid1}{Dies ist ein sogenanntes dünnes Gitter zum Level 2.}{Die Kurzform lasse ich meist leer}
+%\imagewithwidth{figures/grid_l2.png}{2cm}{fig:grid2}{Dies ist ein sogenanntes dünnes Gitter zum Level 2 in 2cm Breite.}{}
+%
+%% Anmerkung: damit LaTeX nicht denkt, dass ein Punkt den Satz beendet
+%% (da spendiert LaTeX gerne mehr Zwischenraum), können wir das
+%% Leerzeichen mit Backslash als Leerzeichen markieren. Damit LaTeX
+%% ein Leerzeichen setzt, bei dem es keinen Zeilenumbruch geben darf,
+%% kann man die Tilde verwenden.
+%% Tables -----------------------------------------------------------------
+%Was wir hin und wieder noch brauchen ist eine Tabelle, wie z.B.\ \autoref{tab:irgendwas}.
+%\begin{table}[htbp]
+%  \centering
+%  \caption{Diese Tabelle zeigt nicht die Daten von etwas Sinnvollem, sondern einfach irgend etwas. Tabellenbeschriftungen sind oft drüber.}
+%  \label{tab:irgendwas}
+%  \begin{tabular}{lrcp{5cm}}
+%    \toprule
+%    \multicolumn{3}{c}{Spalten} & Absatz 5cm \\
+%    \cmidrule(lr){1-3}
+%    linksbündig & rechtsbündig & zentriert & \\
+%    \midrule
+%    1.0 & -1.1 & 1.2 & toller Text, der nach 5cm umbricht und dafür brauchen wir einfach mehr Text. \\
+%    4321.1 & 6543.2 & 7654.3 & mehr Text \\
+%    2.44 & 4.66 & 6.88 & 8.00 \\
+%    \bottomrule
+%  \end{tabular}
+%\end{table}
+%
+%
+%% Source-Code -----------------------------------------------------------------
+%\subsection{Quellcode}
+%Code-Beispiele können mittels \texttt{lstlisting}-Environment eingebunden werden.
+%Siehe \autoref{lst:mylisting} als Beispiel.
+%Alternativen wie \texttt{minted} sind selbstverständlich auch erlaubt, solange sie Features wie Syntax-Highlighting und Zeilennummern mitbringen.
+%Code-Beispiele sollten minimal sein, d.h.\ auf den Punkt gebracht und keinen überflüssigen Code beinhalten.
+%Es muss standardkonformer Code sein und mit hinzugefügtem Boilerplate-Code (main, Auslassungen von Überflüssigem, \dots) ohne Fehler compilierbar sein.
+%
+%Quellcode aus Dateien kann per \texttt{lstinputlisting} einbezogen werden.
+%Für Inline-Code \texttt{lstinline} verwenden.
+%Für abstrakte Algorithmen (kein C++-Code) besser eines der algorithm-Packages verwenden.
+%
+%\begin{lstlisting}[style=cpp, caption={Example using Lstlisting}, label={lst:mylisting}, numbers=left]
+%// I'm a comment!
+%template <typename T>
+%struct LessThan {
+%  bool operator(T a, T b) { return a < b; };
+%};
+%
+%/*
+% * I'm a multiline comment!
+% * Ich bin in Kommentar, der mehrere Zeilen verwendet!
+% */
+%std::vector<int> v = { 5, 4, 3, 2, 1 };
+%std::sort(v.begin(), v.end(), LessThan<int>());
+%
+%std::cout << "Hello, World" << std::endl;
+%\end{lstlisting}
+%
+%
+%% Pseudo-Code -----------------------------------------------------------------
+%\subsection{Pseudo-Code}
+%Für Pseudo-Code kann die \texttt{algorithm}-Umgebung verwendet werden.
+%Ein Beispiel ist in \autoref{alg:ppo} zu sehen.
+%\begin{algorithm}
+%	\caption{PPO}
+%	\begin{algorithmic}[htbp]
+%		\For {$iteration=1,2,\ldots$}
+%			\For {$actor=1,2,\ldots,N$}
+%				\State Run policy $\pi_{\theta_{old}}$ in environment for $T$ time steps
+%				\State Compute advantage estimates $\hat{A}_{1},\ldots,\hat{A}_{T}$
+%			\EndFor
+%			\State Optimize surrogate $L$ wrt. $\theta$, with $K$ epochs and minibatch size $M\leq NT$
+%			\State $\theta_{old}\leftarrow\theta$
+%		\EndFor
+%	\end{algorithmic} 
+%	\label{alg:ppo}
+%\end{algorithm}
+%
+%
+%% Custom graphics -----------------------------------------------------------------
+%\subsection{Graphiken}
+%Wenn man einfache Graphiken in seiner Ausarbeitung verwenden will, bietet es sich heirfür immer an, diese selbst zu machen. 
+%Eine Möglichkeit hierfür ist zum Beispiel TikZ.
+%Aber Achtung: zu viele TikZ Bilder können die Compile-Zeit von LaTex negativ beeinflussen.
+%
+%\begin{figure}[htbp]
+%    \centering
+%    \begin{tikzpicture}
+%        \fill[orange] (-0.5, -0.5) rectangle (2.5, 1.5);
+%        \node[circle, fill=white, draw=black] (A) at (1, 1) {$A$};
+%        \node[circle, fill=white, draw=black] (B) at (2, 0) {$B$};
+%        \node[circle, fill=white, draw=black] (C) at (0, 0) {$C$};
+%        \draw[-to] (A) -- (B);
+%        \draw[-to] (B) -- (C);
+%        \draw[-to] (C) -- (A);
+%    \end{tikzpicture}
+%    \caption{Ein einfaches Beispiel eines Graphen gezeichnet via TikZ.}
+%    \label{fig:tikz}
+%\end{figure}
+
+%\subsection{Zum Schluss}
+%\dots viel Spaß!
+
+
+% ---- Bibliography ----
+\bibliographystyle{splncs04}%alpha, arabic
+\bibliography{bib/literatur.bib}
+
+\end{document}
