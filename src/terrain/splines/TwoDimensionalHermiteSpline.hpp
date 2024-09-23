@@ -13,8 +13,8 @@
 
 class TwoDimensionalHermiteSpline : public Spline<Vector> {
   public:
-    TwoDimensionalHermiteSpline(floatType startT, floatType endT, Vector start, Vector end, Vector startDer,
-                                Vector endDer);
+    TwoDimensionalHermiteSpline(
+        floatType startT, floatType endT, Vector start, Vector end, Vector startDer, Vector endDer);
     ~TwoDimensionalHermiteSpline() override = default;
 
     Vector evaluateDerivative(floatType tPos, int n) const override;

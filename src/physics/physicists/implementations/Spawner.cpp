@@ -8,10 +8,13 @@
 #include <iostream>
 #include <mutex>
 
-Spawner::Spawner(Terrain &terrain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world,
-                 GameConstants &gameConstants)
-    : rockSpawner(rockSpawner), terrain(terrain), itemSpawner(itemSpawner), world(world), gameConstants(gameConstants) {
-}
+Spawner::Spawner(
+    Terrain &terrain, RockSpawner &rockSpawner, ItemSpawner &itemSpawner, World &world, GameConstants &gameConstants)
+    : rockSpawner(rockSpawner),
+      terrain(terrain),
+      itemSpawner(itemSpawner),
+      world(world),
+      gameConstants(gameConstants) {}
 
 void Spawner::spawn() {
     if (this->world.getMaxX() > this->terrain.getRightBorder() - gameConstants.terrainConstants.bufferRight &&

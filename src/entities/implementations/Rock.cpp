@@ -9,15 +9,24 @@
 #include <iostream>
 #include <utility>
 
-Rock::Rock(const Vector &position, const std::vector<Vector> &vertices, const std::vector<Vector2> &textureCoordinates,
-           const floatType mass, const floatType density, const floatType momentOfInertia,
+Rock::Rock(const Vector &position,
+           const std::vector<Vector> &vertices,
+           const std::vector<Vector2> &textureCoordinates,
+           const floatType mass,
+           const floatType density,
+           const floatType momentOfInertia,
            const DynamicProperties &dynamicProperties)
     : DynamicPolygon(position, vertices, textureCoordinates, mass, density, momentOfInertia, dynamicProperties),
       type(NORMAL_ROCK) {}
 
 Rock::Rock(Vector position, const DynamicPolygon &polygon, DynamicProperties properties, RockType rockType)
-    : DynamicPolygon(position, polygon.getBodySpaceVertices(), polygon.getTextureCoordinates(), polygon.getMass(),
-                     polygon.getDensity(), polygon.getMomentOfInertia(), properties),
+    : DynamicPolygon(position,
+                     polygon.getBodySpaceVertices(),
+                     polygon.getTextureCoordinates(),
+                     polygon.getMass(),
+                     polygon.getDensity(),
+                     polygon.getMomentOfInertia(),
+                     properties),
       type(rockType) {}
 
 RenderInformation Rock::getRenderInformation() const {

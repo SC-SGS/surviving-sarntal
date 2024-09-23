@@ -27,7 +27,11 @@ class Hiker;
 class World {
 
   public:
-    World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+    World(Terrain &terrain,
+          Hiker &hiker,
+          Inventory &inventory,
+          Monster &monster,
+          AudioService &audioService,
           GameConstants &gameConstants);
     ~World();
     Hiker &getHiker() const;

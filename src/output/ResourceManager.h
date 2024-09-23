@@ -30,8 +30,14 @@ class ResourceManager {
 
   public:
     ~ResourceManager() = default;
-    void initialize();
+
+    /**
+     * This constructor does not initialize the assets needed for the game.
+     * We need this, so that we can mock the class without using Raylib to load the assets.
+     * If you want to initialize the assets you need to use another constructor or call the init() function afterwards.
+     */
     explicit ResourceManager(ConfigManager &configManager);
+    ResourceManager(ConfigManager &configManager, bool initOnBuild);
     void loadTexture(const std::string &name, const std::string &path);
     Texture2D getTexture(const std::string &name);
     void loadSound(const std::string &name, const std::string &path);
@@ -39,5 +45,6 @@ class ResourceManager {
     void loadMusic(const std::string &name, const std::string &path);
     Music getMusic(const std::string &name);
     void unloadAllSounds() const;
+    void init();
 };
 #endif // SURVIVING_SARNTAL_RESOURCEMANAGER_H

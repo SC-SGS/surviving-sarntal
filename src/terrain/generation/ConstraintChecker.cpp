@@ -8,9 +8,13 @@
 
 ConstraintChecker::ConstraintChecker(const std::shared_ptr<Ground> &ground,
                                      const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
-                                     const TerrainConstants &terrainConstants, const HikerConstants &hikerConstants)
-    : terrainConstants(terrainConstants), hikerConstants(hikerConstants), ground(ground),
-      groundPolyRepresentation(groundPolyRepresentation), groundBasePoints(ground->getBasePoints()) {
+                                     const TerrainConstants &terrainConstants,
+                                     const HikerConstants &hikerConstants)
+    : terrainConstants(terrainConstants),
+      hikerConstants(hikerConstants),
+      ground(ground),
+      groundPolyRepresentation(groundPolyRepresentation),
+      groundBasePoints(ground->getBasePoints()) {
     this->minXPos = this->groundBasePoints->getStartPoint().x;
     Vector lastPos = this->groundBasePoints->getStartPoint();
     bool overhang = false;
@@ -148,7 +152,8 @@ bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint, Vector newPoint
     return true;
 }
 
-bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint, const std::shared_ptr<StaticPolyline> &newTerrain,
+bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint,
+                                                const std::shared_ptr<StaticPolyline> &newTerrain,
                                                 Vector direction) const {
     return std::all_of(newTerrain->getPoints().begin(), newTerrain->getPoints().end(), [&](const Vector &newPoint) {
         return this->isOutsideHikerClearance(oldPoint, newPoint, direction);

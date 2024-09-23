@@ -10,7 +10,9 @@
 #include "Component.hpp"
 class Ground : public Component<StaticPolyline> {
   public:
-    Ground(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives, floatType startT,
+    Ground(const std::shared_ptr<StaticPolyline> &polyline,
+           const std::vector<Vector> &derivatives,
+           floatType startT,
            const TerrainConstants &terrainConstants);
 
     /**
@@ -48,8 +50,8 @@ class Ground : public Component<StaticPolyline> {
      * @param resolution
      * @return
      */
-    std::shared_ptr<StaticPolyline> getPolyRepresentationLastPointToNewPoint(Vector &newPoint, Vector &newDerivative,
-                                                                             floatType resolution) const;
+    std::shared_ptr<StaticPolyline>
+    getPolyRepresentationLastPointToNewPoint(Vector &newPoint, Vector &newDerivative, floatType resolution) const;
 
     Vector evaluate(floatType relativeT) const override;
 

@@ -7,12 +7,24 @@
 #include "spdlog/spdlog.h"
 #include <mutex>
 
-Game::Game(World &world, Renderer &renderer, FullMenuRenderer &menuRenderer, MenuEngine &menuEngine,
-           MenuEventProcessor &menuEventProcessor, PhysicsEngine &physicsEngine, AudioService &audioService,
-           InputHandler &inputHandler, GameConstants &gameConstants)
-    : world(world), renderer(renderer), menuRenderer(menuRenderer), menuEngine(menuEngine),
-      menuEventProcessor(menuEventProcessor), physicsEngine(physicsEngine), audioService(audioService),
-      inputHandler(inputHandler), gameConstants(gameConstants) {
+Game::Game(World &world,
+           Renderer &renderer,
+           FullMenuRenderer &menuRenderer,
+           MenuEngine &menuEngine,
+           MenuEventProcessor &menuEventProcessor,
+           PhysicsEngine &physicsEngine,
+           AudioService &audioService,
+           InputHandler &inputHandler,
+           GameConstants &gameConstants)
+    : world(world),
+      renderer(renderer),
+      menuRenderer(menuRenderer),
+      menuEngine(menuEngine),
+      menuEventProcessor(menuEventProcessor),
+      physicsEngine(physicsEngine),
+      audioService(audioService),
+      inputHandler(inputHandler),
+      gameConstants(gameConstants) {
     spdlog::info("Game initialized.");
 }
 

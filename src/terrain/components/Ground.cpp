@@ -7,8 +7,10 @@
 #include "../../utilities/Singleton.hpp"
 #include <cassert>
 
-Ground::Ground(const std::shared_ptr<StaticPolyline> &polyline, const std::vector<Vector> &derivatives,
-               floatType startT, const TerrainConstants &terrainConstants)
+Ground::Ground(const std::shared_ptr<StaticPolyline> &polyline,
+               const std::vector<Vector> &derivatives,
+               floatType startT,
+               const TerrainConstants &terrainConstants)
     : Component(polyline, terrainConstants), derivatives(std::make_unique<std::vector<Vector>>(derivatives)) {
     std::vector<Vector> initialPoint = {polyline->getStartPoint()};
     std::vector<Vector> initialDerivative = {derivatives.front()};

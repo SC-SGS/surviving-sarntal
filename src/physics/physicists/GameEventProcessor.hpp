@@ -23,7 +23,9 @@ class GameEventProcessor : public EventProcessor {
     // using AutoEventFunction = void (GameEventProcessor::*)() const;
 
   public:
-    explicit GameEventProcessor(World &world, Renderer &renderer, HikerConstants &hikerConstants,
+    explicit GameEventProcessor(World &world,
+                                Renderer &renderer,
+                                HikerConstants &hikerConstants,
                                 MenuEngine &menuEngine);
     ~GameEventProcessor() = default;
     /**

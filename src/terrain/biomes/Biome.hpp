@@ -17,9 +17,16 @@
 
 class Biome {
   public:
-    Biome(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase, Vector &basePoint,
-          Vector &baseDerivative, floatType startT, floatType length, HikerConstants &hikerConstants,
-          TerrainConstants &terrainConstants, ResourceManager &resourceManager, bool renderGeneration);
+    Biome(const std::vector<TerrainPhase> &phaseChoices,
+          const TerrainPhase &firstPhase,
+          Vector &basePoint,
+          Vector &baseDerivative,
+          floatType startT,
+          floatType length,
+          HikerConstants &hikerConstants,
+          TerrainConstants &terrainConstants,
+          ResourceManager &resourceManager,
+          bool renderGeneration);
     virtual ~Biome() = default;
 
     std::shared_ptr<Ground> getGround();

@@ -22,8 +22,8 @@ class PolygonGenerator {
      * @param density
      * @return random convex polygon
      */
-    DynamicPolygon generatePolygon(int numberPoints, floatType maxRadius, const Vector &position,
-                                   floatType density) const;
+    DynamicPolygon
+    generatePolygon(int numberPoints, floatType maxRadius, const Vector &position, floatType density) const;
 
   protected:
     RandomGenerator *randomGenerator = &RandomGenerator::getInstance();
@@ -123,8 +123,8 @@ class PolygonGenerator {
      * @param density
      * @return
      */
-    static floatType calculateInertiaOfTriangleRotatingAroundOriginP0(const Vector &vertexA, const Vector &vertexB,
-                                                                      floatType density);
+    static floatType
+    calculateInertiaOfTriangleRotatingAroundOriginP0(const Vector &vertexA, const Vector &vertexB, floatType density);
     /**
      * This method takes a list of vectors in clockwise order and returns a copy of them in anticlockwise order.
      * @param vertices

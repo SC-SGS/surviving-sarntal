@@ -110,8 +110,10 @@ class Terrain {
      *
      * @return
      */
-    static Terrain getEmptyTerrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
-                                   ResourceManager &resourceManager, AxisAlignedBoundingBox boundingBox);
+    static Terrain getEmptyTerrain(HikerConstants &hikerConstants,
+                                   TerrainConstants &terrainConstants,
+                                   ResourceManager &resourceManager,
+                                   AxisAlignedBoundingBox boundingBox);
 
     void reset();
 
@@ -123,7 +125,9 @@ class Terrain {
     TerrainConstants &terrainConstants;
     ResourceManager &resourceManager;
 
-    Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager,
+    Terrain(HikerConstants &hikerConstants,
+            TerrainConstants &terrainConstants,
+            ResourceManager &resourceManager,
             AxisAlignedBoundingBox boundingBox);
 
     /**
