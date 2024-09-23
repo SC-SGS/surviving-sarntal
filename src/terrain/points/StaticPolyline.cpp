@@ -6,14 +6,10 @@
 #include <cassert>
 
 StaticPolyline::StaticPolyline(std::vector<Vector> &points)
-    : StaticPolyObject(points), basepoint(points.front()), startPoint(points.front()), endPoint(points.back()) {
-    for (Vector point : this->points) {
-        if (point.y < this->basepoint.y) {
-            this->basepoint = point;
-        }
-        this->basepoint -= {0, 1};
-    }
-}
+    : StaticPolyObject(points), startPoint(points.front()), endPoint(points.back()) {}
+
+StaticPolyline::StaticPolyline(std::vector<Vector> &points, int index)
+    : StaticPolyObject(points, index), startPoint(points.front()), endPoint(points.back()) {}
 
 const Vector &StaticPolyline::getStartPoint() const { return startPoint; }
 
@@ -21,10 +17,6 @@ const Vector &StaticPolyline::getEndPoint() const { return endPoint; }
 
 void StaticPolyline::addPoint(Vector point) {
     this->points.push_back(point);
-    if (point.y < this->basepoint.y) {
-        this->basepoint = point;
-    }
-    this->basepoint -= {0, 1};
     this->endPoint = point;
 
     Vector minMin = this->boundingBox.minMin;
@@ -65,8 +57,7 @@ bool StaticPolyline::intersectsWithoutFirstPoint(const StaticPolyline &other) co
 void StaticPolyline::removeLastPoints(int count) {
     assert(this->points.size() > count);
     for (int counter = 0; counter < count; counter++) {
-        auto pointsIt = std::prev(this->points.end());
-        this->points.erase(pointsIt);
+        this->points.pop_back();
     }
     this->endPoint = this->points.back();
     this->recalculateBoundingBox();

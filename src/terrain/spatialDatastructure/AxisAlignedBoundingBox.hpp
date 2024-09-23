@@ -149,6 +149,21 @@ struct AxisAlignedBoundingBox {
     bool overlaps(const AxisAlignedBoundingBox &other) const;
 
     bool operator==(const AxisAlignedBoundingBox &other) const;
+
+    /**
+     * Computes a new bounding box by moving this Bounding box by the specified delta.
+     *
+     * @param delta
+     */
+    AxisAlignedBoundingBox moveByDelta(Vector delta) const;
+
+    /**
+     * Transforms the given rectangle into a bounding box.
+     *
+     * @param rectangle
+     * @return
+     */
+    static AxisAlignedBoundingBox transform(const Rectangle &rectangle);
 };
 
 #endif // SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP

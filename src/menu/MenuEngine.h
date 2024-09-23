@@ -18,6 +18,7 @@ class MenuEngine {
     ScreenState currentScreen;
     bool gameplayRunning;
     bool playAgainClicked;
+    bool gameClosed;
 
   public:
     explicit MenuEngine(ResourceManager &resourceManager);
@@ -43,6 +44,7 @@ class MenuEngine {
     bool getPlayAgainClicked() const;
     void setPlayAgainClicked(bool playAgainClicked);
     std::shared_ptr<Button> getCurrentlySelectedButton();
+    bool isGameClosed() const;
 };
 
 #endif // SURVIVING_SARNTAL_MENUENGINE_H

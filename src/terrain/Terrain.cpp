@@ -228,3 +228,32 @@ void Terrain::reset() {
     this->biomes.clear();
     this->generateInitial();
 }
+
+std::vector<std::shared_ptr<StaticPolyline>>
+Terrain::getTerrainSections(const AxisAlignedBoundingBox &boundingBox) const {
+    std::vector<std::shared_ptr<StaticPolyline>> relevantSections = {};
+    for (auto const &biome : this->biomes) {
+        if (biome->getBoundingBox().overlaps(boundingBox)) {
+            auto newGroundSections = biome->getGroundCollisionDetection()->calculateRelevantSections(boundingBox);
+            relevantSections.insert(relevantSections.cend(), newGroundSections.cbegin(), newGroundSections.cend());
+            for (auto const &component : biome->getComponentsCollisionDetection()) {
+                auto newComponentSections = component->calculateRelevantSections(boundingBox);
+                relevantSections.insert(relevantSections.cend(), newComponentSections.cbegin(),
+                                        newComponentSections.cend());
+            }
+        }
+    }
+    return relevantSections;
+}
+
+std::vector<std::shared_ptr<Intersection>>
+Terrain::calculateCollisionsWithPolygon(const std::shared_ptr<StaticPolygon> &poly) const {
+    const AxisAlignedBoundingBox boundingBox = poly->getBoundingBox();
+    const auto &mountainSurface = this->getTerrainSections(boundingBox);
+    std::vector<std::shared_ptr<Intersection>> intersections = {};
+    for (const auto &polyline : mountainSurface) {
+        std::vector<std::shared_ptr<Intersection>> newIntersections = polyline->calculateIntersections(poly);
+        intersections.insert(intersections.cend(), newIntersections.cbegin(), newIntersections.cend());
+    }
+    return intersections;
+}

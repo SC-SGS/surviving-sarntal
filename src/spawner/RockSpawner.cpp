@@ -47,7 +47,8 @@ DynamicPolygon RockSpawner::getRandDynamicPolygon(const Vector position) {
 bool RockSpawner::shouldSpawnRocks() {
     auto gameTime = GetTime();
     floatType timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
-    bool shouldSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
+    bool isTimeToSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
+    bool shouldSpawn = isTimeToSpawn && this->gameConstants.rockConstants.spawnRocks;
     if (shouldSpawn) {
         this->lastSpawnTime = static_cast<floatType>(gameTime);
     }

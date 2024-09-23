@@ -127,6 +127,16 @@ struct Vector {
      */
     floatType length() const;
 
+    /**
+     * Reflects this vector on the given normal vector. The result vector is then dampened by the given
+     * terrainDampeningFector.
+     *
+     * @param normal
+     * @param rockTerrainDamping
+     * @return
+     */
+    Vector reflectOnNormalDampened(Vector const &normal, floatType terrainDampening) const;
+
     Vector reflectOnNormal(Vector const &normal, floatType rockTerrainDamping) const;
     /**
      * Calculates a vector with the same direction as the given one and length one.
@@ -258,4 +268,10 @@ struct Vector {
      * @return
      */
     floatType computeSlope() const;
+
+    /**
+     *
+     * @return a normal vector to this vector (orthogonal and length 1
+     */
+    Vector getNormalVector() const;
 };

@@ -92,6 +92,19 @@ Rectangle DynamicPolygon::getBoundingBox() const {
             maxY = vertex.y;
     }
 
+    return {minX + this->position.x, minY + this->position.y, maxX - minX, maxY - minY};
+}
+
+Rectangle DynamicPolygon::getSweptBoundingBox() const {
+    const Vector positionDelta = this->position - this->dynamicProperties.lastPosition;
+    const Rectangle newBoundingBox = this->getBoundingBox();
+    Rectangle oldBoundingBox = newBoundingBox;
+    oldBoundingBox.x -= positionDelta.x;
+    oldBoundingBox.y -= positionDelta.y;
+    const floatType minX = std::min(newBoundingBox.x, oldBoundingBox.x);
+    const floatType minY = std::min(newBoundingBox.y, oldBoundingBox.y);
+    const floatType maxX = std::max(newBoundingBox.x, oldBoundingBox.x);
+    const floatType maxY = std::max(newBoundingBox.y, oldBoundingBox.y);
     return {minX, minY, maxX - minX, maxY - minY};
 }
 

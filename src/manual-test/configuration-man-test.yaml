@@ -1,0 +1,3 @@
+test-cases:
+  - "../../src/manual-test/test-case-0.yaml"
+  - "../../src/manual-test/test-case-1.yaml"

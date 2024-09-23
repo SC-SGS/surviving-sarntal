@@ -1,0 +1,7 @@
+name: "Some name for the test case"
+rocks:
+  - {
+    position: [ 400.0, 300.0 ],
+    velocity: [ 400.0, 0.0 ],
+    radius: 100.0
+  }

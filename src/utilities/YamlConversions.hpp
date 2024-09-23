@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_YAMLCONVERSIONS_HPP
 #define SURVIVING_SARNTAL_YAMLCONVERSIONS_HPP
 
+#include "../entities/Rock.h"
 #include "../game/GameProperties.hpp"
 #include "raylib.h"
 #include <yaml-cpp/yaml.h>
@@ -27,13 +28,10 @@ template <> struct convert<HikerConstants> {
         hikerConstants.jumpVelocity = node["jumpVelocity"].as<floatType>();
         hikerConstants.airMovementSpeedFactor = node["airMovementSpeedFactor"].as<floatType>();
         hikerConstants.knockBack = node["knockBack"].as<floatType>();
-        hikerConstants.minSpeedNegSlope = node["minSpeedNegSlope"].as<floatType>();
         hikerConstants.maxSpeedNegSlope = node["maxSpeedNegSlope"].as<floatType>();
-        hikerConstants.minSpeedPosSlope = node["minSpeedPosSlope"].as<floatType>();
-        hikerConstants.slowestNegSlope = node["slowestNegSlope"].as<floatType>();
-        hikerConstants.fastestNegSlope = node["fastestNegSlope"].as<floatType>();
-        hikerConstants.slowestPosScope = node["slowestPosScope"].as<floatType>();
         hikerConstants.maxClimbableSlope = node["maxClimbableSlope"].as<floatType>();
+        hikerConstants.terrainCollisionDampening = node["terrainCollisionDampening"].as<floatType>();
+        hikerConstants.friction = node["friction"].as<floatType>();
 
         return true;
     }
@@ -45,6 +43,8 @@ template <> struct convert<ItemsConstants> {
             return false;
         }
 
+        itemsConstants.spawnItems = node["spawnItems"].as<bool>();
+        itemsConstants.shieldTime = node["shieldTime"].as<floatType>();
         itemsConstants.collectionRadius = node["collectionRadius"].as<floatType>();
         itemsConstants.slotsPerInventory = node["slotsPerInventory"].as<int>();
         itemsConstants.itemsPerSlot = node["itemsPerSlot"].as<int>();
@@ -68,6 +68,7 @@ template <> struct convert<RockConstants> {
             return false;
         }
 
+        rockConstants.spawnRocks = node["spawnRocks"].as<bool>();
         rockConstants.minRockSize = node["minRockSize"].as<floatType>();
         rockConstants.maxRockSize = node["maxRockSize"].as<floatType>();
         rockConstants.velocityCap = node["velocityCap"].as<floatType>();
@@ -161,7 +162,7 @@ template <> struct convert<MountainConstants> {
             return false;
         }
 
-        mountainConstants.visibleChunksCount = node["visibleChunkCount"].as<int>();
+        mountainConstants.visibleChunksCount = node["visibleChunksCount"].as<int>();
         mountainConstants.chunkBufferLeft = node["chunkBufferLeft"].as<int>();
         mountainConstants.chunkBufferRight = node["chunkBufferRight"].as<int>();
         mountainConstants.initialHeight = node["initialHeight"].as<floatType>();

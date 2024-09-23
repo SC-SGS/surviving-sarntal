@@ -11,8 +11,12 @@ void EventProcessor::processEvents() {
     for (int i = 0; i < numEvents; i++) {
         const auto &event = this->eventQueue.front();
         // spdlog::info("Event with axis value {}.", event.axisValue);
-        const std::function<void(GameEvent)> func = gameEventFunctionMappings.at(event);
-        func(event);
+        auto iterator = this->gameEventFunctionMappings.find(event);
+        if (iterator != this->gameEventFunctionMappings.end()) {
+            const std::function<void(GameEvent)> func = gameEventFunctionMappings.at(event);
+            func(event);
+        }
+
         if (event.executeRepeatedly) {
             this->eventQueue.push(event);
         }

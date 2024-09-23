@@ -32,7 +32,7 @@ void Game::run() {
     audioService.playSound("background-music");
     // bool playedEndSound = false;
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !this->menuEngine.isGameClosed()) {
         bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
         if (needToInitGamePads) {
             initializeGamepads();
@@ -74,7 +74,9 @@ void Game::runMenu() {
     this->menuEventProcessor.addEvents(events);
     this->menuEventProcessor.processEvents();
     this->menuEventProcessor.clearRepeatedEvents();
-    this->menuRenderer.render();
+    if (!this->menuEngine.isGameClosed()) {
+        this->menuRenderer.render();
+    }
 }
 
 void Game::runGameplay() {

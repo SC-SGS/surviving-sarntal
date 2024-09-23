@@ -101,11 +101,18 @@ class DynamicPolygon : public RenderedEntity {
     std::vector<Vector> getWorldSpaceVertices() const;
 
     /**
-     * This method creates a bounding box for the polygon in the shape of a rectangle.
+     * This method creates a bounding box in world space coordinates for the polygon in the shape of a rectangle.
      * The x coordinate is the minX and the y coordinate is the minY.
      * @return bounding box
      */
     Rectangle getBoundingBox() const;
+
+    /**
+     * Returns the swept bounding box of this polygon, calculated from its last and current position.
+     *
+     * @return
+     */
+    Rectangle getSweptBoundingBox() const;
 
     /**
      * This method moves the polygon.

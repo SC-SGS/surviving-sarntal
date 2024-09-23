@@ -32,7 +32,7 @@ void CollisionDetectionRepresentation::sortRightBorder() {
 }
 
 std::vector<std::shared_ptr<StaticPolyline>>
-CollisionDetectionRepresentation::calculateRelevantSections(AxisAlignedBoundingBox &boundingBox) {
+CollisionDetectionRepresentation::calculateRelevantSections(const AxisAlignedBoundingBox &boundingBox) {
     std::vector<std::shared_ptr<StaticPolyline>> sectionsLeftBorder = this->calculateRelevantSectionsX(
         this->polylineSectionsSortedLeftBorder, &AxisAlignedBoundingBox::isSmallerLeftBorder, boundingBox);
     std::vector<std::shared_ptr<StaticPolyline>> sectionsRightBorder = this->calculateRelevantSectionsX(
@@ -52,13 +52,14 @@ CollisionDetectionRepresentation::calculateRelevantSections(AxisAlignedBoundingB
             sections.push_back(section);
         }
     }
+
     return sections;
 }
 
 std::vector<std::shared_ptr<StaticPolyline>> CollisionDetectionRepresentation::calculateRelevantSectionsX(
     const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,
     IsSmallerComparator isSmallerComparator,
-    AxisAlignedBoundingBox &boundingBox) {
+    const AxisAlignedBoundingBox &boundingBox) {
     int index = (static_cast<int>(sortedSections.size() - 1)) / 2;
     int min = 0;
     int max = static_cast<int>(sortedSections.size()) - 1;
@@ -98,4 +99,34 @@ std::vector<std::shared_ptr<Intersection>> CollisionDetectionRepresentation::cal
         intersections.insert(intersections.cend(), newIntersections.cbegin(), newIntersections.cend());
     }
     return intersections;
+}
+
+std::vector<std::shared_ptr<StaticPolyline>>
+CollisionDetectionRepresentation::calculateRelevantSectionsContinuous(const AxisAlignedBoundingBox &boundingBox) {
+    std::vector<std::shared_ptr<StaticPolyline>> sections = this->calculateRelevantSections(boundingBox);
+    std::vector<std::shared_ptr<StaticPolyline>> sectionsContinuousOrdered = {};
+
+    int maxIndex = 0;
+    int minIndex = static_cast<int>(this->polylineSectionsSortedT.size()) - 1;
+
+    auto maxIter = std::max_element(
+        sections.begin(), sections.end(),
+        [](const std::shared_ptr<StaticPolyline> &first, const std::shared_ptr<StaticPolyline> &second) {
+            return first->getIndex() < second->getIndex();
+        });
+    auto minIter = std::min_element(
+        sections.begin(), sections.end(),
+        [](const std::shared_ptr<StaticPolyline> &first, const std::shared_ptr<StaticPolyline> &second) {
+            return first->getIndex() < second->getIndex();
+        });
+
+    if (minIter != sections.end() && maxIter != sections.end()) {
+        minIndex = (*minIter)->getIndex().value();
+        maxIndex = (*maxIter)->getIndex().value();
+    }
+
+    for (int index = minIndex; index < maxIndex; index++) {
+        sectionsContinuousOrdered.push_back(this->polylineSectionsSortedT.at(index));
+    }
+    return sectionsContinuousOrdered;
 }

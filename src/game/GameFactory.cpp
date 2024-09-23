@@ -38,7 +38,11 @@ GameFactory::GameFactory(Camera2D &camera)
       collisionHandler(world, collisionDetector, audioService, renderer, gameConstants),
       destructor(world, renderer, gameConstants),
       interpolator(world),
-      positioner(world, gameConstants.hikerConstants, gameConstants.barriersConstants),
+      positioner(world,
+                 gameConstants.hikerConstants,
+                 gameConstants.barriersConstants,
+                 gameConstants.physicsConstants,
+                 gameConstants.terrainConstants),
       gameEventProcessor(world, renderer, gameConstants.hikerConstants, menuEngine),
       physicsEngine(world,
                     spawner,
@@ -60,6 +64,7 @@ GameFactory::GameFactory(Camera2D &camera)
            audioService,
            inputHandler,
            gameConstants) {}
+
 GameFactory::~GameFactory() = default;
 Game GameFactory::buildGame() const { return this->game; }
 

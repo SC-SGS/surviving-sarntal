@@ -8,10 +8,12 @@
 
 #include "../output/audio/AudioService.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
+#include "../terrain/points/StaticPolygon.hpp"
+#include "../terrain/spatialDatastructure/AxisAlignedBoundingBox.hpp"
 #include "../utilities/vector.h"
+#include "DynamicPolygon.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
-#include "World.h"
 #include <list>
 
 class World;
@@ -20,9 +22,9 @@ class World;
  * This struct contains information about a collision of a hiker with a rock.
  */
 struct HitInformation {
-    floatType radiusRock;
-    floatType velocityRock;
-    int countingVariable;
+    Vector knockback;
+    int maxSteps;
+    int currentSteps;
 };
 
 /**
@@ -50,8 +52,9 @@ class Hiker : public RenderedEntity {
     bool getIsHit() const;
     void setIsHit(bool isHit);
 
-    const HitInformation &getHitInformation() const;
-    void setHitInformation(const HitInformation &hit);
+    const std::vector<HitInformation> &getHitInformation() const;
+    void setHitInformation(const std::vector<HitInformation> &hits);
+    void addHitInformation(const HitInformation &hit);
 
     const Vector &getVelocity() const;
     void setVelocity(const Vector &newVel);
@@ -81,8 +84,42 @@ class Hiker : public RenderedEntity {
     void setYVelocity(floatType yValue);
 
     void addHealthPoints(int points);
+    void doDamagePoints(int damagePoints);
 
     void kill();
+    bool hasShield() const;
+    /**
+     * Sets shield for the hiker for a given time.
+     * @param time the number of seconds will be active for
+     */
+    void setShield(double time);
+
+    /**
+     * Computes the bounding box for the hiker movement specified by the given movement vector
+     *
+     * @param movement
+     * @return
+     */
+    AxisAlignedBoundingBox getBoundingBoxMovement(Vector movement) const;
+
+    /**
+     * Computes the relative multiplier of the hiker speed for the given slope.
+     *
+     * @param movement
+     * @return
+     */
+    floatType computeSpeedFactor(Vector movement) const;
+
+    /**
+     * Returns the bounding box for the current position and state of this hiker.
+     *
+     * @return
+     */
+    std::shared_ptr<DynamicPolygon> getCurrentBoundingBox() const;
+
+    std::shared_ptr<StaticPolygon> getCurrentBoundingBoxStatic() const;
+
+    void setPosition(Vector &position) override;
     void reset(Vector &position);
 
   private:
@@ -97,11 +134,15 @@ class Hiker : public RenderedEntity {
     int healthPoints{};
     HikerMovement hikerMovement{};
     bool isHit{};
-    HitInformation hitInformation{};
+    std::vector<HitInformation> hitInformation{};
     bool isAlive{};
-    // DynamicPolygon boundingBoxWalking;
-    // DynamicPolygon boundingBoxCrouched;
-    // DynamicPolygon boundingBoxJumping;
+    std::shared_ptr<DynamicPolygon> boundingBoxWalking = nullptr;
+    Vector walkingHitBoxDelta{}; // Delta from the hiker position to the position of their walking hitbox
+    // std::shared_ptr<DynamicPolygon> boundingBoxCrouched = nullptr;
+    // Vector crouchedHitBoxDelta{};
+    // std::shared_ptr<DynamicPolygon> boundingBoxJumping = nullptr;
+    // Vector jumpingHitBoxDelta{};
+    double shieldTime{};
 
     // Helper functions
     void doSecondJump();

@@ -63,9 +63,9 @@ void PhysicsEngine::updateTimeStep() {
     this->spawner.spawn();
     this->eventProcessor.processEvents();
     this->accelerator.accelerate();
+    this->positioner.updatePositions();
     // TODO check placement of collision detection
     this->collisionDetector.detectCollisions();
     this->collisionHandler.handleCollisions();
-    this->positioner.updatePositions();
     this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
 }

@@ -58,6 +58,9 @@ class World {
 
     std::list<std::shared_ptr<Item>> &getItems() const;
 
+    void clearAllItems();
+    void clearAllRocks();
+
     /**
      * ´This method adds an item to the game by adding it to the list of items
      * @param item
