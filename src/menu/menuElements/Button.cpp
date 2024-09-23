@@ -4,7 +4,9 @@
 #include "Button.h"
 
 Button::Button(ButtonType buttonType, ScreenState resultingScreen, Texture2D untoggledButton, Texture2D toggledButton)
-    : buttonType(buttonType), resultingScreen(resultingScreen), untoggledButton(untoggledButton),
+    : buttonType(buttonType),
+      resultingScreen(resultingScreen),
+      untoggledButton(untoggledButton),
       toggledButton(toggledButton) {
     this->height = 100;
     this->width = 200;

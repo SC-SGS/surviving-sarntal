@@ -25,7 +25,10 @@ class CollisionHandler {
     void handleCollisions();
 
     void setDeltaT(floatType deltaT);
-    CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService, Renderer &renderer,
+    CollisionHandler(World &world,
+                     CollisionDetector &collisionDetector,
+                     AudioService &audioService,
+                     Renderer &renderer,
                      GameConstants &gameConstants);
     ~CollisionHandler() = default;
 

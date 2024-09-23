@@ -5,7 +5,8 @@
 #include "Splineoid.hpp"
 
 #include <utility>
-Splineoid::Splineoid(std::shared_ptr<StaticPolygon> polygon, const std::vector<Vector> &derivatives,
+Splineoid::Splineoid(std::shared_ptr<StaticPolygon> polygon,
+                     const std::vector<Vector> &derivatives,
                      TerrainConstants &terrainConstants)
     : ClosedComponent(std::move(polygon), terrainConstants) {}
 

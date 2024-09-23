@@ -6,12 +6,15 @@
 
 #include <mutex>
 
-ResourceManager::ResourceManager(ConfigManager &configManager) : config(configManager) {
-    // this->loadTextures();
-    // this->loadMusic();
+ResourceManager::ResourceManager(ConfigManager &configManager) : config(configManager) {}
+
+ResourceManager::ResourceManager(ConfigManager &configManager, bool initOnBuild) : config(configManager) {
+    if (initOnBuild) {
+        this->init();
+    }
 }
 
-void ResourceManager::initialize() {
+void ResourceManager::init() {
     this->loadTextures();
     this->loadMusic();
 }

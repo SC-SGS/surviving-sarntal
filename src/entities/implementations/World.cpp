@@ -7,9 +7,17 @@
 #include <iostream>
 #include <mutex>
 
-World::World(Terrain &terrain, Hiker &hiker, Inventory &inventory, Monster &monster, AudioService &audioService,
+World::World(Terrain &terrain,
+             Hiker &hiker,
+             Inventory &inventory,
+             Monster &monster,
+             AudioService &audioService,
              GameConstants &gameConstants)
-    : terrain(terrain), hiker(hiker), inventory(inventory), monster(monster), audioService(audioService),
+    : terrain(terrain),
+      hiker(hiker),
+      inventory(inventory),
+      monster(monster),
+      audioService(audioService),
       gameConstants(gameConstants) {}
 
 World::~World() = default;

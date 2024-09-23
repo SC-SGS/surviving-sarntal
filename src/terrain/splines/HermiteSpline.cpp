@@ -10,9 +10,12 @@ const Polynomial HermiteSpline::polynomialRightValue = Polynomial({-2, 3, 0, 0})
 const Polynomial HermiteSpline::polynomialLeftDer = Polynomial({1, -2, 1, 0});
 const Polynomial HermiteSpline::polynomialRightDer = Polynomial({1, -1, 0, 0});
 
-HermiteSpline::HermiteSpline(floatType leftT, floatType rightT, floatType leftValue, floatType rightValue,
-                             floatType leftDer, floatType rightDer)
-    : Spline<floatType>(leftT, rightT), leftValue(leftValue), rightValue(rightValue), leftDer(leftDer),
+HermiteSpline::HermiteSpline(
+    floatType leftT, floatType rightT, floatType leftValue, floatType rightValue, floatType leftDer, floatType rightDer)
+    : Spline<floatType>(leftT, rightT),
+      leftValue(leftValue),
+      rightValue(rightValue),
+      leftDer(leftDer),
       rightDer(rightDer) {}
 
 floatType HermiteSpline::evaluateDerivative(floatType tPos, int n) const {

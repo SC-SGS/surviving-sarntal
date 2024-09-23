@@ -56,7 +56,8 @@ CollisionDetectionRepresentation::calculateRelevantSections(AxisAlignedBoundingB
 }
 
 std::vector<std::shared_ptr<StaticPolyline>> CollisionDetectionRepresentation::calculateRelevantSectionsX(
-    const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections, IsSmallerComparator isSmallerComparator,
+    const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,
+    IsSmallerComparator isSmallerComparator,
     AxisAlignedBoundingBox &boundingBox) {
     int index = (static_cast<int>(sortedSections.size() - 1)) / 2;
     int min = 0;

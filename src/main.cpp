@@ -1,4 +1,5 @@
 #include "game/Game.hpp"
+#include "game/GameFactory.hpp"
 #include "menu/MenuEventProcessor.h"
 #include "spawner/PolygonGenerator.h"
 #include "spdlog/fmt/bundled/chrono.h"
@@ -10,7 +11,7 @@ Vector2 transformCoordinatesTesting(floatType minY, floatType maxY, Vector posit
 
 // TODO extract initialization to game
 int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warnings-as-errors]
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::info);
     testIntersection();
     InitWindow(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL, "Surviving Sarntal");
 
@@ -18,54 +19,9 @@ int main(int argc, char *argv[]) { // NOLINT [readability-function-size,-warning
     SetTargetFPS(60);
     SDL_Init(SDL_INIT_GAMECONTROLLER);
 
-    // Init Services todo rename the other managers / handlers to one of these: service or manager or handler
-    ConfigManager &configManager = ConfigManager::getInstance();
-    InputHandler &inputHandler = InputHandler::getInstance();
-    ResourceManager resourceManager(configManager);
-    resourceManager.initialize();
-    AudioService audioService(resourceManager);
-
-    // Init game world
-    GameConstants gameConstants = configManager.getGameConstants();
-    auto terrain = Terrain(gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager);
-    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO);
-    floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
-    Hiker hiker(Vector{hikerPositionX, hikerPositionY}, audioService, gameConstants.hikerConstants);
-    Monster monster(gameConstants.hikerConstants);
-    Inventory inventory(audioService, gameConstants.itemsConstants);
-    World world(terrain, hiker, inventory, monster, audioService, gameConstants);
-
-    PolygonRenderer polygonRenderer(resourceManager);
-    Camera2D camera = {0};
-
-    MenuEngine menuEngine(resourceManager);
-    FullMenuRenderer menuRenderer(menuEngine);
-    MenuEventProcessor menuEventProcessor(menuEngine);
-
-    // Init renderer
-    MountainRenderer mountainRenderer(camera, gameConstants, resourceManager);
-    Renderer renderer(world, resourceManager, camera, mountainRenderer, gameConstants, polygonRenderer);
-
-    // Init physics
-    Accelerator accelerator(world, gameConstants);
-    CollisionDetector collisionDetector(world);
-    CollisionHandler collisionHandler(world, collisionDetector, audioService, renderer, gameConstants);
-    Destructor destructor(world, renderer, gameConstants);
-    Interpolator interpolator(world);
-    Positioner positioner(world, gameConstants.hikerConstants, gameConstants.barriersConstants);
-    GameEventProcessor eventProcessor(world, renderer, gameConstants.hikerConstants, menuEngine);
-    auto items = configManager.getItems();
-    ItemSpawner itemSpawner(world, gameConstants, items);
-    RockSpawner rockSpawner(world, gameConstants);
-    Spawner spawner(terrain, rockSpawner, itemSpawner, world, gameConstants);
-
-    PhysicsEngine physicsEngine(world, spawner, gameConstants.physicsConstants, eventProcessor, accelerator, positioner,
-                                collisionDetector, collisionHandler, interpolator, destructor);
-
-    // Init game
-    Game game(world, renderer, menuRenderer, menuEngine, menuEventProcessor, physicsEngine, audioService, inputHandler,
-              gameConstants);
-
+    Camera2D camera{0};
+    GameFactory gameFactory{camera};
+    Game game = gameFactory.buildGame();
     game.run();
 
     CloseAudioDevice();

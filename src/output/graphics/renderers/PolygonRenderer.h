@@ -47,8 +47,12 @@ class PolygonRenderer {
      * @param pointCount - number of vertices of the polygon
      * @param tint
      */
-    void drawTexturePoly(const Texture2D &texture, Vector2 centroid, const std::vector<Vector2> &points,
-                         const std::vector<Vector2> &texCoords, int pointCount, Color tint) const;
+    void drawTexturePoly(const Texture2D &texture,
+                         Vector2 centroid,
+                         const std::vector<Vector2> &points,
+                         const std::vector<Vector2> &texCoords,
+                         int pointCount,
+                         Color tint) const;
 
     /**
      * This method transforms the vertices of the polygon into raylib vertices (using Vector2 instead of

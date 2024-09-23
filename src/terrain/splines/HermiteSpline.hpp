@@ -16,7 +16,11 @@
  */
 class HermiteSpline : public Spline<floatType> {
   public:
-    HermiteSpline(floatType leftT, floatType rightT, floatType leftValue, floatType rightValue, floatType leftDer,
+    HermiteSpline(floatType leftT,
+                  floatType rightT,
+                  floatType leftValue,
+                  floatType rightValue,
+                  floatType leftDer,
                   floatType rightDer);
     ~HermiteSpline() override = default;
 

@@ -11,8 +11,10 @@
 class GenerationAngleCalculator {
   public:
     GenerationAngleCalculator(const std::shared_ptr<Ground> &ground,
-                              const std::shared_ptr<StaticPolyline> &groundPolyRepresentation, TerrainPhase &phase,
-                              const HikerConstants &hikerConstants, const TerrainConstants &terrainConstants);
+                              const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
+                              TerrainPhase &phase,
+                              const HikerConstants &hikerConstants,
+                              const TerrainConstants &terrainConstants);
     ~GenerationAngleCalculator() = default;
 
     /**

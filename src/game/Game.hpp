@@ -17,9 +17,15 @@
 class Game {
 
   public:
-    Game(World &world, Renderer &renderer, FullMenuRenderer &menuRenderer, MenuEngine &menuEngine,
-         MenuEventProcessor &menuEventProcessor, PhysicsEngine &physicsEngine, AudioService &audioService,
-         InputHandler &inputHandler, GameConstants &gameConstants);
+    Game(World &world,
+         Renderer &renderer,
+         FullMenuRenderer &menuRenderer,
+         MenuEngine &menuEngine,
+         MenuEventProcessor &menuEventProcessor,
+         PhysicsEngine &physicsEngine,
+         AudioService &audioService,
+         InputHandler &inputHandler,
+         GameConstants &gameConstants);
     ~Game() = default;
     void run();
 

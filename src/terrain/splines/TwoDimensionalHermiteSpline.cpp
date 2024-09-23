@@ -5,10 +5,15 @@
 #include "TwoDimensionalHermiteSpline.hpp"
 #include "HermiteSpline.hpp"
 
-TwoDimensionalHermiteSpline::TwoDimensionalHermiteSpline(floatType startT, floatType endT, Vector start, Vector end,
-                                                         Vector startDer, Vector endDer)
-    : Spline(startT, endT), start(start), end(end), startDer(startDer.normalize()), endDer(endDer.normalize()),
-      startT(startT), endT(endT) {
+TwoDimensionalHermiteSpline::TwoDimensionalHermiteSpline(
+    floatType startT, floatType endT, Vector start, Vector end, Vector startDer, Vector endDer)
+    : Spline(startT, endT),
+      start(start),
+      end(end),
+      startDer(startDer.normalize()),
+      endDer(endDer.normalize()),
+      startT(startT),
+      endT(endT) {
     this->xSpline = std::make_unique<HermiteSpline>(startT, endT, start.x, end.x, this->startDer.x, this->endDer.x);
     this->ySpline = std::make_unique<HermiteSpline>(startT, endT, start.y, end.y, this->startDer.y, this->endDer.y);
 }
