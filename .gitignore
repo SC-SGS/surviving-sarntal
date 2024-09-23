@@ -1,3 +1,4 @@
+# Ignore build and IDE files
 cmake-build*
 .idea
 /build
@@ -9,3 +10,18 @@ kinect/
 /UML/plant_UML
 .DB_Store
 coverage*
+
+#Ignore automatically generated files from LaTeX
+*.aux
+*.bbl
+*.brf
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.out
+*.gz
+*.blg
+*.log
+*bak
