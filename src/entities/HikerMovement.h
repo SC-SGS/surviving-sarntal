@@ -22,7 +22,7 @@ class HikerMovement {
     HikerMovement(MovementState state, Direction direction);
 
     MovementState getState() const;
-    std::string getStateString() const;
+    std::string getStateString(bool hasShield) const;
     void setState(MovementState state);
     Direction getDirection() const;
     void setDirection(Direction direction);
