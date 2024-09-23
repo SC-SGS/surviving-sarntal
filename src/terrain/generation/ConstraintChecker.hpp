@@ -12,7 +12,8 @@ class ConstraintChecker {
   public:
     ConstraintChecker(const std::shared_ptr<Ground> &ground,
                       const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
-                      const TerrainConstants &terrainConstants, const HikerConstants &hikerConstants);
+                      const TerrainConstants &terrainConstants,
+                      const HikerConstants &hikerConstants);
     ~ConstraintChecker() = default;
 
     /**
@@ -75,8 +76,8 @@ class ConstraintChecker {
      * @param direction
      * @return
      */
-    bool isOutsideHikerClearance(Vector oldPoint, const std::shared_ptr<StaticPolyline> &newTerrain,
-                                 Vector direction) const;
+    bool
+    isOutsideHikerClearance(Vector oldPoint, const std::shared_ptr<StaticPolyline> &newTerrain, Vector direction) const;
 
     /**
      * Checks whether the new point is outside the range of the hiker clearance in any direction from the old point.

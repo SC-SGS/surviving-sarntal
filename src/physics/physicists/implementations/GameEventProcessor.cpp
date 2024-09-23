@@ -8,7 +8,9 @@
 #include <iostream>
 #include <mutex>
 
-GameEventProcessor::GameEventProcessor(World &world, Renderer &renderer, HikerConstants &hikerConstants,
+GameEventProcessor::GameEventProcessor(World &world,
+                                       Renderer &renderer,
+                                       HikerConstants &hikerConstants,
                                        MenuEngine &menuEngine)
     : world(world), renderer(renderer), menuEngine(menuEngine), hikerConstants(hikerConstants) {
     this->gameEventFunctionMappings = {

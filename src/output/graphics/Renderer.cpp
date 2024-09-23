@@ -5,10 +5,18 @@
 #include "GraphicsUtil.h"
 #include <cmath>
 
-Renderer::Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-                   GameConstants &gameConstants, PolygonRenderer &polygonRenderer)
-    : world(world), resourceManager(resourceManager), camera(camera), mountainRenderer(mountainRenderer),
-      gameConstants(gameConstants), polygonRenderer(polygonRenderer) {
+Renderer::Renderer(World &world,
+                   ResourceManager &resourceManager,
+                   Camera2D &camera,
+                   MountainRenderer &mountainRenderer,
+                   GameConstants &gameConstants,
+                   PolygonRenderer &polygonRenderer)
+    : world(world),
+      resourceManager(resourceManager),
+      camera(camera),
+      mountainRenderer(mountainRenderer),
+      gameConstants(gameConstants),
+      polygonRenderer(polygonRenderer) {
 
     const floatType leftBorder = world.getMinX() * graphics::UNIT_TO_PIXEL_RATIO;
     const floatType rightBorder = world.getMaxX() * graphics::UNIT_TO_PIXEL_RATIO;
@@ -57,7 +65,9 @@ void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotati
     renderEntity(entity, rotation, texture, sourceRec);
 }
 
-void Renderer::renderEntity(const RenderedEntity &entity, const floatType rotation, const Texture2D &texture,
+void Renderer::renderEntity(const RenderedEntity &entity,
+                            const floatType rotation,
+                            const Texture2D &texture,
                             const Rectangle sourceRec) const {
     auto info = entity.getRenderInformation();
     info.width *= graphics::UNIT_TO_PIXEL_RATIO;
@@ -255,7 +265,9 @@ void Renderer::renderHUD() const {
     DrawFPS(0, 0);
 }
 
-void Renderer::renderItemSlot(const Inventory &inventory, const int slotNumber, const int startX,
+void Renderer::renderItemSlot(const Inventory &inventory,
+                              const int slotNumber,
+                              const int startX,
                               const int startY) const {
     if (!inventory.slotIsEmpty(slotNumber)) {
         const auto textureName = inventory.getItem(slotNumber)->getRenderInformation().texture;
@@ -491,8 +503,10 @@ void Renderer::renderBackground() {
     drawBackgroundTextureRepeatedly(foregroundTex, scrollingFore, textureForeScale, foreOffsetY);
 }
 
-void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture2D, const floatType scrolling,
-                                               const floatType scale, const floatType offsetY) const {
+void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture2D,
+                                               const floatType scrolling,
+                                               const floatType scale,
+                                               const floatType offsetY) const {
 
     DrawTextureEx(texture2D, {scrolling, offsetY}, 0.0f, scale, WHITE);
     DrawTextureEx(texture2D, {static_cast<floatType>(texture2D.width) * scale + scrolling, offsetY}, 0.0f, scale,

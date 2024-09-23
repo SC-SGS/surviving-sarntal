@@ -13,13 +13,17 @@
 
 class GenerationRenderer {
   public:
-    GenerationRenderer(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
+    GenerationRenderer(HikerConstants &hikerConstants,
+                       TerrainConstants &terrainConstants,
                        ResourceManager &resourceManager);
     ~GenerationRenderer() = default;
 
     const void render(const std::shared_ptr<Ground> &newGround,
-                      const std::shared_ptr<StaticPolyline> &groundPolyRepresentation, Vector &newPoint,
-                      TerrainPhase &phase, floatType minAngle, floatType maxAngle);
+                      const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
+                      Vector &newPoint,
+                      TerrainPhase &phase,
+                      floatType minAngle,
+                      floatType maxAngle);
 
   private:
     TerrainConstants &terrainConstants;

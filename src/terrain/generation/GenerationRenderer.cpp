@@ -4,13 +4,18 @@
 
 #include "GenerationRenderer.hpp"
 #include "rlgl.h"
-GenerationRenderer::GenerationRenderer(HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
+GenerationRenderer::GenerationRenderer(HikerConstants &hikerConstants,
+                                       TerrainConstants &terrainConstants,
                                        ResourceManager &resourceManager)
     : terrainConstants(terrainConstants), hikerConstants(hikerConstants), resourceManager(resourceManager) {}
 
 const void GenerationRenderer::render( // NOLINT [readability-function-size,-warnings-as-errors]
-    const std::shared_ptr<Ground> &newGround, const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
-    Vector &newPoint, TerrainPhase &phase, floatType minAngle, floatType maxAngle) {
+    const std::shared_ptr<Ground> &newGround,
+    const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
+    Vector &newPoint,
+    TerrainPhase &phase,
+    floatType minAngle,
+    floatType maxAngle) {
     Vector oldPoint = newGround->getBasePoints()->getPoints().at(
         std::max(0, static_cast<int>(newGround->getBasePoints()->getPoints().size() - 2)));
     Camera2D camera = this->setUpRendering();

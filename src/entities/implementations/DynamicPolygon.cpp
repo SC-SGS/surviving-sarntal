@@ -10,11 +10,20 @@
 #include <iostream>
 #include <ostream>
 
-DynamicPolygon::DynamicPolygon(const Vector &position, const std::vector<Vector> &vertices,
-                               const std::vector<Vector2> &textureCoordinates, const floatType mass, floatType density,
-                               const floatType momentOfInertia, const DynamicProperties &dynamicProperties)
-    : RenderedEntity(position), dynamicProperties(dynamicProperties), bodySpaceVertices(vertices),
-      textureCoordinates(textureCoordinates), mass(mass), density(density), momentOfInertia(momentOfInertia) {
+DynamicPolygon::DynamicPolygon(const Vector &position,
+                               const std::vector<Vector> &vertices,
+                               const std::vector<Vector2> &textureCoordinates,
+                               const floatType mass,
+                               floatType density,
+                               const floatType momentOfInertia,
+                               const DynamicProperties &dynamicProperties)
+    : RenderedEntity(position),
+      dynamicProperties(dynamicProperties),
+      bodySpaceVertices(vertices),
+      textureCoordinates(textureCoordinates),
+      mass(mass),
+      density(density),
+      momentOfInertia(momentOfInertia) {
     if (vertices.size() + 1 != textureCoordinates.size()) {
         throw std::invalid_argument(
             "Dynamic Polygon cannot be generated. Vertex List and TexCoords list do not have sizes n and n+1.");
@@ -36,9 +45,11 @@ DynamicPolygon::DynamicPolygon(const Vector &position, const std::vector<Vector>
 }
 
 DynamicPolygon::DynamicPolygon(const Vector &position, const std::vector<Vector> &vertices, floatType mass)
-    : RenderedEntity(position), bodySpaceVertices(vertices), mass(mass),
-      density(this->calculateDensity(vertices, mass)), momentOfInertia(this->calculateMomentOfInertia(vertices, mass)) {
-}
+    : RenderedEntity(position),
+      bodySpaceVertices(vertices),
+      mass(mass),
+      density(this->calculateDensity(vertices, mass)),
+      momentOfInertia(this->calculateMomentOfInertia(vertices, mass)) {}
 
 floatType DynamicPolygon::getRotationAngle() const { return this->dynamicProperties.rotationAngleRad; }
 floatType DynamicPolygon::getMass() const { return this->mass; }

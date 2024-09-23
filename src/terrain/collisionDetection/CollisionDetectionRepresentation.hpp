@@ -55,7 +55,8 @@ class CollisionDetectionRepresentation {
      */
     std::vector<std::shared_ptr<StaticPolyline>>
     calculateRelevantSectionsX(const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,
-                               IsSmallerComparator isSmallerComparator, AxisAlignedBoundingBox &boundingBox);
+                               IsSmallerComparator isSmallerComparator,
+                               AxisAlignedBoundingBox &boundingBox);
 };
 
 #endif // SURVIVING_SARNTAL_COLLISIONDETECTIONREPRESENTATION_HPP

@@ -19,8 +19,12 @@ class Renderer {
   public:
     void draw();
     void setShake(float intensity);
-    Renderer(World &world, ResourceManager &resourceManager, Camera2D &camera, MountainRenderer &mountainRenderer,
-             GameConstants &gameConstants, PolygonRenderer &polygonRenderer);
+    Renderer(World &world,
+             ResourceManager &resourceManager,
+             Camera2D &camera,
+             MountainRenderer &mountainRenderer,
+             GameConstants &gameConstants,
+             PolygonRenderer &polygonRenderer);
     ~Renderer() = default;
 
     void toggleDebugMode();
@@ -55,13 +59,15 @@ class Renderer {
     void loadLandmarks();
     void renderEntity(const RenderedEntity &entity) const;
     void renderEntity(const RenderedEntity &entity, floatType rotation) const;
-    void renderEntity(const RenderedEntity &entity, floatType rotation, const Texture2D &texture,
-                      Rectangle sourceRec) const;
+    void
+    renderEntity(const RenderedEntity &entity, floatType rotation, const Texture2D &texture, Rectangle sourceRec) const;
     void renderBackground();
     void regenerateGradientTexture();
     void renderRock(const std::shared_ptr<Rock> &rock) const;
     void renderHiker(const Hiker &hiker);
-    void drawBackgroundTextureRepeatedly(const Texture2D &texture2D, floatType scrolling, floatType scale,
+    void drawBackgroundTextureRepeatedly(const Texture2D &texture2D,
+                                         floatType scrolling,
+                                         floatType scale,
                                          floatType offsetY) const;
     void renderEntities();
     void animateEntity(const RenderedEntity &entity);

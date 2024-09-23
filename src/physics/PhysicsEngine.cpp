@@ -7,14 +7,29 @@
 
 #include <iostream>
 #include <mutex>
-PhysicsEngine::PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants,
-                             GameEventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
-                             CollisionDetector &collisionDetector, CollisionHandler &collisionHandler,
-                             Interpolator &interpolator, Destructor &destructor)
-    : world(world), accumulator(0.f), timeLastUpdate(0.f), spawner(spawner), physicsConstants(physicsConstants),
-      deltaT(physicsConstants.physicsDeltaT), eventProcessor(eventProcessor), accelerator(accelerator),
-      positioner(positioner), collisionDetector(collisionDetector), collisionHandler(collisionHandler),
-      interpolator(interpolator), destructor(destructor) {
+PhysicsEngine::PhysicsEngine(World &world,
+                             Spawner &spawner,
+                             PhysicsConstants &physicsConstants,
+                             GameEventProcessor &eventProcessor,
+                             Accelerator &accelerator,
+                             Positioner &positioner,
+                             CollisionDetector &collisionDetector,
+                             CollisionHandler &collisionHandler,
+                             Interpolator &interpolator,
+                             Destructor &destructor)
+    : world(world),
+      accumulator(0.f),
+      timeLastUpdate(0.f),
+      spawner(spawner),
+      physicsConstants(physicsConstants),
+      deltaT(physicsConstants.physicsDeltaT),
+      eventProcessor(eventProcessor),
+      accelerator(accelerator),
+      positioner(positioner),
+      collisionDetector(collisionDetector),
+      collisionHandler(collisionHandler),
+      interpolator(interpolator),
+      destructor(destructor) {
     this->setDeltaT(this->physicsConstants.physicsDeltaT);
 }
 

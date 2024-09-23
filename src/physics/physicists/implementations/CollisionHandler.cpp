@@ -8,10 +8,18 @@
 #include <iostream>
 #include <mutex>
 
-CollisionHandler::CollisionHandler(World &world, CollisionDetector &collisionDetector, AudioService &audioService,
-                                   Renderer &renderer, GameConstants &gameConstants)
-    : world(world), collisionDetector(collisionDetector), audioService(audioService), renderer(renderer),
-      gameConstants(gameConstants), hapticsService(HapticsService::getInstance()), deltaT(1) {}
+CollisionHandler::CollisionHandler(World &world,
+                                   CollisionDetector &collisionDetector,
+                                   AudioService &audioService,
+                                   Renderer &renderer,
+                                   GameConstants &gameConstants)
+    : world(world),
+      collisionDetector(collisionDetector),
+      audioService(audioService),
+      renderer(renderer),
+      gameConstants(gameConstants),
+      hapticsService(HapticsService::getInstance()),
+      deltaT(1) {}
 
 void CollisionHandler::handleCollisions() {
     this->playerCollisions();

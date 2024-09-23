@@ -65,9 +65,13 @@ class DynamicPolygon : public RenderedEntity {
      * @param dynamicProperties
      * @throw std::invalid_argument if the conditions above are not met
      */
-    DynamicPolygon(const Vector &position, const std::vector<Vector> &vertices,
-                   const std::vector<Vector2> &textureCoordinates, floatType mass, floatType density,
-                   floatType momentOfInertia, const DynamicProperties &dynamicProperties);
+    DynamicPolygon(const Vector &position,
+                   const std::vector<Vector> &vertices,
+                   const std::vector<Vector2> &textureCoordinates,
+                   floatType mass,
+                   floatType density,
+                   floatType momentOfInertia,
+                   const DynamicProperties &dynamicProperties);
 
     /**
      * This is a simplified constructor for Dynamic Polygon that is only used
