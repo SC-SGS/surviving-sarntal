@@ -6,14 +6,28 @@
 #include "../../utilities/RandomGenerator.hpp"
 #include "../../utilities/Singleton.hpp"
 #include "GenerationAngleCalculator.hpp"
-GroundGenerator::GroundGenerator(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase,
-                                 Vector basePoint, Vector baseDerivative, floatType startT, floatType length,
-                                 HikerConstants &hikerConstants, TerrainConstants &terrainConstants,
-                                 ResourceManager &resourceManager, bool render)
-    : terrainConstants(terrainConstants), hikerConstants(hikerConstants), render(render),
+GroundGenerator::GroundGenerator(const std::vector<TerrainPhase> &phaseChoices,
+                                 const TerrainPhase &firstPhase,
+                                 Vector basePoint,
+                                 Vector baseDerivative,
+                                 floatType startT,
+                                 floatType length,
+                                 HikerConstants &hikerConstants,
+                                 TerrainConstants &terrainConstants,
+                                 ResourceManager &resourceManager,
+                                 bool render)
+    : terrainConstants(terrainConstants),
+      hikerConstants(hikerConstants),
+      render(render),
       generationRenderer(std::make_unique<GenerationRenderer>(hikerConstants, terrainConstants, resourceManager)),
-      basePoint(basePoint), baseDerivative(baseDerivative), startT(startT), length(length), phaseChoices(phaseChoices),
-      firstPhase(firstPhase), terrainPhase(firstPhase), lastPoint(basePoint) {}
+      basePoint(basePoint),
+      baseDerivative(baseDerivative),
+      startT(startT),
+      length(length),
+      phaseChoices(phaseChoices),
+      firstPhase(firstPhase),
+      terrainPhase(firstPhase),
+      lastPoint(basePoint) {}
 
 std::shared_ptr<Ground> GroundGenerator::generateGround() {
     this->generateGroundBase();
@@ -88,7 +102,8 @@ std::optional<Vector> GroundGenerator::generateNewPoint() {
     }
 }
 
-std::optional<Vector> GroundGenerator::generateNewPoint(floatType minAngle, floatType maxAngle,
+std::optional<Vector> GroundGenerator::generateNewPoint(floatType minAngle,
+                                                        floatType maxAngle,
                                                         const std::shared_ptr<ConstraintChecker> &constraintChecker) {
     Vector newPoint{};
     Vector newDerivative{};

@@ -1,3 +1,6 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 ColumnLimit: 120
+BreakConstructorInitializersBeforeComma: false  # Break initializers after commas
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+BinPackParameters: false  # Puts each parameter on a new line

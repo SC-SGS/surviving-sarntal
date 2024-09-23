@@ -13,7 +13,9 @@
 template <typename U, typename = std::enable_if_t<std::is_base_of_v<StaticPolyObject, U>>> class Component {
   public:
     explicit Component(std::shared_ptr<U> polyObject, TerrainConstants const &terrainConstants)
-        : polyObject(polyObject), startPoint(polyObject->getPoints().front()), endPoint(polyObject->getPoints().back()),
+        : polyObject(polyObject),
+          startPoint(polyObject->getPoints().front()),
+          endPoint(polyObject->getPoints().back()),
           terrainConstants(terrainConstants){};
 
     /**

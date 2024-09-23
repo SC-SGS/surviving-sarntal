@@ -52,9 +52,15 @@ class PhysicsEngine {
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
 
-    PhysicsEngine(World &world, Spawner &spawner, PhysicsConstants &physicsConstants,
-                  GameEventProcessor &eventProcessor, Accelerator &accelerator, Positioner &positioner,
-                  CollisionDetector &collisionDetector, CollisionHandler &collisionHandler, Interpolator &interpolator,
+    PhysicsEngine(World &world,
+                  Spawner &spawner,
+                  PhysicsConstants &physicsConstants,
+                  GameEventProcessor &eventProcessor,
+                  Accelerator &accelerator,
+                  Positioner &positioner,
+                  CollisionDetector &collisionDetector,
+                  CollisionHandler &collisionHandler,
+                  Interpolator &interpolator,
                   Destructor &destructor);
 
     ~PhysicsEngine() = default;

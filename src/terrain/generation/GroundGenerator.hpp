@@ -13,9 +13,16 @@
 
 class GroundGenerator {
   public:
-    GroundGenerator(const std::vector<TerrainPhase> &phaseChoices, const TerrainPhase &firstPhase, Vector basePoint,
-                    Vector baseDerivative, floatType startT, floatType length, HikerConstants &hikerConstants,
-                    TerrainConstants &terrainConstants, ResourceManager &resourceManager, bool render);
+    GroundGenerator(const std::vector<TerrainPhase> &phaseChoices,
+                    const TerrainPhase &firstPhase,
+                    Vector basePoint,
+                    Vector baseDerivative,
+                    floatType startT,
+                    floatType length,
+                    HikerConstants &hikerConstants,
+                    TerrainConstants &terrainConstants,
+                    ResourceManager &resourceManager,
+                    bool render);
     ~GroundGenerator() = default;
 
     /**
@@ -99,7 +106,8 @@ class GroundGenerator {
      * @param constraintChecker
      * @return new point if possible, std::nullopt else
      */
-    std::optional<Vector> generateNewPoint(floatType minAngle, floatType maxAngle,
+    std::optional<Vector> generateNewPoint(floatType minAngle,
+                                           floatType maxAngle,
                                            const std::shared_ptr<ConstraintChecker> &constraintChecker);
 
     /**

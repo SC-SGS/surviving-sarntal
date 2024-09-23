@@ -21,8 +21,13 @@ enum RockType { NORMAL_ROCK = 0, SNOW_ROCK = 1, ICE_ROCK = 2, HEAVY_ROCK = 3, LA
  */
 class Rock : public DynamicPolygon {
   public:
-    Rock(const Vector &position, const std::vector<Vector> &vertices, const std::vector<Vector2> &textureCoordinates,
-         floatType mass, floatType density, floatType momentOfInertia, const DynamicProperties &dynamicProperties);
+    Rock(const Vector &position,
+         const std::vector<Vector> &vertices,
+         const std::vector<Vector2> &textureCoordinates,
+         floatType mass,
+         floatType density,
+         floatType momentOfInertia,
+         const DynamicProperties &dynamicProperties);
     Rock(Vector position, const DynamicPolygon &polygon, DynamicProperties properties, RockType rockType);
     ~Rock() override = default;
 

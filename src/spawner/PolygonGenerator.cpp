@@ -10,8 +10,10 @@
 
 PolygonGenerator::PolygonGenerator() = default;
 
-DynamicPolygon PolygonGenerator::generatePolygon(const int numberPoints, const floatType maxRadius,
-                                                 const Vector &position, const floatType density) const {
+DynamicPolygon PolygonGenerator::generatePolygon(const int numberPoints,
+                                                 const floatType maxRadius,
+                                                 const Vector &position,
+                                                 const floatType density) const {
     std::vector<Vector> points = generatePoints(numberPoints, maxRadius);
     const std::vector<Vector> vertices = determineVertices(points);
     if (!isAnticlockwise(vertices)) {

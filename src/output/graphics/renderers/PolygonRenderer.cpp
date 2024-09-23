@@ -65,9 +65,12 @@ void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicPolygon
                           WHITE);
 }
 
-void PolygonRenderer::drawTexturePoly(const Texture2D &texture, const Vector2 centroid,
-                                      const std::vector<Vector2> &points, const std::vector<Vector2> &texCoords,
-                                      const int pointCount, const Color tint) const {
+void PolygonRenderer::drawTexturePoly(const Texture2D &texture,
+                                      const Vector2 centroid,
+                                      const std::vector<Vector2> &points,
+                                      const std::vector<Vector2> &texCoords,
+                                      const int pointCount,
+                                      const Color tint) const {
     rlSetTexture(texture.id);
 
     rlBegin(RL_QUADS);

@@ -6,10 +6,15 @@
 #include "spdlog/spdlog.h"
 GenerationAngleCalculator::GenerationAngleCalculator(const std::shared_ptr<Ground> &ground,
                                                      const std::shared_ptr<StaticPolyline> &groundPolyRepresentation,
-                                                     TerrainPhase &phase, const HikerConstants &hikerConstants,
+                                                     TerrainPhase &phase,
+                                                     const HikerConstants &hikerConstants,
                                                      const TerrainConstants &terrainConstants)
-    : minAllowedAngle(-PI * phase.randomness), maxAllowedAngle(PI * phase.randomness), phase(phase), ground(ground),
-      lastOldPoint(ground->getBasePoints()->getEndPoint()), groundPolyRepresentation(groundPolyRepresentation),
+    : minAllowedAngle(-PI * phase.randomness),
+      maxAllowedAngle(PI * phase.randomness),
+      phase(phase),
+      ground(ground),
+      lastOldPoint(ground->getBasePoints()->getEndPoint()),
+      groundPolyRepresentation(groundPolyRepresentation),
       constraintChecker(
           std::make_shared<ConstraintChecker>(ground, groundPolyRepresentation, terrainConstants, hikerConstants)) {
     this->deltaMaxAngle = this->maxAllowedAngle;
