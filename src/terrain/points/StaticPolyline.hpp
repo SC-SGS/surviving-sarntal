@@ -13,6 +13,7 @@
 class StaticPolyline : public StaticPolyObject {
   public:
     explicit StaticPolyline(std::vector<Vector> &points);
+    StaticPolyline(std::vector<Vector> &points, int index);
     ~StaticPolyline() = default;
 
     /**
@@ -48,9 +49,10 @@ class StaticPolyline : public StaticPolyObject {
     void removeLastPoints(int count);
 
   private:
-    Vector basepoint; // Point below the polyline
     Vector startPoint;
     Vector endPoint;
+
+    void initializeBasepoint();
 };
 
 #endif // SURVIVING_SARNTAL_STATICPOLYLINE_HPP

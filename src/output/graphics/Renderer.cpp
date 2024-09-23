@@ -226,13 +226,18 @@ void Renderer::renderNormalEntities() {
     }
 }
 
-void Renderer::debugRenderEntities() {
+void Renderer::debugRenderEntities() { // NOLINT [readability-function-size,-warnings-as-errors]
     const auto &hiker = world.getHiker();
     const auto &rocks = world.getRocks();
     const auto &monster = world.getMonster();
-    const auto &terrain = world.getTerrain();
     // Render hiker
-    renderHiker(hiker);
+    // renderHiker(hiker);
+    std::vector<Vector> vertices = hiker.getCurrentBoundingBoxStatic()->getPoints();
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        const Vector2 point1 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[i])));
+        const Vector2 point2 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[(i + 1) % vertices.size()])));
+        DrawLineEx({point1.x, point1.y}, {point2.x, point2.y}, 3, RED);
+    }
     // Render rocks
     for (auto &rock : rocks) {
         debugRenderRock(*rock);
@@ -535,6 +540,7 @@ std::list<Rock> &Renderer::getDestroyedRocks() const {
     });
     return *destroyedRocks;
 }
+Camera2D &Renderer::getCamera() { return this->camera; }
 
 void Renderer::reset() {
     const floatType leftBorder = world.getMinX() * graphics::UNIT_TO_PIXEL_RATIO;

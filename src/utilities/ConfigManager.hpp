@@ -20,6 +20,7 @@ class ConfigManager : public Singleton<ConfigManager> {
     std::unordered_map<std::string, int> getLandmarks();
 
     GameConstants getGameConstants();
+    bool isInDevMode();
 
   private:
     ConfigManager();

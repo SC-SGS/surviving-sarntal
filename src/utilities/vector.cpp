@@ -41,6 +41,13 @@ floatType Vector::distanceTo(const Vector &other) const {
 
 floatType Vector::length() const { return this->distanceTo({0., 0.}); }
 
+Vector Vector::reflectOnNormalDampened(const Vector &normal, floatType terrainDampening) const {
+    Vector norm = normal.normalize();
+    float dotProduct = dot(norm);
+    Vector reflected = *this - norm * (2 * dotProduct);
+    return reflected * (1.0f - terrainDampening);
+}
+
 Vector Vector::reflectOnNormal(const Vector &normal, const floatType rockTerrainDamping) const {
     const floatType normalVelocity = std::abs(*this * normal);
     return *this + normal * normalVelocity * (1.0f + rockTerrainDamping);
@@ -133,3 +140,5 @@ floatType Vector::computeSlope() const {
     assert(this->x != 0);
     return fabsf(this->y / this->x);
 }
+
+Vector Vector::getNormalVector() const { return (Vector{-this->y, this->x} / this->length()); }

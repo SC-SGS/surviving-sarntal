@@ -138,10 +138,9 @@ std::shared_ptr<StaticPolyline> Ground::getPolyRepresentationForGeneration() con
 void Ground::removeLastBasepoints(int count) {
     assert(this->splines.size() >= count);
     for (int counter = 0; counter < count; counter++) {
-        auto splinesIt = std::prev(this->splines.end());
-        this->splines.erase(splinesIt);
-        auto derivativesIt = std::prev(this->derivatives->end());
-        this->derivatives->erase(derivativesIt);
+        this->splines.pop_back();
+        this->derivatives->pop_back();
+        this->relativeTs.pop_back();
     }
     this->polyObject->removeLastPoints(count);
     this->endPoint = this->polyObject->getEndPoint();

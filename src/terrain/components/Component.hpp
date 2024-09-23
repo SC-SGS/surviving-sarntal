@@ -44,7 +44,7 @@ template <typename U, typename = std::enable_if_t<std::is_base_of_v<StaticPolyOb
             points.push_back(endPoint);
             boundingBox.extend(endPoint);
 
-            pointSections.push_back(std::make_shared<StaticPolyline>(points));
+            pointSections.push_back(std::make_shared<StaticPolyline>(points, index));
         }
         return std::make_shared<CollisionDetectionRepresentation>(pointSections, boundingBox);
     };

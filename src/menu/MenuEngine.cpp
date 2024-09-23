@@ -16,6 +16,7 @@ MenuEngine::MenuEngine(ResourceManager &resourceManager) : resourceManager(resou
     currentScreen = START_SCREEN;
     gameplayRunning = false;
     playAgainClicked = false;
+    gameClosed = false;
 }
 ScreenState MenuEngine::getScreenState() { return currentScreen; }
 
@@ -24,6 +25,9 @@ void MenuEngine::switchButton(int offset) { screens[currentScreen]->switchButton
 void MenuEngine::switchTo(ScreenState screenState) { this->currentScreen = screenState; }
 void MenuEngine::switchScreen() {
     ButtonType currentButton = screens[currentScreen]->getCurrentlySelectedButton()->getButtonType();
+    if (currentButton == CLOSE_GAME) {
+        this->gameClosed = true;
+    }
     ScreenState nextScreenState = screens[currentScreen]->getCurrentlySelectedButton()->getResultingScreen();
     this->switchTo(nextScreenState);
     if (nextScreenState == NO_MENU_SCREEN) {
@@ -31,9 +35,6 @@ void MenuEngine::switchScreen() {
     }
     if (currentButton == PLAY_AGAIN || currentButton == BACK_TO_MENU) {
         this->playAgainClicked = true;
-    }
-    if (currentButton == CLOSE_GAME) {
-        CloseWindow();
     }
 }
 void MenuEngine::setGameplayRunning(bool isGameplayRunning) { this->gameplayRunning = isGameplayRunning; }
@@ -43,3 +44,5 @@ std::shared_ptr<Button> MenuEngine::getCurrentlySelectedButton() {
 }
 bool MenuEngine::getPlayAgainClicked() const { return playAgainClicked; }
 void MenuEngine::setPlayAgainClicked(bool playAgain) { this->playAgainClicked = playAgain; }
+
+bool MenuEngine::isGameClosed() const { return this->gameClosed; }

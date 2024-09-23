@@ -1,3 +1,5 @@
+run-dev-mode: false # if true the manual tests will run instead of the normal game
+
 soundEffects:
   background-music: "../../assets/audio/background_music.mp3"
   background-music2: "../../assets/audio/background_music2.wav"
@@ -26,6 +28,9 @@ textures:
   crouch: "../../assets/texture/player_duck.png"
   jump: "../../assets/texture/player_jump.png"
   walk: "../../assets/texture/player_walk.png"
+  crouch-shield: "../../assets/texture/hiker_duck.png"
+  jump-shield: "../../assets/texture/hiker_jump.png"
+  walk-shield: "../../assets/texture/hiker_walk.png"
   kaiserschmarrn: "../../assets/texture/kaiserschmarrn.png"
   coin: "../../assets/texture/coin.png"
   duck: "../../assets/texture/duck.png"
@@ -72,13 +77,13 @@ items:
     autoCollect: false
     useOnPickUp: false
     dropOnUse: true
-    spawnWeight: 5
+    spawnWeight: 2
   coin:
     typeId: 1
     autoCollect: true
     useOnPickUp: true
     dropOnUse: true
-    spawnWeight: 3
+    spawnWeight: 6
   duck:
     typeId: 2
     autoCollect: true
@@ -103,21 +108,20 @@ gameConstants:
     hikerWidth: 1.15
     crouchedHikerHeight: 1.42
     crouchedHikerWidth: 0.96
-    mass: 80.0
+    mass: 800.0
     duckSpeedFactor: 0.35
     normalSpeed: 2.6
     jumpVelocity: 10.0
-    airMovementSpeedFactor: 0.6
+    airMovementSpeedFactor: -0.6
     knockBack: 0.00005
-    minSpeedNegSlope: 0.6
-    maxSpeedNegSlope: 1.5
-    minSpeedPosSlope: 0.5
-    slowestNegSlope: -1.0
-    fastestNegSlope: -0.5
-    slowestPosScope: 2.0
+    maxSpeedNegSlope: 5.0
     maxClimbableSlope: 4.0
+    terrainCollisionDampening: 0.8
+    friction: 0.3 #is applied to the gravitational constant, when the hiker slides down the terrain
 
   itemsConstants:
+    spawnItems: true
+    shieldTime: 5.0
     collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
@@ -132,6 +136,7 @@ gameConstants:
     inventorySlotSize: 80.0
 
   rockConstants:
+    spawnRocks: true
     minRockSize: 0.32
     maxRockSize: 1.0
     velocityCap: 1200.0
