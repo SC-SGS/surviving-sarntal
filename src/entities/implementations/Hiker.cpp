@@ -29,9 +29,25 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
 }
 
 RenderInformation Hiker::getRenderInformation() const {
-    floatType directedWidth = width * static_cast<float>(hikerMovement.getDirection() != HikerMovement::LEFT ? 1 : -1);
-    return RenderInformation{
-        Vector2(position), {0, height / 2}, directedWidth, height, 0, hikerMovement.getStateString(), animation};
+    floatType renderWidth = this->width;
+    floatType renderHeight = this->height;
+    // TO DO due to the shield, the hiker itself in the texture is smaller (and therefore rendered smaller bc
+    // hikerheight/width stays the same), so I thought we could render it a little big bigger - but I know this is not a
+    // pretty solution I was thinking about introducing a new hikerHeight/Width for hiker with shield
+    if (this->hasShield()) {
+        renderWidth += 0.1;
+        renderHeight += 0.1;
+    }
+    floatType directedWidth =
+        renderWidth * static_cast<float>(hikerMovement.getDirection() != HikerMovement::LEFT ? 1 : -1);
+
+    return RenderInformation{Vector2(position),
+                             {0, height / 2},
+                             directedWidth,
+                             renderHeight,
+                             0,
+                             hikerMovement.getStateString(this->hasShield()),
+                             animation};
 }
 
 floatType Hiker::getHeight() const { return height; }

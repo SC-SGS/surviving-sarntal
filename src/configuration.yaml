@@ -28,9 +28,9 @@ textures:
   crouch: "../../assets/texture/player_duck.png"
   jump: "../../assets/texture/player_jump.png"
   walk: "../../assets/texture/player_walk.png"
-  crouch-shield: "../../assets/texture/hiker_duck.png"
-  jump-shield: "../../assets/texture/hiker_jump.png"
-  walk-shield: "../../assets/texture/hiker_walk.png"
+  crouch-shield: "../../assets/texture/player_duck_shield.png"
+  jump-shield: "../../assets/texture/player_jump_shield.png"
+  walk-shield: "../../assets/texture/player_walk_shield.png"
   kaiserschmarrn: "../../assets/texture/kaiserschmarrn.png"
   coin: "../../assets/texture/coin.png"
   duck: "../../assets/texture/duck.png"
@@ -121,7 +121,7 @@ gameConstants:
 
   itemsConstants:
     spawnItems: true
-    shieldTime: 5.0
+    shieldTime: 15.0
     collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
