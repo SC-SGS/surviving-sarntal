@@ -6,12 +6,12 @@
 #define SURVIVING_SARNTAL_HIKER_H
 #pragma once
 
+#include "../geometry/DynamicConvexPolygon.h"
 #include "../output/audio/AudioService.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
 #include "../terrain/points/StaticPolygon.hpp"
 #include "../terrain/spatialDatastructure/AxisAlignedBoundingBox.hpp"
 #include "../utilities/vector.h"
-#include "DynamicPolygon.h"
 #include "HikerMovement.h"
 #include "RenderedEntity.h"
 #include <list>
@@ -108,19 +108,19 @@ class Hiker : public RenderedEntity {
      * @param movement
      * @return
      */
-    floatType computeSpeedFactor(Vector movement) const;
+    floatType computeSpeedFactor(const Vector &movement) const;
 
     /**
      * Returns the bounding box for the current position and state of this hiker.
      *
      * @return
      */
-    std::shared_ptr<DynamicPolygon> getCurrentBoundingBox() const;
+    std::shared_ptr<DynamicConvexPolygon> getCurrentBoundingBox() const;
 
     std::shared_ptr<StaticPolygon> getCurrentBoundingBoxStatic() const;
 
-    void setPosition(Vector &position) override;
-    void reset(Vector &position);
+    void setPosition(const Vector &position) override;
+    void reset(const Vector &position);
 
   private:
     // Dependencies
@@ -136,7 +136,7 @@ class Hiker : public RenderedEntity {
     bool isHit{};
     std::vector<HitInformation> hitInformation{};
     bool isAlive{};
-    std::shared_ptr<DynamicPolygon> boundingBoxWalking = nullptr;
+    std::shared_ptr<DynamicConvexPolygon> boundingBoxWalking = nullptr;
     Vector walkingHitBoxDelta{}; // Delta from the hiker position to the position of their walking hitbox
     // std::shared_ptr<DynamicPolygon> boundingBoxCrouched = nullptr;
     // Vector crouchedHitBoxDelta{};

@@ -58,7 +58,7 @@ CollisionDetectionRepresentation::calculateRelevantSections(const AxisAlignedBou
 
 std::vector<std::shared_ptr<StaticPolyline>> CollisionDetectionRepresentation::calculateRelevantSectionsX(
     const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,
-    IsSmallerComparator isSmallerComparator,
+    const IsSmallerComparator isSmallerComparator,
     const AxisAlignedBoundingBox &boundingBox) {
     int index = (static_cast<int>(sortedSections.size() - 1)) / 2;
     int min = 0;
@@ -125,7 +125,7 @@ CollisionDetectionRepresentation::calculateRelevantSectionsContinuous(const Axis
         maxIndex = (*maxIter)->getIndex().value();
     }
 
-    for (int index = minIndex; index < maxIndex; index++) {
+    for (int index = std::max(0, minIndex); index <= maxIndex; index++) {
         sectionsContinuousOrdered.push_back(this->polylineSectionsSortedT.at(index));
     }
     return sectionsContinuousOrdered;

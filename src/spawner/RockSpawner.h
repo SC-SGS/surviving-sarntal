@@ -7,7 +7,7 @@
 
 #include "../entities/World.h"
 #include "../game/GameProperties.hpp"
-#include "../utilities/Singleton.hpp"
+#include "../utilities/RandomGenerator.hpp"
 
 /**
  * Rock spawning phases that determine the spawn velocity and spawn time interval.
@@ -40,18 +40,15 @@ class RockSpawner {
     /**
      * Determines the number of rocks to spawn based on the current rock spawn
      * phase.
-     * @param rockSpawnPhase
-     * @param spawnData
      * @return number of rocks to spawn
      */
     int computeNumRocksToSpawn();
 
     /**
      * Determines the time between rock spawns based on the current rock spawn difficulty.
-     * @param rockSpawnPhase
      * @return time between rock spawns
      */
-    floatType rockSpawnTimeFromPhase();
+    floatType rockSpawnTimeFromPhase() const;
 
     /**
      * Determines the current rock spawn difficulty based on how far the hiker has
@@ -65,13 +62,13 @@ class RockSpawner {
      * progressed in the game (measured in the horizontal distance).
      * @return rock spawn difficulty
      */
-    RockType determineRockTypePhase();
+    RockType determineRockTypePhase() const;
 
     bool shouldSpawnRocks();
 
-    void spawnRock(size_t idxRock);
+    void spawnRock(size_t idxRock) const;
 
-    std::vector<Vector> getOffsetsAdditionalRocks();
+    std::vector<Vector> getOffsetsAdditionalRocks() const;
 
     /**
      * This method generates a random radius between maxRockSize/2 und maxRockSize.
@@ -106,12 +103,16 @@ class RockSpawner {
 
     /**
      *
-     * @return
+     * @param position
+     * @param poly
+     * @param dynamicProperties
      */
-    void createRock(Vector &position, DynamicPolygon &polygon, DynamicProperties &dynamicProperties);
+    void createRock(const Vector &position,
+                    const DynamicConvexPolygon &poly,
+                    const DynamicProperties &dynamicProperties) const;
 
-    Vector getRockSpawnPosition(size_t idxRock);
-    DynamicPolygon getRandDynamicPolygon(Vector position);
+    Vector getRockSpawnPosition(size_t idxRock) const;
+    DynamicConvexPolygon getRandDynamicPolygon(const Vector &position) const;
     floatType determineDifficultyFactor() const;
     floatType determineLowerBoundVelocity() const;
 };

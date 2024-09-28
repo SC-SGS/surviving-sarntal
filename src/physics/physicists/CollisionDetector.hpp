@@ -6,25 +6,73 @@
 #define COLLISIONDETECTOR_H
 
 #include "../../entities/World.h"
+#include "../../geometry/AABB.h"
+#include "../../geometry/ConcavePolygon.h"
+#include "../../geometry/ConvexPolygon.h"
+#include "../../geometry/DynamicConvexPolygon.h"
+#include "../../geometry/SimpleConvexPolygon.h"
+#include "common/shapes.h"
 
 struct PolygonProjectionOnAxis {
-    floatType lowerBound{std::numeric_limits<floatType>::max()};
-    floatType upperBound{std::numeric_limits<floatType>::min()};
+    floatType lowerBound{std::numeric_limits<floatType>::infinity()};
+    floatType upperBound{-std::numeric_limits<floatType>::infinity()};
+    size_t indexOfLowestVertex{0};
 
-    bool overlaps(const PolygonProjectionOnAxis &other) const {
-        return lowerBound < other.upperBound && upperBound > other.lowerBound;
+    bool overlaps(const PolygonProjectionOnAxis &other, const floatType eps = NUMERIC_EPSILON) const {
+        return lowerBound + eps < other.upperBound && upperBound > other.lowerBound + eps;
     }
-};
-
-struct PolygonEdge {
-    Vector vertexA;
-    Vector vertexB;
 };
 
 struct CollisionObject {
     bool isCollision{false};
-    floatType collisionDepth{};
+    floatType collisionDepth{std::numeric_limits<floatType>::max()};
     Vector collisionDirection{};
+};
+
+struct PolygonCollisionObject : CollisionObject {
+    // Body containing the vertex
+    ConvexPolygon *polyAIncident{nullptr};
+    // Body containing the face having the collision normal, which points from B to A
+    ConvexPolygon *polyBReference{nullptr};
+    // Colliding vertex on polyA
+    size_t collisionVertexIdx{};
+    // Index of the reference edge on polyB
+    size_t collisionFaceIdx{};
+    // Index of the reference edge on polyB if no collision occurred
+    size_t lastWitnessEdgeIdx{};
+    // TODO Collision Manifold
+};
+
+struct DynamicPolygonCollisionObject : CollisionObject {
+    // Body containing the vertex
+    DynamicConvexPolygon *polyAIncident{nullptr};
+    // Body containing the face having the collision normal, which points from B to A
+    DynamicConvexPolygon *polyBReference{nullptr};
+    // Colliding vertex on polyA
+    size_t collisionVertexIdx{};
+    // Index of the reference edge on polyB
+    size_t collisionFaceIdx{};
+    // TODO colllision manifold
+    // alpha-value between 0 and 1 at which collision first occurred
+    floatType relativeTimeOfCollision{1};
+};
+
+struct DynamicPolygonTerrainCollisionObject : CollisionObject {
+    DynamicConvexPolygon *poly{nullptr};
+    std::optional<SimpleConvexPolygon> triangle{};
+    bool isPolyIncident{true};
+    // Colliding vertex on incident polygon
+    size_t collisionVertexIdx{};
+    // Index of the reference edge
+    size_t collisionFaceIdx{};
+    // alpha-value between 0 and 1 at which collision first occurred
+    floatType relativeTimeOfCollision{1};
+};
+
+struct LineAABBIntersection {
+    enum Type { LEFT, RIGHT, TOP, BOTTOM, NO_INTERSECTION };
+    Type intersectionType{NO_INTERSECTION};
+    std::optional<Vector> intersectionPoint;
 };
 
 /**
@@ -42,7 +90,7 @@ struct TerrainCollisionObject : CollisionObject {
 class CollisionDetector {
 
   public:
-    explicit CollisionDetector(World &world);
+    explicit CollisionDetector(World &world, const GameConstants &gameConstants, bool devMode = false);
     ~CollisionDetector() = default;
 
     /**
@@ -52,19 +100,16 @@ class CollisionDetector {
      */
     void detectCollisions() const;
 
-    // TODO later one collides method that can calculate whether arbritrary objects collide? Smaller ball of mud...
-    // TODO this method should then also be tested well
+    // TODO linked cell?
 
     /**
      * Checks whether two given circular rocks collide.
      *
-     * TODO maybe later adapt to non-circular rocks and it should be used in some method that uses linked cell or sth
-     *
      * @param rock1
      * @param rock2
      * @return
-     */
-    static bool rocksCollide(Rock &rock1, Rock &rock2);
+     *
+    static bool rocksCollide(Rock &rock1, Rock &rock2);*/
 
     /**
      * Checks whether the player is hit by a given rock, where the player is represented as a axis-aligned rectangle and
@@ -72,37 +117,28 @@ class CollisionDetector {
      * See
      * <a href="https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection">this</a>.
      *
-     * TODO there should be one method to detect all collisions and return a collObj this method should be tested well
-     *
      * @return
-     */
-    bool isPlayerHitByRock(Rock &rock);
+     *
+    bool isPlayerHitByRock(Rock &rock);*/
 
     /**
-     * Used to calculate the normal... AT A VERTEX!!!
-     * Only useful because we still have this terrible implementation, where the rocks don't collide with the lines of
-     * the mountain, but at the vertices, which are NON-DIFFERENTIABLE  AGHHH.
-     * Like... look at this documentation from legacy:
-     * Find the normal vector of a given vertex
-     * Calculate, which of the neighbouring points is closer and compute the
-     * normal corresponding to the connection line between these two
+     * Checks whether two convex dynamic polygons have collided in the last time step of size deltaT.
+     * Only not const params because pointers to the colliding polygons are returned in the collision object.
      *
-     * TODO this is evil and has to go
-     *
-     * @param idx
-     * @param rockPos
+     * @param poly1
+     * @param poly2
      * @return
      */
-    Vector getNormal(Vector rockPos) const;
+    DynamicPolygonCollisionObject dynamicPolygonCollision(DynamicConvexPolygon &poly1,
+                                                          DynamicConvexPolygon &poly2) const;
 
     /**
      * Returns a list of collisions of a polygon with the terrain. The terrain is approximated by a continuous line.
      *
      * @param poly
-     * @param terrain
      * @return
      */
-    static std::vector<CollisionObject> polygonTerrainCollision(const DynamicPolygon &poly, const Terrain &terrain);
+    DynamicPolygonTerrainCollisionObject polygonTerrainCollision(DynamicConvexPolygon &poly) const;
 
     /**
      * Checks whether two polygons collide using the SAT:
@@ -116,31 +152,45 @@ class CollisionDetector {
      *
      * @param poly1
      * @param poly2
+     * @param poly1LastWitnessToPoly2
+     * @param poly2LastWitnessToPoly1
+     * @param eps
      * @return
      */
-    static CollisionObject polygonsCollide(const DynamicPolygon &poly1, const DynamicPolygon &poly2);
+    static PolygonCollisionObject polygonsCollide(ConvexPolygon &poly1,
+                                                  ConvexPolygon &poly2,
+                                                  size_t poly1LastWitnessToPoly2 = 0,
+                                                  size_t poly2LastWitnessToPoly1 = 0,
+                                                  floatType eps = NUMERIC_EPSILON);
 
   private:
     World &world;
+    const GameConstants &gameConstants;
+    const bool devMode;
 
     /**
-     * Checks whether a polygon collides with a line that is a boundary to the terrain, i.e. the polygon being on the
-     * "inner side" of the line also counts as collision.
+     * Checks if there is a possible collision of two dynamic convex polygons in the last time step by checking whether
+     * their swept bounding boxes collide.
      *
-     * @param poly
-     * @param edge
+     * @param poly1
+     * @param poly2
      * @return
      */
-    static CollisionObject polygonLineCollision(const DynamicPolygon &poly, const PolygonEdge &edge);
+    static bool sweptAABBsCollide(const DynamicConvexPolygon &poly1, const DynamicConvexPolygon &poly2);
 
     /**
      * Checks whether the separating axis of the two polygons is one of the edges of poly 1.
      *
      * @param poly1
      * @param poly2
-     * @return the collision with smallest depth
+     * @param poly1LastWitnessToPoly2
+     * @param eps
+     * @return the collision with the smallest depth
      */
-    static CollisionObject collisionWithSepAxisOn1(const DynamicPolygon &poly1, const DynamicPolygon &poly2);
+    static PolygonCollisionObject collisionWithSepAxisOn1(ConvexPolygon &poly1,
+                                                          ConvexPolygon &poly2,
+                                                          size_t poly1LastWitnessToPoly2 = 0,
+                                                          floatType eps = NUMERIC_EPSILON);
 
     /**
      * Projects a Polygon on a Normal vector, returning a 1D PolygonProjection represented by its lower and upper bound
@@ -150,7 +200,86 @@ class CollisionDetector {
      * @param normal of the other polygon, must be normalized
      * @return
      */
-    static PolygonProjectionOnAxis projectPolygonOnNormal(const DynamicPolygon &poly, const Vector &normal);
+    static PolygonProjectionOnAxis projectPolygonOnNormal(const ConvexPolygon &poly, const Vector &normal);
+
+    /**
+     * Creates a dynamic polygon collision object from a polygon collision object and additional temporal information.
+     *
+     * @param collResult
+     * @param poly1
+     * @param poly2
+     * @param poly1AtT
+     * @param poly2AtT
+     * @param relativeTime
+     * @return
+     */
+    static DynamicPolygonCollisionObject
+    createDynamicPolygonCollisionObjectFrom(const PolygonCollisionObject &collResult,
+                                            DynamicConvexPolygon &poly1,
+                                            DynamicConvexPolygon &poly2,
+                                            const ConvexPolygon &poly1AtT,
+                                            const ConvexPolygon &poly2AtT,
+                                            floatType relativeTime);
+
+    /**
+     * Uses according method from terrain and puts the components together to one polsline.
+     *
+     * @param terrainSurfaceComponents
+     * @return
+     */
+    static StaticPolyline getContinuousTerrainSurfaceFromComponents(
+        const std::vector<std::shared_ptr<StaticPolyline>> &terrainSurfaceComponents);
+    /**
+     * Returns a concave polygon representing the terrain in a given bounding box.
+     *
+     * @param terrainSurfaceComponents
+     * @param aabb
+     * @return
+     */
+    static ConcavePolygon
+    getConcaveTerrainPolygonInAABB(const std::vector<std::shared_ptr<StaticPolyline>> &terrainSurfaceComponents,
+                                   const AABB &aabb);
+
+    /**
+     * Returns the boundary triangles of the triangulation of the concave polygon representing the terrain.
+     *
+     * @param terrainPoly
+     * @return
+     */
+    static std::vector<SimpleConvexPolygon> getSurfaceTrianglesOfConcaveTerrainPoly(const ConcavePolygon &terrainPoly);
+
+    /**
+     * Triangulates the given concave polygon representing the terrain using the poly2tri library.
+     *
+     * @param terrainPoly
+     * @return
+     */
+    static std::vector<SimpleConvexPolygon> triagulateConcaveTerrainPoly(const ConcavePolygon &terrainPoly);
+
+    /**
+     * Returns a SimpleConvexPolygon representation of a p2t triangle.
+     *
+     * @param p2tTri
+     * @return
+     */
+    static SimpleConvexPolygon createConvexPolyFromP2TTriangle(p2t::Triangle &p2tTri);
+
+    /**
+     * Returns a DynamicPolygonTerrainCollisionObject from a PolygonCollisionObject and some additional info.
+     *
+     * @param collision
+     * @param poly
+     * @param polyAtT
+     * @param triangle
+     * @param relativeTime
+     * @return
+     */
+    static DynamicPolygonTerrainCollisionObject
+    createDynamicPolygonTerrainCollisionObjectFrom(const PolygonCollisionObject &collision,
+                                                   DynamicConvexPolygon &poly,
+                                                   const SimpleConvexPolygon &polyAtT,
+                                                   const ConvexPolygon &triangle,
+                                                   floatType relativeTime);
 };
 
 #endif // COLLISIONDETECTOR_H

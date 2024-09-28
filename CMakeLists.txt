@@ -56,13 +56,14 @@ FetchContent_Declare(raylib URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/raylib-4.5.0.ta
 FetchContent_Declare(googletest URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest-1.14.0.tar.gz)
 FetchContent_Declare(yaml-cpp URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/yaml-cpp-0.8.0.tar.gz)
 FetchContent_Declare(spdlog URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/spdlog-1.13.0.tar.gz)
-FetchContent_Declare(poly2tri URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/poly2tri-master.zip)
+# Add poly2tri (local tarball)
+FetchContent_Declare(
+        poly2tri
+        URL ${CMAKE_CURRENT_SOURCE_DIR}/libs/poly2tri-master.tar.gz
+)
 
-FetchContent_MakeAvailable(raylib)
-FetchContent_MakeAvailable(googletest)
-FetchContent_MakeAvailable(yaml-cpp)
-FetchContent_MakeAvailable(spdlog)
-FetchContent_MakeAvailable(poly2tri)
+# Fetch content for all declared libraries
+FetchContent_MakeAvailable(raylib googletest yaml-cpp spdlog poly2tri)
 
 # Remove unnecessary .clang-tidy files from fetched libraries
 remove_clang_tidy(${raylib_SOURCE_DIR})
@@ -73,6 +74,7 @@ remove_clang_tidy(${poly2tri_SOURCE_DIR})
 
 # Include directories
 include_directories(libs/NITE/Include /usr/include/ni)
+include_directories(${poly2tri_SOURCE_DIR}/poly2tri)
 if (APPLE)
     execute_process(
             COMMAND bash -c "brew info sdl2 | grep 'Cellar/sdl2' | awk '{print $1}'"

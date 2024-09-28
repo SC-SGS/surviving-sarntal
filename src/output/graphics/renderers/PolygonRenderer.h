@@ -5,7 +5,7 @@
 #ifndef SURVIVING_SARNTAL_POLYGONRENDERER_H
 #define SURVIVING_SARNTAL_POLYGONRENDERER_H
 
-#include "../../../entities/DynamicPolygon.h"
+#include "../../../geometry/DynamicConvexPolygon.h"
 #include "../../ResourceManager.h"
 
 /**
@@ -20,19 +20,20 @@ class PolygonRenderer {
      * This method renders the polygon as a filled area.
      * @param polygon
      */
-    void renderPolygon(const DynamicPolygon &polygon) const;
+    void renderPolygon(const DynamicConvexPolygon &polygon) const;
 
     /**
      * This method renders the outline of a polygon based on the vertices the polygon is defined by.
      * @param polygon
      */
-    void renderPolygonOutline(const DynamicPolygon &polygon) const;
+    void renderPolygonOutline(const DynamicConvexPolygon &polygon) const;
+    static void renderPolygonOutlineStatic(const ConvexPolygon &polygon, Color color = RAYWHITE);
 
     /**
      * This method renders a polygon by filling it with a texture.
      * @param polygon
      */
-    void renderTexturedPolygon(const std::shared_ptr<DynamicPolygon> &polygon) const;
+    void renderTexturedPolygon(const std::shared_ptr<DynamicConvexPolygon> &polygon) const;
 
     /**
      *  Draws a textured polygon, defined by vertex and texture coordinates.
