@@ -13,10 +13,17 @@ int main(int argc, char *argv[]) {
     SetTargetFPS(60);
     SDL_Init(SDL_INIT_GAMECONTROLLER);
 
+    ConfigManager &configManager = ConfigManager::getInstance();
     Camera2D camera{};
     const GameFactory gameFactory{camera};
-    Game game = gameFactory.buildGame();
-    game.run();
+
+    if (!configManager.isInDevMode()) {
+        Game game = gameFactory.buildGame();
+        game.run();
+    } else {
+        DevMode devMode = gameFactory.buildDevMode();
+        devMode.run();
+    }
 
     CloseAudioDevice();
     CloseWindow();
