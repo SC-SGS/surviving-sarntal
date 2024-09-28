@@ -11,7 +11,6 @@
 #include "Inventory.hpp"
 #include "Item.hpp"
 #include "Monster.h"
-#include "Mountain.h"
 #include "Rock.h"
 
 #include <list>

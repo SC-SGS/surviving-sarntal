@@ -5,8 +5,8 @@
 #ifndef SURVIVING_SARNTAL_ROCK_H
 #define SURVIVING_SARNTAL_ROCK_H
 
+#include "../geometry/DynamicConvexPolygon.h"
 #include "../utilities/vector.h"
-#include "DynamicPolygon.h"
 
 #include "RenderedEntity.h"
 
@@ -19,7 +19,7 @@ enum RockType { NORMAL_ROCK = 0, SNOW_ROCK = 1, ICE_ROCK = 2, HEAVY_ROCK = 3, LA
  * This class represents a rock in the game. A rock is simulated by a certain point (position) with a radius
  * and the attributes velocity and rotation.
  */
-class Rock : public DynamicPolygon {
+class Rock : public DynamicConvexPolygon {
   public:
     Rock(const Vector &position,
          const std::vector<Vector> &vertices,
@@ -28,7 +28,10 @@ class Rock : public DynamicPolygon {
          floatType density,
          floatType momentOfInertia,
          const DynamicProperties &dynamicProperties);
-    Rock(Vector position, const DynamicPolygon &polygon, DynamicProperties properties, RockType rockType);
+    Rock(const Vector &position,
+         const DynamicConvexPolygon &polygon,
+         const DynamicProperties &properties,
+         const RockType &rockType);
     ~Rock() override = default;
 
     RenderInformation getRenderInformation() const override;

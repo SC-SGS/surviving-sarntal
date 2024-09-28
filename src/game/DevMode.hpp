@@ -49,24 +49,24 @@ class DevMode {
     Vector getTransformedMousePosition() const;
     void loadTestConfig();
     std::vector<TestCaseDto> loadTestCases();
-    void clearAllItems();
-    void clearAllRocks();
+    void clearAllItems() const;
+    void clearAllRocks() const;
     void increaseRockSize(float increment);
 
-    void spawnRockAtMouse();
+    void spawnRockAtMouse() const;
     void spawnItemAtMouse(int itemId);
     void startTestCase(int testCase);
     void spawnRocks(const std::vector<Rock> &rocks);
     Vector getTransformedPosition(const Vector &position) const;
-    void drawOnScreen(const char *message);
-    TestCaseDto mapToTestCaseDto(const YAML::Node &testCase);
-    void loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto);
+    void drawOnScreen(const char *message) const;
+    TestCaseDto mapToTestCaseDto(const YAML::Node &testCase) const;
+    void loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto) const;
     void renderText(const std::string &message) const;
-    bool shouldStartTestCase();
-    int getTestCaseFromInput();
-    void spawnRock(Vector position, Vector velocity);
-    void spawnRock(Vector position, Vector velocity, floatType radius);
-    Rock generateRock(Vector position, Vector velocity, floatType radius);
+    bool shouldStartTestCase() const;
+    int getTestCaseFromInput() const;
+    void spawnRock(const Vector &position, const Vector &velocity) const;
+    void spawnRock(const Vector &position, const Vector &velocity, floatType radius) const;
+    Rock generateRock(const Vector &position, const Vector &velocity, floatType radius) const;
 };
 
 #endif // SURVIVING_SARNTAL_DEVMODE_HPP

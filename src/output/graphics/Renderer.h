@@ -32,7 +32,7 @@ class Renderer {
     Camera2D &getCamera();
 
     void reset();
-    MountainRenderer &getMountainRenderer();
+    MountainRenderer &getMountainRenderer() const;
 
   private:
     // Dependencies

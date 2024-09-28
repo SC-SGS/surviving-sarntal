@@ -100,10 +100,10 @@ void AxisAlignedBoundingBox::extend(const Vector &point) {
     }
 }
 
-AxisAlignedBoundingBox AxisAlignedBoundingBox::moveByDelta(Vector delta) const {
+AxisAlignedBoundingBox AxisAlignedBoundingBox::moveByDelta(const Vector &delta) const {
     return {this->minMin + delta, this->maxMax + delta};
 }
 
-AxisAlignedBoundingBox AxisAlignedBoundingBox::transform(const Rectangle &rectangle) {
-    return {{rectangle.x, rectangle.y}, {rectangle.x + rectangle.width, rectangle.y + rectangle.height}};
+AxisAlignedBoundingBox AxisAlignedBoundingBox::transform(const AABB &aabb) {
+    return {aabb.getBottomLeft(), aabb.getTopRight()};
 }

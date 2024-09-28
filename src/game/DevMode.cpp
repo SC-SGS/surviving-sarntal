@@ -5,7 +5,7 @@
 #include "DevMode.hpp"
 
 #include "../spawner/PolygonGenerator.h"
-#include <utility>
+
 DevMode::DevMode(World &world,
                  Renderer &renderer,
                  PhysicsEngine &physicsEngine,
@@ -25,7 +25,7 @@ DevMode::DevMode(World &world,
 
     loadTestConfig();
     this->items = ConfigManager::getInstance().getItems();
-    // this->testCases = loadTestCases();
+    this->testCases = loadTestCases();
 
     spdlog::info("Manual test initialized.");
 }
@@ -60,12 +60,12 @@ void DevMode::mainLoop() {
     } else if (!IsKeyDown(KEY_RIGHT_SHIFT) && IsKeyPressed(KEY_TWO)) {
         this->spawnItemAtMouse(2);
     } else if (this->shouldStartTestCase()) {
-        int testCase = this->getTestCaseFromInput();
+        const int testCase = this->getTestCaseFromInput();
         this->startTestCase(testCase);
     }
 }
 
-void DevMode::spawnRockAtMouse() {
+void DevMode::spawnRockAtMouse() const {
     Vector position = getTransformedMousePosition();
     Vector velocity = Vector();
 
@@ -77,34 +77,38 @@ void DevMode::spawnRockAtMouse() {
     if (IsKeyDown(KEY_UP)) {
         velocity.y = 500.0;
     }
+    auto hpos = this->world.getHiker().getPosition();
+    spdlog::info("Hiker position: (x: {0}, y: {1}) ", hpos.x, hpos.y);
+    spdlog::info("Mouse position: (x: {0}, y: {1}) ", position.x, position.y);
 
     this->spawnRock(position, velocity);
 }
 
-void DevMode::clearAllItems() { this->world.clearAllItems(); }
+void DevMode::clearAllItems() const { this->world.clearAllItems(); }
 
-void DevMode::clearAllRocks() { this->world.clearAllRocks(); }
+void DevMode::clearAllRocks() const { this->world.clearAllRocks(); }
 
-void DevMode::increaseRockSize(float increment) {
+void DevMode::increaseRockSize(const float increment) {
     if (this->rockSize + increment > 0) {
         this->rockSize += increment;
     }
 }
 
 void DevMode::spawnItemAtMouse(int itemId) {
-    auto itemType = ItemType(itemId);
-    auto itemDto = this->items[itemType];
-    Item item = Item(itemType, getTransformedMousePosition(), gameConstants.itemsConstants.itemBaseHeight, itemDto);
+    const auto itemType = ItemType(itemId);
+    const auto itemDto = this->items[itemType];
+    const Item item =
+        Item(itemType, getTransformedMousePosition(), gameConstants.itemsConstants.itemBaseHeight, itemDto);
     this->world.addItem(item);
 }
 
-bool DevMode::shouldStartTestCase() {
-    int keyPressed = GetKeyPressed();
-    bool keyPressedIsNum = KEY_ZERO <= keyPressed && keyPressed <= KEY_NINE;
+bool DevMode::shouldStartTestCase() const {
+    const int keyPressed = GetKeyPressed();
+    const bool keyPressedIsNum = KEY_ZERO <= keyPressed && keyPressed <= KEY_NINE;
     return IsKeyDown(KEY_RIGHT_SHIFT) && keyPressedIsNum;
 }
 
-int DevMode::getTestCaseFromInput() {
+int DevMode::getTestCaseFromInput() const {
     for (int i = 0; i < 9; i++) {
         if (IsKeyPressed(KEY_ZERO + i)) {
             return i;
@@ -113,25 +117,25 @@ int DevMode::getTestCaseFromInput() {
     return 0;
 }
 
-void DevMode::drawOnScreen(const char *message) {
-    int fontSize = 40;
+void DevMode::drawOnScreen(const char *message) const {
+    const int fontSize = 40;
     // Calculate the text width and height
-    int textWidth = MeasureText(message, fontSize);
-    int textHeight = fontSize; // Ascent + Descent, but raylib doesn't provide this separately, so using font size
+    const int textWidth = MeasureText(message, fontSize);
+    const int textHeight = fontSize; // Ascent + Descent, but raylib doesn't provide this separately, so using font size
 
     // Calculate the positions
-    int posX = (graphics::SCREEN_WIDTH_IN_PIXEL - textWidth) / 2;
-    int posY = (graphics::SCREEN_HEIGHT_IN_PIXEL - textHeight) / 2;
+    const int posX = (graphics::SCREEN_WIDTH_IN_PIXEL - textWidth) / 2;
+    const int posY = (graphics::SCREEN_HEIGHT_IN_PIXEL - textHeight) / 2;
 
     DrawText(message, posX, posY, fontSize, RED);
 }
 
 Vector DevMode::getTransformedMousePosition() const {
-    Vector2 positionMouse = GetMousePosition();
+    const Vector2 positionMouse = GetMousePosition();
     Vector position = Vector();
     position.x = positionMouse.x;
-    float pos = GraphicsUtil::transformYCoordinate(camera.target.y) - positionMouse.y +
-                static_cast<float>(graphics::SCREEN_HEIGHT_IN_PIXEL) / 2;
+    const float pos = GraphicsUtil::transformYCoordinate(camera.target.y) - positionMouse.y +
+                      static_cast<float>(graphics::SCREEN_HEIGHT_IN_PIXEL) / 2;
     position.y = pos;
     return position;
 }
@@ -182,7 +186,7 @@ std::vector<TestCaseDto> DevMode::loadTestCases() {
     return testCasesList;
 }
 
-TestCaseDto DevMode::mapToTestCaseDto(const YAML::Node &testCase) {
+TestCaseDto DevMode::mapToTestCaseDto(const YAML::Node &testCase) const {
     TestCaseDto dto;
 
     dto.name = testCase["name"].as<std::string>();
@@ -191,30 +195,33 @@ TestCaseDto DevMode::mapToTestCaseDto(const YAML::Node &testCase) {
     return dto;
 }
 
-void DevMode::loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto) {
+void DevMode::loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto) const {
     for (const auto &rockNode : rocksNode) {
         auto position = rockNode["position"].as<std::vector<floatType>>();
         auto velocity = rockNode["velocity"].as<std::vector<floatType>>();
-        auto radius = rockNode["radius"].as<floatType>();
+        const auto radius = rockNode["radius"].as<floatType>();
 
-        auto posVec = Vector{position[0], position[1]};
-        auto velVec = Vector{velocity[0], velocity[1]};
+        const auto posVec = Vector{position[0], position[1]};
+        const auto velVec = Vector{velocity[0], velocity[1]};
 
         Rock rock = this->generateRock(posVec, velVec, radius);
         dto.rocks.push_back(rock);
     }
 }
 
-void DevMode::spawnRock(Vector position, Vector velocity) { this->spawnRock(position, velocity, this->rockSize); }
+void DevMode::spawnRock(const Vector &position, const Vector &velocity) const {
+    this->spawnRock(position, velocity, this->rockSize);
+}
 
-void DevMode::spawnRock(Vector position, Vector velocity, floatType radius) {
+void DevMode::spawnRock(const Vector &position, const Vector &velocity, const floatType radius) const {
     Rock newRock = this->generateRock(position, velocity, radius);
     this->world.addRock(std::make_shared<Rock>(newRock));
 }
 
-Rock DevMode::generateRock(Vector position, Vector velocity, floatType radius) {
-    DynamicPolygon poly = this->polyGen.generatePolygon(100, radius, position, 1.0f);
-    DynamicProperties dynamicProperties{position, 0, velocity, 1};
+Rock DevMode::generateRock(const Vector &position, const Vector &velocity, const floatType radius) const {
+    const DynamicConvexPolygon poly = this->polyGen.generatePolygon(100, radius, position, 0.8f);
+    spdlog::info("Rock spawned at {0}, {1}", position.x, position.y);
+    DynamicProperties dynamicProperties{position, 0, 0, velocity, 1};
     return {position,         poly.getBodySpaceVertices(), poly.getTextureCoordinates(),
             poly.getMass(),   poly.getDensity(),           poly.getMomentOfInertia(),
             dynamicProperties};

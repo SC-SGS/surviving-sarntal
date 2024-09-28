@@ -2,12 +2,15 @@
 // Created by Anietta Weckauff on 06.08.24.
 //
 
-#ifndef SURVIVING_SARNTAL_POLYGON_H
-#define SURVIVING_SARNTAL_POLYGON_H
+#ifndef DYNAMICCONVEXPOLYGON_H
+#define DYNAMICCONVEXPOLYGON_H
 
+#include "../entities/RenderedEntity.h"
 #include "../utilities/vector.h"
-#include "RenderedEntity.h"
+#include "AABB.h"
+#include "ConvexPolygon.h"
 
+#include <map>
 #include <vector>
 
 /**
@@ -17,8 +20,21 @@
 struct DynamicProperties {
     Vector lastPosition{};
     floatType rotationAngleRad = 0;
+    floatType lastRotationAngleRad{};
     Vector linearMomentum{};
     floatType angularMomentum{};
+};
+
+/**
+ * Contains info about the last witness found to another rock.
+ * A witness is a separating axis (see SAT).
+ * If we fina a separating axis to another polygon p, the map stores the tuple (p.ID, index of edge on this polygon that
+ * is a witness). The map is used to boost performance during collision detection with other rocks, because we can
+ * immediately return after finding any separating axis. If we do not have a witness to another polygon, usually the
+ * witness index is set to 0, i.e. we start the next CD step with the first edge as we have no further knowledge.
+ */
+struct CollisionData {
+    std::map<size_t, size_t> lastWitness{};
 };
 
 /**
@@ -26,10 +42,13 @@ struct DynamicProperties {
  * The postition of the polygon is the position of its centroid and the vertices are stored in body coordinates.
  * When needed, they are transformed to world coordinates by rotation and subsequent translation.
  */
-class DynamicPolygon : public RenderedEntity {
+class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon {
 
   protected:
     DynamicProperties dynamicProperties;
+    static size_t idCount;
+    const size_t id;
+    CollisionData collisionData;
 
     // Static Attributes:
     // Body Space Coordinates of the corners in anticlockwise order
@@ -39,9 +58,6 @@ class DynamicPolygon : public RenderedEntity {
     const floatType density;
     // TODO inertia tensor or moment of inertia in each step
     const floatType momentOfInertia;
-
-    floatType calculateDensity(const std::vector<Vector> &vertices, floatType mass) const;
-    floatType calculateMomentOfInertia(const std::vector<Vector> &vertices, floatType mass) const;
 
   public:
     /**
@@ -61,31 +77,44 @@ class DynamicPolygon : public RenderedEntity {
      * @param vertices
      * @param textureCoordinates
      * @param mass
+     * @param density
      * @param momentOfInertia
      * @param dynamicProperties
      * @throw std::invalid_argument if the conditions above are not met
      */
-    DynamicPolygon(const Vector &position,
-                   const std::vector<Vector> &vertices,
-                   const std::vector<Vector2> &textureCoordinates,
-                   floatType mass,
-                   floatType density,
-                   floatType momentOfInertia,
-                   const DynamicProperties &dynamicProperties);
-
-    /**
-     * This is a simplified constructor for Dynamic Polygon that is only used
-     * to initialize a bounding box in the shape of a convex polygon for the hiker.
-     * @param position
-     * @param vertices
-     * @param mass
-     */
-    DynamicPolygon(const Vector &position, const std::vector<Vector> &vertices, floatType mass);
+    DynamicConvexPolygon(const Vector &position,
+                         const std::vector<Vector> &vertices,
+                         const std::vector<Vector2> &textureCoordinates,
+                         floatType mass,
+                         floatType density,
+                         floatType momentOfInertia,
+                         const DynamicProperties &dynamicProperties);
 
     floatType getRotationAngle() const;
     floatType getMass() const;
     floatType getDensity() const;
     floatType getMomentOfInertia() const;
+    size_t getID() const;
+
+    Vector getVelocityAtPointInWorldSpace(const Vector &point) const;
+    Vector getVelocityAtPointInBodySpace(const Vector &point) const;
+    Vector getVelocityAtVertex(size_t vertexIdx) const;
+
+    /**
+     * Checks for equality via unique id.
+     *
+     * @param other
+     * @return
+     */
+    bool operator==(const DynamicConvexPolygon &other) const;
+
+    /**
+     * Checks for inequality via unique id.
+     *
+     * @param other
+     * @return
+     */
+    bool operator!=(const DynamicConvexPolygon &other) const;
 
     /**
      * This method returns the list of vertices that define the polygon in body space coordinates i.e. with the centroid
@@ -98,29 +127,37 @@ class DynamicPolygon : public RenderedEntity {
      * This method returns the list of vertices that define the polygon in world space coordinates.
      * @return
      */
-    std::vector<Vector> getWorldSpaceVertices() const;
+    std::vector<Vector> getWorldSpaceVertices() const override;
+
+    /**
+     * Returns the interpolated list of vertices at time last time + alpha * (current time - last time).
+     *
+     * @param alpha between 0 and 1
+     * @return
+     */
+    std::vector<Vector> interpolateWorldSpaceVerticesBetweenLastAndCurrent(floatType alpha) const;
 
     /**
      * This method creates a bounding box in world space coordinates for the polygon in the shape of a rectangle.
      * The x coordinate is the minX and the y coordinate is the minY.
      * @return bounding box
      */
-    Rectangle getBoundingBox() const;
+    AABB getBoundingBox() const;
+
+    /**
+     * Returns bounding box at a time alpha between last and current time (alpha in [0, 1]).
+     *
+     * @param alpha
+     * @return
+     */
+    AABB getInterpolatedBoundingBox(floatType alpha) const;
 
     /**
      * Returns the swept bounding box of this polygon, calculated from its last and current position.
      *
      * @return
      */
-    Rectangle getSweptBoundingBox() const;
-
-    /**
-     * This method moves the polygon.
-     * The last position is set to the current position and then the offset is added to the current position.
-     * @param xOffset - how much it is moved in x direction
-     * @param yOffset - how much it is moved in y direction
-     */
-    void move(floatType xOffset, floatType yOffset);
+    AABB getSweptBoundingBox() const;
 
     /**
      * This method moves the polygon.
@@ -130,7 +167,8 @@ class DynamicPolygon : public RenderedEntity {
     void move(const Vector &offset);
 
     /**
-     * This method rotates the polygon by the given angularOffset in radians.
+     * This method rotates the polygon by the given angularOffset in radians. Different to setRotationAngle because it
+     * also sets last rotation angle to the one before the method call.
      * @param angularOffset
      */
     void rotate(floatType angularOffset);
@@ -150,10 +188,21 @@ class DynamicPolygon : public RenderedEntity {
     void setAngularMomentum(floatType newAngularMomentum);
     void setRotationAngleRad(floatType newRotationAngleRad);
 
+    void setInterpolatedMovementState(floatType alpha);
+    floatType getInterpolatedRotationAngleRad(floatType alpha) const;
+    Vector getInterpolatedPosition(floatType alpha) const;
+
     const Vector &getLinearMomentum() const;
     floatType getAngularMomentum() const;
     floatType getRotationAngleRad() const;
     const DynamicProperties &getDynamicProperties() const;
+
+    void updateLastWitness(size_t otherRockID, size_t witnessEdgeIdx);
+    size_t getLastWitnessTo(size_t otherRockID) const;
+    void removeWitnessInformationFor(size_t otherID);
+    void removeAllWitnessInformation();
+
+    void applyForce(const Vector &force, const Vector &point);
 };
 
-#endif // SURVIVING_SARNTAL_POLYGON_H
+#endif //  DYNAMICCONVEXPOLYGON_H

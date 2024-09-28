@@ -5,8 +5,3 @@ rocks:
     velocity: [ 4.0, 0.0 ],
     radius: 1.0
   }
-  - {
-    position: [ 8.0, 3.0 ],
-    velocity: [ 4.0, 0.0 ],
-    radius: 1.0
-  }

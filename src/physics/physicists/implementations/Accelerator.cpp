@@ -31,7 +31,7 @@ floatType Accelerator::calculateTorque(const Rock &rock) const {
         Vector{0, this->gameConstants.physicsConstants.gravitationalConstant * rock.getMass()} /
         static_cast<floatType>(rock.getBodySpaceVertices().size());
     for (const auto &vertex : rock.getBodySpaceVertices()) {
-        sumOfTorque += vertex.cross(forcePerVertex);
+        sumOfTorque += vertex.cross(forcePerVertex * this->gameConstants.physicsConstants.gravitySpinEffectOnVertices);
     }
     return sumOfTorque;
 }

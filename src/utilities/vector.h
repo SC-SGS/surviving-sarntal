@@ -132,7 +132,7 @@ struct Vector {
      * terrainDampeningFector.
      *
      * @param normal
-     * @param rockTerrainDamping
+     * @param terrainDampening
      * @return
      */
     Vector reflectOnNormalDampened(Vector const &normal, floatType terrainDampening) const;
@@ -144,6 +144,25 @@ struct Vector {
      * @return normalized vector
      */
     Vector normalize() const;
+
+    /**
+     * Calculates the pre cross product with a z vector, i.e. zVec x this.
+     * A z vector has the form (0 0 z)^T.
+     * To calculate the pre-cross product, this vector is interpreted as a 3-dimensional vector with 0 in its z
+     * component. So, we get
+     *
+     * __   __     __   __     __     __
+     * |  0  |     |  x  |     |  -zy  |
+     * |  0  |  x  |  y  |  =  |   zx  |
+     * |  z  |     |  0  |     |   0   |
+     * __   __     __   __     __     __
+     *
+     * In the end, we disregard the 3rd component again.
+     *
+     * @param zValue the z vector is given as a scalar as that is enough to define it
+     * @return
+     */
+    Vector preCrossZScalar(floatType zValue) const;
 
     /**
      * Performs simple linear interpolation
@@ -271,7 +290,7 @@ struct Vector {
 
     /**
      *
-     * @return a normal vector to this vector (orthogonal and length 1
+     * @return a normal vector to this vector (orthogonal and length 1)
      */
-    Vector getNormalVector() const;
+    Vector getOutwardsNormalVectorForCCWEdge() const;
 };

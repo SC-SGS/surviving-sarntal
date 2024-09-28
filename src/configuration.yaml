@@ -157,9 +157,15 @@ gameConstants:
 
   physicsConstants:
     gravitationalConstant: -9.81
-    epsilon: 0.001
-    rockTerrainDamping: 0.08
-    physicsDeltaT: 0.01
+    gravitySpinEffectOnVertices: 0.1
+    epsilon: 0.01 # should be "small"
+    rockRockBounciness: 0.4 # between 0 and 1 (wink wink*)
+    rockTerrainBounciness: 0.9 #between 0 and 1 (wink wink*)
+    physicsDeltaT: 0.01 # ideally, 1/physicsDeltaT >> frameRate
+    maxNumberOfResolutionSteps: 4
+    terrainSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
+    rockSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
+    debugCDRendering: false
 
   inputConstants:
     maxGamepads: 8
@@ -181,17 +187,8 @@ gameConstants:
     mountainResolution: 10
 
   barriersConstants:
-    killBarVelocity: 1.0
+    killBarVelocity: 1.5
     playerRightBarrierOffset: 15.0
-
-  mountainConstants:
-    visibleChunksCount: 16
-    chunkBufferLeft: 2
-    chunkBufferRight: 16
-    initialHeight: 0
-    slope: 0.4
-    randomness: 1.0
-    linStepSize: 0.5
 
   terrainConstants:
     bufferLeft: 25.0
@@ -199,7 +196,7 @@ gameConstants:
     biomeWidth: 100.0
 
     renderingResolution: 0.1
-    collisionDetectionResolution: 0.1
+    collisionDetectionResolution: 1
     collisionDetectionPreFilteringTolerance: 0.2
 
     generationCheckingRange: 5.0

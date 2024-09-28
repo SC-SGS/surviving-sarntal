@@ -5,10 +5,11 @@
 #ifndef SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 #define SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 
-#include <iostream>
+#include <cstddef>
 #include <vector>
 
 typedef float floatType;
+constexpr floatType NUMERIC_EPSILON = 0.0001f;
 
 namespace graphics {
 constexpr int SCREEN_WIDTH_IN_PIXEL = 1600;
@@ -93,9 +94,15 @@ struct RockConstants {
 
 struct PhysicsConstants {
     floatType gravitationalConstant;
+    floatType gravitySpinEffectOnVertices;
     floatType epsilon;
-    floatType rockTerrainDamping;
+    floatType rockRockBounciness;
+    floatType rockTerrainBounciness;
     floatType physicsDeltaT;
+    floatType terrainSubstepSize;
+    floatType rockSubstepSize;
+    size_t maxNumberOfResolutionSteps;
+    bool debugCDRendering;
 };
 
 struct InputConstants {
@@ -200,7 +207,6 @@ struct GameConstants {
     InputConstants inputConstants{};
     VisualConstants visualConstants{};
     BarriersConstants barriersConstants{};
-    MountainConstants mountainConstants{};
     TerrainConstants terrainConstants{};
     RockSpawnerConstants rockSpawnerConstants{};
 };
