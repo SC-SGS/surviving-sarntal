@@ -42,9 +42,9 @@ floatType Vector::distanceTo(const Vector &other) const {
 floatType Vector::length() const { return this->distanceTo({0., 0.}); }
 
 Vector Vector::reflectOnNormalDampened(const Vector &normal, floatType terrainDampening) const {
-    Vector norm = normal.normalize();
-    float dotProduct = dot(norm);
-    Vector reflected = *this - norm * (2 * dotProduct);
+    const Vector norm = normal.normalize();
+    const float dotProduct = dot(norm);
+    const Vector reflected = *this - norm * (2 * dotProduct);
     return reflected * (1.0f - terrainDampening);
 }
 
@@ -63,6 +63,9 @@ Vector Vector::normalize() const {
     const Vector current = *this;
     return current * (1.0f / this->length());
 }
+
+Vector Vector::preCrossZScalar(floatType zValue) const { return {-zValue * this->y, zValue * this->x}; }
+
 bool Vector::operator<(const Vector &other) const { return x < other.x || (x == other.x && y < other.y); }
 bool Vector::operator!=(const Vector &other) const { return x != other.x || y != other.y; }
 bool Vector::operator==(const Vector &other) const { return x == other.x && y == other.y; }
@@ -141,4 +144,4 @@ floatType Vector::computeSlope() const {
     return fabsf(this->y / this->x);
 }
 
-Vector Vector::getNormalVector() const { return (Vector{-this->y, this->x} / this->length()); }
+Vector Vector::getOutwardsNormalVectorForCCWEdge() const { return (Vector{this->y, -this->x} / this->length()); }

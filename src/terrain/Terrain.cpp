@@ -140,24 +140,6 @@ std::vector<std::shared_ptr<StaticPolyline>> Terrain::getPolyRepresentationOfGro
     return groundRepresentation;
 }
 
-// std::vector<std::shared_ptr<StaticPolygon>> Terrain::getPolyRepresentationOfAllComponentsCollisionDetection() const {
-//     std::vector<std::shared_ptr<StaticPolygon>> allComponents = {};
-//     for (auto biome : this->biomes) {
-//         auto const &biomeComponents = biome->getComponentsCollisionDetection();
-//         allComponents.insert(allComponents.cend(), biomeComponents.cbegin(), biomeComponents.cend());
-//     }
-//     return allComponents;
-// }
-//
-// StaticPolyline *Terrain::getPolyRepresentationOfGroundCollisionDetection() const {
-//     assert(!this->biomes.empty());
-//     StaticPolyline *groundRepresentation = this->biomes.front()->getGroundCollisionDetection();
-//     for (int index = 1; index < this->biomes.size(); index++) {
-//         groundRepresentation->addPolyline(this->biomes.at(index)->getGroundCollisionDetection());
-//     }
-//     return groundRepresentation;
-// }
-
 std::shared_ptr<StaticPolyline> Terrain::getBasepoints() const {
     assert(!this->biomes.empty());
     auto basePoints = std::make_shared<StaticPolyline>(*this->biomes.front()->getGround()->getBasePoints());
@@ -256,4 +238,22 @@ Terrain::calculateCollisionsWithPolygon(const std::shared_ptr<StaticPolygon> &po
         intersections.insert(intersections.cend(), newIntersections.cbegin(), newIntersections.cend());
     }
     return intersections;
+}
+
+std::vector<std::shared_ptr<StaticPolyline>>
+Terrain::getTerrainSectionsContinuous(const AxisAlignedBoundingBox &boundingBox) const {
+    std::vector<std::shared_ptr<StaticPolyline>> relevantSections = {};
+    for (auto const &biome : this->biomes) {
+        if (biome->getBoundingBox().overlaps(boundingBox)) {
+            auto newGroundSections =
+                biome->getGroundCollisionDetection()->calculateRelevantSectionsContinuous(boundingBox);
+            relevantSections.insert(relevantSections.cend(), newGroundSections.cbegin(), newGroundSections.cend());
+            for (auto const &component : biome->getComponentsCollisionDetection()) {
+                auto newComponentSections = component->calculateRelevantSectionsContinuous(boundingBox);
+                relevantSections.insert(relevantSections.cend(), newComponentSections.cbegin(),
+                                        newComponentSections.cend());
+            }
+        }
+    }
+    return relevantSections;
 }

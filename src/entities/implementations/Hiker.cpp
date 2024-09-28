@@ -5,7 +5,6 @@
 #include "../Hiker.h"
 #include "../../output/haptics/HapticsService.hpp"
 #include "spdlog/spdlog.h"
-#include <iostream>
 
 Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants hikerConstants)
     : RenderedEntity(position), audioService(audioService), hikerConstants(hikerConstants) {
@@ -23,7 +22,9 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
     floatType halfWidth = this->hikerConstants.hikerWidth / 2;
     // TODO: Nice hitbox, currently this is just a diamond shape
     std::vector<Vector> vertices = {{0, -halfHeight}, {halfHeight / 4, 0}, {0, halfHeight}, {-halfHeight / 4, 0}};
-    this->boundingBoxWalking = std::make_shared<DynamicPolygon>(center, vertices, this->hikerConstants.mass);
+    this->boundingBoxWalking = std::make_shared<DynamicConvexPolygon>(
+        center, vertices, std::vector<Vector2>{vertices.size() + 1}, this->hikerConstants.mass, 0.0f,
+        std::numeric_limits<floatType>::infinity(), DynamicProperties{});
 
     spdlog::info("A Hiker was initialized");
 }
@@ -31,14 +32,14 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
 RenderInformation Hiker::getRenderInformation() const {
     floatType renderWidth = this->width;
     floatType renderHeight = this->height;
-    // TO DO due to the shield, the hiker itself in the texture is smaller (and therefore rendered smaller bc
+    // TODO due to the shield, the hiker itself in the texture is smaller (and therefore rendered smaller bc
     // hikerheight/width stays the same), so I thought we could render it a little big bigger - but I know this is not a
     // pretty solution I was thinking about introducing a new hikerHeight/Width for hiker with shield
     if (this->hasShield()) {
         renderWidth += 0.1;
         renderHeight += 0.1;
     }
-    floatType directedWidth =
+    const floatType directedWidth =
         renderWidth * static_cast<float>(hikerMovement.getDirection() != HikerMovement::LEFT ? 1 : -1);
 
     return RenderInformation{Vector2(position),
@@ -81,7 +82,7 @@ void Hiker::doDamagePoints(const int damagePoints) {
     }
 }
 
-void Hiker::setShield(double time) { this->shieldTime = GetTime() + time; }
+void Hiker::setShield(const double time) { this->shieldTime = GetTime() + time; }
 
 bool Hiker::hasShield() const { return this->shieldTime > GetTime(); }
 
@@ -111,7 +112,7 @@ void Hiker::setHitInformation(const std::vector<HitInformation> &hits) { hitInfo
 
 bool Hiker::getIsHit() const { return isHit; }
 
-void Hiker::setIsHit(bool isHit) { this->isHit = isHit; }
+void Hiker::setIsHit(const bool isHit) { this->isHit = isHit; }
 
 const Vector &Hiker::getVelocity() const { return velocity; }
 
@@ -119,7 +120,7 @@ void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
 
 bool Hiker::getIsAlive() const { return this->isAlive; }
 
-void Hiker::setIsAlive(bool alive) { isAlive = alive; }
+void Hiker::setIsAlive(const bool alive) { isAlive = alive; }
 
 void Hiker::turnLeft() { this->hikerMovement.setDirection(HikerMovement::LEFT); }
 void Hiker::turnRight() { this->hikerMovement.setDirection(HikerMovement::RIGHT); }
@@ -154,13 +155,13 @@ void Hiker::jump() {
 }
 void Hiker::setHikerMoving() { this->hikerMovement.setState(HikerMovement::MOVING); }
 void Hiker::setHikerInAir() { this->hikerMovement.setState(HikerMovement::IN_AIR); }
-void Hiker::moveToRight(floatType deltaX) { this->position.setX(this->position.x + deltaX); }
-void Hiker::moveToLeft(floatType deltaX) { this->position.setX(this->position.x - deltaX); }
-void Hiker::accelerateX(floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
-void Hiker::accelerateY(floatType deltaY) { this->velocity.setY(this->velocity.y + deltaY); }
-void Hiker::setXVelocity(floatType xValue) { this->velocity.setX(xValue); }
-void Hiker::setYVelocity(floatType yValue) { this->velocity.setY(yValue); }
-void Hiker::setLastJump(float lastJump) { this->hikerMovement.setLastJump(lastJump); }
+void Hiker::moveToRight(const floatType deltaX) { this->position.setX(this->position.x + deltaX); }
+void Hiker::moveToLeft(const floatType deltaX) { this->position.setX(this->position.x - deltaX); }
+void Hiker::accelerateX(const floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
+void Hiker::accelerateY(const floatType deltaY) { this->velocity.setY(this->velocity.y + deltaY); }
+void Hiker::setXVelocity(const floatType xValue) { this->velocity.setX(xValue); }
+void Hiker::setYVelocity(const floatType yValue) { this->velocity.setY(yValue); }
+void Hiker::setLastJump(const float lastJump) { this->hikerMovement.setLastJump(lastJump); }
 void Hiker::doSecondJump() {
     this->audioService.playSound("jump");
     this->velocity.setY(hikerConstants.jumpVelocity);
@@ -177,25 +178,25 @@ void Hiker::kill() {
     HapticsService::deathRumble();
 }
 
-void Hiker::reset(Vector &position) {
+void Hiker::reset(const Vector &position) {
     this->setIsAlive(true);
     this->setHealthPoints(this->hikerConstants.hikerMaxHealth);
     this->setPosition(position);
 }
 
 AxisAlignedBoundingBox Hiker::getBoundingBoxMovement(const Vector movement) const {
-    AxisAlignedBoundingBox polyBoundingBox =
+    const AxisAlignedBoundingBox polyBoundingBox =
         AxisAlignedBoundingBox::transform(this->getCurrentBoundingBox()->getBoundingBox());
-    AxisAlignedBoundingBox startBox = polyBoundingBox;
-    AxisAlignedBoundingBox endBox = polyBoundingBox.moveByDelta(movement);
+    const AxisAlignedBoundingBox startBox = polyBoundingBox;
+    const AxisAlignedBoundingBox endBox = polyBoundingBox.moveByDelta(movement);
     return startBox.merge(endBox);
 }
 
-floatType Hiker::computeSpeedFactor(Vector movement) const {
+floatType Hiker::computeSpeedFactor(const Vector &movement) const {
     if (movement.x == 0) {
         return 0.0;
     }
-    floatType slope = movement.computeSlope();
+    const floatType slope = movement.computeSlope();
     floatType speedFactor;
     if (movement.y < 0) { // Downhill
         speedFactor = std::fmin(this->hikerConstants.maxSpeedNegSlope,
@@ -210,11 +211,11 @@ floatType Hiker::computeSpeedFactor(Vector movement) const {
     return speedFactor;
 }
 
-std::shared_ptr<DynamicPolygon> Hiker::getCurrentBoundingBox() const { return this->boundingBoxWalking; }
+std::shared_ptr<DynamicConvexPolygon> Hiker::getCurrentBoundingBox() const { return this->boundingBoxWalking; }
 
-void Hiker::setPosition(Vector &position) {
+void Hiker::setPosition(const Vector &position) {
     RenderedEntity::setPosition(position);
-    Vector boundingBoxWalkingPosition = position + this->walkingHitBoxDelta;
+    const Vector boundingBoxWalkingPosition = position + this->walkingHitBoxDelta;
     this->boundingBoxWalking->setPosition(boundingBoxWalkingPosition);
 }
 
