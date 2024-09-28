@@ -10,10 +10,10 @@
 
 PolygonGenerator::PolygonGenerator() = default;
 
-DynamicPolygon PolygonGenerator::generatePolygon(const int numberPoints,
-                                                 const floatType maxRadius,
-                                                 const Vector &position,
-                                                 const floatType density) const {
+DynamicConvexPolygon PolygonGenerator::generatePolygon(const int numberPoints,
+                                                       const floatType maxRadius,
+                                                       const Vector &position,
+                                                       const floatType density) const {
     std::vector<Vector> points = generatePoints(numberPoints, maxRadius);
     const std::vector<Vector> vertices = determineVertices(points);
     if (!isAnticlockwise(vertices)) {
@@ -24,7 +24,8 @@ DynamicPolygon PolygonGenerator::generatePolygon(const int numberPoints,
     const std::vector<Vector2> textureCoordinates = determineTextureCoordinates(bodySpaceVertices);
     const floatType mass = calculateAreaBodySpace(bodySpaceVertices) * density;
     const floatType momentOfInertia = calculateInertiaRotCentroidBodySpace(bodySpaceVertices, density);
-    return {position, bodySpaceVertices, textureCoordinates, mass, density, momentOfInertia, DynamicProperties()};
+    return DynamicConvexPolygon{position, bodySpaceVertices, textureCoordinates, mass,
+                                density,  momentOfInertia,   DynamicProperties()};
 }
 
 std::vector<Vector> PolygonGenerator::generatePoints(const int numberPoints, const floatType maxRadius) const {
@@ -181,7 +182,7 @@ floatType PolygonGenerator::calculateInertiaRotCentroidBodySpace(const std::vect
         throw std::invalid_argument("Cannot calculate inertia. Vertex List is not given in anticlockwise order.");
     }
     const auto bodyCentroid = calculateCentroid(vertices);
-    if (!(vertices[0] + bodyCentroid).approxEq(vertices[0], 0.0001)) {
+    if (!(vertices[0] + bodyCentroid).approxEq(vertices[0], NUMERIC_EPSILON)) {
         throw std::invalid_argument(
             "Cannot calculate inertia. Vertex List is not given in centroid coordinate system.");
     }

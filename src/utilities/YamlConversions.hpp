@@ -98,9 +98,15 @@ template <> struct convert<PhysicsConstants> {
         }
 
         physicsConstants.gravitationalConstant = node["gravitationalConstant"].as<floatType>();
+        physicsConstants.gravitySpinEffectOnVertices = node["gravitySpinEffectOnVertices"].as<floatType>();
         physicsConstants.epsilon = node["epsilon"].as<floatType>();
-        physicsConstants.rockTerrainDamping = node["rockTerrainDamping"].as<floatType>();
+        physicsConstants.rockRockBounciness = node["rockRockBounciness"].as<floatType>();
+        physicsConstants.rockTerrainBounciness = node["rockTerrainBounciness"].as<floatType>();
         physicsConstants.physicsDeltaT = node["physicsDeltaT"].as<floatType>();
+        physicsConstants.terrainSubstepSize = node["terrainSubstepSize"].as<floatType>();
+        physicsConstants.rockSubstepSize = node["rockSubstepSize"].as<floatType>();
+        physicsConstants.maxNumberOfResolutionSteps = node["maxNumberOfResolutionSteps"].as<size_t>();
+        physicsConstants.debugCDRendering = node["debugCDRendering"].as<bool>();
 
         return true;
     }
@@ -151,23 +157,6 @@ template <> struct convert<BarriersConstants> {
 
         barriersConstants.killBarVelocity = node["killBarVelocity"].as<floatType>();
         barriersConstants.playerRightBarrierOffset = node["playerRightBarrierOffset"].as<floatType>();
-
-        return true;
-    }
-};
-
-template <> struct convert<MountainConstants> {
-    static bool decode(const Node &node, MountainConstants &mountainConstants) {
-        if (!node.IsMap()) {
-            return false;
-        }
-
-        mountainConstants.visibleChunksCount = node["visibleChunksCount"].as<int>();
-        mountainConstants.chunkBufferLeft = node["chunkBufferLeft"].as<int>();
-        mountainConstants.chunkBufferRight = node["chunkBufferRight"].as<int>();
-        mountainConstants.initialHeight = node["initialHeight"].as<floatType>();
-        mountainConstants.slope = node["slope"].as<floatType>();
-        mountainConstants.randomness = node["randomness"].as<floatType>();
 
         return true;
     }

@@ -107,6 +107,16 @@ class Terrain {
      */
     std::vector<std::shared_ptr<StaticPolyline>> getTerrainSections(const AxisAlignedBoundingBox &boundingBox) const;
 
+    /**
+     * Returns all sections of this terrain that overlap the given bounding box in the order given by the terrain and
+     * without gaps.
+     *
+     * @param boundingBox
+     * @return relevant terrain sections as polylines
+     */
+    std::vector<std::shared_ptr<StaticPolyline>>
+    getTerrainSectionsContinuous(const AxisAlignedBoundingBox &boundingBox) const;
+
     std::shared_ptr<StaticPolyline> getBasepoints() const;
 
     /**

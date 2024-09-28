@@ -4,6 +4,7 @@
 
 #include "GraphicsUtil.h"
 #include <cmath>
+#include <poly2tri/poly2tri.h>
 
 Renderer::Renderer(World &world,
                    ResourceManager &resourceManager,
@@ -572,4 +573,4 @@ void Renderer::reset() {
 
     regenerateGradientTexture();
 }
-MountainRenderer &Renderer::getMountainRenderer() { return mountainRenderer; }
+MountainRenderer &Renderer::getMountainRenderer() const { return mountainRenderer; }

@@ -3,15 +3,9 @@
 //
 
 #include "RockSpawner.h"
-
 #include "PolygonGenerator.h"
 
-#include <iostream>
-#include <mutex>
-#include <random>
-#include <utility>
-
-RockSpawner::RockSpawner(World &world, GameConstants &gameConstants) : world(world), gameConstants(gameConstants){};
+RockSpawner::RockSpawner(World &world, GameConstants &gameConstants) : gameConstants(gameConstants), world(world) {}
 
 void RockSpawner::spawnRocks() {
     if (!shouldSpawnRocks()) {
@@ -24,31 +18,31 @@ void RockSpawner::spawnRocks() {
     }
 }
 
-void RockSpawner::spawnRock(const size_t idxRock) {
-    Vector velocity = this->getRandVelocity();
+void RockSpawner::spawnRock(const size_t idxRock) const {
+    const Vector velocity = this->getRandVelocity();
     Vector position = this->getRockSpawnPosition(idxRock);
-    DynamicPolygon poly = this->getRandDynamicPolygon(position);
-    DynamicProperties dynamicProperties{position, 0, velocity, 1};
+    const DynamicConvexPolygon poly = this->getRandDynamicPolygon(position);
+    const DynamicProperties dynamicProperties{position, 0, 0, velocity, 1};
     this->createRock(position, poly, dynamicProperties);
     spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);
 }
 
-Vector RockSpawner::getRockSpawnPosition(const size_t idxRock) {
+Vector RockSpawner::getRockSpawnPosition(const size_t idxRock) const {
     const std::vector<Vector> offsetsAdditionalRocks = getOffsetsAdditionalRocks();
-    Vector spawnBasePos = getRandSpawnPos();
+    const Vector spawnBasePos = getRandSpawnPos();
     return {spawnBasePos.x + offsetsAdditionalRocks[idxRock].x, spawnBasePos.y + offsetsAdditionalRocks[idxRock].y};
 }
 
-DynamicPolygon RockSpawner::getRandDynamicPolygon(const Vector position) {
-    PolygonGenerator polyGen;
+DynamicConvexPolygon RockSpawner::getRandDynamicPolygon(const Vector &position) const {
+    const PolygonGenerator polyGen;
     return polyGen.generatePolygon(this->getRandPointNumber(), this->getRandRadius(), position, this->getRandDensity());
 }
 
 bool RockSpawner::shouldSpawnRocks() {
-    auto gameTime = GetTime();
-    floatType timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
-    bool isTimeToSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
-    bool shouldSpawn = isTimeToSpawn && this->gameConstants.rockConstants.spawnRocks;
+    const auto gameTime = GetTime();
+    const floatType timeBetweenRockSpawns = this->rockSpawnTimeFromPhase();
+    const bool isTimeToSpawn = gameTime > this->lastSpawnTime + timeBetweenRockSpawns;
+    const bool shouldSpawn = isTimeToSpawn && this->gameConstants.rockConstants.spawnRocks;
     if (shouldSpawn) {
         this->lastSpawnTime = static_cast<floatType>(gameTime);
     }
@@ -65,24 +59,24 @@ int RockSpawner::computeNumRocksToSpawn() {
     return 1;
 }
 
-floatType RockSpawner::rockSpawnTimeFromPhase() {
-    std::vector<floatType> spawnTimeInterval = gameConstants.rockSpawnerConstants.rockSpawnTimeInterval;
+floatType RockSpawner::rockSpawnTimeFromPhase() const {
+    const std::vector<floatType> spawnTimeInterval = gameConstants.rockSpawnerConstants.rockSpawnTimeInterval;
     return spawnTimeInterval[this->determineRockSpawnDifficulty()];
 }
 
 RockSpawnDifficulty RockSpawner::determineRockSpawnDifficulty() const {
-    floatType currentXCoordinate = this->world.getMaxX();
-    std::vector<floatType> spawningPhase = gameConstants.rockSpawnerConstants.spawningPhase;
+    const floatType currentXCoordinate = this->world.getMaxX();
+    const std::vector<floatType> spawningPhase = gameConstants.rockSpawnerConstants.spawningPhase;
     for (int i = 0; i < spawningPhase.size(); i++) {
         if (currentXCoordinate < spawningPhase[i]) {
-            return RockSpawnDifficulty(i);
+            return static_cast<RockSpawnDifficulty>(i);
         }
     }
-    return RockSpawnDifficulty(spawningPhase.size() - 1);
+    return static_cast<RockSpawnDifficulty>(spawningPhase.size() - 1);
 }
 
-std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() {
-    auto &rockConst = gameConstants.rockConstants;
+std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() const {
+    const auto &rockConst = gameConstants.rockConstants;
     return {
         {0., 0.},
         {static_cast<floatType>(rockConst.maxRockSize + 5.), static_cast<floatType>(rockConst.maxRockSize * 2 + 10.)},
@@ -101,45 +95,47 @@ Vector RockSpawner::getRandSpawnPos() const {
 int RockSpawner::getRandPointNumber() const { return randomGenerator->getRandomNumber(50, 200); }
 
 floatType RockSpawner::getRandDensity() const {
-    auto &rockConst = gameConstants.rockConstants;
+    const auto &rockConst = gameConstants.rockConstants;
     return randomGenerator->getRandomRealNumber(rockConst.minRockDensity, rockConst.maxRockDensity);
 }
 
 Vector RockSpawner::getRandVelocity() const {
-    floatType lowerBoundVelocity = this->determineLowerBoundVelocity();
-    floatType upperBoundVelocity = this->gameConstants.rockConstants.maxSpawnVelocity;
-    floatType xComponent = -1 * randomGenerator->getRandomRealNumber(lowerBoundVelocity, upperBoundVelocity);
+    const floatType lowerBoundVelocity = this->determineLowerBoundVelocity();
+    const floatType upperBoundVelocity = this->gameConstants.rockConstants.maxSpawnVelocity;
+    const floatType xComponent = -1 * randomGenerator->getRandomRealNumber(lowerBoundVelocity, upperBoundVelocity);
     return {xComponent, 0};
 }
 
 floatType RockSpawner::determineLowerBoundVelocity() const {
     auto const &rockConst = this->gameConstants.rockConstants;
-    floatType difficultyFactor = determineDifficultyFactor();
+    const floatType difficultyFactor = determineDifficultyFactor();
     return difficultyFactor * (rockConst.maxSpawnVelocity - rockConst.minSpawnVelocity) + rockConst.minSpawnVelocity;
 }
 
 floatType RockSpawner::determineDifficultyFactor() const {
-    std::vector<floatType> velocityDifficultyFactor = gameConstants.rockSpawnerConstants.velocityDifficultyFactor;
+    const std::vector<floatType> velocityDifficultyFactor = gameConstants.rockSpawnerConstants.velocityDifficultyFactor;
     return velocityDifficultyFactor[this->determineRockSpawnDifficulty()];
 }
 
-void RockSpawner::createRock(Vector &position, DynamicPolygon &poly, DynamicProperties &dynamicProperties) {
+void RockSpawner::createRock(const Vector &position,
+                             const DynamicConvexPolygon &poly,
+                             const DynamicProperties &dynamicProperties) const {
     auto rock = Rock(position, poly, dynamicProperties, this->determineRockTypePhase());
     this->world.addRock(std::make_shared<Rock>(rock));
 }
 
 floatType RockSpawner::getRandRadius() const {
-    floatType maxRockSize = gameConstants.rockConstants.maxRockSize;
+    const floatType maxRockSize = gameConstants.rockConstants.maxRockSize;
     return randomGenerator->getRandomRealNumber(4 * maxRockSize / 5, maxRockSize);
 }
 
-RockType RockSpawner::determineRockTypePhase() {
-    floatType currentXCoordinate = this->world.getMaxX();
-    std::vector<floatType> rockTypePhase = gameConstants.rockSpawnerConstants.rockTypePhase;
+RockType RockSpawner::determineRockTypePhase() const {
+    const floatType currentXCoordinate = this->world.getMaxX();
+    const std::vector<floatType> rockTypePhase = gameConstants.rockSpawnerConstants.rockTypePhase;
     for (int i = 0; i < rockTypePhase.size(); i++) {
         if (currentXCoordinate < rockTypePhase[i]) {
-            return RockType(i);
+            return static_cast<RockType>(i);
         }
     }
-    return RockType(0);
+    return static_cast<RockType>(0);
 }

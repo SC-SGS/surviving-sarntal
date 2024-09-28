@@ -10,7 +10,7 @@
 #include "../GraphicsUtil.h"
 PolygonRenderer::PolygonRenderer(ResourceManager &resourceManager) : resourceManager(resourceManager){};
 
-void PolygonRenderer::renderPolygon(const DynamicPolygon &polygon) const {
+void PolygonRenderer::renderPolygon(const DynamicConvexPolygon &polygon) const {
     std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
     const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
     const Vector2 centroid2 = {centroid.x, centroid.y};
@@ -24,7 +24,7 @@ void PolygonRenderer::renderPolygon(const DynamicPolygon &polygon) const {
     }
 }
 
-void PolygonRenderer::renderPolygonOutline(const DynamicPolygon &polygon) const {
+void PolygonRenderer::renderPolygonOutline(const DynamicConvexPolygon &polygon) const {
     std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
     const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
 
@@ -39,7 +39,7 @@ void PolygonRenderer::renderPolygonOutline(const DynamicPolygon &polygon) const 
     }
 }
 
-void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicPolygon> &polygon) const {
+void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicConvexPolygon> &polygon) const {
     const Texture2D texture = resourceManager.getTexture(polygon->getRenderInformation().texture);
     std::vector<Vector> vertices = polygon->getWorldSpaceVertices();
     for (Vector &vertex : vertices) {
@@ -63,6 +63,21 @@ void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicPolygon
     // render textured polygon
     this->drawTexturePoly(texture, rlCentroid, raylibVertices, texCoords, static_cast<int>(raylibVertices.size()),
                           WHITE);
+}
+
+void PolygonRenderer::renderPolygonOutlineStatic(const ConvexPolygon &polygon, const Color color) {
+    const std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
+    // const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
+
+    // DrawCircle(static_cast<int>(centroid.x), static_cast<int>(centroid.y), 5.0, color);
+
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        const auto point1 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[i])));
+        const auto point2 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[(i + 1) % vertices.size()])));
+        DrawLineEx({point1.x, point1.y}, {point2.x, point2.y}, 3, color);
+        // DrawLine(static_cast<int>(point1.x), static_cast<int>(point1.y), static_cast<int>(centroid.x),
+        // static_cast<int>(centroid.y), color);
+    }
 }
 
 void PolygonRenderer::drawTexturePoly(const Texture2D &texture,

@@ -34,7 +34,7 @@ GameFactory::GameFactory(Camera2D &camera)
       spawner(terrain, rockSpawner, itemSpawner, world, gameConstants),
       // Physics
       accelerator(world, gameConstants),
-      collisionDetector(world),
+      collisionDetector(world, gameConstants, configManager.isInDevMode()),
       collisionHandler(world, collisionDetector, audioService, renderer, gameConstants),
       destructor(world, renderer, gameConstants),
       interpolator(world),

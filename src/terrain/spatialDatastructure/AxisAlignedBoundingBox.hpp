@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP
 #define SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP
 
+#include "../../geometry/AABB.h"
 #include "../../utilities/vector.h"
 #include "../points/Line.hpp"
 
@@ -155,15 +156,15 @@ struct AxisAlignedBoundingBox {
      *
      * @param delta
      */
-    AxisAlignedBoundingBox moveByDelta(Vector delta) const;
+    AxisAlignedBoundingBox moveByDelta(const Vector &delta) const;
 
     /**
      * Transforms the given rectangle into a bounding box.
      *
-     * @param rectangle
+     * @param aabb
      * @return
      */
-    static AxisAlignedBoundingBox transform(const Rectangle &rectangle);
+    static AxisAlignedBoundingBox transform(const AABB &aabb);
 };
 
 #endif // SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP

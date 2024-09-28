@@ -6,8 +6,6 @@
 
 #include "../../utilities/vector.h"
 #include <cmath>
-#include <iostream>
-#include <utility>
 
 Rock::Rock(const Vector &position,
            const std::vector<Vector> &vertices,
@@ -16,17 +14,20 @@ Rock::Rock(const Vector &position,
            const floatType density,
            const floatType momentOfInertia,
            const DynamicProperties &dynamicProperties)
-    : DynamicPolygon(position, vertices, textureCoordinates, mass, density, momentOfInertia, dynamicProperties),
+    : DynamicConvexPolygon(position, vertices, textureCoordinates, mass, density, momentOfInertia, dynamicProperties),
       type(NORMAL_ROCK) {}
 
-Rock::Rock(Vector position, const DynamicPolygon &polygon, DynamicProperties properties, RockType rockType)
-    : DynamicPolygon(position,
-                     polygon.getBodySpaceVertices(),
-                     polygon.getTextureCoordinates(),
-                     polygon.getMass(),
-                     polygon.getDensity(),
-                     polygon.getMomentOfInertia(),
-                     properties),
+Rock::Rock(const Vector &position,
+           const DynamicConvexPolygon &polygon,
+           const DynamicProperties &properties,
+           const RockType &rockType)
+    : DynamicConvexPolygon(position,
+                           polygon.getBodySpaceVertices(),
+                           polygon.getTextureCoordinates(),
+                           polygon.getMass(),
+                           polygon.getDensity(),
+                           polygon.getMomentOfInertia(),
+                           properties),
       type(rockType) {}
 
 RenderInformation Rock::getRenderInformation() const {
@@ -37,15 +38,15 @@ RenderInformation Rock::getRenderInformation() const {
                                  0.f,
                                  this->dynamicProperties.rotationAngleRad * static_cast<floatType>(180.0f / M_PI),
                                  this->getTextureName()};
-    } else {
-        return RenderInformation{Vector2(this->position),
-                                 {0, 0},
-                                 this->getBoundingBox().width,
-                                 this->getBoundingBox().height,
-                                 this->dynamicProperties.rotationAngleRad,
-                                 "explosion",
-                                 {25, 0, 0.1, 0}};
     }
+    const AABB aabb = this->getBoundingBox();
+    return RenderInformation{Vector2(this->position),
+                             {0, 0},
+                             aabb.getTopRight().x - aabb.getBottomLeft().x,
+                             aabb.getTopRight().y - aabb.getBottomLeft().y,
+                             this->dynamicProperties.rotationAngleRad,
+                             "explosion",
+                             {25, 0, 0.1, 0}};
 }
 
 std::string Rock::getTextureName() const {
@@ -62,6 +63,8 @@ std::string Rock::getTextureName() const {
         return "lavaRock";
     case CRYSTAL_ROCK:
         return "crystalRock";
+    default:
+        return "";
     }
 }
 bool Rock::getShouldBeDestroyed() const { return this->shouldBeDestroyed; }

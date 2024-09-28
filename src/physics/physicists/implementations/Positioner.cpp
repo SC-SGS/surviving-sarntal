@@ -4,7 +4,6 @@
 
 #include "../Positioner.hpp"
 
-#include "../CollisionDetector.hpp"
 #include "spdlog/sinks/rotating_file_sink.h"
 
 #include <iostream>
@@ -50,14 +49,12 @@ void Positioner::updateWorldBorderPosition() const {
 void Positioner::updateRockPositions() const {
     for (auto &rock : this->world.getRocks()) {
         // Symplectic euler for translation
-        auto pos = rock->getPosition();
-        pos += (rock->getLinearMomentum() / rock->getMass()) * this->deltaT;
-        rock->setPosition(pos);
+        auto posDelta = (rock->getLinearMomentum() / rock->getMass()) * this->deltaT;
+        rock->move(posDelta);
 
         // Symplectic Euler for rotation
-        auto rotationAngleRad = rock->getRotationAngle();
-        rotationAngleRad += (rock->getAngularMomentum() / rock->getMomentOfInertia()) * this->deltaT;
-        rock->setRotationAngleRad(rotationAngleRad);
+        auto rotationAngleRadDelta = (rock->getAngularMomentum() / rock->getMomentOfInertia()) * this->deltaT;
+        rock->rotate(rotationAngleRadDelta);
     }
 }
 

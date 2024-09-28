@@ -5,11 +5,11 @@
 #ifndef SURVIVING_SARNTAL_POLYGONGENERATOR_H
 #define SURVIVING_SARNTAL_POLYGONGENERATOR_H
 
-#include "../entities/DynamicPolygon.h"
+#include "../geometry/DynamicConvexPolygon.h"
 #include "../utilities/RandomGenerator.hpp"
 
 class PolygonGenerator {
-    friend class DynamicPolygon;
+    friend class DynamicConvexPolygon;
 
   public:
     PolygonGenerator();
@@ -22,7 +22,7 @@ class PolygonGenerator {
      * @param density
      * @return random convex polygon
      */
-    DynamicPolygon
+    DynamicConvexPolygon
     generatePolygon(int numberPoints, floatType maxRadius, const Vector &position, floatType density) const;
 
   protected:
@@ -32,8 +32,6 @@ class PolygonGenerator {
      * around the point center.
      * @param numberPoints
      * @param maxRadius
-     * @param center
-     * @return set of points
      */
     std::vector<Vector> generatePoints(int numberPoints, floatType maxRadius) const;
 

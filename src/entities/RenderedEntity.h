@@ -23,7 +23,7 @@ class RenderedEntity {
     virtual RenderInformation getRenderInformation() const = 0;
     void setAnimationInformation(AnimationInformation animationInformation);
 
-    virtual void setPosition(Vector &position);
+    virtual void setPosition(const Vector &position);
     const Vector &getPosition() const;
 
     const int &getId() const { return id; }
