@@ -3,6 +3,7 @@
 //
 
 #include "GameFactory.hpp"
+#include "DevMode.hpp"
 
 GameFactory::GameFactory(Camera2D &camera)
     : // Service
@@ -63,10 +64,12 @@ GameFactory::GameFactory(Camera2D &camera)
            physicsEngine,
            audioService,
            inputHandler,
-           gameConstants) {}
+           gameConstants),
+      devMode(world, renderer, physicsEngine, spawner, audioService, inputHandler, gameConstants, camera) {}
 
 GameFactory::~GameFactory() = default;
 Game GameFactory::buildGame() const { return this->game; }
+DevMode GameFactory::buildDevMode() const { return this->devMode; }
 
 Vector GameFactory::getInitialHikerPosition() {
     floatType hikerPositionX = 0.3 * graphics::SCREEN_WIDTH_IN_METER;

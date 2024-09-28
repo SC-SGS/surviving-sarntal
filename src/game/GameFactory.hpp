@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_GAMEFACTORY_HPP
 #define SURVIVING_SARNTAL_GAMEFACTORY_HPP
 
+#include "DevMode.hpp"
 #include "Game.hpp"
 
 class GameFactory {
@@ -14,6 +15,8 @@ class GameFactory {
 
     // API
     Game buildGame() const;
+
+    DevMode buildDevMode() const;
 
   private:
     // Services
@@ -59,6 +62,7 @@ class GameFactory {
 
     // Game
     Game game;
+    DevMode devMode;
 
     Vector getInitialHikerPosition();
 };
