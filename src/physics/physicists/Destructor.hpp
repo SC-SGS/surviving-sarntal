@@ -13,12 +13,12 @@ class Destructor {
 
   public:
     void destruct() const;
-    explicit Destructor(World &world, Renderer &renderer, GameConstants &gameConstants);
+    explicit Destructor(World &world, EntityRenderer &entityRenderer, GameConstants &gameConstants);
     ~Destructor() = default;
 
   private:
     World &world;
-    Renderer &renderer;
+    EntityRenderer &entityRenderer;
     GameConstants &gameConstants;
 
     /**
