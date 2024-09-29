@@ -19,6 +19,7 @@ class MenuEngine {
     bool gameplayRunning;
     bool playAgainClicked;
     bool gameClosed;
+    Vector achievedGameScore{};
 
   public:
     explicit MenuEngine(ResourceManager &resourceManager);
@@ -45,6 +46,8 @@ class MenuEngine {
     void setPlayAgainClicked(bool playAgainClicked);
     std::shared_ptr<Button> getCurrentlySelectedButton();
     bool isGameClosed() const;
+    void setAchievedGameScore(const Vector &gameScore);
+    Vector getAchievedGameScore();
 };
 
 #endif // SURVIVING_SARNTAL_MENUENGINE_H

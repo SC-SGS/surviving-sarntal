@@ -3,6 +3,9 @@
 //
 
 #include "FullMenuRenderer.h"
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 FullMenuRenderer::FullMenuRenderer(MenuEngine &menuEngine) : menuEngine(menuEngine) {}
 
@@ -13,6 +16,9 @@ void FullMenuRenderer::render() {
         BeginDrawing();
         this->renderBackground(screenState);
         this->renderButtons(screenState);
+        if (screenState == END_SCREEN) {
+            this->renderScoreOnEndscreen();
+        }
         EndDrawing();
     }
 }
@@ -44,4 +50,26 @@ void FullMenuRenderer::renderButton(const std::shared_ptr<Button> &button) {
     // const Vector2 origin = {width / 2, height / 2};
 
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);
+}
+
+void FullMenuRenderer::renderScoreOnEndscreen() {
+    Vector endScore = menuEngine.getAchievedGameScore();
+
+    std::ostringstream outX;
+    outX << std::fixed << std::setprecision(1) << std::round(endScore.x * 10) / 10;
+    std::string xScoreString = outX.str() + "m";
+
+    std::ostringstream outY;
+    outY << std::fixed << std::setprecision(1) << std::round(endScore.y * 10) / 10;
+    std::string yScoreString = outY.str() + "m";
+
+    const char *xScoreText = xScoreString.c_str();
+    const char *yScoreText = yScoreString.c_str();
+
+    const auto xScoreXPos = graphics::SCREEN_WIDTH_IN_PIXEL / 2 - 100;
+    const auto xScoreYpos = 6 * graphics::SCREEN_HEIGHT_IN_PIXEL / 7 - 10;
+    const auto yScoreXPos = graphics::SCREEN_WIDTH_IN_PIXEL / 2 + 70;
+    const auto yScoreYpos = 6 * graphics::SCREEN_HEIGHT_IN_PIXEL / 7 - 10;
+    DrawText(xScoreText, xScoreXPos, xScoreYpos, 20, WHITE);
+    DrawText(yScoreText, yScoreXPos, yScoreYpos, 20, WHITE);
 }

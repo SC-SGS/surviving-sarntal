@@ -14,6 +14,7 @@ class FullMenuRenderer {
     void renderButtons(ScreenState screenState);
     void renderBackground(ScreenState screenState);
     void renderButton(const std::shared_ptr<Button> &button);
+    void renderScoreOnEndscreen();
 
   public:
     void render();
