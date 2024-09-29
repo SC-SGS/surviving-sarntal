@@ -122,9 +122,9 @@ void World::updateGameScore() {
 
 void World::reset() {
     this->terrain.reset();
-    this->resetAttributes();
     this->resetHiker();
     this->resetMonster();
+    this->resetAttributes();
 }
 
 void World::clearRocks() {
@@ -146,6 +146,8 @@ void World::resetAttributes() {
     this->setMinX(0);
     this->setMaxX(graphics::SCREEN_WIDTH_IN_METER);
     this->coinScore = 0;
+    this->gameScore.x = this->hiker.getPosition().x;
+    this->gameScore.y = this->hiker.getPosition().y;
     this->items->clear();
     this->rocks->clear();
     this->inventory.reset();
