@@ -45,7 +45,7 @@ class World {
 
     int getCoinScore() const;
 
-    int getGameScore() const;
+    Vector getGameScore() const;
 
     void updateGameScore();
 
@@ -108,7 +108,7 @@ class World {
     floatType maxX = graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO;
 
     int coinScore = 0;
-    int gameScore = 0;
+    Vector gameScore = {0, 0};
 
     const std::unique_ptr<std::list<std::shared_ptr<Rock>>> rocks =
         std::make_unique<std::list<std::shared_ptr<Rock>>>();
