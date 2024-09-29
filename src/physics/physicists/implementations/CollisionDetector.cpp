@@ -20,33 +20,12 @@ void CollisionDetector::detectCollisions() const {}
     const Vector pos2 = rock2.getPosition();
     const floatType rad2 = rock2.getBoundingBox().width / 2;
     return (pos1.distanceTo(pos2) <= rad1 + rad2);
+}*/
+
+DynamicPolygonCollisionObject CollisionDetector::playerRockCollision(Rock &rock) const {
+    auto const &hiker = this->world.getHiker();
+    return this->dynamicPolygonCollision(*hiker.getCurrentBoundingBox(), rock);
 }
-
-bool CollisionDetector::isPlayerHitByRock(Rock &rock) {
-    const auto rockPosition = rock.getPosition();
-    const auto rad = rock.getBoundingBox().width / 2;
-    // hiker position is at his feet, but here we use the center of mass (center of the rectangle) as position
-    const auto pos = this->world.getHiker().getPosition();
-    const auto adjustedHikerPosition = Vector{pos.x, pos.y + this->world.getHiker().getHeight() / 2};
-    const auto hikerHeight = this->world.getHiker().getHeight();
-    const auto hikerWidth = this->world.getHiker().getWidth();
-    const auto xCenterDistanceAbs = std::abs(adjustedHikerPosition.x - rockPosition.x);
-    const auto yCenterDistanceAbs = std::abs(adjustedHikerPosition.y - rockPosition.y);
-    bool isHit = false;
-
-    if (xCenterDistanceAbs > hikerWidth / 2 + rad || yCenterDistanceAbs > hikerHeight / 2 + rad) {
-
-    } else if (xCenterDistanceAbs <= hikerWidth / 2 || yCenterDistanceAbs <= hikerHeight / 2) {
-        isHit = true;
-    } else {
-        const auto cornerDistanceSq =
-            std::pow(xCenterDistanceAbs - hikerWidth / 2, 2) + std::pow(yCenterDistanceAbs - hikerHeight / 2, 2);
-        if (cornerDistanceSq <= std::pow(rad, 2)) {
-            isHit = true;
-        }
-    }
-    return isHit;
-};*/
 
 DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollision(DynamicConvexPolygon &poly1,
                                                                          DynamicConvexPolygon &poly2) const {

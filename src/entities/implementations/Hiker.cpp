@@ -148,13 +148,29 @@ void Hiker::jump() {
         hikerMovement.setLastJump(0.0);
         hikerMovement.setCanJumpAgain(true);
     }
-    const bool canSecondJump = hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain();
-    if (canSecondJump) {
-        doSecondJump();
+    const bool canJump = hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain();
+    if (canJump) {
+        this->audioService.playSound("jump");
+        this->velocity.setY(hikerConstants.jumpVelocity);
+        if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
+            this->hikerMovement.setCanJumpAgain(false);
+        }
+        hikerMovement.setState(HikerMovement::IN_AIR);
     }
 }
-void Hiker::setHikerMoving() { this->hikerMovement.setState(HikerMovement::MOVING); }
-void Hiker::setHikerInAir() { this->hikerMovement.setState(HikerMovement::IN_AIR); }
+
+void Hiker::setHikerMoving() {
+    this->hikerMovement.setState(HikerMovement::MOVING);
+    this->setHeight(hikerConstants.hikerHeight);
+    this->setWidth(hikerConstants.hikerWidth);
+}
+
+void Hiker::setHikerInAir() {
+    this->hikerMovement.setState(HikerMovement::IN_AIR);
+    this->setHeight(hikerConstants.hikerHeight);
+    this->setWidth(hikerConstants.hikerWidth);
+}
+
 void Hiker::moveToRight(const floatType deltaX) { this->position.setX(this->position.x + deltaX); }
 void Hiker::moveToLeft(const floatType deltaX) { this->position.setX(this->position.x - deltaX); }
 void Hiker::accelerateX(const floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
@@ -162,14 +178,6 @@ void Hiker::accelerateY(const floatType deltaY) { this->velocity.setY(this->velo
 void Hiker::setXVelocity(const floatType xValue) { this->velocity.setX(xValue); }
 void Hiker::setYVelocity(const floatType yValue) { this->velocity.setY(yValue); }
 void Hiker::setLastJump(const float lastJump) { this->hikerMovement.setLastJump(lastJump); }
-void Hiker::doSecondJump() {
-    this->audioService.playSound("jump");
-    this->velocity.setY(hikerConstants.jumpVelocity);
-    if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
-        this->hikerMovement.setCanJumpAgain(false);
-    }
-    hikerMovement.setState(HikerMovement::IN_AIR);
-}
 
 void Hiker::kill() {
     this->isAlive = false;
@@ -228,3 +236,6 @@ std::shared_ptr<StaticPolygon> Hiker::getCurrentBoundingBoxStatic() const {
 }
 
 void Hiker::addHitInformation(const HitInformation &hit) { this->hitInformation.push_back(hit); }
+
+const Vector &Hiker::getKnockback() const { return knockback; }
+void Hiker::setKnockback(const Vector &newKnockback) { this->knockback = newKnockback; }

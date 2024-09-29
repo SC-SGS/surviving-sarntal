@@ -44,7 +44,7 @@ class Positioner {
      *
      * @return
      */
-    Vector getHikerKockback() const;
+    Vector getHikerKnockback() const;
 
     /**
      * Applies all knockbacks to the hiker that need to be applied according to the hitInformation of the hiker.
@@ -102,7 +102,7 @@ class Positioner {
      *
      * @param movement
      */
-    void moveHiker(Vector movement) const;
+    void moveHiker(const Vector &movement) const;
 
     /**
      * Calculate the theoretical next hiker position based on the velocity of the hiker.

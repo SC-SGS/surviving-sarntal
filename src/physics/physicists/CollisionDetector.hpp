@@ -112,14 +112,11 @@ class CollisionDetector {
     static bool rocksCollide(Rock &rock1, Rock &rock2);*/
 
     /**
-     * Checks whether the player is hit by a given rock, where the player is represented as a axis-aligned rectangle and
-     * the rock as a circle.
-     * See
-     * <a href="https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection">this</a>.
+     * Checks whether the player is hit by a given rock, where the player is represented by their hitbox.
      *
      * @return
-     *
-    bool isPlayerHitByRock(Rock &rock);*/
+     */
+    DynamicPolygonCollisionObject playerRockCollision(Rock &rock) const;
 
     /**
      * Checks whether two convex dynamic polygons have collided in the last time step of size deltaT.

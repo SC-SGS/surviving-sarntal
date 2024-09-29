@@ -36,6 +36,7 @@ struct HikerConstants {
     floatType jumpVelocity;
     floatType airMovementSpeedFactor;
     floatType knockBack;
+    floatType knockbackLossPerStep;
     floatType maxSpeedNegSlope;
 
     // Terrain interaction
