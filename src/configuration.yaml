@@ -127,6 +127,7 @@ gameConstants:
     maxClimbableSlope: 4.0
     terrainCollisionDampening: 0.8
     friction: 0.3 #is applied to the gravitational constant, when the hiker slides down the terrain
+    knockbackLossPerStep: 0.9
 
   itemsConstants:
     spawnItems: true

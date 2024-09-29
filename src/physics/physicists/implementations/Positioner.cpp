@@ -58,11 +58,13 @@ void Positioner::updateRockPositions() const {
     }
 }
 
-void Positioner::moveHiker(Vector movement) const {
-    Hiker &hiker = this->world.getHiker();
-    Vector newPos = hiker.getPosition() + movement;
-    hiker.setPosition(newPos);
-    this->resolveHikerTerrainCollisions(movement);
+void Positioner::moveHiker(const Vector &movement) const {
+    if (movement != Vector{0.f, 0.f}) {
+        Hiker &hiker = this->world.getHiker();
+        Vector newPos = hiker.getPosition() + movement;
+        hiker.setPosition(newPos);
+        this->resolveHikerTerrainCollisions(movement);
+    }
 }
 
 // void Positioner::moveHiker(Vector movement) const {
@@ -96,12 +98,21 @@ void Positioner::moveHiker(Vector movement) const {
 // };
 
 void Positioner::applyKnockbackToHiker() const {
-    return;
-    Hiker &hiker = this->world.getHiker();
-
-    Vector knockback = this->getHikerKockback();
-    this->moveHiker(knockback);
-    // this->clampHikerToTerrain();
+    if (this->world.getHiker().getKnockback().length() < NUMERIC_EPSILON) {
+        this->world.getHiker().setKnockback({0, 0});
+        return;
+    }
+    const Vector &knockback = this->world.getHiker().getKnockback();
+    this->moveHiker(knockback * this->deltaT);
+    this->world.getHiker().setKnockback(knockback * this->hikerConstants.knockbackLossPerStep);
+    /*const Vector &knockback = this->world.getHiker().getKnockback();
+    const bool shouldBeKnockedAgain = knockback.length() > this->hikerConstants.knockbackLossPerStep;
+    if (shouldBeKnockedAgain) {
+        this->moveHiker(knockback * this->deltaT);
+        this->world.getHiker().setKnockback(knockback - (knockback * this->hikerConstants.knockbackLossPerStep));
+    } else {
+        this->world.getHiker().setKnockback({0, 0});
+    }*/
 }
 
 void Positioner::clampHikerToTerrain() const {
@@ -112,30 +123,6 @@ void Positioner::clampHikerToTerrain() const {
     hiker.setPosition(hikerFeetPos);
     hiker.setHikerMoving();
     hiker.setLastJump(0.0f);
-}
-
-Vector Positioner::getHikerKockback() const {
-    Hiker &hiker = this->world.getHiker();
-    Vector knockback = {0.0f, 0.0f};
-    // TODO this should go into the collision handler, but there might be problems with the event processor so let's
-    // TODO leave it here until we take care of the physics
-    if (hiker.getIsHit()) {
-        std::vector<HitInformation> hitInformations = hiker.getHitInformation();
-        std::vector<HitInformation> newHitInformations = {};
-        for (auto &hitInfo : hitInformations) {
-            if (hitInfo.currentSteps < hitInfo.maxSteps) {
-                knockback += hitInfo.knockback;
-                hitInfo.currentSteps++;
-                newHitInformations.push_back(hitInfo);
-            }
-        }
-        hiker.setHitInformation(newHitInformations);
-        if (newHitInformations.empty()) {
-            hiker.setIsHit(false);
-        }
-    }
-
-    return knockback;
 }
 
 void Positioner::moveHikerInAir() const {
@@ -182,12 +169,15 @@ void Positioner::enforceWorldLimitOnHiker() const {
 
     if (pos.x > this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset) {
         pos.x = this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset;
-        pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
+        if (hiker.getHikerMovement().getState() != HikerMovement::MovementState::IN_AIR) {
+            pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
+        }
     }
     hiker.setPosition(pos);
 }
 
 void Positioner::updateHikerPosition() const {
+
     this->applyKnockbackToHiker();
     Hiker &hiker = this->world.getHiker();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {
@@ -294,7 +284,7 @@ Vector Positioner::calculateTheoreticalNextHikerPosition() const {
     floatType nextYPos;
     spdlog::debug("Hiker direction: {}", hiker.getHikerMovement().getDirection());
     if (hiker.getHikerMovement().getDirection() != HikerMovement::Direction::NEUTRAL) {
-        nextXPos = vel.x * this->deltaT * this->hikerConstants.normalSpeed + oldPos.x;
+        nextXPos = vel.x * this->deltaT * this->hikerConstants.maxSpeedNegSlope + oldPos.x;
         nextYPos = this->world.getTerrain().mapHeightToTerrain({nextXPos, oldPos.y});
         Vector newPos = {nextXPos, nextYPos};
 
