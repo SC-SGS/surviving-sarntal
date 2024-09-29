@@ -100,7 +100,6 @@ void Game::resetGame() {
     playedEndSound = false;
     this->world.reset();
     this->renderer.reset();
-    this->renderer.getMountainRenderer().reset();
 }
 
 void Game::checkPlayAgainClicked() {

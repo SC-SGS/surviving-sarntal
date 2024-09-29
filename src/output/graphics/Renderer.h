@@ -9,6 +9,8 @@
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
+#include "renderers/EntityRenderer.h"
+#include "renderers/HudRenderer.h"
 #include "renderers/MountainRenderer.h"
 #include "renderers/PolygonRenderer.h"
 
@@ -17,77 +19,50 @@ constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 class Renderer {
 
   public:
-    void draw();
-    void setShake(float intensity);
     Renderer(World &world,
              ResourceManager &resourceManager,
              Camera2D &camera,
-             MountainRenderer &mountainRenderer,
              GameConstants &gameConstants,
-             PolygonRenderer &polygonRenderer);
+             MountainRenderer &mountainRenderer,
+             EntityRenderer &entityRenderer,
+             HudRenderer &hudRenderer);
     ~Renderer() = default;
 
+    void draw();
     void toggleDebugMode();
-    void addExplosion(const Rock &rock) const;
-    Camera2D &getCamera();
-
+    void setShake(float intensity);
     void reset();
-    MountainRenderer &getMountainRenderer() const;
 
   private:
     // Dependencies
     World &world;
     ResourceManager &resourceManager;
     GameConstants &gameConstants;
+    // Renderers
+    MountainRenderer &mountainRenderer;
+    EntityRenderer &entityRenderer;
+    HudRenderer &hudRenderer;
 
     // Attributes
     Camera2D &camera;
-    std::unordered_map<int, AnimationInformation> animations;
-    AnimationInformation &getAnimationInformation(int entityId, AnimationInformation &defaultAnimation);
-    std::unordered_map<std::string, int> landmarks;
+    bool debugMode = false;
     const Vector2 screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
     float shakeIntensity = 0.0f;
     Texture2D gradientTextureBackground{};
-    bool debugMode = false;
-    const std::unique_ptr<std::list<Rock>> destroyedRocks = std::make_unique<std::list<Rock>>();
-    MountainRenderer &mountainRenderer;
 
     // Initialize the scrolling speed
     floatType scrollingMid = 0;
     floatType scrollingFore = 0;
 
     // Helper functions
-    void loadLandmarks();
-    void renderEntity(const RenderedEntity &entity) const;
-    void renderEntity(const RenderedEntity &entity, floatType rotation) const;
-    void
-    renderEntity(const RenderedEntity &entity, floatType rotation, const Texture2D &texture, Rectangle sourceRec) const;
-    void renderBackground();
+    void initCamera();
     void regenerateGradientTexture();
-    void renderRock(const std::shared_ptr<Rock> &rock) const;
-    void renderHiker(const Hiker &hiker);
+    void applyRumbleEffect();
+    void renderBackground();
     void drawBackgroundTextureRepeatedly(const Texture2D &texture2D,
                                          floatType scrolling,
                                          floatType scale,
                                          floatType offsetY) const;
-    void renderEntities();
-    void animateEntity(const RenderedEntity &entity);
-    void renderAnimation(const RenderedEntity &entity);
-    void renderInventory() const;
-    void renderItemSlot(const Inventory &inventory, int slotNumber, int startX, int startY) const;
-    void renderHealthBar() const;
-    void debugRenderEntities();
-    void debugRenderRock(const Rock &rock) const;
-    void renderScore() const;
-    void renderCoinScore() const;
-    void renderHUD() const;
-    void renderAltimeter() const;
-    void renderAltimeterStep(int drawY, int drawAltitude, int fontSize) const;
-    void applyRumbleEffect();
-    void renderNormalEntities();
-    std::list<Rock> &getDestroyedRocks() const;
-    void renderWalkingHiker(const Hiker &hiker);
-    PolygonRenderer &polygonRenderer;
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

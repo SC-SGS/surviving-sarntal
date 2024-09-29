@@ -109,13 +109,13 @@ void World::setMinX(const floatType newMinX) { this->minX = newMinX; }
 
 int World::getCoinScore() const { return this->coinScore; }
 
-int World::getGameScore() const { return this->gameScore; }
+Vector World::getGameScore() const { return this->gameScore; }
 
 void World::updateGameScore() {
-    // const int hikerHeight = static_cast<int>(this->hiker.getPosition().y);
-    // this->gameScore = std::max(this->gameScore, hikerHeight);
-    const int hikerXDistance = static_cast<int>(this->hiker.getPosition().x);
-    this->gameScore = std::max(this->gameScore, hikerXDistance);
+    const float hikerHeight = this->hiker.getPosition().y;
+    this->gameScore.y = std::max(this->gameScore.y, hikerHeight);
+    const float hikerXDistance = this->hiker.getPosition().x;
+    this->gameScore.x = std::max(this->gameScore.x, hikerXDistance);
 }
 
 void World::reset() {
