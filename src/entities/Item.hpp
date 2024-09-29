@@ -13,8 +13,7 @@
 /**
  * Enum to specify the different types of items that occur in the game.
  */
-// todo remove no_item @aleksis
-enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2 };
+enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2, ROCK_BOMB = 3 };
 
 struct ItemDto {
     std::string name;
@@ -35,7 +34,6 @@ class Item : public RenderedEntity {
   public:
     Item(ItemType itemType, Vector position, floatType baseHeight, const ItemDto &dto);
 
-    // Item(ItemDto itemDto, Vector position);
     RenderInformation getRenderInformation() const override;
 
     ItemType getItemType() const;
