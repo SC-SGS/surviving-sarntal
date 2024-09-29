@@ -69,6 +69,8 @@ textures:
   snowRock: "../../assets/texture/snowRock.png"
   crystalRock: "../../assets/texture/crystalRock.png"
   default: "../../assets/texture/default.png"
+  scoreBgX: "../../assets/texture/scoreBgX.png"
+  scoreBgY: "../../assets/texture/scoreBgY.png"
   terrainGenerationBackground: "../../assets/texture/terrainGenerationBackground.png"
 
 items:

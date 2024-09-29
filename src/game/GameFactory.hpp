@@ -36,6 +36,8 @@ class GameFactory {
     // Renderer
     PolygonRenderer polygonRenderer;
     MountainRenderer mountainRenderer;
+    EntityRenderer entityRenderer;
+    HudRenderer hudRenderer;
     Renderer renderer;
     Camera2D &camera;
 

@@ -23,8 +23,7 @@ class MountainRenderer {
      * @param topColor is the color at the top of the mountain
      * @param bottomColor is the color at the bottom of the mountain
      */
-    void renderMountain(const Terrain &terr, Color topColor = WHITE, Color bottomColor = BLUE, bool debug = false);
-
+    void renderMountain(const Terrain &terrain, bool debug);
     void debugRenderMountain();
 
     void reset();

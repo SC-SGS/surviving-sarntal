@@ -12,7 +12,7 @@ MountainRenderer::MountainRenderer(Camera2D &camera, GameConstants &gameConstant
     SetTextureWrap(mountainTexture, TEXTURE_WRAP_MIRROR_REPEAT);
 }
 
-void MountainRenderer::renderMountain(const Terrain &terrain, Color topColor, Color bottomColor, bool debug) {
+void MountainRenderer::renderMountain(const Terrain &terrain, bool debug) {
     floatType newMinX = static_cast<float>(floor(terrain.getLeftBorder())) * graphics::UNIT_TO_PIXEL_RATIO;
     floatType newMaxX = static_cast<float>(ceil(terrain.getRightBorder())) * graphics::UNIT_TO_PIXEL_RATIO;
 
@@ -92,7 +92,7 @@ std::vector<p2t::Point *> MountainRenderer::createPolylinePoints(const std::shar
 void MountainRenderer::debugRenderMountain() {
     rlBegin(RL_LINES);
     rlColor3f(1.0f, 0.0f, 0.0f);
-    for (int i = 0; i < vertices.size() - 2; i += 3) {
+    for (int i = 0; i < vertices.size() - 2; i += 4) {
         rlVertex2f(vertices[i].x, vertices[i].y);
         rlVertex2f(vertices[i + 1].x, vertices[i + 1].y);
 
