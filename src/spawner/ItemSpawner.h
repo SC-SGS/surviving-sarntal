@@ -31,7 +31,7 @@ class ItemSpawner {
 
     // Attributes
     GameConstants &gameConstants;
-    floatType nextSpawnTime;
+    floatType nextSpawnDistance;
     int spawnWeightsSum;
     /**
      * Maps the itemType id to the spawn weight of the item
@@ -43,7 +43,7 @@ class ItemSpawner {
     std::unordered_map<ItemType, ItemDto> itemDtoMap;
 
     // Helper functions
-    void updateNextSpawnTime();
+    void updateNextSpawnDistance();
     ItemType getNextRandomItemType();
     Vector getNextRandomPosition();
 };
