@@ -94,6 +94,7 @@ void Game::endGameplay() {
     }
     menuEngine.setGameplayRunning(false);
     menuEngine.switchTo(END_SCREEN);
+    menuEngine.setAchievedGameScore(this->world.getGameScore());
 }
 
 void Game::resetGame() {
