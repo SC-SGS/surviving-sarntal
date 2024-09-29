@@ -82,12 +82,7 @@ void GameEventProcessor::pickAutoCollectableItems() const {
 
 void GameEventProcessor::dropItem(GameEvent event) const { this->world.getInventory().removeSelectedItem(); }
 
-void GameEventProcessor::useItem(const GameEvent event) const {
-    if (!this->world.getInventory().selectedSlotIsEmpty()) {
-        this->world.useItem(this->world.getInventory().getSelectedItemType());
-        this->world.getInventory().removeSelectedItem();
-    }
-}
+void GameEventProcessor::useItem(const GameEvent event) const { this->world.useSelectedItem(); }
 
 void GameEventProcessor::jump(GameEvent event) const { this->world.getHiker().jump(); }
 

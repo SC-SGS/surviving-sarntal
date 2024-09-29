@@ -81,6 +81,8 @@ void World::useItem(const ItemType itemType) {
     case DUCK_ITEM:
         useDuck();
         break;
+    case ROCK_BOMB:
+        useRockBomb();
     default:
         break;
     }
@@ -125,6 +127,12 @@ void World::reset() {
     this->resetMonster();
 }
 
+void World::clearRocks() {
+    for (auto &rock : *this->rocks) {
+        rock->setShouldBeDestroyed(true);
+    }
+}
+
 void World::resetHiker() {
     floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH_IN_METER);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX) + 0.1f;
@@ -141,4 +149,12 @@ void World::resetAttributes() {
     this->items->clear();
     this->rocks->clear();
     this->inventory.reset();
+}
+void World::useRockBomb() { this->clearRocks(); }
+
+void World::useSelectedItem() {
+    if (!this->getInventory().selectedSlotIsEmpty()) {
+        this->useItem(this->getInventory().getSelectedItemType());
+        this->getInventory().removeSelectedItem();
+    }
 }
