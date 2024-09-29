@@ -17,6 +17,7 @@ MenuEngine::MenuEngine(ResourceManager &resourceManager) : resourceManager(resou
     gameplayRunning = false;
     playAgainClicked = false;
     gameClosed = false;
+    achievedGameScore = {0, 0};
 }
 ScreenState MenuEngine::getScreenState() { return currentScreen; }
 
@@ -38,11 +39,19 @@ void MenuEngine::switchScreen() {
     }
 }
 void MenuEngine::setGameplayRunning(bool isGameplayRunning) { this->gameplayRunning = isGameplayRunning; }
+
 bool MenuEngine::isGamePlayRunning() const { return gameplayRunning; }
+
 std::shared_ptr<Button> MenuEngine::getCurrentlySelectedButton() {
     return screens[currentScreen]->getCurrentlySelectedButton();
 }
+
 bool MenuEngine::getPlayAgainClicked() const { return playAgainClicked; }
+
 void MenuEngine::setPlayAgainClicked(bool playAgain) { this->playAgainClicked = playAgain; }
 
 bool MenuEngine::isGameClosed() const { return this->gameClosed; }
+
+void MenuEngine::setAchievedGameScore(const Vector &gameScore) { this->achievedGameScore = gameScore; }
+
+Vector MenuEngine::getAchievedGameScore() { return this->achievedGameScore; }

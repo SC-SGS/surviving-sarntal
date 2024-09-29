@@ -115,7 +115,6 @@ class World {
         std::make_unique<std::list<std::shared_ptr<Rock>>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
-    void resetTerrain();
     void resetHiker();
     void resetMonster() const;
     void resetAttributes();
