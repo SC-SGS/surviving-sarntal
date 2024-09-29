@@ -138,6 +138,12 @@ class CollisionHandler {
      */
     void playerCollisions() const;
 
+    void checkAndHandlePlayerRockCollision(Rock &rock) const;
+
+    void resolvePlayerRockCollisions() const;
+
+    void checkAndHandlePlayerTerrainCollisions() const;
+
     /**
      * Calculates the damage a collided rock does to the hiker, dependent on its velocity, size and
      * TODO later also the difficulty/type of rock
@@ -152,10 +158,10 @@ class CollisionHandler {
     /**
      * Calculates the hit information for a rock if this rock was to hit the hiker.
      *
-     * @param rock
+     * @param coll
      * @return
      */
-    HitInformation computeHitInformation(std::shared_ptr<Rock> &rock) const;
+    Vector computeKnockback(const DynamicPolygonCollisionObject &coll) const;
 
     /**
      * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.

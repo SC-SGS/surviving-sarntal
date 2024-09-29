@@ -30,6 +30,7 @@ void CollisionHandler::resolveRockCollisions() const {
         anyCollisions = false;
         for (const std::shared_ptr<Rock> &rock : this->world.getRocks()) {
             anyCollisions = checkAndHandleTerrainCollision(*rock) || anyCollisions;
+            this->checkAndHandlePlayerRockCollision(*rock);
             for (const std::shared_ptr<Rock> &rock2 : this->world.getRocks()) {
                 anyCollisions = checkAndHandleRockCollision(*rock, *rock2) || anyCollisions;
             }
@@ -343,9 +344,35 @@ floatType CollisionHandler::capAngularVelocity(const floatType angVel) const {
     return angVel;
 }*/
 
-HitInformation CollisionHandler::computeHitInformation(std::shared_ptr<Rock> &rock) const {
-    Vector linearMomentum = rock->getLinearMomentum();
-    Vector knockback = linearMomentum / this->gameConstants.hikerConstants.mass;
-    int steps = static_cast<int>(knockback.length());
-    return {knockback, steps, 0};
+Vector CollisionHandler::computeKnockback(const DynamicPolygonCollisionObject &coll) const {
+    const Hiker &hiker = this->world.getHiker();
+    Vector linearMomentum{};
+    floatType isHikerIncidentSignum;
+    if (*hiker.getCurrentBoundingBox() == *coll.polyAIncident) {
+        linearMomentum = coll.polyBReference->getLinearMomentum();
+        isHikerIncidentSignum = 1;
+    } else {
+        linearMomentum = coll.polyAIncident->getLinearMomentum();
+        isHikerIncidentSignum = -1;
+    }
+    const Vector knockback = coll.collisionDirection * linearMomentum.length() *
+                             isHikerIncidentSignum; // / this->gameConstants.hikerConstants.mass;
+    return knockback;
+}
+
+void CollisionHandler::checkAndHandlePlayerRockCollision(Rock &rock) const {
+    auto &hiker = this->world.getHiker();
+    auto const &collision = this->collisionDetector.playerRockCollision(rock);
+    if (collision.isCollision) {
+        this->audioService.playSound("rock-smash");
+        this->audioService.playSound("boom");
+        const int rockDmg = this->rockDamage(rock);
+        spdlog::debug("Player has hit with rock damage: {}", rockDmg);
+        HapticsService::rockRumble(rockDmg);
+        this->world.getHiker().doDamagePoints(rockDmg);
+        this->world.getHiker().setIsHit(true);
+        // TODO knockback issue
+        this->world.getHiker().setKnockback(this->world.getHiker().getKnockback() + this->computeKnockback(collision));
+        rock.setShouldBeDestroyed(true);
+    }
 }
