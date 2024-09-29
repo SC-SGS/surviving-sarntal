@@ -34,6 +34,7 @@ textures:
   kaiserschmarrn: "../../assets/texture/kaiserschmarrn.png"
   coin: "../../assets/texture/coin.png"
   duck: "../../assets/texture/duck.png"
+  bomb: "../../assets/texture/stone.png"
   rock: "../../assets/texture/stone.png"
   explosion: "../../assets/texture/explosion.png"
   helicopter: "../../assets/texture/helicopter.png"
@@ -76,7 +77,7 @@ textures:
 items:
   kaiserschmarrn:
     typeId: 0
-    autoCollect: false
+    autoCollect: true
     useOnPickUp: false
     dropOnUse: true
     spawnWeight: 2
@@ -92,6 +93,12 @@ items:
     useOnPickUp: false
     dropOnUse: true
     spawnWeight: 2
+  bomb:
+    typeId: 3
+    autoCollect: true
+    useOnPickUp: false
+    dropOnUse: true
+    spawnWeight: 1
 
 landmarks:
   - name: "Statue of Liberty"

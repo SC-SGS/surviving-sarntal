@@ -7,10 +7,10 @@
 ItemSpawner::ItemSpawner(World &world, GameConstants &gameConstants, std::unordered_map<ItemType, ItemDto> &itemDtoMap)
     : world(world),
       gameConstants(gameConstants),
-      nextSpawnTime(gameConstants.itemsConstants.startSpawnTime),
+      nextSpawnDistance(gameConstants.itemsConstants.startSpawnTime),
       itemDtoMap(itemDtoMap),
       spawnWeightsSum(static_cast<int>(itemDtoMap.size())) {
-    this->nextSpawnTime = this->gameConstants.itemsConstants.startSpawnTime;
+    this->nextSpawnDistance = this->gameConstants.itemsConstants.startSpawnTime;
     const auto &items = ConfigManager::getInstance().getItems();
     for (const auto &item : items) {
         int itemType = item.first;
@@ -21,7 +21,8 @@ ItemSpawner::ItemSpawner(World &world, GameConstants &gameConstants, std::unorde
 }
 
 void ItemSpawner::spawnItems() {
-    if (GetTime() < nextSpawnTime || !this->gameConstants.itemsConstants.spawnItems) {
+    bool skipSpawn = this->world.getMaxX() < nextSpawnDistance || !this->gameConstants.itemsConstants.spawnItems;
+    if (skipSpawn) {
         return;
     }
 
@@ -30,14 +31,14 @@ void ItemSpawner::spawnItems() {
 
     const Item newItem = Item(itemType, position, gameConstants.itemsConstants.itemBaseHeight, itemDtoMap[itemType]);
     this->world.addItem(newItem);
-    updateNextSpawnTime();
+    updateNextSpawnDistance();
 
     spdlog::info("Spawning {0} at position (x: {1}, y: {2}).", newItem.getName(), position.x, position.y);
 }
-void ItemSpawner::updateNextSpawnTime() {
-    auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 10)); // todo get range from config
-    nextSpawnTime = static_cast<floatType>(GetTime()) + rand;
-    spdlog::debug("Next spawn time was set to: {}", nextSpawnTime);
+void ItemSpawner::updateNextSpawnDistance() {
+    auto rand = static_cast<floatType>(randomGenerator.getRandomNumber(2, 6));
+    nextSpawnDistance = this->world.getMaxX() + rand;
+    spdlog::debug("Next spawn distance was set to: {}", nextSpawnDistance);
 }
 ItemType ItemSpawner::getNextRandomItemType() {
     int rand = randomGenerator.getRandomNumber(1, this->spawnWeightsSum);

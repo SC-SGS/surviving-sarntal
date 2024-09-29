@@ -93,6 +93,7 @@ class World {
     bool isOutOfScope(const RenderedEntity &entity) const;
 
     void reset();
+    void useSelectedItem();
 
   private:
     // Dependencies
@@ -118,6 +119,8 @@ class World {
     void resetHiker();
     void resetMonster() const;
     void resetAttributes();
+    void clearRocks();
+    void useRockBomb();
 };
 
 #endif // SURVIVING_SARNTAL_WORLD_H

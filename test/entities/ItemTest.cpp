@@ -21,7 +21,7 @@ TEST_F(ItemTestFixture, CreateKaiserschmarrnItemTest) {
         std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight,
                                configManager.getItems()[KAISERSCHMARRN]);
     EXPECT_EQ(kaiserschmarrnItem->getItemType(), KAISERSCHMARRN);
-    EXPECT_FALSE(kaiserschmarrnItem->canAutoCollect());
+    EXPECT_TRUE(kaiserschmarrnItem->canAutoCollect());
     EXPECT_FALSE(kaiserschmarrnItem->canUseOnPickUp());
     EXPECT_TRUE(kaiserschmarrnItem->shouldDropOnUse());
 }
