@@ -62,6 +62,9 @@ class Hiker : public RenderedEntity {
     bool getIsAlive() const;
     void setIsAlive(bool alive);
 
+    const Vector &getKnockback() const;
+    void setKnockback(const Vector &newKnockback);
+
     RenderInformation getRenderInformation() const override;
 
     void turnLeft();
@@ -135,6 +138,9 @@ class Hiker : public RenderedEntity {
     HikerMovement hikerMovement{};
     bool isHit{};
     std::vector<HitInformation> hitInformation{};
+    Vector knockback = {0.f, 0.f};
+
+  private:
     bool isAlive{};
     std::shared_ptr<DynamicConvexPolygon> boundingBoxWalking = nullptr;
     Vector walkingHitBoxDelta{}; // Delta from the hiker position to the position of their walking hitbox
@@ -143,9 +149,6 @@ class Hiker : public RenderedEntity {
     // std::shared_ptr<DynamicPolygon> boundingBoxJumping = nullptr;
     // Vector jumpingHitBoxDelta{};
     double shieldTime{};
-
-    // Helper functions
-    void doSecondJump();
 };
 
 #endif // SURVIVING_SARNTAL_HIKER_H

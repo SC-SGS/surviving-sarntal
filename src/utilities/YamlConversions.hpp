@@ -32,6 +32,7 @@ template <> struct convert<HikerConstants> {
         hikerConstants.maxClimbableSlope = node["maxClimbableSlope"].as<floatType>();
         hikerConstants.terrainCollisionDampening = node["terrainCollisionDampening"].as<floatType>();
         hikerConstants.friction = node["friction"].as<floatType>();
+        hikerConstants.knockbackLossPerStep = node["knockbackLossPerStep"].as<floatType>();
 
         return true;
     }
