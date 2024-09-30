@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_RENDERER_H
 
 #include "../../entities/World.h"
+#include "../../menu/MenuEngine.h"
 #include "../../utilities/Singleton.hpp"
 #include "../ResourceManager.h"
 #include "raylib.h"
@@ -23,6 +24,7 @@ class Renderer {
              ResourceManager &resourceManager,
              Camera2D &camera,
              GameConstants &gameConstants,
+             MenuEngine &menuEngine,
              MountainRenderer &mountainRenderer,
              EntityRenderer &entityRenderer,
              HudRenderer &hudRenderer);
@@ -38,6 +40,7 @@ class Renderer {
     World &world;
     ResourceManager &resourceManager;
     GameConstants &gameConstants;
+    MenuEngine &menuEngine;
     // Renderers
     MountainRenderer &mountainRenderer;
     EntityRenderer &entityRenderer;
@@ -46,23 +49,18 @@ class Renderer {
     // Attributes
     Camera2D &camera;
     bool debugMode = false;
-    const Vector2 screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
+    Vector2 screenCenter = {};
     float shakeIntensity = 0.0f;
-    Texture2D gradientTextureBackground{};
-
-    // Initialize the scrolling speed
-    floatType scrollingMid = 0;
-    floatType scrollingFore = 0;
+    enum FullscreenMode { NONE, TO_FS, TO_WINDOWED, UPDATE_VALUES };
+    FullscreenMode fsMode = NONE;
 
     // Helper functions
     void initCamera();
-    void regenerateGradientTexture();
     void applyRumbleEffect();
     void renderBackground();
-    void drawBackgroundTextureRepeatedly(const Texture2D &texture2D,
-                                         floatType scrolling,
-                                         floatType scale,
-                                         floatType offsetY) const;
+    void drawBackgroundTextureRepeatedly(const Texture2D &texture, floatType drawnWidth, floatType offset) const;
+    void toggleFullscreen();
+    void handleFullScreenSwitch();
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

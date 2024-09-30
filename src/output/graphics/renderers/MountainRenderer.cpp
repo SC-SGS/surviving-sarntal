@@ -80,7 +80,7 @@ std::vector<p2t::Point *> MountainRenderer::createPolylinePoints(const std::shar
     }
 
     // Calculate the lower border by adding half the screen size to the lowest point
-    floatType lowerBorder = lowestPoint + static_cast<float>(GetScreenHeight()) / 2;
+    floatType lowerBorder = lowestPoint + static_cast<float>(GetMonitorHeight(GetCurrentMonitor())) / 2;
 
     // Close the shape with the lower border
     polylinePoints.push_back(new p2t::Point(polylinePoints.back()->x, lowerBorder));

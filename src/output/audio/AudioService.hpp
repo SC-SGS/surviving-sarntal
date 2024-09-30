@@ -11,12 +11,15 @@
 class AudioService {
 
   public:
+    explicit AudioService(ResourceManager &resourceManager);
     ~AudioService();
     virtual void playSound(const std::string &soundName) const;
-    explicit AudioService(ResourceManager &resourceManager);
+    virtual void playSong(const std::string &songName, bool loop);
+    void updateMusicStream();
 
   private:
     ResourceManager &resourceManager;
+    std::list<Music> musicList;
 };
 
 #endif // SURVIVING_SARNTAL_AUDIOSERVICE_HPP

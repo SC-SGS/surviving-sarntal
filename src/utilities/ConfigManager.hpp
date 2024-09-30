@@ -16,6 +16,7 @@ class ConfigManager : public Singleton<ConfigManager> {
   public:
     std::unordered_map<std::string, std::string> getTextures();
     std::unordered_map<std::string, std::string> getSounds();
+    std::unordered_map<std::string, std::string> getMusic();
     std::unordered_map<ItemType, ItemDto> getItems();
     std::unordered_map<std::string, int> getLandmarks();
 

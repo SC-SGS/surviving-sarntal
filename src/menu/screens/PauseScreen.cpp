@@ -17,6 +17,7 @@ void PauseScreen::setUpScreen() {
 }
 
 void PauseScreen::setUpButtons() {
+    buttons = std::vector<std::shared_ptr<Button>>();
     Texture2D continueButtonTexture = resourceManager.getTexture("continueButton");
     Texture2D continueButtonToggledTexture = resourceManager.getTexture("continueButtonToggled");
     std::shared_ptr<Button> continueButton =
@@ -39,14 +40,14 @@ void PauseScreen::setUpButtons() {
 
     closeGameButton->setHeight(90);
     closeGameButton->setWidth(90);
-    Vector position = {graphics::SCREEN_WIDTH_IN_PIXEL - 50 - closeGameButton->getWidth(), 50};
+    Vector position = {static_cast<float>(GetScreenWidth()) - 50 - closeGameButton->getWidth(), 50};
     closeGameButton->setPosition(position);
     buttons.push_back(closeGameButton);
 }
 
 void PauseScreen::distributeButtons() {
-    int margin = 500;                                               // Minimum margin from the left and right edges
-    int usableWidth = graphics::SCREEN_WIDTH_IN_PIXEL - 2 * margin; // Usable width of the screen
+    int margin = 500;                                // Minimum margin from the left and right edges
+    int usableWidth = GetScreenWidth() - 2 * margin; // Usable width of the screen
 
     int totalButtonWidth = 0;
     int buttonCount = (int)buttons.size();
@@ -66,7 +67,7 @@ void PauseScreen::distributeButtons() {
 
     // Set x-coordinate for each button
     for (auto &button : buttons) {
-        Vector position = {0, (floatType)graphics::SCREEN_HEIGHT_IN_PIXEL / 2 + button->getHeight() / 2};
+        Vector position = {0, (floatType) static_cast<float>(GetScreenHeight()) / 2 + button->getHeight() / 2};
         position.x = (floatType)currentX;
         button->setPosition(position);
         currentX += (int)button->getWidth() + spacing;

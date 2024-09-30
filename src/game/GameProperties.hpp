@@ -15,8 +15,6 @@ namespace graphics {
 constexpr int SCREEN_WIDTH_IN_PIXEL = 1600;
 constexpr int SCREEN_HEIGHT_IN_PIXEL = 900;
 constexpr float UNIT_TO_PIXEL_RATIO = 77.5;
-constexpr floatType SCREEN_WIDTH_IN_METER = SCREEN_WIDTH_IN_PIXEL / UNIT_TO_PIXEL_RATIO;
-constexpr floatType SCREEN_HEIGHT_IN_METER = SCREEN_HEIGHT_IN_PIXEL / UNIT_TO_PIXEL_RATIO;
 }; // namespace graphics
 
 struct HikerConstants {
@@ -124,8 +122,7 @@ struct VisualConstants {
     floatType rumbleIntensity;
     floatType rumbleDampening;
 
-    floatType textureMidScale;
-    floatType textureForeScale;
+    float backgroundDistanceScale;
     int cameraToHikerOffset;
     int mountainGradientHeight;
     int mountainResolution;
@@ -133,7 +130,6 @@ struct VisualConstants {
 
 struct BarriersConstants {
     floatType killBarVelocity;
-    floatType playerRightBarrierOffset;
 };
 
 struct TerrainConstants {

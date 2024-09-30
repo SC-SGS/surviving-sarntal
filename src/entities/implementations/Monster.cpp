@@ -15,8 +15,6 @@ Monster::Monster(HikerConstants &hikerConstants)
 }
 
 RenderInformation Monster::getRenderInformation() const {
-    const floatType monsterWidth = hikerConstants.hikerWidth * static_cast<floatType>(2.5);
-    const floatType monsterHeight = hikerConstants.hikerHeight * static_cast<floatType>(2);
     return RenderInformation{Vector2(position), {0, 1}, monsterWidth, monsterHeight, -5, "monster", animation};
 }
 

@@ -10,6 +10,7 @@ Renderer::Renderer(World &world,
                    ResourceManager &resourceManager,
                    Camera2D &camera,
                    GameConstants &gameConstants,
+                   MenuEngine &menuEngine,
                    MountainRenderer &mountainRenderer,
                    EntityRenderer &entityRenderer,
                    HudRenderer &hudRenderer)
@@ -17,13 +18,12 @@ Renderer::Renderer(World &world,
       resourceManager(resourceManager),
       camera(camera),
       gameConstants(gameConstants),
+      menuEngine(menuEngine),
       mountainRenderer(mountainRenderer),
       entityRenderer(entityRenderer),
       hudRenderer(hudRenderer) {
 
     initCamera();
-
-    regenerateGradientTexture();
 }
 
 void Renderer::initCamera() {
@@ -45,6 +45,7 @@ void Renderer::initCamera() {
     // Calculate the center of the camera view based on the borders
     const floatType centerX = (leftBorder + rightBorder) / 2.0f;
     const floatType centerY = visibleHeight / 2.0f;
+    screenCenter = {static_cast<float>(GetScreenWidth()) / 2, static_cast<float>(GetScreenHeight()) / 2};
 
     // Initialize the camera
     camera.target = {centerX, centerY};
@@ -53,15 +54,9 @@ void Renderer::initCamera() {
     camera.zoom = zoom;
 }
 
-void Renderer::regenerateGradientTexture() {
-    UnloadTexture(gradientTextureBackground); // TODO necessary?
-    Image verticalGradient = GenImageGradientV(GetScreenWidth(), GetScreenHeight(), BLUE, WHITE);
-    gradientTextureBackground = LoadTextureFromImage(verticalGradient);
-    UnloadImage(verticalGradient);
-}
-
 // Main rendering function
 void Renderer::draw() {
+    handleFullScreenSwitch();
     applyRumbleEffect();
 
     BeginDrawing();
@@ -109,46 +104,66 @@ void Renderer::renderBackground() {
     if (this->debugMode) {
         return;
     }
-    DrawTexture(gradientTextureBackground, 0, 0, WHITE);
-    // Get the textures
-    const Texture2D midgroundTex = resourceManager.getTexture("midground");
-    const Texture2D foregroundTex = resourceManager.getTexture("foreground");
 
-    scrollingMid -= 0.25f;
-    scrollingFore -= 0.5f;
+    const Texture2D &backgroundTexture = resourceManager.getTexture("background");
+    const float drawnWidth = static_cast<float>(backgroundTexture.width) /
+                             static_cast<float>(backgroundTexture.height) * static_cast<float>(GetScreenHeight());
+    float offset = world.getMonster().getPosition().x * graphics::UNIT_TO_PIXEL_RATIO *
+                   gameConstants.visualConstants.backgroundDistanceScale;
 
-    const auto textureMidScale = gameConstants.visualConstants.textureMidScale;
-    const auto textureForeScale = gameConstants.visualConstants.textureForeScale;
-
-    const floatType midOffsetY =
-        static_cast<floatType>(GetScreenHeight()) - static_cast<floatType>(midgroundTex.height) * textureMidScale;
-    const floatType foreOffsetY =
-        static_cast<floatType>(GetScreenHeight()) - static_cast<floatType>(foregroundTex.height) * textureForeScale;
-    if (scrollingMid <= -static_cast<floatType>(midgroundTex.width) * textureMidScale) {
-        scrollingMid = 0;
+    while (offset > static_cast<float>(backgroundTexture.width)) {
+        offset -= static_cast<float>(backgroundTexture.width);
     }
-    if (scrollingFore <= -static_cast<floatType>(foregroundTex.width) * textureForeScale) {
-        scrollingFore = 0;
-    }
-    // Draw midground image repeatedly
-    drawBackgroundTextureRepeatedly(midgroundTex, scrollingMid, textureMidScale, midOffsetY);
-    // Draw foreground image repeatedly
-    drawBackgroundTextureRepeatedly(foregroundTex, scrollingFore, textureForeScale, foreOffsetY);
+    drawBackgroundTextureRepeatedly(backgroundTexture, drawnWidth, offset);
 }
 
-void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture2D,
-                                               const floatType scrolling,
-                                               const floatType scale,
-                                               const floatType offsetY) const {
+void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture,
+                                               const floatType drawnWidth,
+                                               const floatType offset) const {
 
-    DrawTextureEx(texture2D, {scrolling, offsetY}, 0.0f, scale, WHITE);
-    DrawTextureEx(texture2D, {static_cast<floatType>(texture2D.width) * scale + scrolling, offsetY}, 0.0f, scale,
-                  WHITE);
-    DrawTextureEx(texture2D, {static_cast<floatType>(texture2D.width) * scale * 2 + scrolling, offsetY}, 0.0f, scale,
-                  WHITE);
+    float coveredDistance = -offset;
+    while (coveredDistance < static_cast<float>(GetScreenWidth())) {
+        Rectangle const destRect =
+            Rectangle{coveredDistance - offset, 0, drawnWidth, static_cast<float>(GetScreenHeight())};
+        DrawTexturePro(texture, Rectangle{0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height)},
+                       destRect, Vector2{0, 0}, 0.0f, WHITE);
+
+        coveredDistance += drawnWidth;
+    }
 }
 
 void Renderer::toggleDebugMode() { this->debugMode = !this->debugMode; }
+
+void Renderer::toggleFullscreen() {
+    if (!IsWindowFullscreen()) {
+        int monitor = GetCurrentMonitor();
+        SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+        fsMode = TO_FS;
+    } else {
+        ToggleFullscreen();
+        fsMode = TO_WINDOWED;
+    }
+}
+
+void Renderer::handleFullScreenSwitch() {
+    if (fsMode != NONE) {
+        if (fsMode == TO_FS) {
+            ToggleFullscreen();
+            fsMode = UPDATE_VALUES;
+        } else if (fsMode == TO_WINDOWED) {
+            SetWindowSize(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL);
+            fsMode = UPDATE_VALUES;
+        } else if (fsMode == UPDATE_VALUES) {
+            initCamera();
+            mountainRenderer.reset();
+            menuEngine.resetScreens();
+            fsMode = NONE;
+        }
+    }
+    if (IsKeyPressed(KEY_F11)) {
+        toggleFullscreen();
+    }
+}
 
 void Renderer::setShake(const float intensity) { shakeIntensity = intensity; }
 

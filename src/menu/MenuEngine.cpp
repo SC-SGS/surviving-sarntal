@@ -55,3 +55,9 @@ bool MenuEngine::isGameClosed() const { return this->gameClosed; }
 void MenuEngine::setAchievedGameScore(const Vector &gameScore) { this->achievedGameScore = gameScore; }
 
 Vector MenuEngine::getAchievedGameScore() { return this->achievedGameScore; }
+
+void MenuEngine::resetScreens() {
+    for (auto &screen : screens) {
+        screen.second->setUpButtons();
+    }
+}

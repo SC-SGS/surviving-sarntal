@@ -17,12 +17,13 @@ void EndScreen::setUpScreen() {
 }
 
 void EndScreen::setUpButtons() {
+    buttons = std::vector<std::shared_ptr<Button>>();
     Texture2D playAgainButtonTexture = resourceManager.getTexture("playAgainButton");
     Texture2D playAgainButtonToggledTexture = resourceManager.getTexture("playAgainButtonToggled");
     std::shared_ptr<Button> playAgainButton =
         std::make_shared<Button>(PLAY_AGAIN, START_SCREEN, playAgainButtonTexture, playAgainButtonToggledTexture);
-    Vector position = {(floatType)graphics::SCREEN_WIDTH_IN_PIXEL / 2 - playAgainButton->getWidth() / 2,
-                       (floatType)graphics::SCREEN_HEIGHT_IN_PIXEL / 2 + playAgainButton->getHeight() / 2};
+    Vector position = {(floatType) static_cast<float>(GetScreenWidth()) / 2 - playAgainButton->getWidth() / 2,
+                       (floatType) static_cast<float>(GetScreenHeight()) / 2 + playAgainButton->getHeight() / 2};
     playAgainButton->setPosition(position);
     playAgainButton->toggleButton();
     buttons.push_back(playAgainButton);
@@ -34,7 +35,7 @@ void EndScreen::setUpButtons() {
 
     closeGameButton->setHeight(90);
     closeGameButton->setWidth(90);
-    Vector position2 = {graphics::SCREEN_WIDTH_IN_PIXEL - 50 - closeGameButton->getWidth(), 50};
+    Vector position2 = {static_cast<float>(GetScreenWidth()) - 50 - closeGameButton->getWidth(), 50};
     closeGameButton->setPosition(position2);
     buttons.push_back(closeGameButton);
 }
