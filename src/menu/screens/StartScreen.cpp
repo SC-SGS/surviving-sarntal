@@ -18,6 +18,7 @@ void StartScreen::setUpScreen() {
 }
 
 void StartScreen::setUpButtons() {
+    buttons = std::vector<std::shared_ptr<Button>>();
     Texture2D startButtonTexture = resourceManager.getTexture("startButton");
     Texture2D startButtonToggledTexture = resourceManager.getTexture("startButtonToggled");
     std::shared_ptr<Button> startButton =
@@ -48,14 +49,14 @@ void StartScreen::setUpEndGameButton() {
         std::make_shared<Button>(CLOSE_GAME, NO_SCREEN, closeGameButtonTexture, closeGameButtonToggledTexture);
     closeGameButton->setHeight(90);
     closeGameButton->setWidth(90);
-    Vector position = {graphics::SCREEN_WIDTH_IN_PIXEL - 50 - closeGameButton->getWidth(), 50};
+    Vector position = {static_cast<float>(GetScreenWidth()) - 50 - closeGameButton->getWidth(), 50};
     closeGameButton->setPosition(position);
     buttons.push_back(closeGameButton);
 }
 
 void StartScreen::distributeButtons() {
     int margin = 400;
-    int usableWidth = graphics::SCREEN_WIDTH_IN_PIXEL - 2 * margin;
+    int usableWidth = GetScreenWidth() - 2 * margin;
     int totalButtonWidth = 0;
     int buttonCount = (int)buttons.size();
     for (const auto &button : buttons) {
@@ -65,7 +66,7 @@ void StartScreen::distributeButtons() {
     int spacing = totalSpacing / (buttonCount - 1);
     int currentX = margin;
     for (auto &button : buttons) {
-        Vector position = {0, graphics::SCREEN_HEIGHT_IN_PIXEL - 200};
+        Vector position = {0, static_cast<float>(GetScreenHeight()) - 200};
         position.x = (floatType)currentX;
         button->setPosition(position);
         currentX += (int)button->getWidth() + spacing;

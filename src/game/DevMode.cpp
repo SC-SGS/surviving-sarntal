@@ -124,8 +124,8 @@ void DevMode::drawOnScreen(const char *message) const {
     const int textHeight = fontSize; // Ascent + Descent, but raylib doesn't provide this separately, so using font size
 
     // Calculate the positions
-    const int posX = (graphics::SCREEN_WIDTH_IN_PIXEL - textWidth) / 2;
-    const int posY = (graphics::SCREEN_HEIGHT_IN_PIXEL - textHeight) / 2;
+    const int posX = (GetScreenWidth() - textWidth) / 2;
+    const int posY = (GetScreenWidth() - textHeight) / 2;
 
     DrawText(message, posX, posY, fontSize, RED);
 }
@@ -135,7 +135,7 @@ Vector DevMode::getTransformedMousePosition() const {
     Vector position = Vector();
     position.x = positionMouse.x;
     const float pos = GraphicsUtil::transformYCoordinate(camera.target.y) - positionMouse.y +
-                      static_cast<float>(graphics::SCREEN_HEIGHT_IN_PIXEL) / 2;
+                      static_cast<float>(GetScreenHeight()) / 2;
     position.y = pos;
     return position;
 }
@@ -236,8 +236,8 @@ void DevMode::spawnRocks(const std::vector<Rock> &rocks) {
 Vector DevMode::getTransformedPosition(const Vector &position) const {
     Vector transformedPos = Vector();
     transformedPos.x = position.x;
-    transformedPos.y = GraphicsUtil::transformYCoordinate(camera.target.y) - position.y +
-                       static_cast<float>(graphics::SCREEN_HEIGHT_IN_PIXEL) / 2;
+    transformedPos.y =
+        GraphicsUtil::transformYCoordinate(camera.target.y) - position.y + static_cast<float>(GetScreenHeight()) / 2;
     return transformedPos;
 }
 

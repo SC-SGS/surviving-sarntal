@@ -31,6 +31,9 @@ class Monster : public RenderedEntity {
     floatType getXPosition() const;
     floatType getYPosition() const;
     void setXPosition(floatType positionX);
+
+    const floatType monsterWidth = hikerConstants.hikerWidth * static_cast<floatType>(2.5);
+    const floatType monsterHeight = hikerConstants.hikerHeight * static_cast<floatType>(2);
 };
 
 #endif // SURVIVING_SARNTAL_MONSTER_H

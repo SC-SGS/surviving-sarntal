@@ -48,6 +48,12 @@ class MenuEngine {
     bool isGameClosed() const;
     void setAchievedGameScore(const Vector &gameScore);
     Vector getAchievedGameScore();
+
+    /**
+     * This method resets the screens to their initial state.
+     * This needs to be done to handle button placement in the fullscreen mode
+     */
+    void resetScreens();
 };
 
 #endif // SURVIVING_SARNTAL_MENUENGINE_H

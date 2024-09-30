@@ -140,8 +140,7 @@ template <> struct convert<VisualConstants> {
         visualConstants.altimeterSteps = node["altimeterSteps"].as<int>();
         visualConstants.rumbleIntensity = node["rumbleIntensity"].as<floatType>();
         visualConstants.rumbleDampening = node["rumbleDampening"].as<floatType>();
-        visualConstants.textureMidScale = node["textureMidScale"].as<floatType>();
-        visualConstants.textureForeScale = node["textureForeScale"].as<floatType>();
+        visualConstants.backgroundDistanceScale = node["backgroundDistanceScale"].as<floatType>();
         visualConstants.cameraToHikerOffset = node["cameraToHikerOffset"].as<int>();
         visualConstants.mountainResolution = node["mountainResolution"].as<int>();
         visualConstants.mountainGradientHeight = node["mountainGradientHeight"].as<int>();
@@ -157,7 +156,6 @@ template <> struct convert<BarriersConstants> {
         }
 
         barriersConstants.killBarVelocity = node["killBarVelocity"].as<floatType>();
-        barriersConstants.playerRightBarrierOffset = node["playerRightBarrierOffset"].as<floatType>();
 
         return true;
     }
