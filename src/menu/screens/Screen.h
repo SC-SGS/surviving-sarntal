@@ -12,13 +12,15 @@
 
 class Screen {
 
+  public:
+    virtual void setUpScreen();
+    virtual void setUpButtons();
+
   protected:
     ResourceManager &resourceManager;
     Texture2D background{};
     std::vector<std::shared_ptr<Button>> buttons;
     size_t selectedButton;
-    virtual void setUpScreen();
-    virtual void setUpButtons();
 
   public:
     explicit Screen(ResourceManager &resourceManager);

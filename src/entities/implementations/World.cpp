@@ -90,7 +90,7 @@ void World::useItem(const ItemType itemType) {
 
 void World::useKaiserschmarrn() const {
     this->hiker.addHealthPoints(gameConstants.itemsConstants.kaiserschmarrnHealthRestoration);
-    this->audioService.playSound("use-kaiserschmarrn");
+    this->audioService.playSound("eat");
     spdlog::debug("Used Kaiserschmarrn.");
 }
 
@@ -134,17 +134,19 @@ void World::clearRocks() {
 }
 
 void World::resetHiker() {
-    floatType hikerPositionX = 0.3 * (graphics::SCREEN_WIDTH_IN_METER);
+    floatType hikerPositionX = 0.3f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX) + 0.1f;
     Vector pos = {hikerPositionX, hikerPositionY};
     this->hiker.reset(pos);
 }
 
-void World::resetMonster() const { this->getMonster().setXPosition(0.1 * graphics::SCREEN_WIDTH_IN_METER); }
+void World::resetMonster() const {
+    this->getMonster().setXPosition(0.1f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO));
+}
 
 void World::resetAttributes() {
     this->setMinX(0);
-    this->setMaxX(graphics::SCREEN_WIDTH_IN_METER);
+    this->setMaxX((static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO));
     this->coinScore = 0;
     this->gameScore.x = this->hiker.getPosition().x;
     this->gameScore.y = this->hiker.getPosition().y;
@@ -152,7 +154,10 @@ void World::resetAttributes() {
     this->rocks->clear();
     this->inventory.reset();
 }
-void World::useRockBomb() { this->clearRocks(); }
+void World::useRockBomb() {
+    this->clearRocks();
+    audioService.playSound("nuke");
+}
 
 void World::useSelectedItem() {
     if (!this->getInventory().selectedSlotIsEmpty()) {

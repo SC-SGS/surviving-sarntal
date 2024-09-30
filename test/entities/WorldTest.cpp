@@ -74,8 +74,8 @@ TEST_F(WorldTestFixture, AddItemTest) {
 TEST_F(WorldTestFixture, UseKaiserschmarrnTest) {
     MockResourceManager mockResourceManager(ConfigManager::getInstance());
     MockAudioService mockAudioService(mockResourceManager);
-    ON_CALL(mockAudioService, playSound("use-kaiserschmarrn")).WillByDefault(::testing::Return());
-    EXPECT_CALL(mockAudioService, playSound("use-kaiserschmarrn")).Times(1);
+    ON_CALL(mockAudioService, playSound("eat")).WillByDefault(::testing::Return());
+    EXPECT_CALL(mockAudioService, playSound("eat")).Times(1);
     Terrain terrain = Terrain::getEmptyTerrain(gameConstants.hikerConstants, gameConstants.terrainConstants,
                                                resourceManager, {{0.0, 0.0}, {10.0, 10.0}});
     Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);

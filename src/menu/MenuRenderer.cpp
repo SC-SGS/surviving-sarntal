@@ -11,8 +11,9 @@ void MenuRenderer::drawStartScreen() {
     checkMouseClickStartScreen();
 
     const Texture2D texture = resourceManager.getTexture("startScreen");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
+                                 static_cast<float>(GetScreenHeight())};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
 
     BeginDrawing();
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);
@@ -47,8 +48,9 @@ void MenuRenderer::checkMouseClickStartScreen() {
 
 void MenuRenderer::drawEndScreen() {
     const Texture2D texture = resourceManager.getTexture("endScreen");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
+                                 static_cast<float>(GetScreenHeight())};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
 
     BeginDrawing();
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);
@@ -72,8 +74,9 @@ void MenuRenderer::checkMouseClickEndScreen() {
 
 void MenuRenderer::drawSettingsScreen() {
     const Texture2D texture = resourceManager.getTexture("settingsScreen");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
+                                 static_cast<float>(GetScreenHeight())};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
 
     BeginDrawing();
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);
@@ -96,8 +99,9 @@ void MenuRenderer::checkMouseClickHomeButton() {
 
 void MenuRenderer::drawInstructionsScreen() {
     const Texture2D texture = resourceManager.getTexture("instructionScreen");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
+                                 static_cast<float>(GetScreenHeight())};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
 
     BeginDrawing();
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);
@@ -138,8 +142,9 @@ void MenuRenderer::setPlayAgainClicked(bool newPlayAgainClicked) { this->playAga
 
 void MenuRenderer::drawPauseScreen() {
     const Texture2D texture = resourceManager.getTexture("pauseScreen");
-    const Rectangle sourceRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
-    const Rectangle destRec = {0.0f, 0.0f, graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL};
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
+                                 static_cast<float>(GetScreenHeight())};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
 
     BeginDrawing();
     DrawTexturePro(texture, sourceRec, destRec, {0, 0}, 0, WHITE);

@@ -17,6 +17,7 @@ ResourceManager::ResourceManager(ConfigManager &configManager, bool initOnBuild)
 void ResourceManager::init() {
     this->loadTextures();
     this->loadMusic();
+    this->loadSounds();
 }
 
 void ResourceManager::loadTextures() {
@@ -30,6 +31,16 @@ void ResourceManager::loadTextures() {
 }
 
 void ResourceManager::loadMusic() {
+    std::unordered_map<std::string, std::string> configMusics = config.getMusic();
+
+    for (auto &configMusic : configMusics) {
+        auto songName = configMusic.first;
+        auto songLocation = configMusic.second;
+        this->musics[songName] = LoadMusicStream(songLocation.c_str());
+    }
+}
+
+void ResourceManager::loadSounds() {
     std::unordered_map<std::string, std::string> configSounds = config.getSounds();
 
     for (auto &configSound : configSounds) {

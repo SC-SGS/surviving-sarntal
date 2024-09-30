@@ -23,6 +23,7 @@ ConfigManager::ConfigManager() {
 ConfigManager::~ConfigManager() = default;
 
 std::unordered_map<std::string, std::string> ConfigManager::getSounds() { return extractMap("soundEffects"); }
+std::unordered_map<std::string, std::string> ConfigManager::getMusic() { return extractMap("music"); }
 
 std::unordered_map<std::string, std::string> ConfigManager::getTextures() { return extractMap("textures"); }
 

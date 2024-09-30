@@ -17,13 +17,14 @@ void SettingsScreen::setUpScreen() {
 }
 
 void SettingsScreen::setUpButtons() {
+    buttons = std::vector<std::shared_ptr<Button>>();
     Texture2D homeButtonTexture = resourceManager.getTexture("homeButton");
     Texture2D homeButtonToggledTexture = resourceManager.getTexture("homeButtonToggled");
     std::shared_ptr<Button> homeButton =
         std::make_shared<Button>(HOME, START_SCREEN, homeButtonTexture, homeButtonToggledTexture);
     homeButton->setHeight(90);
     homeButton->setWidth(90);
-    Vector position = {graphics::SCREEN_WIDTH_IN_PIXEL - 100 - 2 * homeButton->getWidth(), 50};
+    Vector position = {static_cast<float>(GetScreenWidth()) - 100 - 2 * homeButton->getWidth(), 50};
     homeButton->setPosition(position);
     homeButton->toggleButton();
     buttons.push_back(homeButton);
@@ -35,7 +36,7 @@ void SettingsScreen::setUpButtons() {
 
     closeGameButton->setHeight(90);
     closeGameButton->setWidth(90);
-    Vector position2 = {graphics::SCREEN_WIDTH_IN_PIXEL - 50 - closeGameButton->getWidth(), 50};
+    Vector position2 = {static_cast<float>(GetScreenWidth()) - 50 - closeGameButton->getWidth(), 50};
     closeGameButton->setPosition(position2);
     buttons.push_back(closeGameButton);
 }

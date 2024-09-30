@@ -1,8 +1,10 @@
 run-dev-mode: false # if true the manual tests will run instead of the normal game
 
-soundEffects:
-  background-music: "../../assets/audio/background_music.mp3"
+music:
+  background-music: "../../assets/audio/Going Up The Country.mp3"
   background-music2: "../../assets/audio/background_music2.wav"
+
+soundEffects:
   use-kaiserschmarrn: "../../assets/audio/cool_sound.mp3"
   use-duck: "../../assets/audio/duck.wav"
   use-coin: "../../assets/audio/proper_coin.wav"
@@ -23,6 +25,8 @@ soundEffects:
   game-over: "../../assets/audio/game_over.wav"
   meme-game-over: "../../assets/audio/gameover.wav"
   meme-game-over2: "../../assets/audio/shutdown.wav"
+  nuke: "../../assets/audio/nuke.mp3"
+  eat: "../../assets/audio/eat.mp3"
 
 textures:
   crouch: "../../assets/texture/player_duck.png"
@@ -39,8 +43,7 @@ textures:
   explosion: "../../assets/texture/explosion.png"
   helicopter: "../../assets/texture/helicopter.png"
   monster: "../../assets/texture/killbar.png"
-  midground: "../../assets/layers/mountainBackground.png"
-  foreground: "../../assets/layers/clouds_mg_1.png"
+  background: "../../assets/layers/mountainBackground.png"
   mountain: "../../assets/layers/mountain3.png"
   startScreen: "../../assets/screens/start_screen.png"
   settingsScreen: "../../assets/screens/settings_screen.png"
@@ -190,8 +193,7 @@ gameConstants:
     altimeterSteps: 10
     rumbleIntensity: 0.4
     rumbleDampening: 0.9
-    textureMidScale: 1.0
-    textureForeScale: 7.0
+    backgroundDistanceScale: 0.1
     cameraToHikerOffset: 1
     mountainGradientHeight: 300
     mountainResolution: 10
