@@ -19,17 +19,18 @@ GameFactory::GameFactory(Camera2D &camera)
       monster(Monster(gameConstants.hikerConstants)),
       inventory(audioService, gameConstants.itemsConstants),
       world(terrain, hiker, inventory, monster, audioService, gameConstants),
+      // Menu
+      menuEngine(resourceManager),
+      fullMenuRenderer(menuEngine),
+      menuEventProcessor(menuEngine),
       // Renderer
       camera(camera),
       polygonRenderer(resourceManager),
       mountainRenderer(camera, gameConstants, resourceManager),
       entityRenderer(world, camera, gameConstants, resourceManager, polygonRenderer),
       hudRenderer(world, camera, gameConstants, resourceManager),
-      renderer(world, resourceManager, camera, gameConstants, mountainRenderer, entityRenderer, hudRenderer),
-      // Menu
-      menuEngine(resourceManager),
-      fullMenuRenderer(menuEngine),
-      menuEventProcessor(menuEngine),
+      renderer(
+          world, resourceManager, camera, gameConstants, menuEngine, mountainRenderer, entityRenderer, hudRenderer),
       // Spawner
       items(configManager.getItems()),
       itemSpawner(world, gameConstants, items),
@@ -74,7 +75,7 @@ Game GameFactory::buildGame() const { return this->game; }
 DevMode GameFactory::buildDevMode() const { return this->devMode; }
 
 Vector GameFactory::getInitialHikerPosition() {
-    floatType hikerPositionX = 0.3 * graphics::SCREEN_WIDTH_IN_METER;
+    floatType hikerPositionX = 0.3f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO);
     floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
     return {hikerPositionX, hikerPositionY};
 }

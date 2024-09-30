@@ -29,10 +29,11 @@ Game::Game(World &world,
 }
 
 void Game::run() {
-    audioService.playSound("background-music");
+    audioService.playSong("background-music", true);
     // bool playedEndSound = false;
 
     while (!WindowShouldClose() && !this->menuEngine.isGameClosed()) {
+        audioService.updateMusicStream();
         bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
         if (needToInitGamePads) {
             initializeGamepads();

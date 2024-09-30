@@ -121,7 +121,8 @@ void Positioner::clampHikerToTerrain() const {
     floatType terrainHeight = this->world.getTerrain().mapHeightToTerrain(hikerFeetPos);
     hikerFeetPos.y = terrainHeight;
     hiker.setPosition(hikerFeetPos);
-    hiker.setHikerMoving();
+    if (!hiker.getHikerMovement().getState() == HikerMovement::CROUCHED)
+        hiker.setHikerMoving();
     hiker.setLastJump(0.0f);
 }
 
@@ -166,9 +167,9 @@ void Positioner::moveHikerOnTerrain() const {
 void Positioner::enforceWorldLimitOnHiker() const {
     Hiker &hiker = this->world.getHiker();
     Vector pos = hiker.getPosition();
-
-    if (pos.x > this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset) {
-        pos.x = this->world.getMonster().getXPosition() + barriersConstants.playerRightBarrierOffset;
+    const float rightBorder = this->world.getMinX() + (this->world.getMaxX() - this->world.getMinX()) * 0.9f;
+    if (pos.x > rightBorder) {
+        pos.x = rightBorder;
         if (hiker.getHikerMovement().getState() != HikerMovement::MovementState::IN_AIR) {
             pos.y = this->world.getTerrain().mapHeightToTerrain(pos);
         }
@@ -177,7 +178,6 @@ void Positioner::enforceWorldLimitOnHiker() const {
 }
 
 void Positioner::updateHikerPosition() const {
-
     this->applyKnockbackToHiker();
     Hiker &hiker = this->world.getHiker();
     if (hiker.getHikerMovement().getState() == HikerMovement::MovementState::IN_AIR) {

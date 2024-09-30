@@ -20,6 +20,7 @@ class ResourceManager {
 
   private:
     virtual void loadMusic();
+    virtual void loadSounds();
     virtual void loadTextures();
 
     ConfigManager &config;
