@@ -123,8 +123,7 @@ void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture,
 
     float coveredDistance = -offset;
     while (coveredDistance < static_cast<float>(GetScreenWidth())) {
-        Rectangle const destRect =
-            Rectangle{coveredDistance - offset, 0, drawnWidth, static_cast<float>(GetScreenHeight())};
+        Rectangle const destRect = Rectangle{coveredDistance, 0, drawnWidth, static_cast<float>(GetScreenHeight())};
         DrawTexturePro(texture, Rectangle{0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height)},
                        destRect, Vector2{0, 0}, 0.0f, WHITE);
 
@@ -154,9 +153,7 @@ void Renderer::handleFullScreenSwitch() {
             SetWindowSize(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL);
             fsMode = UPDATE_VALUES;
         } else if (fsMode == UPDATE_VALUES) {
-            initCamera();
-            mountainRenderer.reset();
-            menuEngine.resetScreens();
+            reset();
             fsMode = NONE;
         }
     }
@@ -170,5 +167,6 @@ void Renderer::setShake(const float intensity) { shakeIntensity = intensity; }
 void Renderer::reset() {
     initCamera();
     mountainRenderer.reset();
-    entityRenderer.reset();
+    menuEngine.resetScreens();
+    fsMode = NONE;
 }

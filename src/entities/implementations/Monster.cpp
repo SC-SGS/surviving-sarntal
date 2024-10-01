@@ -10,7 +10,8 @@
 
 Monster::Monster(HikerConstants &hikerConstants)
     : hikerConstants(hikerConstants),
-      RenderedEntity({0.1 * (graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO), 0}) {
+      RenderedEntity(
+          {static_cast<floatType>(0.1 * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO)), 0}) {
     animation = {10, 0, 0.2, 0};
 }
 

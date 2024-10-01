@@ -59,6 +59,8 @@ std::unordered_map<std::string, int> ConfigManager::getLandmarks() {
     return landmarks;
 }
 
+bool ConfigManager::getFullscreen() { return config["fullscreen"].as<bool>(); }
+
 GameConstants ConfigManager::getGameConstants() { return config["gameConstants"].as<GameConstants>(); }
 
 std::unordered_map<std::string, std::string> ConfigManager::extractMap(std::string const &propertyName) {
