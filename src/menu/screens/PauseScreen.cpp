@@ -46,8 +46,9 @@ void PauseScreen::setUpButtons() {
 }
 
 void PauseScreen::distributeButtons() {
-    int margin = 500;                                // Minimum margin from the left and right edges
-    int usableWidth = GetScreenWidth() - 2 * margin; // Usable width of the screen
+    int margin =
+        static_cast<int>(static_cast<float>(GetScreenWidth()) * 0.35f); // Minimum margin from the left and right edges
+    int usableWidth = GetScreenWidth() - 2 * margin;                    // Usable width of the screen
 
     int totalButtonWidth = 0;
     int buttonCount = (int)buttons.size();

@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 #define SURVIVING_SARNTAL_GAMEPROPERTIES_HPP
 
+#include "raylib.h"
 #include <cstddef>
 #include <vector>
 
@@ -156,9 +157,8 @@ struct MountainConstants {
     int chunkBufferRight = 16;
     int chunkCount = visibleChunksCount + chunkBufferLeft + chunkBufferRight;
 
-    floatType chunkWidth =
-        static_cast<floatType>(1.0 * graphics::SCREEN_WIDTH_IN_PIXEL /
-                               (static_cast<float>(visibleChunksCount) * graphics::UNIT_TO_PIXEL_RATIO));
+    floatType chunkWidth = static_cast<floatType>(
+        1.0 * GetScreenWidth() / (static_cast<float>(visibleChunksCount) * graphics::UNIT_TO_PIXEL_RATIO));
     floatType width = static_cast<floatType>(chunkCount) * chunkWidth;
     floatType start = static_cast<floatType>(-chunkBufferLeft) * chunkWidth;
     floatType initialHeight = 0.0;
