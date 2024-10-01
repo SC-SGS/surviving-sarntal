@@ -5,15 +5,27 @@
 #include "spdlog/fmt/bundled/chrono.h"
 #include "spdlog/spdlog.h"
 
-int main(int argc, char *argv[]) {
-    spdlog::set_level(spdlog::level::info);
-    InitWindow(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL, "Surviving Sarntal");
+void initRaylib() {
+    InitWindow(0, 0, "Surviving Sarntal");
 
     InitAudioDevice(); // Initialize audio device
     SetTargetFPS(60);
     SDL_Init(SDL_INIT_GAMECONTROLLER);
+}
+
+int main(int argc, char *argv[]) {
+    spdlog::set_level(spdlog::level::info);
+
+    initRaylib();
 
     ConfigManager &configManager = ConfigManager::getInstance();
+
+    if (configManager.getFullscreen()) {
+        ToggleFullscreen();
+    } else {
+        SetWindowSize(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL);
+    }
+
     Camera2D camera{};
     const GameFactory gameFactory{camera};
 

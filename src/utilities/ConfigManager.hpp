@@ -19,6 +19,7 @@ class ConfigManager : public Singleton<ConfigManager> {
     std::unordered_map<std::string, std::string> getMusic();
     std::unordered_map<ItemType, ItemDto> getItems();
     std::unordered_map<std::string, int> getLandmarks();
+    bool getFullscreen();
 
     GameConstants getGameConstants();
     bool isInDevMode();

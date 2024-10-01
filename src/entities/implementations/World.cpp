@@ -146,7 +146,7 @@ void World::resetMonster() const {
 
 void World::resetAttributes() {
     this->setMinX(0);
-    this->setMaxX((static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO));
+    this->setMaxX(graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO);
     this->coinScore = 0;
     this->gameScore.x = this->hiker.getPosition().x;
     this->gameScore.y = this->hiker.getPosition().y;
