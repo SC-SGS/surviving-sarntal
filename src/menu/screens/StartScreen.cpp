@@ -55,7 +55,7 @@ void StartScreen::setUpEndGameButton() {
 }
 
 void StartScreen::distributeButtons() {
-    int margin = 400;
+    int margin = static_cast<int>(static_cast<float>(GetScreenWidth()) * 0.25f);
     int usableWidth = GetScreenWidth() - 2 * margin;
     int totalButtonWidth = 0;
     int buttonCount = (int)buttons.size();
@@ -66,7 +66,7 @@ void StartScreen::distributeButtons() {
     int spacing = totalSpacing / (buttonCount - 1);
     int currentX = margin;
     for (auto &button : buttons) {
-        Vector position = {0, static_cast<float>(GetScreenHeight()) - 200};
+        Vector position = {0, static_cast<float>(GetScreenHeight()) * 0.8f};
         position.x = (floatType)currentX;
         button->setPosition(position);
         currentX += (int)button->getWidth() + spacing;

@@ -8,8 +8,8 @@ Button::Button(ButtonType buttonType, ScreenState resultingScreen, Texture2D unt
       resultingScreen(resultingScreen),
       untoggledButton(untoggledButton),
       toggledButton(toggledButton) {
-    this->height = 100;
-    this->width = 200;
+    this->height = static_cast<float>(GetScreenWidth()) * 0.0625f;
+    this->width = static_cast<float>(GetScreenWidth()) * 0.125f;
     this->texture = untoggledButton;
     this->isToggled = false;
     this->position = {0, 0};
