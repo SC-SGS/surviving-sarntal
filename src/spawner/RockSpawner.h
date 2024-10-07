@@ -27,6 +27,8 @@ class RockSpawner {
      */
     void spawnRocks();
 
+    void reset();
+
   private:
     GameConstants &gameConstants;
     floatType lastSpawnTime{0.};

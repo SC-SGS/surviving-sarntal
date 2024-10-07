@@ -69,3 +69,4 @@ void PhysicsEngine::updateTimeStep() {
     this->collisionHandler.handleCollisions();
     this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
 }
+void PhysicsEngine::reset() { this->spawner.reset(); }

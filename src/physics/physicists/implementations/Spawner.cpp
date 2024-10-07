@@ -33,3 +33,7 @@ void Spawner::spawn() {
     this->rockSpawner.spawnRocks();
     this->itemSpawner.spawnItems();
 }
+void Spawner::reset() {
+    this->itemSpawner.reset();
+    this->rockSpawner.reset();
+}

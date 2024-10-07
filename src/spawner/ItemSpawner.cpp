@@ -60,3 +60,4 @@ Vector ItemSpawner::getNextRandomPosition() {
     spdlog::debug("Next spawn position is (x: {0}, y: {1}", xPosition, yPosition);
     return Vector{xPosition, yPosition};
 }
+void ItemSpawner::reset() { this->nextSpawnDistance = 0.0; }

@@ -65,6 +65,8 @@ class PhysicsEngine {
 
     ~PhysicsEngine() = default;
 
+    void reset();
+
   private:
     /**
      * The constant length of a simulation time interval.
