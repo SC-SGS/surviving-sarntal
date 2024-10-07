@@ -1,0 +1,114 @@
+gameConstants:
+  hikerConstants:
+    hikerMaxHealth: 100
+    hikerHeight: 1.8
+    hikerWidth: 1.15
+    crouchedHikerHeight: 1.42
+    crouchedHikerWidth: 0.96
+    mass: 800.0
+    duckSpeedFactor: 0.35
+    normalSpeed: 2.6
+    jumpVelocity: 10.0
+    airMovementSpeedFactor: -0.6
+    knockBack: 0.00005
+    maxSpeedNegSlope: 5.0
+    maxClimbableSlope: 4.0
+    terrainCollisionDampening: 0.8
+    friction: 0.3 #is applied to the gravitational constant, when the hiker slides down the terrain
+    knockbackLossPerStep: 0.9
+
+  itemsConstants:
+    spawnItems: false
+    shieldTime: 15.0
+    collectionRadius: 1.0
+    slotsPerInventory: 3
+    itemsPerSlot: 64
+    kaiserschmarrnHealthRestoration: 30
+    coinScore: 500
+    startSpawnTime: 5.0
+    minSpawnTime: 2
+    maxSpawnTime: 10
+    itemBaseHeight: 1
+    itemMaxHeight: 2.6
+    itemsPerSecond: 0.05
+    inventorySlotSize: 80.0
+
+  rockConstants:
+    spawnRocks: false
+    minRockSize: 0.32
+    maxRockSize: 1.0
+    velocityCap: 1200.0
+    gamma: 1.0
+    maxAngularVelocity: 1.0
+    minSpawnVelocity: 0.01
+    maxSpawnVelocity: 10.0
+    minSpawnRotationVelocity: 0.1
+    maxSpawnRotationVelocity: 1.0
+    rockTimePeriodDifficult: 1.0
+    rockTimePeriodMedium: 5.0
+    rockTimePeriodEasy: 2.0
+    timeBetweenRockSpawns: 5.0
+    numOfRocksToSpawn: 10
+    spawnOffsetX: 0.5
+    minRockDensity: 1.0
+    maxRockDensity: 3.0
+
+  physicsConstants:
+    gravitationalConstant: -9.81
+    gravitySpinEffectOnVertices: 0.1
+    epsilon: 0.01 # should be "small"
+    rockRockBounciness: 0.4 # between 0 and 1 (wink wink*)
+    rockTerrainBounciness: 0.9 #between 0 and 1 (wink wink*)
+    physicsDeltaT: 0.01 # ideally, 1/physicsDeltaT >> frameRate
+    maxNumberOfResolutionSteps: 4
+    terrainSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
+    rockSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
+    debugCDRendering: false
+
+  inputConstants:
+    maxGamepads: 8
+
+  visualConstants:
+    uiMargin: 20
+    fontSizeScore: 30
+    fontSizeAltimeter: 20
+    healthBarWidth: 200
+    healthBarHeight: 20
+    positionToScoreRatio: 10
+    altimeterSteps: 10
+    rumbleIntensity: 0.4
+    rumbleDampening: 0.9
+    backgroundDistanceScale: 0.1
+    cameraToHikerOffset: 1
+    mountainGradientHeight: 300
+    mountainResolution: 10
+
+  barriersConstants:
+    killBarVelocity: 0.0
+    playerRightBarrierOffset: 15.0
+
+  terrainConstants:
+    bufferLeft: 25.0
+    bufferRight: 25.0
+    biomeWidth: 100.0
+
+    renderingResolution: 0.1
+    collisionDetectionResolution: 1
+    collisionDetectionPreFilteringTolerance: 0.2
+
+    generationCheckingRange: 5.0
+    minimalBasePointDistance: 1.0
+    minimalBasePolylineAngle: 30.0 #in degrees
+    maximalSlopeHikerClearance: 85.0 #in degrees
+    hikerClearanceTolerance: 1.5 #multiplier for hiker width and height
+    maximalOverhangDepth: 7.0
+    maximalOverhangHeight: 5.0
+
+  rockSpawnerConstants:
+    # All based on difficulty [EEEASY, EASY, MEDIUM, HARD, I_WANT_MOMY]
+    velocityDifficultyFactor: [ 0.0, 0.25, 0.5, 0.75, 1.0 ]
+    spawningPhase: [ 60.0, 150.0, 250.0, 500.0, 1000.0 ]
+    rockSpawnTimeInterval: [ 8.0, 7.0, 5.0, 3.0, 2.0 ]
+
+    # Based on rock type
+    rockTypePhase: [ 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 ]

@@ -28,11 +28,17 @@ class ConfigManager : public Singleton<ConfigManager> {
     ConfigManager();
     ~ConfigManager();
 
+    // Configs locations
+    const std::string CONFIG_LOCATION = "../../src/configuration.yaml";
+    const std::string CONFIG_DEV_MODE_LOCATION = "../../src/game/configuration-dev-mode.yaml";
+
     // Attributes
     YAML::Node config;
+    YAML::Node configDevMode;
 
     // Helper functions
     std::unordered_map<std::string, std::string> extractMap(std::string const &propertyName);
+    YAML::Node loadConfiguration(const std::string &relativePath);
 };
 
 #endif // SURVIVING_SARNTAL_CONFIGMANAGER_HPP
