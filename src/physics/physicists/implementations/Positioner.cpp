@@ -32,16 +32,21 @@ void Positioner::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; };
 
 void Positioner::updateMonsterPosition() const {
     const auto oldXPos = this->world.getMonster().getXPosition();
-    const auto newXPos = oldXPos + barriersConstants.killBarVelocity * this->deltaT;
+    const auto offset = this->getKillBarVelocity() * this->deltaT;
+    const auto newXPos = oldXPos + offset;
     const auto newYPos = this->world.getTerrain().getMaxHeight(newXPos);
     Vector newPos = {newXPos, newYPos};
     this->world.getMonster().setPosition(newPos);
 }
 
+floatType Positioner::getKillBarVelocity() const {
+    return barriersConstants.killBarVelocity * this->world.getKillBarFactor();
+}
+
 void Positioner::updateWorldBorderPosition() const {
     const auto xMin = this->world.getMinX();
     const auto xMax = this->world.getMaxX();
-    const auto delta = barriersConstants.killBarVelocity * this->deltaT;
+    const auto delta = this->getKillBarVelocity() * this->deltaT;
     this->world.setMinX(xMin + delta);
     this->world.setMaxX(xMax + delta);
 }

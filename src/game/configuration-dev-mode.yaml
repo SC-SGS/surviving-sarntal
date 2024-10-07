@@ -8,6 +8,7 @@ gameConstants:
     mass: 800.0
     duckSpeedFactor: 0.35
     normalSpeed: 2.6
+    maxSpeed: 4.5 # Make sure this is higher than the kill bar max velocity
     jumpVelocity: 10.0
     airMovementSpeedFactor: -0.6
     knockBack: 0.00005
@@ -18,13 +19,14 @@ gameConstants:
     knockbackLossPerStep: 0.9
 
   itemsConstants:
-    spawnItems: false
+    spawnItems: true
     shieldTime: 15.0
     collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
     kaiserschmarrnHealthRestoration: 30
     coinScore: 500
+    coinAccelerationFactor: 0.05
     startSpawnTime: 5.0
     minSpawnTime: 2
     maxSpawnTime: 10
@@ -34,7 +36,7 @@ gameConstants:
     inventorySlotSize: 80.0
 
   rockConstants:
-    spawnRocks: false
+    spawnRocks: true
     minRockSize: 0.32
     maxRockSize: 1.0
     velocityCap: 1200.0
@@ -84,7 +86,9 @@ gameConstants:
     mountainResolution: 10
 
   barriersConstants:
-    killBarVelocity: 0.0
+    killBarVelocity: 1.5
+    killBarAccelerationFactor: 30.0
+    maxKillBarVelocity: 4.0
     playerRightBarrierOffset: 15.0
 
   terrainConstants:

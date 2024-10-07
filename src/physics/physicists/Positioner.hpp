@@ -127,6 +127,11 @@ class Positioner {
      * @param movement the last movement of the hiker that placed them in their current position.
      */
     void resolveHikerTerrainCollisions(Vector movement) const;
+
+    /**
+     * Computes the speed  based on the covered distance.
+     */
+    floatType getKillBarVelocity() const;
 };
 
 #endif // POSITIONER_H
