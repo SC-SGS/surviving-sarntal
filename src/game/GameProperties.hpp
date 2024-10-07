@@ -32,6 +32,7 @@ struct HikerConstants {
     // Hiker movement speed
     floatType duckSpeedFactor;
     floatType normalSpeed;
+    floatType maxSpeed;
     floatType jumpVelocity;
     floatType airMovementSpeedFactor;
     floatType knockBack;
@@ -53,6 +54,7 @@ struct ItemsConstants {
     int itemsPerSlot;
     int kaiserschmarrnHealthRestoration;
     int coinScore;
+    floatType coinAccelerationFactor;
 
     floatType startSpawnTime;
     int minSpawnTime;
@@ -131,6 +133,8 @@ struct VisualConstants {
 
 struct BarriersConstants {
     floatType killBarVelocity;
+    floatType killBarAccelerationFactor;
+    floatType maxKillBarVelocity;
 };
 
 struct TerrainConstants {

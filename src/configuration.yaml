@@ -125,6 +125,7 @@ gameConstants:
     mass: 800.0
     duckSpeedFactor: 0.35
     normalSpeed: 2.6
+    maxSpeed: 4.5 # Make sure this is higher than the kill bar max velocity
     jumpVelocity: 10.0
     airMovementSpeedFactor: -0.6
     knockBack: 0.00005
@@ -142,6 +143,7 @@ gameConstants:
     itemsPerSlot: 64
     kaiserschmarrnHealthRestoration: 30
     coinScore: 500
+    coinAccelerationFactor: 0.05
     startSpawnTime: 5.0
     minSpawnTime: 2
     maxSpawnTime: 10
@@ -202,6 +204,8 @@ gameConstants:
 
   barriersConstants:
     killBarVelocity: 1.5
+    killBarAccelerationFactor: 30.0
+    maxKillBarVelocity: 4.0
     playerRightBarrierOffset: 15.0
 
   terrainConstants:

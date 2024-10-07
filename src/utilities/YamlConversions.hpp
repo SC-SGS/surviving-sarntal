@@ -25,6 +25,7 @@ template <> struct convert<HikerConstants> {
         hikerConstants.mass = node["mass"].as<floatType>();
         hikerConstants.duckSpeedFactor = node["duckSpeedFactor"].as<floatType>();
         hikerConstants.normalSpeed = node["normalSpeed"].as<floatType>();
+        hikerConstants.maxSpeed = node["maxSpeed"].as<floatType>();
         hikerConstants.jumpVelocity = node["jumpVelocity"].as<floatType>();
         hikerConstants.airMovementSpeedFactor = node["airMovementSpeedFactor"].as<floatType>();
         hikerConstants.knockBack = node["knockBack"].as<floatType>();
@@ -51,6 +52,7 @@ template <> struct convert<ItemsConstants> {
         itemsConstants.itemsPerSlot = node["itemsPerSlot"].as<int>();
         itemsConstants.kaiserschmarrnHealthRestoration = node["kaiserschmarrnHealthRestoration"].as<int>();
         itemsConstants.coinScore = node["coinScore"].as<int>();
+        itemsConstants.coinAccelerationFactor = node["coinAccelerationFactor"].as<floatType>();
         itemsConstants.startSpawnTime = node["startSpawnTime"].as<floatType>();
         itemsConstants.minSpawnTime = node["minSpawnTime"].as<int>();
         itemsConstants.maxSpawnTime = node["maxSpawnTime"].as<int>();
@@ -156,6 +158,8 @@ template <> struct convert<BarriersConstants> {
         }
 
         barriersConstants.killBarVelocity = node["killBarVelocity"].as<floatType>();
+        barriersConstants.killBarAccelerationFactor = node["killBarAccelerationFactor"].as<floatType>();
+        barriersConstants.maxKillBarVelocity = node["maxKillBarVelocity"].as<floatType>();
 
         return true;
     }

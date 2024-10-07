@@ -165,3 +165,35 @@ void World::useSelectedItem() {
         this->getInventory().removeSelectedItem();
     }
 }
+
+floatType World::calculateHikerSpeed(floatType factor) {
+    floatType speed = this->gameConstants.hikerConstants.normalSpeed;
+
+    speed += speed * this->getCoinSpeedFactor();
+    speed *= factor;
+
+    if (this->hiker.getHikerMovement().getState() == HikerMovement::CROUCHED) {
+        speed *= this->gameConstants.hikerConstants.duckSpeedFactor;
+    }
+
+    if (speed > this->gameConstants.hikerConstants.maxSpeed) {
+        return this->gameConstants.hikerConstants.maxSpeed;
+    } else {
+        return speed;
+    }
+}
+
+floatType World::getCoinSpeedFactor() const {
+    floatType numberOfCoins =
+        static_cast<floatType>(coinScore) / static_cast<floatType>(gameConstants.itemsConstants.coinScore);
+    return numberOfCoins * gameConstants.itemsConstants.coinAccelerationFactor;
+}
+
+floatType World::getKillBarFactor() const {
+    floatType factor = this->getMaxX() / gameConstants.barriersConstants.killBarAccelerationFactor;
+    if (factor > gameConstants.barriersConstants.maxKillBarVelocity) {
+        return gameConstants.barriersConstants.maxKillBarVelocity;
+    } else {
+        return factor;
+    }
+}
