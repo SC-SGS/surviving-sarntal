@@ -95,6 +95,11 @@ class World {
     void reset();
     void useSelectedItem();
 
+    floatType getCoinSpeedFactor() const;
+
+    floatType getKillBarFactor() const;
+    floatType calculateHikerSpeed(floatType factor);
+
   private:
     // Dependencies
     Terrain &terrain;
