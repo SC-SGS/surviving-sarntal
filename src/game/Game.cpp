@@ -100,6 +100,7 @@ void Game::endGameplay() {
 
 void Game::resetGame() {
     playedEndSound = false;
+    this->physicsEngine.reset();
     this->world.reset();
     this->renderer.reset();
 }
