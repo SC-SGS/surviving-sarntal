@@ -21,6 +21,8 @@ class Spawner {
     ~Spawner() = default;
     void spawn();
 
+    void reset();
+
   private:
     RockSpawner &rockSpawner;
     Terrain &terrain;

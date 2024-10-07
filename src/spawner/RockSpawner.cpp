@@ -139,3 +139,4 @@ RockType RockSpawner::determineRockTypePhase() const {
     }
     return static_cast<RockType>(0);
 }
+void RockSpawner::reset() {}

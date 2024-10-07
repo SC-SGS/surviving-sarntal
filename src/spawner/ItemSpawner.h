@@ -24,6 +24,8 @@ class ItemSpawner {
      */
     void spawnItems();
 
+    void reset();
+
   private:
     // Dependencies
     World &world;
