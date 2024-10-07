@@ -8,16 +8,22 @@
 #include "iostream"
 
 ConfigManager::ConfigManager() {
-    std::string configLocation = "../../src/configuration.yaml";
+    config = this->loadConfiguration(this->CONFIG_LOCATION);
+    configDevMode = this->loadConfiguration(this->CONFIG_DEV_MODE_LOCATION);
+}
 
+YAML::Node ConfigManager::loadConfiguration(const std::string &relativePath) {
+    YAML::Node configurationNode;
     try {
-        config = YAML::LoadFile(configLocation);
+        configurationNode = YAML::LoadFile(relativePath);
     } catch (...) {
-        spdlog::critical("Configuration file could not be loaded. Check if file with relative location: {} exists.",
-                         configLocation);
+        spdlog::critical("Configuration file could not be loaded. Check if file with relative location to the "
+                         "ConfigManager.cpp: {} exists.",
+                         relativePath);
         throw std::runtime_error("Something went wrong when loading the configuration.");
     }
-    spdlog::info("Configuration was loaded successfully.");
+    spdlog::info("Configuration file at: {} was loaded successfully.", relativePath);
+    return configurationNode;
 }
 
 ConfigManager::~ConfigManager() = default;
@@ -61,7 +67,13 @@ std::unordered_map<std::string, int> ConfigManager::getLandmarks() {
 
 bool ConfigManager::getFullscreen() { return config["fullscreen"].as<bool>(); }
 
-GameConstants ConfigManager::getGameConstants() { return config["gameConstants"].as<GameConstants>(); }
+GameConstants ConfigManager::getGameConstants() {
+    if (this->isInDevMode()) {
+        return configDevMode["gameConstants"].as<GameConstants>();
+    } else {
+        return config["gameConstants"].as<GameConstants>();
+    }
+}
 
 std::unordered_map<std::string, std::string> ConfigManager::extractMap(std::string const &propertyName) {
     const YAML::Node propertyConfig = config[propertyName];
