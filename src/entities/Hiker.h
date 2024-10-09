@@ -75,8 +75,8 @@ class Hiker : public RenderedEntity {
     void crouch();
     void uncrouch();
     void jump();
-    void setHikerMoving();
-    void setHikerInAir();
+    void setMoving();
+    void setInAir();
 
     void moveToRight(floatType deltaX);
     void moveToLeft(floatType deltaX);
@@ -98,14 +98,6 @@ class Hiker : public RenderedEntity {
     void setShield(double time);
 
     /**
-     * Computes the bounding box for the hiker movement specified by the given movement vector
-     *
-     * @param movement
-     * @return
-     */
-    AxisAlignedBoundingBox getBoundingBoxMovement(Vector movement) const;
-
-    /**
      * Computes the relative multiplier of the hiker speed for the given slope.
      *
      * @param movement
@@ -118,12 +110,21 @@ class Hiker : public RenderedEntity {
      *
      * @return
      */
-    std::shared_ptr<DynamicConvexPolygon> getCurrentBoundingBox() const;
-
-    std::shared_ptr<StaticPolygon> getCurrentBoundingBoxStatic() const;
+    std::shared_ptr<DynamicConvexPolygon> getCurrentHitbox() const;
 
     void setPosition(const Vector &position) override;
+    void move(const Vector &movement);
     void reset(const Vector &position);
+
+    const Vector &getCurrentHitboxDelta() const;
+
+    void resetHitboxAngularMomentum();
+
+    void setShouldUncrouch();
+    bool getShouldUncrouch() const;
+
+    std::shared_ptr<DynamicConvexPolygon> getHitboxWalking() const;
+    std::shared_ptr<DynamicConvexPolygon> getHitboxCrouched() const;
 
   private:
     // Dependencies
@@ -136,19 +137,25 @@ class Hiker : public RenderedEntity {
     floatType width{};
     int healthPoints{};
     HikerMovement hikerMovement{};
-    bool isHit{};
-    std::vector<HitInformation> hitInformation{};
     Vector knockback = {0.f, 0.f};
 
-  private:
     bool isAlive{};
-    std::shared_ptr<DynamicConvexPolygon> boundingBoxWalking = nullptr;
-    Vector walkingHitBoxDelta{}; // Delta from the hiker position to the position of their walking hitbox
+    std::shared_ptr<DynamicConvexPolygon> hitboxWalking = nullptr;
+    std::shared_ptr<DynamicConvexPolygon> hitboxCrouched = nullptr;
+    Vector walkingHitboxDelta{};  // Delta from the hiker position to the position of their walking hitbox
+    Vector crouchedHitboxDelta{}; // Delta from the hiker position to the position of their crouched hitbox
+    floatType
+        crouchedToWalkingDelta{}; // delta by which the crouched hitbox is to be placed lower than the walking hitbox
+    bool shouldUncrouch = false;
     // std::shared_ptr<DynamicPolygon> boundingBoxCrouched = nullptr;
     // Vector crouchedHitBoxDelta{};
     // std::shared_ptr<DynamicPolygon> boundingBoxJumping = nullptr;
     // Vector jumpingHitBoxDelta{};
     double shieldTime{};
+
+    void setHitboxVelocity(const Vector &velocity);
+
+    void updateDirection();
 };
 
 #endif // SURVIVING_SARNTAL_HIKER_H

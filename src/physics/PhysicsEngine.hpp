@@ -52,6 +52,11 @@ class PhysicsEngine {
     floatType getDeltaT() const;
     void setDeltaT(floatType deltaT);
 
+    /**
+     * Resets the physics engine
+     */
+    void reset();
+
     PhysicsEngine(World &world,
                   Spawner &spawner,
                   PhysicsConstants &physicsConstants,
@@ -64,8 +69,6 @@ class PhysicsEngine {
                   Destructor &destructor);
 
     ~PhysicsEngine() = default;
-
-    void reset();
 
   private:
     /**

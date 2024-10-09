@@ -25,6 +25,28 @@ class PolygonGenerator {
     DynamicConvexPolygon
     generatePolygon(int numberPoints, floatType maxRadius, const Vector &position, floatType density) const;
 
+    /**
+     * Calculates the area of a convex polygon given its vertices in a centroid coordinate system.
+     * The vertices have to be given in anticlockwise order, otherwise the bahaviour is undefined.
+     *
+     * @param vertices the vertices in a centroid coordinate system
+     * @return the area of the convex polygon
+     */
+    static floatType calculateAreaBodySpace(const std::vector<Vector> &vertices);
+
+    /**
+     * Calculates the moment of inertia of a 2D convex polygon rotating around its centroid with the z-axis as rotation
+     * axis given its vertices in a centroid coodinate system. The polygon is split into triangles, where each contains
+     * one edge of the polygon and has the centroid (origin) as one of its vertices. The moments of inertia are
+     * calculated for each triangle rotating around the centroid and then summed up.
+     * Make sure, the vertices are actually given in a centroid coordinate system and in an anticlockwise order.
+     *
+     * @param vertices the vertices in a centroid coordinate system
+     * @param density the constant density of the polygon (a homogenous material is assumed, not a density function)
+     * @return the moment of inertia of the convex polygon
+     */
+    static floatType calculateInertiaRotCentroidBodySpace(const std::vector<Vector> &vertices, floatType density);
+
   protected:
     RandomGenerator *randomGenerator = &RandomGenerator::getInstance();
     /**
@@ -129,28 +151,6 @@ class PolygonGenerator {
      * @return vertices in anticlockwise order
      */
     static std::vector<Vector> reverseOrderToAnticlockWise(std::vector<Vector> vertices);
-
-    /**
-     * Calculates the area of a convex polygon given its vertices in a centroid coordinate system.
-     * The vertices have to be given in anticlockwise order, otherwise the bahaviour is undefined.
-     *
-     * @param vertices the vertices in a centroid coordinate system
-     * @return the area of the convex polygon
-     */
-    static floatType calculateAreaBodySpace(const std::vector<Vector> &vertices);
-
-    /**
-     * Calculates the moment of inertia of a 2D convex polygon rotating around its centroid with the z-axis as rotation
-     * axis given its vertices in a centroid coodinate system. The polygon is split into triangles, where each contains
-     * one edge of the polygon and has the centroid (origin) as one of its vertices. The moments of inertia are
-     * calculated for each triangle rotating around the centroid and then summed up.
-     * Make sure, the vertices are actually given in a centroid coordinate system and in an anticlockwise order.
-     *
-     * @param vertices the vertices in a centroid coordinate system
-     * @param density the constant density of the polygon (a homogenous material is assumed, not a density function)
-     * @return the moment of inertia of the convex polygon
-     */
-    static floatType calculateInertiaRotCentroidBodySpace(const std::vector<Vector> &vertices, floatType density);
 
     /**
      * Checks whether a given list of vertices is given in anticlockwise ordering.

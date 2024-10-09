@@ -27,6 +27,13 @@ class Biome {
           TerrainConstants &terrainConstants,
           ResourceManager &resourceManager,
           bool renderGeneration);
+
+    Biome(std::vector<Vector> &groundPoints,
+          floatType startT,
+          HikerConstants &hikerConstants,
+          TerrainConstants &terrainConstants,
+          ResourceManager &resourceManager);
+
     virtual ~Biome() = default;
 
     std::shared_ptr<Ground> getGround();
@@ -126,6 +133,8 @@ class Biome {
      * Computes the bounding box of this terrain based on the bounding boxes of all components and the ground.
      */
     void computeBoundingBox();
+
+    std::vector<Vector> computeDerivatives(const std::vector<Vector> &groundPoints) const;
 };
 
 #endif // SURVIVING_SARNTAL_BIOME_HPP

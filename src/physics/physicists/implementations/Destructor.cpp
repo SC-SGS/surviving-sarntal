@@ -9,9 +9,9 @@ Destructor::Destructor(World &world, EntityRenderer &entityRenderer, GameConstan
     : world(world), entityRenderer(entityRenderer), gameConstants(gameConstants) {}
 
 void Destructor::destruct() const {
-    destructRocks();
     destructItems();
     destructTerrain();
+    destructRocks();
     destructHiker();
 }
 

@@ -23,6 +23,8 @@ class ConfigManager : public Singleton<ConfigManager> {
 
     GameConstants getGameConstants();
     bool isInDevMode();
+    bool musicShouldBePlayed();
+    std::vector<Vector> getGroundPointsDevMode();
 
   private:
     ConfigManager();

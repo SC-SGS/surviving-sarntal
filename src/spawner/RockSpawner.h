@@ -88,7 +88,7 @@ class RockSpawner {
      * This method generates a random velocity based on the current rock spawn phase.
      * @return random velocity
      */
-    Vector getRandVelocity() const;
+    Vector getRandLinearMomentum() const;
 
     /**
      * This method generates a random number that is used as the number of points
@@ -116,7 +116,7 @@ class RockSpawner {
     Vector getRockSpawnPosition(size_t idxRock) const;
     DynamicConvexPolygon getRandDynamicPolygon(const Vector &position) const;
     floatType determineDifficultyFactor() const;
-    floatType determineLowerBoundVelocity() const;
+    floatType determineLowerBoundLinearMomentum() const;
 };
 
 #endif // SURVIVING_SARNTAL_ROCKSPAWNER_H

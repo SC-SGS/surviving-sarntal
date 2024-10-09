@@ -29,7 +29,8 @@ Game::Game(World &world,
 }
 
 void Game::run() {
-    audioService.playSong("background-music", true);
+    if (this->gameConstants.audioConstants.musicEnabled)
+        audioService.playSong("background-music", true, this->gameConstants.audioConstants.musicVolume);
     // bool playedEndSound = false;
 
     while (!WindowShouldClose() && !this->menuEngine.isGameClosed()) {
@@ -103,6 +104,7 @@ void Game::resetGame() {
     this->physicsEngine.reset();
     this->world.reset();
     this->renderer.reset();
+    this->physicsEngine.reset();
 }
 
 void Game::checkPlayAgainClicked() {

@@ -8,6 +8,7 @@
 #include "../../geometry/AABB.h"
 #include "../../utilities/vector.h"
 #include "../points/Line.hpp"
+#include <memory>
 
 struct AxisAlignedBoundingBox {
     Vector minMin;
@@ -22,11 +23,32 @@ struct AxisAlignedBoundingBox {
     AxisAlignedBoundingBox merge(const AxisAlignedBoundingBox &other) const;
 
     /**
+     * Calculates the intersection of the given line with this AABB.
+     *
+     * @return
+     */
+    std::vector<std::shared_ptr<Intersection>> calculateIntersections(const Line &line) const;
+
+    /**
+     * Calculates the first intersection of the given line with this AABB.
+     *
+     * @return
+     */
+    Vector calculateFirstIntersection(const Line &line) const;
+
+    /**
      * Extends this Bounding box by extending the outline with this point if necessary.
      *
      * @param point
      */
     void extend(const Vector &point);
+
+    /**
+     * Extends this bounding box by the given tolerance in each direction.
+     *
+     * @param tolerance
+     */
+    AxisAlignedBoundingBox extend(floatType tolerance) const;
 
     /**
      * Checks whether the given point is inside this bounding box.
@@ -159,12 +181,71 @@ struct AxisAlignedBoundingBox {
     AxisAlignedBoundingBox moveByDelta(const Vector &delta) const;
 
     /**
-     * Transforms the given rectangle into a bounding box.
+     * Transforms the given AABB into an AxisAlignedBoundingBox.
      *
      * @param aabb
      * @return
      */
     static AxisAlignedBoundingBox transform(const AABB &aabb);
+
+    /**
+     * Returns the edges of this AABB in clockwise order starting with the point minMin.
+     *
+     * @return
+     */
+    std::vector<Line> getEdges() const;
+
+    /**
+     * Returns the index of the edge on which this point lies.
+     * PRECONDITION: Point must lie on an edge of this aabb.
+     *
+     * @param point
+     * @return
+     */
+    int getIndexOfEdge(const Vector &point) const;
+
+    /**
+     * Returns the corners of this AABB in clockwise order, starting with the point minMin.
+     *
+     * @return
+     */
+    std::vector<Vector> getCorners() const;
+
+    /**
+     * Projects a point on the given other bounding box onto this one by mapping it orthogonal to the borders outwards.
+     * PRECONDITIONS: This aabb needs to encase the other aabb entirely AND the given point needs to be on, not in the
+     * other AABB.
+     *
+     * @param pointOnOther
+     * @param projectionLine
+     * @return
+     */
+    Vector projectOutwards(const Vector &pointOnOther, const Vector &projectionLine) const;
+
+    /**
+     * Computes the index of the edge on which the given point is.
+     *
+     * @param point
+     * @return
+     */
+    std::optional<Line> getEdge(const Vector &point) const;
+
+    /**
+     * Checks whether the given point is on the given horizontal or vertical line.
+     * PRECONDITION: The given line must be vertical or horizontal.
+     *
+     * @param point
+     * @param edge
+     * @return
+     */
+    static bool isOnEdge(const Vector &point, const Line &edge);
+
+  private:
+    floatType maxOfHeightLength() const;
+
+    floatType getHeight() const;
+
+    floatType getWidth() const;
 };
 
 #endif // SURVIVING_SARNTAL_AXISALIGNEDBOUNDINGBOX_HPP

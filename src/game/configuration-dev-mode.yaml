@@ -1,6 +1,7 @@
 gameConstants:
   hikerConstants:
     hikerMaxHealth: 100
+    spawnXRelativeToScreenWidth: 0.4
     hikerHeight: 1.8
     hikerWidth: 1.15
     crouchedHikerHeight: 1.42
@@ -8,15 +9,14 @@ gameConstants:
     mass: 800.0
     duckSpeedFactor: 0.35
     normalSpeed: 2.6
-    maxSpeed: 4.5 # Make sure this is higher than the kill bar max velocity
+    maxSpeed: 8.0 # Make sure this times airMovementSpeedFactor is higher than maxKillBarFactor * killBarBaseVelocity
     jumpVelocity: 10.0
-    airMovementSpeedFactor: -0.6
-    knockBack: 0.00005
+    airMovementSpeedFactor: 0.77
     maxSpeedNegSlope: 5.0
     maxClimbableSlope: 4.0
-    terrainCollisionDampening: 0.8
-    friction: 0.3 #is applied to the gravitational constant, when the hiker slides down the terrain
-    knockbackLossPerStep: 0.9
+    knockbackIntensity: 0.5 # between 0 and 1
+    knockbackLossPerStep: 0.25 # between 0 and 1
+    knockbackCutoff: 5
 
   itemsConstants:
     spawnItems: true
@@ -36,21 +36,13 @@ gameConstants:
     inventorySlotSize: 80.0
 
   rockConstants:
-    spawnRocks: true
+    spawnRocks: false
     minRockSize: 0.32
     maxRockSize: 1.0
-    velocityCap: 1200.0
-    gamma: 1.0
-    maxAngularVelocity: 1.0
-    minSpawnVelocity: 0.01
-    maxSpawnVelocity: 10.0
-    minSpawnRotationVelocity: 0.1
-    maxSpawnRotationVelocity: 1.0
-    rockTimePeriodDifficult: 1.0
-    rockTimePeriodMedium: 5.0
-    rockTimePeriodEasy: 2.0
-    timeBetweenRockSpawns: 5.0
-    numOfRocksToSpawn: 10
+    minSpawnLinearMomentum: 0.01
+    maxSpawnLinearMomentum: 10.0
+    minSpawnAngularMomentum: 0.1
+    maxSpawnAngularMomentum: 1.0
     spawnOffsetX: 0.5
     minRockDensity: 1.0
     maxRockDensity: 3.0
@@ -65,7 +57,7 @@ gameConstants:
     maxNumberOfResolutionSteps: 4
     terrainSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
     rockSubstepSize: 0.5 # between 0 and 1 (no seriously this time)
-    debugCDRendering: false
+    debugCDRendering: true
 
   inputConstants:
     maxGamepads: 8
@@ -84,16 +76,25 @@ gameConstants:
     cameraToHikerOffset: 1
     mountainGradientHeight: 300
     mountainResolution: 10
+    shakeEnabled: false
+
+  audioConstants:
+    musicEnabled: true
+    musicVolume: 0.3
+    effectsThreshold: 35
 
   barriersConstants:
-    killBarVelocity: 1.5
-    killBarAccelerationFactor: 30.0
-    maxKillBarVelocity: 4.0
+    killBarBaseVelocity: 0.0
+    killBarAccelerationFactor: 0.015 # describes how quickly the killbar accelerates with an increasing right border
+    maxKillBarFactor: 4.0 # => max killbar velocity is base velocity * max factor
     playerRightBarrierOffset: 15.0
+    monsterXRelativeToScreenWidth: 0.1
+    monsterHeight: 3.6
+    monsterWidth: 2.875
 
   terrainConstants:
     bufferLeft: 25.0
-    bufferRight: 25.0
+    bufferRight: 50.0
     biomeWidth: 100.0
 
     renderingResolution: 0.1
@@ -110,7 +111,7 @@ gameConstants:
 
   rockSpawnerConstants:
     # All based on difficulty [EEEASY, EASY, MEDIUM, HARD, I_WANT_MOMY]
-    velocityDifficultyFactor: [ 0.0, 0.25, 0.5, 0.75, 1.0 ]
+    linearMomentumDifficultyFactor: [ 0.0, 0.25, 0.5, 0.75, 1.0 ]
     spawningPhase: [ 60.0, 150.0, 250.0, 500.0, 1000.0 ]
     rockSpawnTimeInterval: [ 8.0, 7.0, 5.0, 3.0, 2.0 ]
 
