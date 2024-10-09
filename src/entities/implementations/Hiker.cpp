@@ -4,11 +4,11 @@
 
 #include "../Hiker.h"
 #include "../../output/haptics/HapticsService.hpp"
+#include "../../spawner/PolygonGenerator.h"
 #include "spdlog/spdlog.h"
 
 Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants hikerConstants)
     : RenderedEntity(position), audioService(audioService), hikerConstants(hikerConstants) {
-
     velocity = {0, 0};
     height = hikerConstants.hikerHeight;
     width = hikerConstants.hikerWidth;
@@ -16,16 +16,27 @@ Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants h
     hikerMovement = HikerMovement();
     isAlive = true;
     animation = {4, 0, 0.3, 0};
-    this->walkingHitBoxDelta = {0, hikerConstants.hikerHeight / 2.0f};
-    Vector center = position + this->walkingHitBoxDelta;
-    floatType halfHeight = this->hikerConstants.hikerHeight / 2;
-    floatType halfWidth = this->hikerConstants.hikerWidth / 2;
-    // TODO: Nice hitbox, currently this is just a diamond shape
-    std::vector<Vector> vertices = {{0, -halfHeight}, {halfHeight / 4, 0}, {0, halfHeight}, {-halfHeight / 4, 0}};
-    this->boundingBoxWalking = std::make_shared<DynamicConvexPolygon>(
-        center, vertices, std::vector<Vector2>{vertices.size() + 1}, this->hikerConstants.mass, 0.0f,
-        std::numeric_limits<floatType>::infinity(), DynamicProperties{});
-
+    this->walkingHitboxDelta = {0, hikerConstants.hikerHeight / 2.0f};
+    Vector centerWalking = position + this->walkingHitboxDelta;
+    floatType halfHeightWalking = this->hikerConstants.hikerHeight / 2;
+    std::vector<Vector> verticesWalking = {
+        {0, -halfHeightWalking}, {halfHeightWalking / 4, 0}, {0, halfHeightWalking}, {-halfHeightWalking / 4, 0}};
+    floatType densityWalking = this->hikerConstants.mass / PolygonGenerator::calculateAreaBodySpace(verticesWalking);
+    this->hitboxWalking = std::make_shared<DynamicConvexPolygon>(
+        centerWalking, verticesWalking, std::vector<Vector2>{verticesWalking.size() + 1}, this->hikerConstants.mass,
+        densityWalking, PolygonGenerator::calculateInertiaRotCentroidBodySpace(verticesWalking, densityWalking),
+        DynamicProperties{});
+    this->crouchedHitboxDelta = {0, hikerConstants.crouchedHikerHeight / 2.0f};
+    Vector centerCrouched = position + this->crouchedHitboxDelta;
+    floatType halfHeightCrouched = this->hikerConstants.crouchedHikerHeight / 2;
+    std::vector<Vector> verticesCrouched = {
+        {0, -halfHeightCrouched}, {halfHeightCrouched / 4, 0}, {0, halfHeightCrouched}, {-halfHeightCrouched / 4, 0}};
+    floatType densityCrouched = this->hikerConstants.mass / PolygonGenerator::calculateAreaBodySpace(verticesCrouched);
+    this->hitboxCrouched = std::make_shared<DynamicConvexPolygon>(
+        centerCrouched, verticesCrouched, std::vector<Vector2>{verticesCrouched.size() + 1}, this->hikerConstants.mass,
+        densityCrouched, PolygonGenerator::calculateInertiaRotCentroidBodySpace(verticesCrouched, densityCrouched),
+        DynamicProperties{});
+    this->crouchedToWalkingDelta = this->walkingHitboxDelta.y - this->crouchedHitboxDelta.y;
     spdlog::info("A Hiker was initialized");
 }
 
@@ -106,17 +117,13 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
     hikerMovement = movement;
 }
 
-const std::vector<HitInformation> &Hiker::getHitInformation() const { return hitInformation; }
-
-void Hiker::setHitInformation(const std::vector<HitInformation> &hits) { hitInformation = hits; }
-
-bool Hiker::getIsHit() const { return isHit; }
-
-void Hiker::setIsHit(const bool isHit) { this->isHit = isHit; }
-
 const Vector &Hiker::getVelocity() const { return velocity; }
 
-void Hiker::setVelocity(const Vector &newVel) { velocity = newVel; }
+void Hiker::setVelocity(const Vector &newVel) {
+    velocity = newVel;
+    this->setHitboxVelocity(newVel);
+    this->updateDirection();
+}
 
 bool Hiker::getIsAlive() const { return this->isAlive; }
 
@@ -138,6 +145,7 @@ void Hiker::uncrouch() {
         hikerMovement.setState(HikerMovement::MOVING);
         this->setHeight(hikerConstants.hikerHeight);
         this->setWidth(hikerConstants.hikerWidth);
+        this->shouldUncrouch = false;
     }
 }
 void Hiker::jump() {
@@ -150,8 +158,10 @@ void Hiker::jump() {
     }
     const bool canJump = hikerMovement.getLastJump() < 1.5 && hikerMovement.getCanJumpAgain();
     if (canJump) {
+        this->audioService.interruptMovingSound();
         this->audioService.playSound("jump");
         this->velocity.setY(hikerConstants.jumpVelocity);
+        this->setHitboxVelocity(this->getVelocity());
         if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
             this->hikerMovement.setCanJumpAgain(false);
         }
@@ -159,30 +169,59 @@ void Hiker::jump() {
     }
 }
 
-void Hiker::setHikerMoving() {
-    this->hikerMovement.setState(HikerMovement::MOVING);
-    this->setHeight(hikerConstants.hikerHeight);
-    this->setWidth(hikerConstants.hikerWidth);
+void Hiker::setMoving() {
+    if (this->hikerMovement.getState() == HikerMovement::IN_AIR) {
+        this->move(Vector{0.f, 0.f});
+    }
+    if (this->hikerMovement.getState() != HikerMovement::CROUCHED) {
+        this->hikerMovement.setState(HikerMovement::MOVING);
+        this->setHeight(hikerConstants.hikerHeight);
+        this->setWidth(hikerConstants.hikerWidth);
+    }
+    this->setVelocity({0.f, 0.f});
+    this->hikerMovement.setDirection(HikerMovement::NEUTRAL);
+    this->setLastJump(0.0f);
 }
 
-void Hiker::setHikerInAir() {
+void Hiker::setInAir() {
+    if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
+        this->uncrouch();
+    }
     this->hikerMovement.setState(HikerMovement::IN_AIR);
+    this->setLastJump(0.0);
     this->setHeight(hikerConstants.hikerHeight);
     this->setWidth(hikerConstants.hikerWidth);
+    this->audioService.interruptMovingSound();
 }
 
 void Hiker::moveToRight(const floatType deltaX) { this->position.setX(this->position.x + deltaX); }
 void Hiker::moveToLeft(const floatType deltaX) { this->position.setX(this->position.x - deltaX); }
-void Hiker::accelerateX(const floatType deltaX) { this->velocity.setX(this->velocity.x + deltaX); }
-void Hiker::accelerateY(const floatType deltaY) { this->velocity.setY(this->velocity.y + deltaY); }
-void Hiker::setXVelocity(const floatType xValue) { this->velocity.setX(xValue); }
-void Hiker::setYVelocity(const floatType yValue) { this->velocity.setY(yValue); }
+void Hiker::accelerateX(const floatType deltaX) {
+    this->velocity.setX(this->velocity.x + deltaX);
+    this->setHitboxVelocity(this->getVelocity());
+    this->updateDirection();
+}
+void Hiker::accelerateY(const floatType deltaY) {
+    this->velocity.setY(this->velocity.y + deltaY);
+    this->setHitboxVelocity(this->getVelocity());
+}
+void Hiker::setXVelocity(const floatType xValue) {
+    this->velocity.setX(xValue);
+    this->setHitboxVelocity(this->getVelocity());
+    this->updateDirection();
+}
+
+void Hiker::setYVelocity(const floatType yValue) {
+    this->velocity.setY(yValue);
+    this->setHitboxVelocity(this->getVelocity());
+}
 void Hiker::setLastJump(const float lastJump) { this->hikerMovement.setLastJump(lastJump); }
 
 void Hiker::kill() {
     this->isAlive = false;
     this->healthPoints = 0;
     this->velocity = {0, 0};
+    this->setHitboxVelocity(this->getVelocity());
     HapticsService::deathRumble();
 }
 
@@ -190,19 +229,24 @@ void Hiker::reset(const Vector &position) {
     this->setIsAlive(true);
     this->setHealthPoints(this->hikerConstants.hikerMaxHealth);
     this->setPosition(position);
+    this->setHikerMovement({HikerMovement::MOVING, HikerMovement::NEUTRAL});
+    this->setMoving();
+    this->setKnockback({0.f, 0.f});
+    this->setVelocity({0.f, 0.f});
+    this->setHitboxVelocity(this->getVelocity());
+    this->resetHitboxAngularMomentum();
 }
 
-AxisAlignedBoundingBox Hiker::getBoundingBoxMovement(const Vector movement) const {
-    const AxisAlignedBoundingBox polyBoundingBox =
-        AxisAlignedBoundingBox::transform(this->getCurrentBoundingBox()->getBoundingBox());
-    const AxisAlignedBoundingBox startBox = polyBoundingBox;
-    const AxisAlignedBoundingBox endBox = polyBoundingBox.moveByDelta(movement);
-    return startBox.merge(endBox);
+const Vector &Hiker::getCurrentHitboxDelta() const {
+    if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
+        return this->crouchedHitboxDelta;
+    }
+    return this->walkingHitboxDelta;
 }
 
 floatType Hiker::computeSpeedFactor(const Vector &movement) const {
     if (movement.x == 0) {
-        return 0.0;
+        return 1.0f;
     }
     const floatType slope = movement.computeSlope();
     floatType speedFactor;
@@ -219,23 +263,50 @@ floatType Hiker::computeSpeedFactor(const Vector &movement) const {
     return speedFactor;
 }
 
-std::shared_ptr<DynamicConvexPolygon> Hiker::getCurrentBoundingBox() const { return this->boundingBoxWalking; }
+std::shared_ptr<DynamicConvexPolygon> Hiker::getCurrentHitbox() const {
+    if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
+        return this->hitboxCrouched;
+    }
+    return this->hitboxWalking;
+}
 
 void Hiker::setPosition(const Vector &position) {
     RenderedEntity::setPosition(position);
-    const Vector boundingBoxWalkingPosition = position + this->walkingHitBoxDelta;
-    this->boundingBoxWalking->setPosition(boundingBoxWalkingPosition);
+    this->hitboxWalking->setPosition(position + this->walkingHitboxDelta);
+    this->hitboxCrouched->setPosition(position + this->crouchedHitboxDelta);
 }
-
-std::shared_ptr<StaticPolygon> Hiker::getCurrentBoundingBoxStatic() const {
-    std::vector<Vector> vertices = this->boundingBoxWalking->getBodySpaceVertices();
-    for (auto &point : vertices) {
-        point += this->boundingBoxWalking->getPosition();
+void Hiker::move(const Vector &movement) {
+    this->hitboxWalking->move(movement);
+    this->hitboxCrouched->move(movement);
+    this->position += movement;
+    if (movement.length() < NUMERIC_EPSILON) {
+        this->audioService.interruptMovingSound();
     }
-    return std::make_shared<StaticPolygon>(vertices);
 }
-
-void Hiker::addHitInformation(const HitInformation &hit) { this->hitInformation.push_back(hit); }
 
 const Vector &Hiker::getKnockback() const { return knockback; }
 void Hiker::setKnockback(const Vector &newKnockback) { this->knockback = newKnockback; }
+
+void Hiker::setHitboxVelocity(const Vector &velocity) {
+    this->hitboxWalking->setLinearMomentum(velocity * this->hikerConstants.mass);
+    this->hitboxCrouched->setLinearMomentum(velocity * this->hikerConstants.mass);
+}
+void Hiker::updateDirection() {
+    if (this->velocity.x < 0) {
+        this->hikerMovement.setDirection(HikerMovement::LEFT);
+    } else if (this->velocity.x > 0) {
+        this->hikerMovement.setDirection(HikerMovement::RIGHT);
+    } else {
+        this->hikerMovement.setDirection(HikerMovement::NEUTRAL);
+    }
+}
+
+void Hiker::resetHitboxAngularMomentum() {
+    this->hitboxWalking->setAngularMomentum(0.f);
+    this->hitboxCrouched->setAngularMomentum(0.f);
+}
+
+void Hiker::setShouldUncrouch() { this->shouldUncrouch = true; }
+bool Hiker::getShouldUncrouch() const { return this->shouldUncrouch; }
+std::shared_ptr<DynamicConvexPolygon> Hiker::getHitboxWalking() const { return hitboxWalking; }
+std::shared_ptr<DynamicConvexPolygon> Hiker::getHitboxCrouched() const { return hitboxCrouched; }

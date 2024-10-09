@@ -35,8 +35,10 @@ Monster &World::getMonster() const { return monster; }
 Terrain &World::getTerrain() const { return terrain; }
 
 bool World::isOutOfScope(const RenderedEntity &entity) const {
-    bool result = entity.getPosition().x < this->minX - this->gameConstants.terrainConstants.bufferLeft ||
-                  entity.getPosition().x > this->maxX + this->gameConstants.terrainConstants.bufferRight;
+    bool result = entity.getPosition().x < this->minX - this->gameConstants.terrainConstants.bufferLeft +
+                                               2 * this->gameConstants.rockConstants.maxRockSize;
+    const floatType rightBorder = this->terrain.getRightBorder();
+    result = entity.getPosition().x > rightBorder - 2 * this->gameConstants.rockConstants.maxRockSize || result;
     if (result) {
         spdlog::debug("An entity has left the scope of the game.");
     }
@@ -49,8 +51,13 @@ std::list<std::shared_ptr<Item>> World::getNearbyItems() const {
     const Vector &position = this->hiker.getPosition();
     const auto adjustedHikerPosition = Vector{position.x, position.y + this->hiker.getHeight() / 2};
     for (const auto &item : *this->items) {
-        const bool inRange =
+        bool inRange =
             item->getPosition().distanceTo(adjustedHikerPosition) < this->gameConstants.itemsConstants.collectionRadius;
+        for (const auto &vertex : hiker.getCurrentHitbox()->getWorldSpaceVertices()) {
+            if (item->getPosition().distanceTo(vertex) < this->gameConstants.itemsConstants.collectionRadius) {
+                inRange = true;
+            }
+        }
         if (inRange) {
             nearbyItems.push_back(item);
         }
@@ -121,6 +128,10 @@ void World::updateGameScore() {
 }
 
 void World::reset() {
+    this->minX = 0;
+    this->maxX = graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO;
+    this->coinScore = 0;
+    this->gameScore = {0, 0};
     this->terrain.reset();
     this->resetHiker();
     this->resetMonster();
@@ -133,15 +144,20 @@ void World::clearRocks() {
     }
 }
 
-void World::resetHiker() {
-    floatType hikerPositionX = 0.3f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO);
-    floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX) + 0.1f;
-    Vector pos = {hikerPositionX, hikerPositionY};
+void World::resetHiker() const {
+    floatType hikerPositionX =
+        this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth * (this->getMaxX() - this->getMinX()) +
+        this->getMinX();
+    const floatType hikerPositionY =
+        terrain.getMaxHeight(hikerPositionX) + this->gameConstants.physicsConstants.epsilon;
+    const Vector pos = {hikerPositionX, hikerPositionY};
     this->hiker.reset(pos);
 }
 
 void World::resetMonster() const {
-    this->getMonster().setXPosition(0.1f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO));
+    this->getMonster().setXPosition(this->gameConstants.barriersConstants.monsterXRelativeToScreenWidth *
+                                        (this->getMaxX() - this->getMinX()) +
+                                    this->getMinX());
 }
 
 void World::resetAttributes() {
@@ -163,37 +179,5 @@ void World::useSelectedItem() {
     if (!this->getInventory().selectedSlotIsEmpty()) {
         this->useItem(this->getInventory().getSelectedItemType());
         this->getInventory().removeSelectedItem();
-    }
-}
-
-floatType World::calculateHikerSpeed(floatType factor) {
-    floatType speed = this->gameConstants.hikerConstants.normalSpeed;
-
-    speed += speed * this->getCoinSpeedFactor();
-    speed *= factor;
-
-    if (this->hiker.getHikerMovement().getState() == HikerMovement::CROUCHED) {
-        speed *= this->gameConstants.hikerConstants.duckSpeedFactor;
-    }
-
-    if (speed > this->gameConstants.hikerConstants.maxSpeed) {
-        return this->gameConstants.hikerConstants.maxSpeed;
-    } else {
-        return speed;
-    }
-}
-
-floatType World::getCoinSpeedFactor() const {
-    floatType numberOfCoins =
-        static_cast<floatType>(coinScore) / static_cast<floatType>(gameConstants.itemsConstants.coinScore);
-    return numberOfCoins * gameConstants.itemsConstants.coinAccelerationFactor;
-}
-
-floatType World::getKillBarFactor() const {
-    floatType factor = this->getMaxX() / gameConstants.barriersConstants.killBarAccelerationFactor;
-    if (factor > gameConstants.barriersConstants.maxKillBarVelocity) {
-        return gameConstants.barriersConstants.maxKillBarVelocity;
-    } else {
-        return factor;
     }
 }

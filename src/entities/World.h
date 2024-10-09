@@ -95,11 +95,6 @@ class World {
     void reset();
     void useSelectedItem();
 
-    floatType getCoinSpeedFactor() const;
-
-    floatType getKillBarFactor() const;
-    floatType calculateHikerSpeed(floatType factor);
-
   private:
     // Dependencies
     Terrain &terrain;
@@ -120,7 +115,7 @@ class World {
         std::make_unique<std::list<std::shared_ptr<Rock>>>();
     const std::unique_ptr<std::list<std::shared_ptr<Item>>> items =
         std::make_unique<std::list<std::shared_ptr<Item>>>();
-    void resetHiker();
+    void resetHiker() const;
     void resetMonster() const;
     void resetAttributes();
     void clearRocks();

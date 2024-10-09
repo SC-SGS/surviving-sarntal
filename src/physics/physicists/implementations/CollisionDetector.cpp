@@ -9,22 +9,15 @@
 #include "../CollisionHandler.hpp"
 #include <poly2tri/poly2tri.h>
 
-CollisionDetector::CollisionDetector(World &world, const GameConstants &gameConstants, const bool devMode)
-    : world(world), gameConstants(gameConstants), devMode(devMode) {}
-
-void CollisionDetector::detectCollisions() const {}
-
-/*bool CollisionDetector::rocksCollide(Rock &rock1, Rock &rock2) {
-    const Vector pos1 = rock1.getPosition();
-    const floatType rad1 = rock1.getBoundingBox().width / 2;
-    const Vector pos2 = rock2.getPosition();
-    const floatType rad2 = rock2.getBoundingBox().width / 2;
-    return (pos1.distanceTo(pos2) <= rad1 + rad2);
-}*/
+CollisionDetector::CollisionDetector(World &world,
+                                     const GameConstants &gameConstants,
+                                     CollisionDetectionDebugRenderer &collisionRenderer,
+                                     const bool devMode)
+    : world(world), gameConstants(gameConstants), devMode(devMode), collRenderer(collisionRenderer) {}
 
 DynamicPolygonCollisionObject CollisionDetector::playerRockCollision(Rock &rock) const {
     auto const &hiker = this->world.getHiker();
-    return this->dynamicPolygonCollision(*hiker.getCurrentBoundingBox(), rock);
+    return this->dynamicPolygonCollision(*hiker.getCurrentHitbox(), rock);
 }
 
 DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollision(DynamicConvexPolygon &poly1,
@@ -44,10 +37,10 @@ DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollision(Dynamic
                                                 poly2.getLastWitnessTo(poly1.getID()),
                                                 this->gameConstants.physicsConstants.epsilon))
                       .isCollision &&
-                 relativeTime < 0.999);
+                 relativeTime < 1 - NUMERIC_EPSILON);
         if (collResult.isCollision) {
             if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
-                CollisionDetectionDebugRenderer::debugRenderRockCollision(createDynamicPolygonCollisionObjectFrom(
+                collRenderer.debugRenderRockCollision(createDynamicPolygonCollisionObjectFrom(
                     collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime));
             return createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime);
         }
@@ -85,14 +78,16 @@ PolygonCollisionObject CollisionDetector::polygonsCollide(ConvexPolygon &poly1,
 }
 
 DynamicPolygonTerrainCollisionObject CollisionDetector::polygonTerrainCollision(DynamicConvexPolygon &poly) const {
-    const AABB aabb = poly.getSweptBoundingBox();
+    const AABB aabb = poly.getSweptBoundingBox().extend(this->gameConstants.physicsConstants.epsilon);
     const auto &terrainSurfaceComponents =
         this->world.getTerrain().getTerrainSectionsContinuous({aabb.getBottomLeft(), aabb.getTopRight()});
     if (terrainSurfaceComponents.empty()) {
         return {};
     }
-    const ConcavePolygon terrainPoly = getConcaveTerrainPolygonInAABB(terrainSurfaceComponents, aabb);
-    std::vector<SimpleConvexPolygon> triangles = getSurfaceTrianglesOfConcaveTerrainPoly(terrainPoly);
+    const std::optional<ConcavePolygon> terrainPoly = getConcaveTerrainPolygonInAABB(terrainSurfaceComponents, aabb);
+    if (!terrainPoly.has_value())
+        return {};
+    std::vector<SimpleConvexPolygon> triangles = getSurfaceTrianglesOfConcaveTerrainPoly(terrainPoly.value());
     DynamicPolygonTerrainCollisionObject result{};
     floatType relativeTime = 0.0f; // TODO better choice of smallDT needed for bullets dependent on velocity
     do {
@@ -106,11 +101,10 @@ DynamicPolygonTerrainCollisionObject CollisionDetector::polygonTerrainCollision(
                     createDynamicPolygonTerrainCollisionObjectFrom(tmpResult, poly, polyAtT, triPoly, relativeTime);
             }
         }
-    } while (!result.isCollision && relativeTime < 0.999);
+    } while (!result.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
     if (result.isCollision)
         if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
-            CollisionDetectionDebugRenderer::debugTerrainCollisionRendering(result, triangles, aabb);
-    spdlog::debug("Terrain Collision");
+            collRenderer.debugTerrainCollisionRendering(result, triangles, aabb);
     return result;
 }
 
@@ -127,17 +121,7 @@ PolygonCollisionObject CollisionDetector::collisionWithSepAxisOn1(ConvexPolygon 
         const PolygonProjectionOnAxis proj1 = projectPolygonOnNormal(poly1, normal);
         const PolygonProjectionOnAxis proj2 = projectPolygonOnNormal(poly2, normal);
         if (proj1.overlaps(proj2, eps)) {
-            result.isCollision = true;
-            const floatType normalNeedsToBeReversed =
-                proj1.upperBound - proj2.lowerBound > proj2.upperBound - proj1.lowerBound ? -1 : 1;
-            const floatType collisionDepth =
-                std::min(proj1.upperBound - proj2.lowerBound, proj2.upperBound - proj1.lowerBound);
-            if (collisionDepth < result.collisionDepth) {
-                result.collisionDepth = collisionDepth;
-                result.collisionDirection = normal * normalNeedsToBeReversed;
-                result.collisionFaceIdx = i % vertices1.size();
-                result.collisionVertexIdx = proj2.indexOfLowestVertex;
-            }
+            updateCollisionResultAfterOverlapFound(result, proj1, proj2, vertices1, normal, i);
         } else {
             // Separating Axis found
             result.lastWitnessEdgeIdx = i % vertices1.size();
@@ -147,6 +131,28 @@ PolygonCollisionObject CollisionDetector::collisionWithSepAxisOn1(ConvexPolygon 
     result.polyAIncident = &poly2;
     result.polyBReference = &poly1;
     return result;
+}
+
+void CollisionDetector::updateCollisionResultAfterOverlapFound(PolygonCollisionObject &result,
+                                                               const PolygonProjectionOnAxis &proj1,
+                                                               const PolygonProjectionOnAxis &proj2,
+                                                               const std::vector<Vector> &vertices1,
+                                                               const Vector &normal,
+                                                               const size_t collisionFaceIdx) {
+    result.isCollision = true;
+    const bool normalNeedsToBeReversed = proj1.upperBound - proj2.lowerBound > proj2.upperBound - proj1.lowerBound;
+    const floatType collisionDepth = std::min(proj1.upperBound - proj2.lowerBound, proj2.upperBound - proj1.lowerBound);
+    if (collisionDepth < result.collisionDepth) {
+        if (normalNeedsToBeReversed) {
+            result.collisionDirection = normal * -1.f;
+            result.collisionVertexIdx = proj2.indexOfHighestVertex;
+        } else {
+            result.collisionDirection = normal;
+            result.collisionVertexIdx = proj2.indexOfLowestVertex;
+        }
+        result.collisionDepth = collisionDepth;
+        result.collisionFaceIdx = collisionFaceIdx % vertices1.size();
+    }
 }
 
 PolygonProjectionOnAxis CollisionDetector::projectPolygonOnNormal(const ConvexPolygon &poly, const Vector &normal) {
@@ -162,8 +168,10 @@ PolygonProjectionOnAxis CollisionDetector::projectPolygonOnNormal(const ConvexPo
             proj.lowerBound = projectionLength;
             proj.indexOfLowestVertex = i;
         }
-        proj.lowerBound = std::min(projectionLength, proj.lowerBound);
-        proj.upperBound = std::max(projectionLength, proj.upperBound);
+        if (projectionLength > proj.upperBound) {
+            proj.upperBound = projectionLength;
+            proj.indexOfHighestVertex = i;
+        }
     }
     return proj;
 }
@@ -202,29 +210,57 @@ StaticPolyline CollisionDetector::getContinuousTerrainSurfaceFromComponents(
     return StaticPolyline{points};
 }
 
-ConcavePolygon CollisionDetector::getConcaveTerrainPolygonInAABB(
+std::optional<ConcavePolygon> CollisionDetector::getConcaveTerrainPolygonInAABB(
     const std::vector<std::shared_ptr<StaticPolyline>> &terrainSurfaceComponents, const AABB &aabb) {
-    const StaticPolyline &terrainSurface = getContinuousTerrainSurfaceFromComponents(terrainSurfaceComponents);
-    const std::vector<Vector> &terrainSurfacePoints = terrainSurface.getPoints();
-    const AxisAlignedBoundingBox terrainAABB = terrainSurface.getBoundingBox();
-    const Vector leftOuter{terrainAABB.minMin.x - aabb.getWidth(), terrainSurfacePoints[0].y};
-    const Vector rightOuter{terrainAABB.maxMax.x + aabb.getWidth(),
-                            terrainSurfacePoints[terrainSurfacePoints.size() - 1].y};
-    const Vector bottomLeft{terrainAABB.minMin.x - aabb.getWidth(), terrainAABB.minMin.y - aabb.getHeight()};
-    const Vector bottomRight{terrainAABB.maxMax.x + aabb.getWidth(), terrainAABB.minMin.y - aabb.getHeight()};
-    /* TODO this can be refined to get a smaller polygon that fits the AABB better in order to check less edges
-    for (size_t i = 0; i < mountainSurfacePoints.size() - 1; ++i) {
-        const PolygonEdge line{mountainSurfacePoints[i], mountainSurfacePoints[i + 1]};
-        switch (lineIntersectsAABB(line, aabb)) {
-            case LEF
+    const AxisAlignedBoundingBox searchAABB = AxisAlignedBoundingBox::transform(aabb);
+    const std::optional<StaticPolyline> &terrainSurface =
+        removeRedundantPoints(getContinuousTerrainSurfaceFromComponents(terrainSurfaceComponents), searchAABB);
+    if (!terrainSurface.has_value())
+        return std::nullopt;
+    const std::vector<Vector> &terrainSurfacePoints = terrainSurface.value().getPoints();
+    const AxisAlignedBoundingBox &terrainAABB = terrainSurface.value().getBoundingBox();
+    const AxisAlignedBoundingBox completeAABB = terrainAABB.merge(searchAABB).extend(EDGE_TOLERANCE);
+    assert(terrainSurfacePoints.size() >= 2);
+    const Line start = {terrainSurfacePoints.front(), terrainSurfacePoints.at(1)};
+    const Line end = {terrainSurfacePoints.back(), terrainSurfacePoints.at(terrainSurfacePoints.size() - 2)};
+
+    Vector entryPoint = searchAABB.calculateFirstIntersection(start);
+    Vector exitPoint = searchAABB.calculateFirstIntersection(end);
+
+    const int indexExitLine = searchAABB.getIndexOfEdge(exitPoint);
+    const Vector entryPointProjectionLine = searchAABB.getEdge(entryPoint).value().calculateNormal();
+    entryPoint = completeAABB.projectOutwards(terrainSurfacePoints.front(), entryPointProjectionLine);
+    const Vector exitPointProjectionLine = searchAABB.getEdge(exitPoint).value().calculateNormal();
+    exitPoint = completeAABB.projectOutwards(terrainSurfacePoints.back(), exitPointProjectionLine);
+    if (entryPoint == exitPoint)
+        return std::nullopt;
+    return getConcaveTerrainPolygonInAABB(terrainSurfacePoints, completeAABB, entryPoint, exitPoint, indexExitLine);
+}
+
+std::optional<ConcavePolygon>
+CollisionDetector::getConcaveTerrainPolygonInAABB(const std::vector<Vector> &terrainSurfacePoints,
+                                                  const AxisAlignedBoundingBox &completeAABB,
+                                                  const Vector &entryPoint,
+                                                  const Vector &exitPoint,
+                                                  const int indexExitLine) {
+    std::vector vertices = {entryPoint};
+    vertices.insert(vertices.cend(), terrainSurfacePoints.cbegin(), terrainSurfacePoints.cend());
+    vertices.push_back(exitPoint);
+
+    const std::vector<Line> completeAABBEdges = completeAABB.getEdges();
+    unsigned long index = indexExitLine;
+    Vector previousPoint = vertices.back();
+    Vector nextPoint = completeAABBEdges.at(index).end;
+    const Vector lastPoint = vertices.front();
+    while (!AxisAlignedBoundingBox::isOnEdge(lastPoint, Line{previousPoint, nextPoint})) {
+        if (nextPoint != lastPoint) {
+            vertices.push_back(nextPoint);
         }
-    }*/
-    std::vector<Vector> vertices{};
-    vertices.push_back(leftOuter);
-    vertices.push_back(bottomLeft);
-    vertices.push_back(bottomRight);
-    vertices.push_back(rightOuter);
-    std::reverse_copy(terrainSurfacePoints.begin(), terrainSurfacePoints.end(), std::back_inserter(vertices));
+        previousPoint = nextPoint;
+        index = (index + 1) % completeAABBEdges.size();
+        nextPoint = completeAABBEdges.at(index).end;
+    }
+    std::reverse(vertices.begin(), vertices.end());
     return ConcavePolygon(vertices);
 }
 
@@ -308,4 +344,26 @@ CollisionDetector::createDynamicPolygonTerrainCollisionObjectFrom(const PolygonC
         result.isPolyIncident = true;
     }
     return result;
+}
+
+std::optional<StaticPolyline> CollisionDetector::removeRedundantPoints(const StaticPolyline &terrainSection,
+                                                                       const AxisAlignedBoundingBox &searchAABB) {
+    const std::vector<Vector> &oldPoints = terrainSection.getPoints();
+    std::vector<Vector> newPoints = {};
+    int minIndex = 0;
+    while (minIndex < oldPoints.size() - 1 &&
+           !searchAABB.intersectsOrIsIn(Line{oldPoints.at(minIndex), oldPoints.at(minIndex + 1)})) {
+        minIndex++;
+    }
+    int maxIndex = static_cast<int>(oldPoints.size()) - 1;
+    while (maxIndex > 0 && !searchAABB.intersectsOrIsIn(Line{oldPoints.at(maxIndex), oldPoints.at(maxIndex - 1)})) {
+        maxIndex--;
+    }
+    for (int index = minIndex; index <= maxIndex; index++) {
+        newPoints.push_back(oldPoints.at(index));
+    }
+    if (newPoints.empty()) {
+        return std::nullopt;
+    }
+    return StaticPolyline(newPoints);
 }

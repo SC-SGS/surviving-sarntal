@@ -35,9 +35,9 @@ std::unordered_map<std::string, std::string> ConfigManager::getTextures() { retu
 
 std::unordered_map<ItemType, ItemDto> ConfigManager::getItems() {
     std::unordered_map<ItemType, ItemDto> items;
-    auto itemsConfig = config["items"];
+    const auto &itemsConfig = config["items"];
 
-    for (YAML::const_iterator it = itemsConfig.begin(); it != itemsConfig.end(); ++it) {
+    for (auto it = itemsConfig.begin(); it != itemsConfig.end(); ++it) {
         ItemDto dto;
 
         dto.name = it->first.as<std::string>();
@@ -89,3 +89,8 @@ std::unordered_map<std::string, std::string> ConfigManager::extractMap(std::stri
 }
 
 bool ConfigManager::isInDevMode() { return this->config["run-dev-mode"].as<bool>(); }
+bool ConfigManager::musicShouldBePlayed() { return this->config["music-should-be-played"].as<bool>(); }
+
+std::vector<Vector> ConfigManager::getGroundPointsDevMode() {
+    return this->config["ground-points"].as<std::vector<Vector>>();
+}

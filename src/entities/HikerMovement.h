@@ -16,7 +16,7 @@
 class HikerMovement {
   public:
     enum MovementState { MOVING, CROUCHED, IN_AIR };
-    enum Direction { LEFT, RIGHT, NEUTRAL };
+    enum Direction { LEFT = -1, RIGHT = 1, NEUTRAL = 0 };
 
     HikerMovement();
     HikerMovement(MovementState state, Direction direction);

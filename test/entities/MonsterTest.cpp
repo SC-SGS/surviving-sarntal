@@ -5,11 +5,11 @@
 #include "../../src/utilities/ConfigManager.hpp"
 #include <gtest/gtest.h>
 
-class MonsterTestFixture : public ::testing::Test {
+class MonsterTestFixture : public testing::Test {
   protected:
     ConfigManager &configManager = ConfigManager::getInstance();
     GameConstants gameConstants = configManager.getGameConstants();
-    Monster monster{gameConstants.hikerConstants};
+    Monster monster{gameConstants};
 
     void SetUp() override {}
 
@@ -22,7 +22,7 @@ TEST_F(MonsterTestFixture, SetXPositionTest) {
 }
 
 TEST_F(MonsterTestFixture, GetXPositionTest) {
-    Vector position = {100, 20};
+    const Vector position = {100, 20};
     monster.setPosition(position);
     EXPECT_EQ(monster.getXPosition(), 100);
 }

@@ -126,3 +126,33 @@ std::shared_ptr<CollisionDetectionRepresentation>
 Biome::calculateCollisionDetectionRepresentationGround(floatType resolution) const {
     return this->ground->calculateCollisionDetectionRepresentation(resolution);
 }
+
+Biome::Biome(std::vector<Vector> &groundPoints,
+             floatType startT,
+             HikerConstants &hikerConstants,
+             TerrainConstants &terrainConstants,
+             ResourceManager &resourceManager)
+    : firstPhase({}),
+      leftBorder(groundPoints.front().x),
+      rightBorder(groundPoints.back().x),
+      hikerConstants(hikerConstants),
+      terrainConstants(terrainConstants) {
+    std::vector<Vector> derivatives = this->computeDerivatives(groundPoints);
+    auto groundLine = std::make_shared<StaticPolyline>(groundPoints);
+    this->ground = std::make_shared<Ground>(groundLine, derivatives, startT, this->terrainConstants);
+    this->rightBorder = this->ground->getBasePoints()->getEndPoint().x;
+    this->updatePolyRepresentations();
+    this->computeBoundingBox();
+}
+
+std::vector<Vector> Biome::computeDerivatives(const std::vector<Vector> &groundPoints) const {
+    assert(groundPoints.size() >= 2);
+    std::vector<Vector> derivatives = {groundPoints.at(1) - groundPoints.front()};
+    Vector lastPoint = groundPoints.at(0);
+    for (int index = 1; index < groundPoints.size(); index++) {
+        Vector point = groundPoints.at(index);
+        derivatives.push_back(point - lastPoint);
+        lastPoint = point;
+    }
+    return derivatives;
+}

@@ -21,6 +21,8 @@ constexpr float UNIT_TO_PIXEL_RATIO = 77.5;
 struct HikerConstants {
     int hikerMaxHealth;
 
+    floatType spawnXRelativeToScreenWidth;
+
     // Hiker size
     floatType hikerHeight;
     floatType hikerWidth;
@@ -35,15 +37,13 @@ struct HikerConstants {
     floatType maxSpeed;
     floatType jumpVelocity;
     floatType airMovementSpeedFactor;
-    floatType knockBack;
+    floatType knockbackIntensity;
     floatType knockbackLossPerStep;
+    floatType knockbackCutoff;
     floatType maxSpeedNegSlope;
 
     // Terrain interaction
     floatType maxClimbableSlope;
-    floatType terrainCollisionDampening; // Factor by which the reflected velocity of the hiker is dampened, when they
-                                         // hit the terrain.
-    floatType friction;
 };
 
 struct ItemsConstants {
@@ -74,20 +74,12 @@ struct RockConstants {
     floatType maxRockSize;
 
     // Rock speed
-    floatType velocityCap;
-    floatType gamma;
-    floatType maxAngularVelocity;
-    floatType minSpawnVelocity;
-    floatType maxSpawnVelocity;
-    floatType minSpawnRotationVelocity;
-    floatType maxSpawnRotationVelocity;
+    floatType minSpawnLinearMomentum;
+    floatType maxSpawnLinearMomentum;
+    floatType minSpawnAngularMomentum;
+    floatType maxSpawnAngularMomentum;
 
     // Rock spawn
-    floatType rockTimePeriodDifficult;
-    floatType rockTimePeriodMedium;
-    floatType rockTimePeriodEasy;
-    floatType timeBetweenRockSpawns;
-    int numOfRocksToSpawn;
     floatType minRockDensity;
     floatType maxRockDensity;
 
@@ -129,12 +121,24 @@ struct VisualConstants {
     int cameraToHikerOffset;
     int mountainGradientHeight;
     int mountainResolution;
+
+    bool shakeEnabled;
+};
+
+struct AudioConstants {
+    bool musicEnabled;
+    float musicVolume;
+
+    floatType effectsThreshold;
 };
 
 struct BarriersConstants {
-    floatType killBarVelocity;
+    floatType killBarBaseVelocity;
     floatType killBarAccelerationFactor;
-    floatType maxKillBarVelocity;
+    floatType maxKillBarFactor;
+    floatType monsterXRelativeToScreenWidth;
+    floatType monsterWidth;
+    floatType monsterHeight;
 };
 
 struct TerrainConstants {
@@ -155,32 +159,12 @@ struct TerrainConstants {
     floatType maximalOverhangHeight;
 };
 
-struct MountainConstants {
-    int visibleChunksCount = 16;
-    int chunkBufferLeft = 2;
-    int chunkBufferRight = 16;
-    int chunkCount = visibleChunksCount + chunkBufferLeft + chunkBufferRight;
-
-    floatType chunkWidth = static_cast<floatType>(
-        1.0 * GetScreenWidth() / (static_cast<float>(visibleChunksCount) * graphics::UNIT_TO_PIXEL_RATIO));
-    floatType width = static_cast<floatType>(chunkCount) * chunkWidth;
-    floatType start = static_cast<floatType>(-chunkBufferLeft) * chunkWidth;
-    floatType initialHeight = 0.0;
-
-    floatType slope = 0.4f;
-    floatType randomness = 1.0;
-    floatType newPointDeltaStandard = slope * chunkWidth;
-    floatType newPointDeltaMin = newPointDeltaStandard - (randomness * chunkWidth);
-    floatType newPointDeltaMax = newPointDeltaStandard + (randomness * chunkWidth);
-    floatType linStepSize = 0.5f;
-};
-
 struct RockSpawnerConstants {
 
     /**
-     * A list that contains the factor that determinse
+     * A list that contains the factor that determines TODO did you fall asleep mid-sentence?
      */
-    std::vector<floatType> velocityDifficultyFactor;
+    std::vector<floatType> linearMomentumDifficultyFactor;
 
     /**
      * A list that contains the x position at which the spawning phase should start at.
@@ -210,6 +194,7 @@ struct GameConstants {
     BarriersConstants barriersConstants{};
     TerrainConstants terrainConstants{};
     RockSpawnerConstants rockSpawnerConstants{};
+    AudioConstants audioConstants{};
 };
 
 #endif // SURVIVING_SARNTAL_GAMEPROPERTIES_HPP

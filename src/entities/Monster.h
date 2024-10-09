@@ -7,22 +7,23 @@
 
 #include "../game/GameProperties.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
-#include "../utilities/Singleton.hpp"
 #include "RenderedEntity.h"
-
-#include <memory>
 
 /**
  * This class represents the monster/ kill bar in the game. The kill bar moves
  * constantly. The player is killed as soon as he is reached by the kill bar.
  */
-class Monster : public RenderedEntity {
+class Monster final : public RenderedEntity {
 
   private:
-    HikerConstants &hikerConstants;
+    GameConstants &gameConstants;
+    floatType velocity;
 
   public:
-    explicit Monster(HikerConstants &hikerConstants);
+    floatType getVelocity() const;
+    void setVelocity(floatType current_speed);
+
+    explicit Monster(GameConstants &gameConstants);
     ~Monster() override = default;
     Monster(const Monster &) = delete;
 
@@ -32,8 +33,8 @@ class Monster : public RenderedEntity {
     floatType getYPosition() const;
     void setXPosition(floatType positionX);
 
-    const floatType monsterWidth = hikerConstants.hikerWidth * static_cast<floatType>(2.5);
-    const floatType monsterHeight = hikerConstants.hikerHeight * static_cast<floatType>(2);
+    const floatType monsterWidth;
+    const floatType monsterHeight;
 };
 
 #endif // SURVIVING_SARNTAL_MONSTER_H

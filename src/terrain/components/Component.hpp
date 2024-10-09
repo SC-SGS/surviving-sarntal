@@ -32,9 +32,11 @@ template <typename U, typename = std::enable_if_t<std::is_base_of_v<StaticPolyOb
                                               this->polyObject->getPoints().front()};
         floatType relativeT;
         for (int index = 0; index < this->polyObject->getPoints().size() - 1; index++) {
+            // floatType sectionTLength = this->relativeTs.at(index + 1) - this->relativeTs.at(index);
+            // floatType stepSize = sectionTLength / floorf(sectionTLength / resolution);
             std::vector<Vector> points = {this->polyObject->getPoints().at(index)};
             relativeT = this->relativeTs.at(index) + resolution;
-            while (relativeT < this->relativeTs.at(index + 1)) {
+            while (relativeT < this->relativeTs.at(index + 1) - resolution) {
                 Vector point = this->evaluate(relativeT);
                 boundingBox.extend(point);
                 points.push_back(point);

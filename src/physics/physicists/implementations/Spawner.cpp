@@ -23,6 +23,7 @@ void Spawner::spawn() {
         this->generatingThread = std::async(&Terrain::generateBiome, &this->terrain, BiomeType::MOUNTAIN,
                                             this->gameConstants.terrainConstants.biomeWidth);
         // this->terrain.generateBiome(BiomeType::MOUNTAIN, gameConstants.terrainConstants.biomeWidth);
+        spdlog::info("Generating new biome");
     }
     if (this->world.getMaxX() > this->terrain.getRightBorder() - this->gameConstants.hikerConstants.hikerWidth) {
         assert(this->generating);
@@ -36,4 +37,5 @@ void Spawner::spawn() {
 void Spawner::reset() {
     this->itemSpawner.reset();
     this->rockSpawner.reset();
+    this->generating = false;
 }
