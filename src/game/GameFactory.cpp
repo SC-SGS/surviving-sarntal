@@ -15,8 +15,9 @@ GameFactory::GameFactory(Camera2D &camera)
       // Game
       gameConstants(configManager.getGameConstants()),
       terrain(gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager),
-      hiker(Hiker(this->getInitialHikerPosition(), audioService, gameConstants.hikerConstants)),
-      monster(Monster(gameConstants.hikerConstants)),
+      // terrain(groundPoints, gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager),
+      hiker({0.0, 0.0}, audioService, gameConstants.hikerConstants),
+      monster(gameConstants),
       inventory(audioService, gameConstants.itemsConstants),
       world(terrain, hiker, inventory, monster, audioService, gameConstants),
       // Menu
@@ -31,6 +32,7 @@ GameFactory::GameFactory(Camera2D &camera)
       hudRenderer(world, camera, gameConstants, resourceManager),
       renderer(
           world, resourceManager, camera, gameConstants, menuEngine, mountainRenderer, entityRenderer, hudRenderer),
+      collisionRenderer(world, gameConstants, camera),
       // Spawner
       items(configManager.getItems()),
       itemSpawner(world, gameConstants, items),
@@ -38,7 +40,7 @@ GameFactory::GameFactory(Camera2D &camera)
       spawner(terrain, rockSpawner, itemSpawner, world, gameConstants),
       // Physics
       accelerator(world, gameConstants),
-      collisionDetector(world, gameConstants, configManager.isInDevMode()),
+      collisionDetector(world, gameConstants, collisionRenderer, configManager.isInDevMode()),
       collisionHandler(world, collisionDetector, audioService, renderer, gameConstants),
       destructor(world, entityRenderer, gameConstants),
       interpolator(world),
@@ -47,7 +49,7 @@ GameFactory::GameFactory(Camera2D &camera)
                  gameConstants.barriersConstants,
                  gameConstants.physicsConstants,
                  gameConstants.terrainConstants),
-      gameEventProcessor(world, renderer, gameConstants.hikerConstants, menuEngine),
+      gameEventProcessor(world, renderer, gameConstants, menuEngine, audioService),
       physicsEngine(world,
                     spawner,
                     gameConstants.physicsConstants,
@@ -71,11 +73,27 @@ GameFactory::GameFactory(Camera2D &camera)
       devMode(world, renderer, physicsEngine, spawner, audioService, inputHandler, gameConstants, camera) {}
 
 GameFactory::~GameFactory() = default;
-Game GameFactory::buildGame() const { return this->game; }
-DevMode GameFactory::buildDevMode() const { return this->devMode; }
+Game GameFactory::buildGame() {
+    this->terrain.initialize();
+    this->monster.setXPosition(this->gameConstants.barriersConstants.monsterXRelativeToScreenWidth *
+                                   (this->world.getMaxX() - this->world.getMinX()) +
+                               this->world.getMinX());
+    this->hiker.setPosition(this->getInitialHikerPosition());
+    this->hiker.move({0.f, 0.f});
+    return this->game;
+}
+DevMode GameFactory::buildDevMode() {
+    this->world.setMinX(-10);
+    this->world.setMaxX(30);
+    this->devMode.init();
+    this->monster.setXPosition(-20.f);
+    return this->devMode;
+}
 
 Vector GameFactory::getInitialHikerPosition() {
-    floatType hikerPositionX = 0.3f * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO);
-    floatType hikerPositionY = terrain.getGroundHeight(hikerPositionX);
+    floatType hikerPositionX = this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth *
+                                   (this->world.getMaxX() - this->world.getMinX()) +
+                               this->world.getMinX();
+    floatType hikerPositionY = terrain.getMaxHeight(hikerPositionX);
     return {hikerPositionX, hikerPositionY};
 }

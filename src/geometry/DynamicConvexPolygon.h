@@ -19,10 +19,10 @@
  */
 struct DynamicProperties {
     Vector lastPosition{};
-    floatType rotationAngleRad = 0;
-    floatType lastRotationAngleRad{};
+    floatType rotationAngleRad = 0.f;
+    floatType lastRotationAngleRad = 0.f;
     Vector linearMomentum{};
-    floatType angularMomentum{};
+    floatType angularMomentum = 0.f;
 };
 
 /**

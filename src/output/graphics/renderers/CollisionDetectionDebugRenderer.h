@@ -5,13 +5,14 @@
 #ifndef COLLISIONDETECTIONDEBUGRENDERER_H
 #define COLLISIONDETECTIONDEBUGRENDERER_H
 
-#include "../../../physics/physicists/CollisionDetector.hpp"
+#include "../../../entities/World.h"
+#include "../../../utilities/CollisionUtils.h"
 
 class CollisionDetectionDebugRenderer {
   public:
-    static void debugRenderRockCollision(const DynamicPolygonCollisionObject &result);
+    CollisionDetectionDebugRenderer(const World &world, const GameConstants &gameConstants, Camera2D &camera);
 
-    static void debugRenderPolygonCollisionEdgeVertexNormal(const DynamicPolygonCollisionObject &result);
+    void debugRenderRockCollision(const DynamicPolygonCollisionObject &result);
 
     /**
      * Does what it says. Careful, only call when result is actually a collision, i.e. the optional triangle has a
@@ -21,9 +22,16 @@ class CollisionDetectionDebugRenderer {
      * @param triangles
      * @param aabb
      */
-    static void debugTerrainCollisionRendering(const DynamicPolygonTerrainCollisionObject &result,
-                                               const std::vector<SimpleConvexPolygon> &triangles,
-                                               const AABB &aabb);
+    void debugTerrainCollisionRendering(const DynamicPolygonTerrainCollisionObject &result,
+                                        const std::vector<SimpleConvexPolygon> &triangles,
+                                        const AABB &aabb);
+
+  private:
+    const World &world;
+    const GameConstants &gameConstants;
+    Camera2D &camera;
+
+    static void debugRenderPolygonCollisionEdgeVertexNormal(const DynamicPolygonCollisionObject &result);
 
     static void debugRenderTriangulatedTerrain(const std::vector<SimpleConvexPolygon> &triangles);
 

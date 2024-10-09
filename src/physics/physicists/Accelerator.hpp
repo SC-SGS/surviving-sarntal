@@ -6,7 +6,6 @@
 #define ACCELERATOR_H
 
 #include "../../entities/World.h"
-#include "../../utilities/Singleton.hpp"
 
 class Accelerator {
 
@@ -55,14 +54,13 @@ class Accelerator {
      *
      * This does not include the velocity update caused by player input, but solely the effects of the world on the
      * hiker. Right now, it is just the application of the gravitational force on the hiker.
-     * // TODO hiker velocity should depend on slope here, but is implemented in the positioner
      */
     void updateHikerVelocity() const;
 
     /**
-     * Checks the velocity to determine the direction of the hiker.
+     * Updates the monster's velocity based on the horizontal distance.
      */
-    void updateHikerDirection() const;
+    void updateMonsterVelocity() const;
 };
 
 #endif // ACCELERATOR_H

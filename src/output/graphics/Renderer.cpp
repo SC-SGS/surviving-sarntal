@@ -85,7 +85,7 @@ void Renderer::draw() {
 }
 
 void Renderer::applyRumbleEffect() {
-    if (shakeIntensity <= 0) {
+    if (shakeIntensity <= 0 || !this->gameConstants.visualConstants.shakeEnabled) {
         return;
     }
 

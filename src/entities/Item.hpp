@@ -5,6 +5,8 @@
 #ifndef SURVIVING_SARNTAL_ITEM_HPP
 #define SURVIVING_SARNTAL_ITEM_HPP
 
+#include <utility>
+
 #include "../output/graphics/renderInformation/RenderInformation.h"
 #include "../utilities/vector.h"
 #include "RenderedEntity.h"
@@ -16,12 +18,27 @@
 enum ItemType { NO_ITEM = -1, KAISERSCHMARRN = 0, COIN = 1, DUCK_ITEM = 2, ROCK_BOMB = 3 };
 
 struct ItemDto {
-    std::string name;
-    ItemType itemType;
-    bool autoCollect;
-    bool useOnPickup;
-    bool dropOnUse;
-    int spawnWeight;
+    ItemDto(std::string name,
+            const ItemType item_type,
+            const bool auto_collect,
+            const bool use_on_pickup,
+            const bool drop_on_use,
+            const int spawn_weight)
+        : name(std::move(name)),
+          itemType(item_type),
+          autoCollect(auto_collect),
+          useOnPickup(use_on_pickup),
+          dropOnUse(drop_on_use),
+          spawnWeight(spawn_weight) {}
+
+    std::string name{};
+    ItemType itemType{NO_ITEM};
+    bool autoCollect{};
+    bool useOnPickup{};
+    bool dropOnUse{};
+    int spawnWeight{};
+
+    ItemDto() { name.reserve(30); };
 };
 
 /**

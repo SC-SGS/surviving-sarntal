@@ -124,7 +124,6 @@ CollisionDetectionRepresentation::calculateRelevantSectionsContinuous(const Axis
         minIndex = (*minIter)->getIndex().value();
         maxIndex = (*maxIter)->getIndex().value();
     }
-
     for (int index = std::max(0, minIndex); index <= maxIndex; index++) {
         sectionsContinuousOrdered.push_back(this->polylineSectionsSortedT.at(index));
     }

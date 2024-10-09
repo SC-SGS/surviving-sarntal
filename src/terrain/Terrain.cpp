@@ -4,12 +4,25 @@
 
 #include "Terrain.hpp"
 #include "biomes/Mountain.hpp"
+#include "spdlog/fmt/bundled/chrono.h"
 #include "spdlog/spdlog.h"
 
 Terrain::Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager)
     : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
-    this->generateInitial();
+    // this->generateInitial();
 }
+
+/*
+Terrain::Terrain(std::vector<Vector> &groundPoints,
+                 HikerConstants &hikerConstants,
+                 TerrainConstants &terrainConstants,
+                 ResourceManager &resourceManager)
+    : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
+    this->biomes = {
+        std::make_shared<Biome>(Biome(groundPoints, 0.f, hikerConstants, terrainConstants, resourceManager))};
+    this->boundingBox = this->biomes.front()->getBoundingBox();
+}
+*/
 
 std::vector<std::shared_ptr<Intersection>> Terrain::getAllIntersections(Line &line) {
     std::vector<std::shared_ptr<Intersection>> intersections = {};
@@ -24,7 +37,7 @@ std::vector<std::shared_ptr<Intersection>> Terrain::getAllIntersections(Line &li
     if (!atLeastOneBiomeIntersects) {
         // spdlog::debug("No biome intersects");
     }
-    Terrain::sortIntersections(line, intersections);
+    sortIntersections(line, intersections);
     return intersections;
 }
 
@@ -32,14 +45,14 @@ void Terrain::generateInitial() {
     const Vector basePoint{0, 0};
     const Vector baseDerivative{1, 0};
     const floatType startT = 0;
-    auto initialBiome =
+    const auto initialBiome =
         std::make_shared<Biome>(Mountain(basePoint, baseDerivative, startT, this->terrainConstants.biomeWidth,
                                          this->hikerConstants, this->terrainConstants, this->resourceManager, true));
     this->biomes.push_back(initialBiome);
     this->boundingBox = initialBiome->getBoundingBox();
 }
 
-std::shared_ptr<Biome> Terrain::generateBiome(BiomeType biomeType, floatType length) {
+std::shared_ptr<Biome> Terrain::generateBiome(const BiomeType biomeType, const floatType length) const {
     Vector basePoint = this->biomes.back()->getGround()->getBasePoints()->getEndPoint();
     Vector baseDerivative = this->biomes.back()->getGround()->getDerivatives()->back();
     floatType startT = this->biomes.back()->getGround()->getEndT();
@@ -64,9 +77,14 @@ void Terrain::addBiome(const std::shared_ptr<Biome> &biome) {
            biome->getGround()->getBasePoints()->getStartPoint());
     this->biomes.push_back(biome);
     this->recalculateBoundingBox();
+    spdlog::info("Added biome. Number of biomes: {}", this->biomes.size());
 }
 
-floatType Terrain::getRightBorder() const { return this->biomes.back()->getGround()->getBasePoints()->getEndPoint().x; }
+floatType Terrain::getRightBorder() const {
+    if (this->biomes.empty())
+        return 0.f;
+    return this->biomes.back()->getGround()->getBasePoints()->getEndPoint().x;
+}
 
 floatType Terrain::getLeftBorder() const {
     return this->biomes.front()->getGround()->getBasePoints()->getStartPoint().x;
@@ -76,28 +94,32 @@ floatType Terrain::getMaxHeight() const { return this->boundingBox.maxMax.y; }
 
 floatType Terrain::getMinHeight() const { return this->boundingBox.minMin.y; }
 
-void Terrain::removeBiome(float xPos) {
+void Terrain::removeBiome(const float xPos) {
     int index = 0;
     while (index < this->biomes.size() && this->biomes.at(index)->getBoundingBox().maxMax.x < xPos) {
         index++;
     }
     this->biomes.erase(this->biomes.cbegin(), this->biomes.cbegin() + index);
     this->recalculateBoundingBox();
+    if (index > 0) {
+        spdlog::info("Removed biome. Number of biomes: {}", this->biomes.size());
+    }
 }
 
-floatType Terrain::getGroundHeight(floatType xPos) {
+floatType Terrain::getGroundHeight(const floatType xPos) {
     Line intersectionLine = {{xPos, this->boundingBox.minMin.y - 5.0f}, {xPos, this->boundingBox.maxMax.y + 5.0f}};
-    std::vector<std::shared_ptr<Intersection>> intersections = this->getAllIntersections(intersectionLine);
+    const std::vector<std::shared_ptr<Intersection>> intersections = this->getAllIntersections(intersectionLine);
     return intersections.front()->intersection.y;
 }
 
-floatType Terrain::getMaxHeight(floatType xPos) {
+floatType Terrain::getMaxHeight(const floatType xPos) {
     Line intersectionLine = {{xPos, this->boundingBox.maxMax.y + 5.0f}, {xPos, this->boundingBox.minMin.y - 5.0f}};
-    std::vector<std::shared_ptr<Intersection>> intersections = this->getAllIntersections(intersectionLine);
+    const std::vector<std::shared_ptr<Intersection>> intersections = this->getAllIntersections(intersectionLine);
     return intersections.front()->intersection.y;
 }
 
-std::vector<std::shared_ptr<StaticPolygon>> Terrain::getPolyRepresentationOfAllComponents(floatType resolution) const {
+std::vector<std::shared_ptr<StaticPolygon>>
+Terrain::getPolyRepresentationOfAllComponents(const floatType resolution) const {
     std::vector<std::shared_ptr<StaticPolygon>> allComponents = {};
     for (const auto &biome : this->biomes) {
         auto biomeComponents = biome->calculatePolyRepresentationOfAllComponents(resolution);
@@ -106,7 +128,7 @@ std::vector<std::shared_ptr<StaticPolygon>> Terrain::getPolyRepresentationOfAllC
     return allComponents;
 }
 
-std::shared_ptr<StaticPolyline> Terrain::getPolyRepresentationOfGround(floatType resolution) const {
+std::shared_ptr<StaticPolyline> Terrain::getPolyRepresentationOfGround(const floatType resolution) const {
     assert(!this->biomes.empty());
     std::shared_ptr<StaticPolyline> groundRepresentation =
         this->biomes.front()->calculatePolyRepresentationOfGround(resolution);
@@ -157,22 +179,17 @@ void Terrain::recalculateBoundingBox() {
     this->boundingBox = newBoundingBox;
 }
 
-void Terrain::sortIntersections(Line &line, std::vector<std::shared_ptr<Intersection>> &intersections) {
-    std::sort(intersections.begin(), intersections.end(),
-              [&](const std::shared_ptr<Intersection> &firstIntersection,
-                  const std::shared_ptr<Intersection> &secondIntersection) {
-                  // Compare squared distances from the start of the line
-                  return firstIntersection->intersection.distanceTo(line.start) <
-                         secondIntersection->intersection.distanceTo(line.start);
-              });
+void Terrain::sortIntersections(const Line &line, std::vector<std::shared_ptr<Intersection>> &intersections) {
+    sortIntersections(line.start, intersections);
 }
 
-floatType Terrain::mapHeightToTerrain(Vector point) {
+floatType Terrain::mapHeightToTerrain(const Vector &point) {
     Line intersectionLineUp = {point, {point.x, this->boundingBox.maxMax.y + 5.0f}};
-    std::vector<std::shared_ptr<Intersection>> intersectionsUp = this->getAllIntersections(intersectionLineUp);
+    const std::vector<std::shared_ptr<Intersection>> intersectionsUp = this->getAllIntersections(intersectionLineUp);
 
     Line intersectionLineDown = {point, {point.x, this->boundingBox.minMin.y - 5.0f}};
-    std::vector<std::shared_ptr<Intersection>> intersectionsDown = this->getAllIntersections(intersectionLineDown);
+    const std::vector<std::shared_ptr<Intersection>> intersectionsDown =
+        this->getAllIntersections(intersectionLineDown);
 
     if (!intersectionsUp.empty() && !intersectionsDown.empty()) {
         if (intersectionsUp.front()->intersection.yDistance(point) <
@@ -201,13 +218,15 @@ Terrain Terrain::getEmptyTerrain(HikerConstants &hikerConstants,
 Terrain::Terrain(HikerConstants &hikerConstants,
                  TerrainConstants &terrainConstants,
                  ResourceManager &resourceManager,
-                 AxisAlignedBoundingBox boundingBox)
+                 const AxisAlignedBoundingBox boundingBox)
     : hikerConstants(hikerConstants), terrainConstants(terrainConstants), resourceManager(resourceManager) {
     this->boundingBox = boundingBox;
+    this->biomes = std::vector<std::shared_ptr<Biome>>{};
 }
 
 void Terrain::reset() {
     this->biomes.clear();
+    this->boundingBox = {};
     this->generateInitial();
 }
 
@@ -256,4 +275,62 @@ Terrain::getTerrainSectionsContinuous(const AxisAlignedBoundingBox &boundingBox)
         }
     }
     return relevantSections;
+}
+
+floatType Terrain::mapToClosestTopTerrain(const Vector &point) {
+    const floatType xPos = point.x;
+    Line intersectionLine = {{xPos, this->boundingBox.minMin.y - 5.0f}, {xPos, this->boundingBox.maxMax.y + 5.0f}};
+    std::vector<std::shared_ptr<Intersection>> intersections = this->getAllIntersections(intersectionLine);
+
+    sortIntersections(point, intersections);
+
+    bool upwardsAllowed = true;
+    bool downwardsAllowed = true;
+    int index = 0;
+    while (index < intersections.size() && (upwardsAllowed || downwardsAllowed)) {
+        auto const &intersection = intersections.at(index).get();
+        if (intersection->intersection.y >= point.y && upwardsAllowed) {
+            if (intersection->normalAtIntersection.y > 0) { // Top of terrain
+                return intersection->intersection.y;
+            } else { // Bottom of terrain
+                upwardsAllowed = false;
+            }
+        } else if (intersection->intersection.y < point.y && downwardsAllowed) {
+            if (intersection->normalAtIntersection.y > 0) { // Top of terrain
+                return intersection->intersection.y;
+            } else { // Bottom of terrain
+                downwardsAllowed = false;
+            }
+        }
+        index++;
+    }
+
+    return point.y; // No terrain height found, leave unchanged
+}
+
+void Terrain::sortIntersections(const Vector &point, std::vector<std::shared_ptr<Intersection>> &intersections) {
+    std::sort(intersections.begin(), intersections.end(),
+              [&](const std::shared_ptr<Intersection> &firstIntersection,
+                  const std::shared_ptr<Intersection> &secondIntersection) {
+                  // Compare squared distances from the given point
+                  return firstIntersection->intersection.distanceTo(point) <
+                         secondIntersection->intersection.distanceTo(point);
+              });
+}
+
+void Terrain::initialize(std::vector<Vector> &groundPoints) {
+    this->biomes = {
+        std::make_shared<Biome>(Biome(groundPoints, 0.f, hikerConstants, terrainConstants, resourceManager))};
+    this->boundingBox = this->biomes.front()->getBoundingBox();
+}
+
+void Terrain::initialize() {
+    const Vector basePoint{0, 0};
+    const Vector baseDerivative{1, 0};
+    const floatType startT = 0;
+    const auto initialBiome =
+        std::make_shared<Biome>(Mountain(basePoint, baseDerivative, startT, this->terrainConstants.biomeWidth,
+                                         this->hikerConstants, this->terrainConstants, this->resourceManager, true));
+    this->biomes.push_back(initialBiome);
+    this->boundingBox = initialBiome->getBoundingBox();
 }

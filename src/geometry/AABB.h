@@ -17,6 +17,10 @@ class AABB : public ConvexPolygon {
     Vector getBottomLeft() const { return this->worldSpaceCoordinates[0]; }
     floatType getWidth() const { return this->worldSpaceCoordinates[1].x - this->worldSpaceCoordinates[0].x; }
     floatType getHeight() const { return this->worldSpaceCoordinates[2].y - this->worldSpaceCoordinates[0].y; }
+    AABB extend(floatType tolerance) const {
+        Vector tolVec = {tolerance, tolerance};
+        return {this->getBottomLeft() - tolVec, this->getTopRight() + tolVec};
+    }
 };
 
 inline AABB::AABB(const Vector &bottomLeft, const Vector &topRight) {

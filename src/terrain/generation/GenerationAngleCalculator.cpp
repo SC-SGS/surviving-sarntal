@@ -24,7 +24,7 @@ GenerationAngleCalculator::GenerationAngleCalculator(const std::shared_ptr<Groun
 }
 
 std::optional<floatType> GenerationAngleCalculator::calculateMinAngle() {
-    spdlog::info("MIN:");
+    spdlog::debug("MIN:");
     int counter = 0;
     while (this->deltaMinAngle > GenerationAngleCalculator::MIN_STEP && this->minAngle >= this->minAllowedAngle &&
            counter < GenerationAngleCalculator::MAX_TRIES) {
@@ -50,11 +50,11 @@ void GenerationAngleCalculator::updateMinAngle(Vector newPoint) {
             newPoint,
             newDerivative)) { // scan through angle domain with step size delta
         this->minAngle += this->deltaMinAngle;
-        spdlog::info("Does NOT fulfill constraints.");
+        spdlog::debug("Does NOT fulfill constraints.");
     } else { // If constraints are fulfilled, lower step size
         this->deltaMinAngle /= 2;
         this->minAngle -= this->deltaMinAngle;
-        spdlog::info("({},{}) fulfills constraints.", newPoint.x, newPoint.y);
+        spdlog::debug("({},{}) fulfills constraints.", newPoint.x, newPoint.y);
     }
 
     // No viable angle found, try again with smaller step size.
@@ -65,7 +65,7 @@ void GenerationAngleCalculator::updateMinAngle(Vector newPoint) {
 }
 
 std::optional<floatType> GenerationAngleCalculator::calculateMaxAngle() {
-    spdlog::info("MAX:");
+    spdlog::debug("MAX:");
     int counter = 0;
     while (this->deltaMaxAngle > GenerationAngleCalculator::MIN_STEP && this->maxAngle <= this->maxAllowedAngle &&
            counter < GenerationAngleCalculator::MAX_TRIES) {
@@ -91,11 +91,11 @@ void GenerationAngleCalculator::updateMaxAngle(Vector newPoint) {
             newPoint,
             newDerivative)) { // scan through angle domain with step size delta
         this->maxAngle -= this->deltaMaxAngle;
-        spdlog::info("Does NOT fulfill constraints.");
+        spdlog::debug("Does NOT fulfill constraints.");
     } else { // If constraints are fulfilled, lower step size
         this->deltaMaxAngle /= 2;
         this->maxAngle += this->deltaMaxAngle;
-        spdlog::info("({},{}) fulfills constraints.", newPoint.x, newPoint.y);
+        spdlog::debug("({},{}) fulfills constraints.", newPoint.x, newPoint.y);
     }
 
     // No viable angle found, try again with smaller step size.

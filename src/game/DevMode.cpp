@@ -21,13 +21,20 @@ DevMode::DevMode(World &world,
       audioService(audioService),
       inputHandler(inputHandler),
       gameConstants(gameConstants),
-      camera(camera) {
+      camera(camera) {}
 
+void DevMode::init() {
     loadTestConfig();
+    std::vector<Vector> groundPoints = ConfigManager::getInstance().getGroundPointsDevMode();
+    if (groundPoints.back().x < this->gameConstants.terrainConstants.biomeWidth) {
+        groundPoints.push_back({this->gameConstants.terrainConstants.biomeWidth, groundPoints.back().y});
+    }
+    this->world.getTerrain().initialize(groundPoints);
     this->items = ConfigManager::getInstance().getItems();
+    this->world.getHiker().setPosition({0, this->world.getTerrain().mapToClosestTopTerrain(Vector{0.f, 0.f})});
+    this->world.getHiker().move({0.f, 0.f});
     this->testCases = loadTestCases();
-
-    spdlog::info("Manual test initialized.");
+    spdlog::info("Dev mode was initialized successfully.");
 }
 
 void DevMode::run() {

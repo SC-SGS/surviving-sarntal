@@ -6,10 +6,20 @@
 #include "../GraphicsUtil.h"
 #include "PolygonRenderer.h"
 
+CollisionDetectionDebugRenderer::CollisionDetectionDebugRenderer(const World &world,
+                                                                 const GameConstants &gameConstants,
+                                                                 Camera2D &camera)
+    : world(world), gameConstants(gameConstants), camera(camera) {}
+
 void CollisionDetectionDebugRenderer::debugRenderRockCollision(const DynamicPolygonCollisionObject &result) {
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
+        camera.target.y = GraphicsUtil::transformYCoordinate(
+            world.getHiker().getRenderInformation().position.y +
+            static_cast<floatType>(this->gameConstants.visualConstants.cameraToHikerOffset));
+        camera.target.x = (this->world.getMaxX() + world.getMinX()) * graphics::UNIT_TO_PIXEL_RATIO / 2.0f;
+        BeginMode2D(camera);
         PolygonRenderer::renderPolygonOutlineStatic(*result.polyAIncident);
         PolygonRenderer::renderPolygonOutlineStatic(*result.polyBReference);
         debugRenderPolygonCollisionEdgeVertexNormal(result);
@@ -43,6 +53,11 @@ void CollisionDetectionDebugRenderer::debugTerrainCollisionRendering(const Dynam
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
+        camera.target.y = GraphicsUtil::transformYCoordinate(
+            world.getHiker().getRenderInformation().position.y +
+            static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset));
+        camera.target.x = (world.getMaxX() + world.getMinX()) * graphics::UNIT_TO_PIXEL_RATIO / 2.0f;
+        BeginMode2D(camera);
         debugRenderTriangulatedTerrain(triangles);
         debugRenderAABB(aabb);
         PolygonRenderer::renderPolygonOutlineStatic(*result.poly);

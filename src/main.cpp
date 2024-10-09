@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     }
 
     Camera2D camera{};
-    const GameFactory gameFactory{camera};
+    GameFactory gameFactory{camera};
 
     if (!configManager.isInDevMode()) {
         Game game = gameFactory.buildGame();

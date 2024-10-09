@@ -17,12 +17,12 @@ PhysicsEngine::PhysicsEngine(World &world,
                              CollisionHandler &collisionHandler,
                              Interpolator &interpolator,
                              Destructor &destructor)
-    : world(world),
-      accumulator(0.f),
-      timeLastUpdate(0.f),
-      spawner(spawner),
+    : deltaT(physicsConstants.physicsDeltaT),
+      world(world),
       physicsConstants(physicsConstants),
-      deltaT(physicsConstants.physicsDeltaT),
+      timeLastUpdate(0.f),
+      accumulator(0.f),
+      spawner(spawner),
       eventProcessor(eventProcessor),
       accelerator(accelerator),
       positioner(positioner),
@@ -43,8 +43,9 @@ void PhysicsEngine::update(std::queue<GameEvent> &events) {
     while (this->accumulator >= this->deltaT) {
         this->updateTimeStep();
         this->accumulator -= this->deltaT;
-        // std::cout << "A Physics step occurred" << std::endl;
+        spdlog::debug("Physics Step");
     }
+    spdlog::debug("Frame");
     const floatType alpha = this->accumulator / this->deltaT;
     this->interpolator.interpolate(alpha);
     this->eventProcessor.clearRepeatedEvents();
@@ -64,9 +65,8 @@ void PhysicsEngine::updateTimeStep() {
     this->eventProcessor.processEvents();
     this->accelerator.accelerate();
     this->positioner.updatePositions();
-    // TODO check placement of collision detection
-    this->collisionDetector.detectCollisions();
     this->collisionHandler.handleCollisions();
-    this->destructor.destruct(); // TODO mountain chunks should probably also be destructed here
+    this->destructor.destruct();
 }
+
 void PhysicsEngine::reset() { this->spawner.reset(); }
