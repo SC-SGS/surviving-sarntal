@@ -140,9 +140,21 @@ class CollisionHandler {
 
     void checkAndHandlePlayerRockCollision(Rock &rock) const;
 
-    void resolvePlayerRockCollisions() const;
+    /**
+     *
+     * @return whether the hiker can uncrouch without getting stuck in the terrain
+     */
+    bool hikerCanUncrouch() const;
 
-    void checkAndHandlePlayerTerrainCollisions() const;
+    /**
+     * If the hiker collides with the terrain at its current position, the hiker is placed just outside the terrain.
+     */
+    bool resolveHikerTerrainCollision(bool inAir) const;
+
+    /**
+     * Restricts the movement of the hiker so that they can't leave the Screen to the right side.
+     */
+    void enforceWorldLimitOnHiker() const;
 
     /**
      * Calculates the damage a collided rock does to the hiker, dependent on its velocity, size and
@@ -164,58 +176,9 @@ class CollisionHandler {
     Vector computeKnockback(const DynamicPolygonCollisionObject &coll) const;
 
     /**
-     * Checks for all rocks whether they WOULD collide with the terrain in the next step and handles the collision.
-     * TODO this is bad and will be changed with spline mountain; also needs lookahead and some analytic methods
-     *
-    void rockTerrainCollisions(); // const;
-
-    /**
-     * This prevents the rock from going into the mountain by reflecting him on the surface.
-     * TODO Careful, right now, it leaves a gap (collides early) and skips the time it takes for the rock to hit the
-     * TODO terrain and bounce up again
-     *
-     * TODO Will be changed anyways if we do polygons
-     * @param rock
-     * @param closestVertex
-     *
-    void rockTerrainCollision(Rock &rock, Intersection &intersection) const;
-
-    /**
-     * Yikes, this is naive.
-     *
-     * TODO make better with linked cell or verlet neighbor
-     *
-     *
-    void rockRockCollisions();
-
-    /**
-     * Collides two rocks.
-     *
-     * @param rock1
-     * @param rock2
-     *
-    void rockRockCollision(Rock &rock1, Rock &rock2);
-
-    /**
-     * Returns the next position of a given rock with a velocity and angular velocity, disregarding any collisions that
-     * might occur. This method serves as a preview of the next rock position in a vacuum and should only be used if
-     * collisions were handled beforehand or immediately after.
-     * TODO check whether positions should be updated before or after collisions or if they are updated in the positions
-     * TODO maybe the collision handler and positioner should be melted into one
-     * TODO maybe this could be a method of Dwayne Johnson
-     *
-     * @param rock
-     * @return
-     *
-    Rock getNextState(Rock &rock) const;
-
-    /**
-     * Sigh ...
-     *
-     * @param angVel
-     * @return
-     *
-    floatType capAngularVelocity(floatType angVel) const;*/
+     * Clamps the hiker to the nearest terrain below him if they intersect this terrain.
+     */
+    void clampHikerIfNeeded() const;
 };
 
 #endif // COLLISIONHANDLER_H

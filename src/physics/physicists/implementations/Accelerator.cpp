@@ -3,18 +3,15 @@
 //
 
 #include "../Accelerator.hpp"
-
 #include <iostream>
-#include <mutex>
-// TODO #include <omp.h>
 
 Accelerator::Accelerator(World &world, GameConstants &gameConstants)
-    : world(world), gameConstants(gameConstants), deltaT(1){};
+    : gameConstants(gameConstants), world(world), deltaT(1) {}
 
 void Accelerator::accelerate() const {
     this->updateHikerVelocity();
     this->updateMomentumOfRocks();
-    this->updateHikerDirection();
+    this->updateMonsterVelocity();
 }
 void Accelerator::setDeltaT(const floatType deltaT) { this->deltaT = deltaT; }
 
@@ -37,7 +34,7 @@ floatType Accelerator::calculateTorque(const Rock &rock) const {
 }
 
 void Accelerator::updateMomentumOfRocks() const {
-    // TODO #pragma omp parallel for
+    // TODO #pragma omp parallel for (only makes sense in batches and I don't expect that we have that many rocks)
     for (auto &rock : this->world.getRocks()) {
         auto linearMomentum = rock->getLinearMomentum();
         linearMomentum += this->calculateTranslationalForces(*rock) * this->deltaT;
@@ -58,16 +55,8 @@ void Accelerator::updateHikerVelocity() const {
     }
 }
 
-void Accelerator::updateHikerDirection() const {
-    auto &hiker = this->world.getHiker();
-    auto vel = hiker.getVelocity();
-    if (vel.x < 0) {
-        hiker.turnLeft();
-    } else if (vel.x > 0) {
-        hiker.turnRight();
-    } else {
-        hiker.turnNeutral();
-    }
-    // std::cout << "Updated hiker direction: " << this->world.getHiker().getHikerMovement().getDirection() <<
-    // std::endl;
-};
+void Accelerator::updateMonsterVelocity() const {
+    floatType factor = this->world.getMaxX() * gameConstants.barriersConstants.killBarAccelerationFactor;
+    factor = fminf(factor, gameConstants.barriersConstants.maxKillBarFactor);
+    this->world.getMonster().setVelocity(gameConstants.barriersConstants.killBarBaseVelocity * factor);
+}

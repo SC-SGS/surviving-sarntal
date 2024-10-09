@@ -3,8 +3,11 @@
 //
 
 #include "AxisAlignedBoundingBox.hpp"
+#include "../Terrain.hpp"
 
+#include <cassert>
 #include <cmath>
+#include <memory>
 
 AxisAlignedBoundingBox AxisAlignedBoundingBox::merge(const AxisAlignedBoundingBox &other) const {
     const floatType minX = std::fmin(this->minMin.x, other.minMin.x);
@@ -106,4 +109,92 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::moveByDelta(const Vector &delta) 
 
 AxisAlignedBoundingBox AxisAlignedBoundingBox::transform(const AABB &aabb) {
     return {aabb.getBottomLeft(), aabb.getTopRight()};
+}
+
+AxisAlignedBoundingBox AxisAlignedBoundingBox::extend(floatType tolerance) const {
+    Vector tolVec = {tolerance, tolerance};
+    return {this->minMin - tolVec, this->maxMax + tolVec};
+}
+
+std::vector<Line> AxisAlignedBoundingBox::getEdges() const {
+    Vector first = this->minMin;
+    Vector second = {this->minMin.x, this->maxMax.y}; // {this->maxMax.x, this->minMin.y};
+    Vector third = this->maxMax;
+    Vector fourth = {this->maxMax.x, this->minMin.y}; // {this->minMin.x, this->maxMax.y};
+    std::vector<Line> edges = {Line{first, second}, Line{second, third}, Line{third, fourth}, Line{fourth, first}};
+    return edges;
+}
+
+std::vector<Vector> AxisAlignedBoundingBox::getCorners() const {
+    Vector first = this->minMin;
+    Vector second = {this->minMin.x, this->maxMax.y}; // {this->maxMax.x, this->minMin.y};
+    Vector third = this->maxMax;
+    Vector fourth = {this->maxMax.x, this->minMin.y}; // {this->minMin.x, this->maxMax.y};
+    return {first, second, third, fourth};
+}
+
+std::vector<std::shared_ptr<Intersection>> AxisAlignedBoundingBox::calculateIntersections(const Line &line) const {
+    std::vector<std::shared_ptr<Intersection>> intersections = {};
+    for (const auto &aabbLine : this->getEdges()) {
+        std::optional<Intersection> intersection = aabbLine.calculateIntersection(line);
+        if (intersection.has_value()) {
+            intersections.push_back(std::make_shared<Intersection>(intersection.value()));
+        }
+    }
+    return intersections;
+}
+
+Vector AxisAlignedBoundingBox::projectOutwards(const Vector &pointOnOther, const Vector &projectionLine) const {
+    Vector projDirection = projectionLine.normalize();
+    Line intersectionLine = {pointOnOther, pointOnOther + projDirection * this->getWidth() * this->getHeight()};
+    std::vector<std::shared_ptr<Intersection>> intersections = this->calculateIntersections(intersectionLine);
+    assert(intersections.size() == 1);
+    return this->calculateIntersections(intersectionLine).at(0)->intersection;
+}
+
+std::optional<Line> AxisAlignedBoundingBox::getEdge(const Vector &point) const {
+    const std::vector<Line> &edges = this->getEdges();
+    for (const Line &edge : edges) {
+        if (AxisAlignedBoundingBox::isOnEdge(point, edge)) {
+            return edge;
+        }
+    }
+    return std::nullopt;
+}
+
+bool AxisAlignedBoundingBox::isOnEdge(const Vector &point, const Line &edge) {
+    if (point.x == edge.start.x && point.x == edge.end.x) {
+        if ((point.y >= edge.start.y && point.y <= edge.end.y) || (point.y <= edge.start.y && point.y >= edge.end.y)) {
+            return true;
+        }
+    } else if (point.y == edge.start.y && point.y == edge.end.y) {
+        if ((point.x >= edge.start.x && point.x <= edge.end.x) || (point.x <= edge.start.x && point.x >= edge.end.x)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+floatType AxisAlignedBoundingBox::maxOfHeightLength() const {
+    return std::fmax(this->maxMax.y - this->minMin.y, this->maxMax.x - this->minMin.x);
+}
+
+floatType AxisAlignedBoundingBox::getHeight() const { return this->maxMax.y - this->minMin.y; }
+
+floatType AxisAlignedBoundingBox::getWidth() const { return this->maxMax.x - this->minMin.x; }
+
+Vector AxisAlignedBoundingBox::calculateFirstIntersection(const Line &line) const {
+    std::vector<std::shared_ptr<Intersection>> startIntersections = this->calculateIntersections(line);
+    Terrain::sortIntersections(line, startIntersections);
+    return startIntersections.front()->intersection;
+}
+
+int AxisAlignedBoundingBox::getIndexOfEdge(const Vector &point) const {
+    std::vector<Line> edges = this->getEdges();
+    for (int index = 0; index < edges.size(); index++) {
+        const Line &line = edges.at(index);
+        if (AxisAlignedBoundingBox::isOnEdge(point, line)) {
+            return index;
+        }
+    }
 }

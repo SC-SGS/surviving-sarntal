@@ -14,12 +14,19 @@ class AudioService {
     explicit AudioService(ResourceManager &resourceManager);
     ~AudioService();
     virtual void playSound(const std::string &soundName) const;
-    virtual void playSong(const std::string &songName, bool loop);
+    virtual void playSong(const std::string &songName, bool loop, floatType vol);
     void updateMusicStream();
+    void playMovingSound(floatType hikerSpeed, floatType maxHikerSpeed);
+    void interruptMovingSound();
+    void playSoundWithSpeedIfNotAlreadyPlaying(const std::string &soundName, float speed) const;
+    void interruptSound(const std::string &soundName) const;
 
   private:
     ResourceManager &resourceManager;
     std::list<Music> musicList;
+    // TODO this is not very nice, but I do not know how to fix it in a prettier way
+    bool movementSoundPlaying = false;
+    floatType lastStartTimeMovementSound = 0.0f;
 };
 
 #endif // SURVIVING_SARNTAL_AUDIOSERVICE_HPP

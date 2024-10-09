@@ -232,7 +232,7 @@ void EntityRenderer::debugRenderEntities() {
 }
 
 void EntityRenderer::debugRenderHiker(const Hiker &hiker) const {
-    std::vector<Vector> vertices = hiker.getCurrentBoundingBoxStatic()->getPoints();
+    std::vector<Vector> vertices = hiker.getCurrentHitbox()->getWorldSpaceVertices();
     for (size_t i = 0; i < vertices.size(); ++i) {
         const Vector2 point1 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[i])));
         const Vector2 point2 = Vector2(GraphicsUtil::transformPosition(Vector2(vertices[(i + 1) % vertices.size()])));

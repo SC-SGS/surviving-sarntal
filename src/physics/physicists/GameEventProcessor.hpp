@@ -10,47 +10,25 @@
 #include "../../input/events/GameEvent.h"
 #include "../../menu/EventProcessor.h"
 #include "../../menu/MenuEngine.h"
-#include "../../menu/MenuRenderer.h"
 #include "../../output/graphics/Renderer.h"
 #include "../../utilities/Singleton.hpp"
 
-#include <list>
-#include <queue>
-
-class GameEventProcessor : public EventProcessor {
-
-    // using GameEventFunction = void (GameEventProcessor::*)(GameEvent) const;
-    // using AutoEventFunction = void (GameEventProcessor::*)() const;
+class GameEventProcessor final : public EventProcessor {
 
   public:
     explicit GameEventProcessor(World &world,
                                 Renderer &renderer,
-                                HikerConstants &hikerConstants,
-                                MenuEngine &menuEngine);
-    ~GameEventProcessor() = default;
-    /**
-     * Performs the changes to the world caused by the user input.
-     */
-    // void processEvents();
-
-    /**
-     * Adds new events to the queue.
-     *
-     * @param eventQueue
-     */
-    // void addEvents(std::queue<GameEvent> &eventQueue);
-
-    /**
-     * Clears events executed repetedly from the event queue.
-     */
-    // void clearRepeatedEvents();
+                                const GameConstants &gameConstants,
+                                MenuEngine &menuEngine,
+                                AudioService &audioService);
 
   private:
     // Dependencies
     World &world;
     Renderer &renderer;
     MenuEngine &menuEngine;
-    HikerConstants &hikerConstants;
+    const GameConstants &gameConstants;
+    AudioService &audioService;
 
     /**
      * Puts the Hiker into the crouched state.
@@ -119,15 +97,20 @@ class GameEventProcessor : public EventProcessor {
      * This method is responsible for adapting the hiker's speed based on user input.
      * If the user clicks the button that moves the hiker to the right, the speed is increased.
      * If the user clicks the button that moves the hiker to the left, the speed is decreased.
+     * Also plays the movement sound
      *
      * @param event
      */
-    void moveX(GameEvent event) const;
+    void moveX(GameEvent event);
     void moveY(GameEvent event) const;
 
     void noEvent(GameEvent event) const;
 
     void pickItem(const std::shared_ptr<Item> &item) const;
+
+    floatType getCoinSpeedFactor() const;
+
+    floatType calculateHikerSpeed(floatType factor) const;
 };
 
 #endif // EVENTPROCESSOR_H

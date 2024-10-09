@@ -27,6 +27,7 @@ class DevMode {
     ~DevMode() = default;
     void run();
     bool debugMode = false;
+    void init();
 
   private:
     World &world;
@@ -42,6 +43,7 @@ class DevMode {
     float rockSize = 10.0;
     std::vector<TestCaseDto> testCases;
     std::string currentTestCase = "Dev Mode";
+
     PolygonGenerator polyGen;
 
     // Helper functions

@@ -18,6 +18,7 @@ template <> struct convert<HikerConstants> {
         }
 
         hikerConstants.hikerMaxHealth = node["hikerMaxHealth"].as<int>();
+        hikerConstants.spawnXRelativeToScreenWidth = node["spawnXRelativeToScreenWidth"].as<floatType>();
         hikerConstants.hikerHeight = node["hikerHeight"].as<floatType>();
         hikerConstants.hikerWidth = node["hikerWidth"].as<floatType>();
         hikerConstants.crouchedHikerHeight = node["crouchedHikerHeight"].as<floatType>();
@@ -28,12 +29,11 @@ template <> struct convert<HikerConstants> {
         hikerConstants.maxSpeed = node["maxSpeed"].as<floatType>();
         hikerConstants.jumpVelocity = node["jumpVelocity"].as<floatType>();
         hikerConstants.airMovementSpeedFactor = node["airMovementSpeedFactor"].as<floatType>();
-        hikerConstants.knockBack = node["knockBack"].as<floatType>();
+        hikerConstants.knockbackIntensity = node["knockbackIntensity"].as<floatType>();
         hikerConstants.maxSpeedNegSlope = node["maxSpeedNegSlope"].as<floatType>();
         hikerConstants.maxClimbableSlope = node["maxClimbableSlope"].as<floatType>();
-        hikerConstants.terrainCollisionDampening = node["terrainCollisionDampening"].as<floatType>();
-        hikerConstants.friction = node["friction"].as<floatType>();
         hikerConstants.knockbackLossPerStep = node["knockbackLossPerStep"].as<floatType>();
+        hikerConstants.knockbackCutoff = node["knockbackCutoff"].as<floatType>();
 
         return true;
     }
@@ -74,20 +74,12 @@ template <> struct convert<RockConstants> {
         rockConstants.spawnRocks = node["spawnRocks"].as<bool>();
         rockConstants.minRockSize = node["minRockSize"].as<floatType>();
         rockConstants.maxRockSize = node["maxRockSize"].as<floatType>();
-        rockConstants.velocityCap = node["velocityCap"].as<floatType>();
-        rockConstants.gamma = node["gamma"].as<floatType>();
-        rockConstants.maxAngularVelocity = node["maxAngularVelocity"].as<floatType>();
-        rockConstants.minSpawnVelocity = node["minSpawnVelocity"].as<floatType>();
-        rockConstants.maxSpawnVelocity = node["maxSpawnVelocity"].as<floatType>();
+        rockConstants.minSpawnLinearMomentum = node["minSpawnLinearMomentum"].as<floatType>();
+        rockConstants.maxSpawnLinearMomentum = node["maxSpawnLinearMomentum"].as<floatType>();
         rockConstants.minRockDensity = node["minRockDensity"].as<floatType>();
         rockConstants.maxRockDensity = node["maxRockDensity"].as<floatType>();
-        rockConstants.minSpawnRotationVelocity = node["minSpawnRotationVelocity"].as<floatType>();
-        rockConstants.maxSpawnRotationVelocity = node["maxSpawnRotationVelocity"].as<floatType>();
-        rockConstants.rockTimePeriodDifficult = node["rockTimePeriodDifficult"].as<floatType>();
-        rockConstants.rockTimePeriodMedium = node["rockTimePeriodMedium"].as<floatType>();
-        rockConstants.rockTimePeriodEasy = node["rockTimePeriodEasy"].as<floatType>();
-        rockConstants.timeBetweenRockSpawns = node["timeBetweenRockSpawns"].as<floatType>();
-        rockConstants.numOfRocksToSpawn = node["numOfRocksToSpawn"].as<int>();
+        rockConstants.minSpawnAngularMomentum = node["minSpawnAngularMomentum"].as<floatType>();
+        rockConstants.maxSpawnAngularMomentum = node["maxSpawnAngularMomentum"].as<floatType>();
         rockConstants.spawnOffsetX = node["spawnOffsetX"].as<floatType>();
 
         return true;
@@ -146,6 +138,7 @@ template <> struct convert<VisualConstants> {
         visualConstants.cameraToHikerOffset = node["cameraToHikerOffset"].as<int>();
         visualConstants.mountainResolution = node["mountainResolution"].as<int>();
         visualConstants.mountainGradientHeight = node["mountainGradientHeight"].as<int>();
+        visualConstants.shakeEnabled = node["shakeEnabled"].as<bool>();
 
         return true;
     }
@@ -157,9 +150,12 @@ template <> struct convert<BarriersConstants> {
             return false;
         }
 
-        barriersConstants.killBarVelocity = node["killBarVelocity"].as<floatType>();
+        barriersConstants.killBarBaseVelocity = node["killBarBaseVelocity"].as<floatType>();
         barriersConstants.killBarAccelerationFactor = node["killBarAccelerationFactor"].as<floatType>();
-        barriersConstants.maxKillBarVelocity = node["maxKillBarVelocity"].as<floatType>();
+        barriersConstants.maxKillBarFactor = node["maxKillBarFactor"].as<floatType>();
+        barriersConstants.monsterXRelativeToScreenWidth = node["monsterXRelativeToScreenWidth"].as<floatType>();
+        barriersConstants.monsterWidth = node["monsterWidth"].as<floatType>();
+        barriersConstants.monsterHeight = node["monsterHeight"].as<floatType>();
 
         return true;
     }
@@ -199,10 +195,25 @@ template <> struct convert<RockSpawnerConstants> {
             return false;
         }
 
-        rockSpawnerConstants.velocityDifficultyFactor = node["velocityDifficultyFactor"].as<std::vector<floatType>>();
+        rockSpawnerConstants.linearMomentumDifficultyFactor =
+            node["linearMomentumDifficultyFactor"].as<std::vector<floatType>>();
         rockSpawnerConstants.spawningPhase = node["spawningPhase"].as<std::vector<floatType>>();
         rockSpawnerConstants.rockSpawnTimeInterval = node["rockSpawnTimeInterval"].as<std::vector<floatType>>();
         rockSpawnerConstants.rockTypePhase = node["rockTypePhase"].as<std::vector<floatType>>();
+
+        return true;
+    }
+};
+
+template <> struct convert<AudioConstants> {
+    static bool decode(const Node &node, AudioConstants &audioConstants) {
+        if (!node.IsMap()) {
+            return false;
+        }
+
+        audioConstants.musicEnabled = node["musicEnabled"].as<bool>();
+        audioConstants.musicVolume = node["musicVolume"].as<floatType>();
+        audioConstants.effectsThreshold = node["effectsThreshold"].as<floatType>();
 
         return true;
     }
@@ -223,10 +234,31 @@ template <> struct convert<GameConstants> {
         gameConstants.barriersConstants = node["barriersConstants"].as<BarriersConstants>();
         gameConstants.terrainConstants = node["terrainConstants"].as<TerrainConstants>();
         gameConstants.rockSpawnerConstants = node["rockSpawnerConstants"].as<RockSpawnerConstants>();
+        gameConstants.audioConstants = node["audioConstants"].as<AudioConstants>();
 
         return true;
     }
 };
+
+template <> struct convert<Vector> {
+    static Node encode(const Vector &rhs) {
+        Node node;
+        node.push_back(rhs.x);
+        node.push_back(rhs.y);
+        return node;
+    }
+
+    static bool decode(const Node &node, Vector &rhs) {
+        if (!node.IsSequence() || node.size() != 2) {
+            return false;
+        }
+
+        rhs.x = node[0].as<floatType>();
+        rhs.y = node[1].as<floatType>();
+        return true;
+    }
+};
+
 } // namespace YAML
 
 #endif // SURVIVING_SARNTAL_YAMLCONVERSIONS_HPP

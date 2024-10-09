@@ -14,9 +14,9 @@ class GameFactory {
     ~GameFactory();
 
     // API
-    Game buildGame() const;
+    Game buildGame();
 
-    DevMode buildDevMode() const;
+    DevMode buildDevMode();
 
   private:
     // Services
@@ -34,12 +34,13 @@ class GameFactory {
     World world;
 
     // Renderer
+    Camera2D &camera;
     PolygonRenderer polygonRenderer;
     MountainRenderer mountainRenderer;
     EntityRenderer entityRenderer;
     HudRenderer hudRenderer;
     Renderer renderer;
-    Camera2D &camera;
+    CollisionDetectionDebugRenderer collisionRenderer;
 
     // Menu
     MenuEngine menuEngine;

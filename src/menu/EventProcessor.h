@@ -12,7 +12,7 @@ class EventProcessor {
 
   public:
     explicit EventProcessor();
-    ~EventProcessor() = default;
+    virtual ~EventProcessor() = default;
     /**
      * Performs the changes to the world caused by the user input.
      */
@@ -28,7 +28,7 @@ class EventProcessor {
     /**
      * Clears events executed repeatedly from the event queue.
      */
-    void clearRepeatedEvents();
+    virtual void clearRepeatedEvents();
 
   private:
     std::queue<GameEvent> eventQueue{};

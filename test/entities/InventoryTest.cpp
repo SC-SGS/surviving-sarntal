@@ -11,17 +11,19 @@ class InventoryTestFixture : public ::testing::Test {
     std::unique_ptr<Inventory> inventory;
     GameConstants gameConstants = ConfigManager::getInstance().getGameConstants();
     ConfigManager &configManager = ConfigManager::getInstance();
+    std::unique_ptr<MockResourceManager> mockResourceManager;
+    std::unique_ptr<MockAudioService> mockAudioService;
 
     void SetUp() override {
-        MockResourceManager mockResourceManager(ConfigManager::getInstance());
-        MockAudioService mockAudioService(mockResourceManager);
-        ON_CALL(mockAudioService, playSound("pickup-item")).WillByDefault(::testing::Return());
-        EXPECT_CALL(mockAudioService, playSound("pickup-item")).Times(1);
-        inventory = std::make_unique<Inventory>(gameConstants.itemsConstants.slotsPerInventory, mockAudioService,
+        mockResourceManager = std::make_unique<MockResourceManager>(ConfigManager::getInstance());
+        mockAudioService = std::make_unique<MockAudioService>(*mockResourceManager);
+        ON_CALL(*mockAudioService, playSound("pickup-item")).WillByDefault(::testing::Return());
+        EXPECT_CALL(*mockAudioService, playSound("pickup-item")).Times(1);
+        inventory = std::make_unique<Inventory>(gameConstants.itemsConstants.slotsPerInventory, *mockAudioService,
                                                 gameConstants.itemsConstants);
         Vector position = {0, 0};
-        auto item = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseHeight,
-                                           configManager.getItems()[DUCK_ITEM]);
+        const auto item = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseHeight,
+                                                 configManager.getItems()[DUCK_ITEM]);
         inventory->addItem(item);
     }
 

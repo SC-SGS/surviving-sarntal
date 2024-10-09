@@ -25,7 +25,7 @@ class Terrain {
      * @param biomeType
      * @param length rough length of the new terrain to generate.
      */
-    std::shared_ptr<Biome> generateBiome(BiomeType biomeType, floatType length);
+    std::shared_ptr<Biome> generateBiome(BiomeType biomeType, floatType length) const;
 
     /**
      * Adds the given biome to this terrain.
@@ -61,7 +61,16 @@ class Terrain {
      * @param point
      * @return
      */
-    floatType mapHeightToTerrain(Vector point);
+    floatType mapHeightToTerrain(const Vector &point);
+
+    /**
+     * Maps the given position to the closest terrain height that is an upper side of the terrain with no underside of
+     * the terrain in between.
+     *
+     * @param point Position to map
+     * @return
+     */
+    floatType mapToClosestTopTerrain(const Vector &point);
 
     /**
      * Computes a list of all intersections of the given line between the start and end point with the terrain in the
@@ -140,6 +149,30 @@ class Terrain {
     std::vector<std::shared_ptr<Intersection>>
     calculateCollisionsWithPolygon(const std::shared_ptr<StaticPolygon> &poly) const;
 
+    /**
+     * Sorts the given list of intersections by the distance from the start point of the given line.
+     *
+     * @param line
+     */
+    static void sortIntersections(const Line &line, std::vector<std::shared_ptr<Intersection>> &intersections);
+
+    /**
+     * Sorts the given list of intersections by the distance from the given point.
+     *
+     * @param line
+     */
+    static void sortIntersections(const Vector &point, std::vector<std::shared_ptr<Intersection>> &intersections);
+
+    /**
+     * Generates the terrain randomly
+     */
+    void initialize();
+
+    /**
+     * Generates the terrain with the given ground points;
+     */
+    void initialize(std::vector<Vector> &groundPoints);
+
   private:
     std::vector<std::shared_ptr<Biome>> biomes;
     AxisAlignedBoundingBox boundingBox = {};
@@ -173,13 +206,6 @@ class Terrain {
     void recalculateBoundingBox();
 
     void generateInitial();
-
-    /**
-     * Sorts the given list of intersections by the distance from the start point of the given line.
-     *
-     * @param line
-     */
-    static void sortIntersections(Line &line, std::vector<std::shared_ptr<Intersection>> &intersections);
 };
 
 #endif // SURVIVING_SARNTAL_TERRAIN_HPP

@@ -5,13 +5,12 @@
 #include "../Monster.h"
 #include "../World.h"
 
-#include <iostream>
-#include <mutex>
-
-Monster::Monster(HikerConstants &hikerConstants)
-    : hikerConstants(hikerConstants),
-      RenderedEntity(
-          {static_cast<floatType>(0.1 * (static_cast<float>(GetScreenWidth()) / graphics::UNIT_TO_PIXEL_RATIO)), 0}) {
+Monster::Monster(GameConstants &gameConstants)
+    : RenderedEntity({0, 0}),
+      gameConstants(gameConstants),
+      velocity(),
+      monsterWidth(gameConstants.barriersConstants.monsterWidth),
+      monsterHeight(gameConstants.barriersConstants.monsterHeight) {
     animation = {10, 0, 0.2, 0};
 }
 
@@ -24,3 +23,6 @@ floatType Monster::getXPosition() const { return position.x; }
 floatType Monster::getYPosition() const { return position.y; }
 
 void Monster::setXPosition(floatType positionX) { position.x = positionX; }
+
+floatType Monster::getVelocity() const { return this->velocity; }
+void Monster::setVelocity(const floatType current_speed) { this->velocity = current_speed; }

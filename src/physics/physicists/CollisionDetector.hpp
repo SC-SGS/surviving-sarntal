@@ -11,105 +11,18 @@
 #include "../../geometry/ConvexPolygon.h"
 #include "../../geometry/DynamicConvexPolygon.h"
 #include "../../geometry/SimpleConvexPolygon.h"
+#include "../../output/graphics/renderers/CollisionDetectionDebugRenderer.h"
+#include "../../utilities/CollisionUtils.h"
 #include "common/shapes.h"
 
-struct PolygonProjectionOnAxis {
-    floatType lowerBound{std::numeric_limits<floatType>::infinity()};
-    floatType upperBound{-std::numeric_limits<floatType>::infinity()};
-    size_t indexOfLowestVertex{0};
-
-    bool overlaps(const PolygonProjectionOnAxis &other, const floatType eps = NUMERIC_EPSILON) const {
-        return lowerBound + eps < other.upperBound && upperBound > other.lowerBound + eps;
-    }
-};
-
-struct CollisionObject {
-    bool isCollision{false};
-    floatType collisionDepth{std::numeric_limits<floatType>::max()};
-    Vector collisionDirection{};
-};
-
-struct PolygonCollisionObject : CollisionObject {
-    // Body containing the vertex
-    ConvexPolygon *polyAIncident{nullptr};
-    // Body containing the face having the collision normal, which points from B to A
-    ConvexPolygon *polyBReference{nullptr};
-    // Colliding vertex on polyA
-    size_t collisionVertexIdx{};
-    // Index of the reference edge on polyB
-    size_t collisionFaceIdx{};
-    // Index of the reference edge on polyB if no collision occurred
-    size_t lastWitnessEdgeIdx{};
-    // TODO Collision Manifold
-};
-
-struct DynamicPolygonCollisionObject : CollisionObject {
-    // Body containing the vertex
-    DynamicConvexPolygon *polyAIncident{nullptr};
-    // Body containing the face having the collision normal, which points from B to A
-    DynamicConvexPolygon *polyBReference{nullptr};
-    // Colliding vertex on polyA
-    size_t collisionVertexIdx{};
-    // Index of the reference edge on polyB
-    size_t collisionFaceIdx{};
-    // TODO colllision manifold
-    // alpha-value between 0 and 1 at which collision first occurred
-    floatType relativeTimeOfCollision{1};
-};
-
-struct DynamicPolygonTerrainCollisionObject : CollisionObject {
-    DynamicConvexPolygon *poly{nullptr};
-    std::optional<SimpleConvexPolygon> triangle{};
-    bool isPolyIncident{true};
-    // Colliding vertex on incident polygon
-    size_t collisionVertexIdx{};
-    // Index of the reference edge
-    size_t collisionFaceIdx{};
-    // alpha-value between 0 and 1 at which collision first occurred
-    floatType relativeTimeOfCollision{1};
-};
-
-struct LineAABBIntersection {
-    enum Type { LEFT, RIGHT, TOP, BOTTOM, NO_INTERSECTION };
-    Type intersectionType{NO_INTERSECTION};
-    std::optional<Vector> intersectionPoint;
-};
-
-/**
- * TODO this does not work, but I guess we can assume that the collision handler only calls this when knowing the
-*participating rocks...
-struct PolygonCollisionObject : CollisionObject { std::shared_ptr<DynamicPolygon> poly1{};
-    std::shared_ptr<DynamicPolygon> poly2{};
-};
-
-struct TerrainCollisionObject : CollisionObject {
-    const std::shared_ptr<DynamicPolygon> poly{};
-};*/
-
-// TODO so far this is a collection of evil utils, pls come pick me up, I'm scared
 class CollisionDetector {
 
   public:
-    explicit CollisionDetector(World &world, const GameConstants &gameConstants, bool devMode = false);
+    explicit CollisionDetector(World &world,
+                               const GameConstants &gameConstants,
+                               CollisionDetectionDebugRenderer &collisionRenderer,
+                               bool devMode = false);
     ~CollisionDetector() = default;
-
-    /**
-     * TODO This should later return a collision object with a list of collided rock IDs, player is hit and damage to
-     * TODO player or be united with the handler
-     * TODO or a list of collision objects or something similar
-     */
-    void detectCollisions() const;
-
-    // TODO linked cell?
-
-    /**
-     * Checks whether two given circular rocks collide.
-     *
-     * @param rock1
-     * @param rock2
-     * @return
-     *
-    static bool rocksCollide(Rock &rock1, Rock &rock2);*/
 
     /**
      * Checks whether the player is hit by a given rock, where the player is represented by their hitbox.
@@ -164,6 +77,7 @@ class CollisionDetector {
     World &world;
     const GameConstants &gameConstants;
     const bool devMode;
+    CollisionDetectionDebugRenderer &collRenderer;
 
     /**
      * Checks if there is a possible collision of two dynamic convex polygons in the last time step by checking whether
@@ -188,6 +102,22 @@ class CollisionDetector {
                                                           ConvexPolygon &poly2,
                                                           size_t poly1LastWitnessToPoly2 = 0,
                                                           floatType eps = NUMERIC_EPSILON);
+
+    /**
+     *
+     * @param result
+     * @param proj1
+     * @param proj2
+     * @param vertices1
+     * @param normal
+     * @param collisionFaceIdx
+     */
+    static void updateCollisionResultAfterOverlapFound(PolygonCollisionObject &result,
+                                                       const PolygonProjectionOnAxis &proj1,
+                                                       const PolygonProjectionOnAxis &proj2,
+                                                       const std::vector<Vector> &vertices1,
+                                                       const Vector &normal,
+                                                       size_t collisionFaceIdx);
 
     /**
      * Projects a Polygon on a Normal vector, returning a 1D PolygonProjection represented by its lower and upper bound
@@ -226,6 +156,7 @@ class CollisionDetector {
      */
     static StaticPolyline getContinuousTerrainSurfaceFromComponents(
         const std::vector<std::shared_ptr<StaticPolyline>> &terrainSurfaceComponents);
+
     /**
      * Returns a concave polygon representing the terrain in a given bounding box.
      *
@@ -233,9 +164,25 @@ class CollisionDetector {
      * @param aabb
      * @return
      */
-    static ConcavePolygon
+    static std::optional<ConcavePolygon>
     getConcaveTerrainPolygonInAABB(const std::vector<std::shared_ptr<StaticPolyline>> &terrainSurfaceComponents,
                                    const AABB &aabb);
+
+    /**
+     * Returns a concave polygon representing the terrain in a given bounding box.
+     *
+     * @param terrainSurfacePoints list of relevant terrain points. Must be inside the completeAABB
+     * @param completeAABB aabb that encloses all the terrainSurfacePoints and th searchAABB
+     * @param entryPoint point on the completeAABB, that is used as a reference for where the terrain starts.
+     * @param exitPoint point on the completeAABB, that is used as a reference for where the terrain ends.
+     * @param indexExitLine index of the line of the completeAABB, on which the exitPoint is.
+     * @return
+     */
+    static std::optional<ConcavePolygon> getConcaveTerrainPolygonInAABB(const std::vector<Vector> &terrainSurfacePoints,
+                                                                        const AxisAlignedBoundingBox &completeAABB,
+                                                                        const Vector &entryPoint,
+                                                                        const Vector &exitPoint,
+                                                                        int indexExitLine);
 
     /**
      * Returns the boundary triangles of the triangulation of the concave polygon representing the terrain.
@@ -277,6 +224,16 @@ class CollisionDetector {
                                                    const SimpleConvexPolygon &polyAtT,
                                                    const ConvexPolygon &triangle,
                                                    floatType relativeTime);
+
+    /**
+     * Removes lines from the start and end of this polyline that do not intersect the aabb.
+     *
+     * @param terrainSection
+     * @param searchAABB
+     * @return
+     */
+    static std::optional<StaticPolyline> removeRedundantPoints(const StaticPolyline &terrainSection,
+                                                               const AxisAlignedBoundingBox &searchAABB);
 };
 
 #endif // COLLISIONDETECTOR_H
