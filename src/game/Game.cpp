@@ -29,21 +29,34 @@ Game::Game(World &world,
 }
 
 void Game::run() {
-    if (this->gameConstants.audioConstants.musicEnabled)
+    if (this->gameConstants.audioConstants.musicEnabled) {
         audioService.playSong("background-music", true, this->gameConstants.audioConstants.musicVolume);
-    // bool playedEndSound = false;
-
-    while (!WindowShouldClose() && !this->menuEngine.isGameClosed()) {
-        audioService.updateMusicStream();
-        bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
-        if (needToInitGamePads) {
-            initializeGamepads();
-        }
-        this->gameLoop();
+    }
+    this->initializeGamepads();
+    while (this->shouldRunGame()) {
+        this->gameTick();
     }
 }
 
-void Game::gameLoop() {
+void Game::initializeGamepads() {
+    BeginDrawing();
+    while (this->waitingForGamepads()) {
+        this->inputHandler.initializeGamepads();
+    }
+    EndDrawing();
+    spdlog::info("Gamepads initialized at time {}", GetTime());
+}
+
+bool Game::waitingForGamepads() {
+    bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
+    return needToInitGamePads && !WindowShouldClose();
+}
+
+bool Game::shouldRunGame() { return !WindowShouldClose() && !this->menuEngine.isGameClosed(); }
+
+void Game::gameTick() {
+    audioService.updateMusicStream();
+
     if (!menuEngine.isGamePlayRunning()) {
         this->checkPlayAgainClicked();
         runMenu();
@@ -61,13 +74,6 @@ void Game::gameLoop() {
 void Game::checkPause() {
     if (!menuEngine.isGamePlayRunning()) {
         gamePaused = true;
-    }
-}
-
-void Game::initializeGamepads() {
-    this->inputHandler.initializeGamepads();
-    if (this->inputHandler.gamepadsInitialized()) {
-        spdlog::info("Gamepads initialized at time {}", GetTime());
     }
 }
 
