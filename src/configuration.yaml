@@ -1,5 +1,5 @@
 run-dev-mode: false # if true the manual tests will run instead of the normal game
-fullscreen: true
+fullscreen: false
 
 music:
   background-music: "../../assets/audio/Going Up The Country.mp3"

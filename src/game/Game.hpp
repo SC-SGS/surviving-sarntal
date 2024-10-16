@@ -50,7 +50,7 @@ class Game {
     InputHandler &inputHandler;
     GameConstants &gameConstants;
 
-    void gameLoop();
+    void gameTick();
     void initializeGamepads();
     void runMenu();
     void runGameplay();
@@ -61,6 +61,8 @@ class Game {
     bool playedEndSound = false;
     bool gamePaused = false;
     void checkPause();
+    bool shouldRunGame();
+    bool waitingForGamepads();
 };
 
 #endif // GAME_HPP
