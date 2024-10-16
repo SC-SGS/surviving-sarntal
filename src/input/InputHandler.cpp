@@ -33,14 +33,12 @@ std::queue<GameEvent> InputHandler::getEvents() const {
 std::vector<InputDevice *> InputHandler::getDevices() const { return this->devices; }
 
 void InputHandler::initializeGamepads() {
-    BeginDrawing();
     for (int i = 0; i < this->inputConstants.maxGamepads; i++) {
         if (IsGamepadAvailable(i)) {
             this->devices.push_back(new Gamepad(i));
             spdlog::info("Gamepad {} added.", i);
         }
     }
-    EndDrawing();
 }
 bool InputHandler::gamepadsInitialized() const {
     return std::any_of(this->devices.cbegin(), this->devices.cend(),

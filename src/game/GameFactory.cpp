@@ -91,9 +91,9 @@ DevMode GameFactory::buildDevMode() {
 }
 
 Vector GameFactory::getInitialHikerPosition() {
-    floatType hikerPositionX = this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth *
-                                   (this->world.getMaxX() - this->world.getMinX()) +
-                               this->world.getMinX();
+    floatType worldWidth = (this->world.getMaxX() - this->world.getMinX());
+    floatType hikerRelativeSpawn = this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth;
+    floatType hikerPositionX = worldWidth * hikerRelativeSpawn + this->world.getMinX();
     floatType hikerPositionY = terrain.getMaxHeight(hikerPositionX);
     return {hikerPositionX, hikerPositionY};
 }
