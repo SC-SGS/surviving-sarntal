@@ -8,11 +8,11 @@
 
 int RenderedEntity::idCounter = 0;
 
-RenderedEntity::RenderedEntity(Vector position) : position(position) { id = idCounter++; }
+RenderedEntity::RenderedEntity(const Vector &position) : position(position) { id = idCounter++; }
 
 void RenderedEntity::setAnimationInformation(const AnimationInformation animationInformation) {
     animation = animationInformation;
 }
 
-void RenderedEntity::setPosition(const Vector &newPosition) { this->position = newPosition; }
+void RenderedEntity::setPosition(const Vector &position) { this->position = position; }
 const Vector &RenderedEntity::getPosition() const { return position; }

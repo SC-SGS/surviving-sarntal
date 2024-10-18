@@ -19,7 +19,7 @@ class Polygon {
      *
      * @return the list of world space coordinates of the polygon's vertices in counterclockwise order
      */
-    virtual std::vector<Vector> getWorldSpaceVertices() const = 0;
+    virtual const std::vector<Vector> &getWorldSpaceVertices() const = 0;
     /**
      *
      * @param point

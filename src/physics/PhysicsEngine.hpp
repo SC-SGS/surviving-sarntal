@@ -5,9 +5,7 @@
 #ifndef PHYSICSENGINE_H
 #define PHYSICSENGINE_H
 
-#include "../entities/World.h"
 #include "../input/events/GameEvent.h"
-#include "../utilities/Singleton.hpp"
 #include "physicists/Accelerator.hpp"
 #include "physicists/CollisionDetector.hpp"
 #include "physicists/CollisionHandler.hpp"
@@ -18,6 +16,23 @@
 #include "physicists/Spawner.hpp"
 
 #include <list>
+
+/**
+ * A record of time step sizes.
+ */
+struct Record {
+    /**
+     * Average time needed for a physics step.
+     */
+    double avgStepTime{0};
+
+    /**
+     * Precise list of times needed for physics steps.
+     */
+    std::list<std::tuple<double, double>> stepTimes{};
+};
+
+class Recorder;
 
 /**
  * <H1>This is the Physics Engine of our game.</H1>
@@ -31,20 +46,19 @@ class PhysicsEngine {
 
   public:
     /**
+     * The exponential moving average of the time needed for a physics step.
+     */
+    static double exponentialMovingAvg;
+
+    /**
      * Perform N = frameTime / deltaT update steps and calculateYPos at the end.
      * The first of the N updates takes into consideration the inputs from the last iteration of the game loop.
-     * //TODO is it possible to calculateYPos the state with no return value
      * The state of the world at the end of this method should be the state at exactly the time, the next frame is
      * rendered.
      *
      * This method accepts a compromise between having a fixed time step and caclculating the exact state of the game
      * at render time. We accept having a latency of up to min(frameTime, deltaT) and corresponding input aliasing
      * effects.
-     * //TODO only way I see how to solve this would be having physics on different thread but I believe we should try
-     * // this version first and check later how it looks and feels
-     * // This is a general problem: Do the physics run slower than the frame rate or can we split the physics in
-     * // parts that are tied to frame rate (input) and parts that are not (particles/rocks)
-     * // do we need to change input? Is input coupled to frame rate?
      *
      * @param events
      */
@@ -56,6 +70,18 @@ class PhysicsEngine {
      * Resets the physics engine
      */
     void reset();
+
+    /**
+     * Starts recording the time needed for update steps.
+     */
+    void startRecording();
+
+    /**
+     * Stops the current recording and returns it.
+     * Should only be called after a recording has been started if you want meaningful results.
+     * @return
+     */
+    Record stopRecording();
 
     PhysicsEngine(World &world,
                   Spawner &spawner,
@@ -70,11 +96,21 @@ class PhysicsEngine {
 
     ~PhysicsEngine() = default;
 
+    /**
+     * Sets gameRunning to false, making sure, that the next physics step restarts the timer.
+     */
+    void pause();
+
   private:
     /**
      * The constant length of a simulation time interval.
      */
     floatType deltaT;
+
+    /**
+     * Checks if the game is running. Needed because we use GetTime.
+     */
+    bool gameRunning{false};
 
     /**
      * The world containing all entities.
@@ -138,9 +174,27 @@ class PhysicsEngine {
     const Destructor &destructor;
 
     /**
+     * A record of time step sizes.
+     */
+    Record record;
+
+    /**
+     * Can be toggled to start and stop recording the times needed for physics steps.
+     */
+    bool recording{false};
+
+    /**
      * Simulates the change in the state of the world over the next deltaT time interval.
      */
     void updateTimeStep();
+
+    void startEngine();
+
+    void updateAccumulator();
+
+    void updateTimeStepAndRecord();
+
+    void recordTimeStep(double t0Start, double t1Stop);
 };
 
 #endif // PHYSICSENGINE_H

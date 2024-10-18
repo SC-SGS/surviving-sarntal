@@ -20,7 +20,7 @@ class Inventory {
 
   private:
     std::vector<std::vector<std::shared_ptr<Item>>> slots;
-    size_t selectedSlot = 0;
+    int selectedSlot = 0;
     AudioService &audioService;
     ItemsConstants &itemsConstants;
 
@@ -31,14 +31,14 @@ class Inventory {
 
   public:
     int getSlotOfItem(ItemType itemType);
-    explicit Inventory(size_t slotCount, AudioService &audioService, ItemsConstants &itemsConstants);
+    explicit Inventory(int slotCount, AudioService &audioService, ItemsConstants &itemsConstants);
     explicit Inventory(AudioService &audioService, ItemsConstants &itemsConstants);
 
     /**
      * @brief This method returns the number of slots in the inventory.
      * @return number of slots
      */
-    size_t getNumberOfSlots() const;
+    int getNumberOfSlots() const;
 
     /**
      * @brief This method adds an item to the inventory.
@@ -73,7 +73,7 @@ class Inventory {
      * @param slotNumber
      * @return item type at the given slot
      */
-    ItemType getItemType(size_t slotNumber) const;
+    ItemType getItemType(int slotNumber) const;
 
     /**
      * @brief This method returns the item type at the currently selected slot.
@@ -87,20 +87,20 @@ class Inventory {
      */
     std::shared_ptr<Item> getSelectedItem() const;
 
-    std::shared_ptr<Item> getItem(size_t slot) const;
+    std::shared_ptr<Item> getItem(int slot) const;
 
     /**
      * @brief This method returns the index of the currently selected slot.
      * @return current slot number
      */
-    size_t getSelectedSlot() const;
+    int getSelectedSlot() const;
 
     /**
      * returns whether the selected slot has an item.
      */
     bool selectedSlotIsEmpty() const;
 
-    bool slotIsEmpty(size_t slot) const;
+    bool slotIsEmpty(int slot) const;
 
     /**
      * switches the selected slot by the given offset (+i to switch i slots
@@ -109,7 +109,7 @@ class Inventory {
      */
     void switchItemSlot(int offset);
 
-    size_t getNumberOfItems(size_t slot) const;
+    int getNumberOfItems(int slot) const;
     void reset();
 };
 

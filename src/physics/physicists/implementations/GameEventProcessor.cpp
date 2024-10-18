@@ -89,7 +89,7 @@ void GameEventProcessor::toggleDebug(const GameEvent event) const { // NOLINT(*-
 }
 
 void GameEventProcessor::fullscreen(const GameEvent event) const {
-    // TODO: implement
+    // TODO: move here
 }
 
 void GameEventProcessor::switchItem(const GameEvent event) const {
@@ -110,9 +110,7 @@ void GameEventProcessor::moveX(const GameEvent event) {
     }
 }
 
-void GameEventProcessor::moveY(const GameEvent event) const {
-    // TODO: implement
-}
+void GameEventProcessor::moveY(const GameEvent event) const {}
 
 void GameEventProcessor::noEvent(const GameEvent event) const {
     // Do nothing

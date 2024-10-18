@@ -9,7 +9,7 @@
 
 class ConvexPolygon : public virtual Polygon {
   public:
-    std::vector<Vector> getWorldSpaceVertices() const override = 0;
+    const std::vector<Vector> &getWorldSpaceVertices() const override = 0;
 };
 
 #endif // CONVEXPOLYGON_H

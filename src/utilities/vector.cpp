@@ -41,6 +41,8 @@ floatType Vector::distanceTo(const Vector &other) const {
 
 floatType Vector::length() const { return this->distanceTo({0., 0.}); }
 
+floatType Vector::lengthSq() const { return this->dot(*this); }
+
 Vector Vector::reflectOnNormalDampened(const Vector &normal, floatType terrainDampening) const {
     const Vector norm = normal.normalize();
     const float dotProduct = dot(norm);

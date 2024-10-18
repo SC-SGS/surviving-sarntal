@@ -8,7 +8,8 @@
 
 InputDevice::~InputDevice() = default;
 
-InputDevice::InputDevice(int deviceId, Device device) : deviceId(deviceId), device(device) {}
+InputDevice::InputDevice(int deviceId, Device device, const InputConstants &inputConstants)
+    : deviceId(deviceId), device(device), inputConstants(inputConstants) {}
 
 GameEvent InputDevice::getGameEvent(DeviceEvent deviceEvent) const {
     if (INPUT_MAPPINGS.count(deviceEvent) > 0) {

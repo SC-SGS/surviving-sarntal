@@ -5,8 +5,7 @@
 #include "Mouse.h"
 #include <queue>
 
-// TODO magic mushrooms, erm numbers
-Mouse::Mouse() : InputDevice(-1, DEVICE_MOUSE) {}
+Mouse::Mouse(const InputConstants &inputConstants) : InputDevice(-1, DEVICE_MOUSE, inputConstants) {}
 Mouse::~Mouse() = default;
 
 std::queue<GameEvent> Mouse::getGameEvents() { return {}; }

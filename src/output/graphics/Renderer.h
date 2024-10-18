@@ -61,6 +61,7 @@ class Renderer {
     void drawBackgroundTextureRepeatedly(const Texture2D &texture, floatType drawnWidth, floatType offset) const;
     void toggleFullscreen();
     void handleFullScreenSwitch();
+    void renderPhysicsTimeStepSize() const;
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

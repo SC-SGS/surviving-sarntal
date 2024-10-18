@@ -193,8 +193,9 @@ int AxisAlignedBoundingBox::getIndexOfEdge(const Vector &point) const {
     std::vector<Line> edges = this->getEdges();
     for (int index = 0; index < edges.size(); index++) {
         const Line &line = edges.at(index);
-        if (AxisAlignedBoundingBox::isOnEdge(point, line)) {
+        if (isOnEdge(point, line)) {
             return index;
         }
     }
+    return -1;
 }

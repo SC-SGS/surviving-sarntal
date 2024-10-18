@@ -18,7 +18,7 @@
  */
 class InputDevice {
   public:
-    explicit InputDevice(int deviceId, Device device);
+    explicit InputDevice(int deviceId, Device device, const InputConstants &inputConstants);
     virtual ~InputDevice();
     /**
      * Checks for events currently happening on this device to control the game.
@@ -48,6 +48,8 @@ class InputDevice {
      * @return corresponding game event
      */
     GameEvent getGameEvent(DeviceEvent deviceEvent) const;
+
+    const InputConstants &inputConstants;
 
   private:
     const int deviceId;

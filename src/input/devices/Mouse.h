@@ -12,7 +12,7 @@
  */
 class Mouse : public InputDevice {
   public:
-    Mouse();
+    explicit Mouse(const InputConstants &inputConstants);
     ~Mouse() override;
 
   protected:

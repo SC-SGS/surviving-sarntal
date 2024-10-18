@@ -6,8 +6,10 @@
 #include "../../game/GameProperties.hpp"
 #include "raylib.h"
 #include "spdlog/spdlog.h"
+#include <optional>
 
-Gamepad::Gamepad(int gamepadID) : InputDevice(gamepadID, DEVICE_GAMEPAD) {
+Gamepad::Gamepad(int gamepadID, const InputConstants &inputConstants)
+    : InputDevice(gamepadID, DEVICE_GAMEPAD, inputConstants) {
     INPUT_MAPPINGS = {
         // Normal events
         // game
@@ -50,14 +52,69 @@ std::queue<GameEvent> Gamepad::getGameEvents() {
     std::queue<GameEvent> events = {};
     for (auto it = INPUT_MAPPINGS.cbegin(); it != INPUT_MAPPINGS.end(); ++it) {
         DeviceEvent deviceEvent = it->first;
-        if (deviceEvent.triggerType == TRIGGER_POSITION) {
-            floatType axisValue = GetGamepadAxisMovement(this->getId(), deviceEvent.trigger);
-            GameEvent gameEvent = getGameEvent(deviceEvent);
-            gameEvent.axisValue = axisValue;
-            events.push(gameEvent);
-        } else if (Gamepad::raylibMappings.at(deviceEvent.triggerType)(this->getId(), deviceEvent.trigger)) {
-            events.push(getGameEvent(deviceEvent));
+        auto gameEvent = this->convertDeviceEvent(deviceEvent);
+        if (gameEvent.has_value()) {
+            events.push(gameEvent.value());
         }
     }
     return events;
+}
+
+std::optional<GameEvent> Gamepad::convertDeviceEvent(const DeviceEvent &deviceEvent) {
+    if (deviceEvent.triggerType == TRIGGER_POSITION) {
+        floatType axisValue = GetGamepadAxisMovement(this->getId(), deviceEvent.trigger);
+        if (deviceEvent.trigger == GAMEPAD_AXIS_LEFT_X) {
+            return this->updateXMovementState(deviceEvent);
+        } else if (deviceEvent.trigger == GAMEPAD_AXIS_LEFT_Y) {
+            return this->updateYMovementState(deviceEvent);
+        } else if (deviceEvent.trigger == GAMEPAD_AXIS_RIGHT_X) {
+            if (GetTime() - this->lastItemSwitchTime > this->inputConstants.gamepadItemSwitchCooldown &&
+                fabsf(axisValue) > this->inputConstants.itemSwitchThreshold) {
+                this->lastItemSwitchTime = GetTime();
+                axisValue = axisValue / fabsf(axisValue);
+            } else {
+                return std::nullopt;
+            }
+        }
+        GameEvent gameEvent = getGameEvent(deviceEvent);
+        gameEvent.axisValue = axisValue;
+        return gameEvent;
+    } else if (Gamepad::raylibMappings.at(deviceEvent.triggerType)(this->getId(), deviceEvent.trigger)) {
+        return getGameEvent(deviceEvent);
+    }
+    return std::nullopt;
+}
+
+std::optional<GameEvent> Gamepad::updateXMovementState(const DeviceEvent &deviceEvent) {
+    assert(deviceEvent.trigger == GAMEPAD_AXIS_LEFT_X);
+    floatType axisValue = GetGamepadAxisMovement(this->getId(), deviceEvent.trigger);
+    if (fabsf(axisValue) < NUMERIC_EPSILON) {
+        if (!this->movingX) {
+            return std::nullopt;
+        } else {
+            this->movingX = false;
+        }
+    } else {
+        this->movingX = true;
+    }
+    GameEvent gameEvent = getGameEvent(deviceEvent);
+    gameEvent.axisValue = axisValue;
+    return gameEvent;
+}
+
+std::optional<GameEvent> Gamepad::updateYMovementState(const DeviceEvent &deviceEvent) {
+    assert(deviceEvent.trigger == GAMEPAD_AXIS_LEFT_Y);
+    floatType axisValue = GetGamepadAxisMovement(this->getId(), deviceEvent.trigger);
+    if (fabsf(axisValue) < NUMERIC_EPSILON) {
+        if (!this->movingY) {
+            return std::nullopt;
+        } else {
+            this->movingY = false;
+        }
+    } else {
+        this->movingY = true;
+    }
+    GameEvent gameEvent = getGameEvent(deviceEvent);
+    gameEvent.axisValue = axisValue;
+    return gameEvent;
 }
