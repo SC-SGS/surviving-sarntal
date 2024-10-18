@@ -104,8 +104,20 @@ class Terrain {
      */
     floatType getMinHeight() const;
 
+    /**
+     * Computes the polygon-representation of all closed components (everything except the ground)
+     * using the rendering resolution as a distance between the points in the calculated polygons.
+     *
+     * @return list of resulting polygons
+     */
     std::vector<std::shared_ptr<StaticPolygon>> getPolyRepresentationOfAllComponentsRendering() const;
 
+    /**
+     * Computes the polyline-representation of the ground of all biomes.
+     * Uses the rendering resolution as a distance between the points in the calculated polylines.
+     *
+     * @return list of resulting polylines
+     */
     std::vector<std::shared_ptr<StaticPolyline>> getPolyRepresentationOfGroundRendering() const;
 
     /**

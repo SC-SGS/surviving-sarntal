@@ -92,5 +92,9 @@ bool ConfigManager::isInDevMode() { return this->config["run-dev-mode"].as<bool>
 bool ConfigManager::musicShouldBePlayed() { return this->config["music-should-be-played"].as<bool>(); }
 
 std::vector<Vector> ConfigManager::getGroundPointsDevMode() {
-    return this->config["ground-points"].as<std::vector<Vector>>();
+    return this->configDevMode["ground-points"].as<std::vector<Vector>>();
+}
+
+SimulationProperties ConfigManager::getSimProperties() {
+    return this->configDevMode["simulation"].as<SimulationProperties>();
 }

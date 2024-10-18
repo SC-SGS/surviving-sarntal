@@ -7,8 +7,7 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-// TODO Felix knows how to avoid these ugly magic numbers
-Keyboard::Keyboard() : InputDevice(-1, DEVICE_KEYBOARD) {
+Keyboard::Keyboard(const InputConstants &inputConstants) : InputDevice(-1, DEVICE_KEYBOARD, inputConstants) {
     INPUT_MAPPINGS = {// Normal events
                       {{KEY_SPACE, TRIGGER_PRESSED}, {JUMP, NO_AXIS, 0, false}},
                       {{KEY_LEFT_SHIFT, TRIGGER_DOWN}, {CROUCH, NO_AXIS, 0, false}},

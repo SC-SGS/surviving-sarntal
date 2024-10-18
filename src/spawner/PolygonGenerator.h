@@ -26,6 +26,18 @@ class PolygonGenerator {
     generatePolygon(int numberPoints, floatType maxRadius, const Vector &position, floatType density) const;
 
     /**
+     * Generates a polygon given the vertices in anticlockwise order, i.e. it calculates all the parameters needed to
+     * initialize a valid polygon including centroid, body space vertices, moment of inertia, ...
+     *
+     * @param vertices
+     * @param position
+     * @param density
+     * @return
+     */
+    static DynamicConvexPolygon
+    generatePolygonFromVertices(const std::vector<Vector> &vertices, const Vector &position, floatType density);
+
+    /**
      * Calculates the area of a convex polygon given its vertices in a centroid coordinate system.
      * The vertices have to be given in anticlockwise order, otherwise the bahaviour is undefined.
      *

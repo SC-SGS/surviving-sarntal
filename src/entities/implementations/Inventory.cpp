@@ -8,9 +8,9 @@
 #include "spdlog/spdlog.h"
 #include <iostream>
 
-Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstants &itemsConstants)
+Inventory::Inventory(int slotCount, AudioService &audioService, ItemsConstants &itemsConstants)
     : slots(slotCount), audioService(audioService), itemsConstants(itemsConstants) {
-    for (size_t i = 0; i < slotCount; ++i) {
+    for (int i = 0; i < slotCount; ++i) {
         slots[i] = std::vector<std::shared_ptr<Item>>();
     }
     spdlog::info("Inventory initialized.");
@@ -19,7 +19,7 @@ Inventory::Inventory(size_t slotCount, AudioService &audioService, ItemsConstant
 Inventory::Inventory(AudioService &audioService, ItemsConstants &itemsConstants)
     : Inventory(itemsConstants.slotsPerInventory, audioService, itemsConstants) {}
 
-size_t Inventory::getNumberOfSlots() const { return slots.size(); }
+int Inventory::getNumberOfSlots() const { return static_cast<int>(slots.size()); }
 
 void Inventory::addItem(const std::shared_ptr<Item> &item) {
     const bool itemInInventory = itemTypeInInventory(item->getItemType());
@@ -39,7 +39,7 @@ void Inventory::removeSelectedItem() {
     }
 }
 
-ItemType Inventory::getItemType(size_t slotNumber) const {
+ItemType Inventory::getItemType(int slotNumber) const {
     const bool validSlot = slotNumber < slots.size();
     if (validSlot) {
         if (!slots[slotNumber].empty()) {
@@ -51,9 +51,14 @@ ItemType Inventory::getItemType(size_t slotNumber) const {
 
 ItemType Inventory::getSelectedItemType() const { return getItemType(selectedSlot); }
 
-size_t Inventory::getSelectedSlot() const { return selectedSlot; }
+int Inventory::getSelectedSlot() const { return selectedSlot; }
 
-void Inventory::switchItemSlot(int offset) { selectedSlot = (selectedSlot + offset) % getNumberOfSlots(); }
+void Inventory::switchItemSlot(int offset) {
+    this->selectedSlot = (this->selectedSlot + offset) % this->getNumberOfSlots();
+    if (this->selectedSlot < 0) {
+        this->selectedSlot += this->getNumberOfSlots();
+    }
+}
 
 bool Inventory::selectedSlotIsEmpty() const { return slots[selectedSlot].empty(); }
 
@@ -101,9 +106,9 @@ bool Inventory::canCollectItem(const std::shared_ptr<Item> &item) {
     }
 }
 
-size_t Inventory::getNumberOfItems(size_t slot) const {
+int Inventory::getNumberOfItems(int slot) const {
     if (slot < slots.size()) {
-        return slots[slot].size();
+        return static_cast<int>(slots[slot].size());
     }
     return 0;
 }
@@ -116,7 +121,7 @@ std::shared_ptr<Item> Inventory::getSelectedItem() const {
         throw std::runtime_error("The selected slot is emtpy and no item could be retrieved.");
     }
 }
-bool Inventory::slotIsEmpty(size_t slot) const {
+bool Inventory::slotIsEmpty(int slot) const {
     if (slot < slots.size()) {
         return slots[slot].empty();
     } else {
@@ -124,7 +129,7 @@ bool Inventory::slotIsEmpty(size_t slot) const {
         throw std::runtime_error("The slot does not exist.");
     }
 }
-std::shared_ptr<Item> Inventory::getItem(size_t slot) const {
+std::shared_ptr<Item> Inventory::getItem(int slot) const {
     const bool canGetItem = !slotIsEmpty(slot) && slot < slots.size();
     if (canGetItem) {
         return this->slots[slot].front();

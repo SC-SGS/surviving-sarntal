@@ -128,6 +128,14 @@ struct Vector {
     floatType length() const;
 
     /**
+     * The squared length or dot product of the vector with itself.
+     * Used to avoid sqrt.
+     *
+     * @return
+     */
+    floatType lengthSq() const;
+
+    /**
      * Reflects this vector on the given normal vector. The result vector is then dampened by the given
      * terrainDampeningFector.
      *
@@ -241,7 +249,6 @@ struct Vector {
     /**
      * Returns the angle between {0, 1} and this vector. Positive, if this vector is in counterclockwise direction of
      * {0, 1}, negative else.
-     * TODO the denominator is a bit unclear
      *
      * @return
      */

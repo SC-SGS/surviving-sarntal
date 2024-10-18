@@ -39,7 +39,7 @@ RenderInformation Rock::getRenderInformation() const {
                                  this->dynamicProperties.rotationAngleRad * static_cast<floatType>(180.0f / M_PI),
                                  this->getTextureName()};
     }
-    const AABB aabb = this->getBoundingBox();
+    const AABB &aabb = this->getBoundingBox();
     return RenderInformation{Vector2(this->position),
                              {0, 0},
                              aabb.getTopRight().x - aabb.getBottomLeft().x,

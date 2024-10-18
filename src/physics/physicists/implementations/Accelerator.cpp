@@ -34,13 +34,11 @@ floatType Accelerator::calculateTorque(const Rock &rock) const {
 }
 
 void Accelerator::updateMomentumOfRocks() const {
-    // TODO #pragma omp parallel for (only makes sense in batches and I don't expect that we have that many rocks)
+    // TODO parallel batch processing
     for (auto &rock : this->world.getRocks()) {
         auto linearMomentum = rock->getLinearMomentum();
         linearMomentum += this->calculateTranslationalForces(*rock) * this->deltaT;
         rock->setLinearMomentum(linearMomentum);
-        // TODO check if velocity / momentum neeeds to be capped
-
         auto angularMomentum = rock->getAngularMomentum();
         angularMomentum += this->calculateTorque(*rock) * this->deltaT;
         rock->setAngularMomentum(angularMomentum);

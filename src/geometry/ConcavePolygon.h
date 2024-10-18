@@ -18,7 +18,7 @@ class ConcavePolygon final : public virtual Polygon {
         : worldSpaceCoordinates(getWorldSpaceCoordsFromEdges(edges)), edges(edges) {
         assert(worldSpaceCoordinates[0] == worldSpaceCoordinates[worldSpaceCoordinates.size()]);
     }
-    std::vector<Vector> getWorldSpaceVertices() const override { return this->worldSpaceCoordinates; }
+    const std::vector<Vector> &getWorldSpaceVertices() const override { return this->worldSpaceCoordinates; }
 
   private:
     const std::vector<Vector> worldSpaceCoordinates;

@@ -24,40 +24,71 @@ DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollision(Dynamic
                                                                          DynamicConvexPolygon &poly2) const {
 
     if (sweptAABBsCollide(poly1, poly2)) {
-        PolygonCollisionObject collResult;
-        floatType relativeTime = 0.0f; // TODO better choice of smallDT needed for bullets dependent on velocity
-        SimpleConvexPolygon poly1AtT{std::vector<Vector>{}};
-        SimpleConvexPolygon poly2AtT{std::vector<Vector>{}};
-        // Substep to the first point of collision
-        do {
-            relativeTime += this->gameConstants.physicsConstants.rockSubstepSize;
-            poly1AtT = SimpleConvexPolygon(poly1.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
-            poly2AtT = SimpleConvexPolygon(poly2.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
-        } while (!(collResult = polygonsCollide(poly1AtT, poly2AtT, poly1.getLastWitnessTo(poly2.getID()),
-                                                poly2.getLastWitnessTo(poly1.getID()),
-                                                this->gameConstants.physicsConstants.epsilon))
-                      .isCollision &&
-                 relativeTime < 1 - NUMERIC_EPSILON);
+        if (this->shouldSubstep(poly1, poly2)) {
+            return dynamicPolygonCollisionSubstep(poly1, poly2);
+        }
+        const PolygonCollisionObject collResult = polygonsCollide(
+            poly1, poly2, poly1.getLastWitnessTo(poly2.getPolyID()), poly2.getLastWitnessTo(poly1.getPolyID()));
+
         if (collResult.isCollision) {
             if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
-                collRenderer.debugRenderRockCollision(createDynamicPolygonCollisionObjectFrom(
-                    collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime));
-            return createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime);
+                collRenderer.debugRenderRockCollision(
+                    createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2));
+            return createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2);
         }
-        if (collResult.polyBReference == &poly1AtT) {
-            poly1.updateLastWitness(poly2.getID(), collResult.lastWitnessEdgeIdx);
+        if (collResult.polyBReference == &poly1) {
+            poly1.updateLastWitness(poly2.getPolyID(), collResult.lastWitnessEdgeIdx);
         } else {
-            poly2.updateLastWitness(poly2.getID(), collResult.lastWitnessEdgeIdx);
+            poly2.updateLastWitness(poly2.getPolyID(), collResult.lastWitnessEdgeIdx);
         }
     }
     return {};
 }
 
+bool CollisionDetector::shouldSubstep(const DynamicConvexPolygon &poly1, const DynamicConvexPolygon &poly2) const {
+    return (poly1.getLinearMomentum().length() / poly1.getMass() +
+            poly2.getLinearMomentum().length() / poly2.getMass()) *
+               this->gameConstants.physicsConstants.physicsDeltaT >
+           this->gameConstants.rockConstants.minRockSize / 2;
+}
+
 bool CollisionDetector::sweptAABBsCollide(const DynamicConvexPolygon &poly1, const DynamicConvexPolygon &poly2) {
-    AABB aabb1 = poly1.getSweptBoundingBox();
-    AABB aabb2 = poly2.getSweptBoundingBox();
-    const PolygonCollisionObject aabbColl = polygonsCollide(aabb1, aabb2);
-    return aabbColl.isCollision;
+    const AABB &aabb1 = poly1.getSweptBoundingBox();
+    const AABB &aabb2 = poly2.getSweptBoundingBox();
+    return !(aabb1.getRight() < aabb2.getLeft() || aabb2.getRight() < aabb1.getLeft() ||
+             aabb1.getTop() < aabb2.getBottom() || aabb2.getTop() < aabb1.getBottom());
+}
+
+DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollisionSubstep(DynamicConvexPolygon &poly1,
+                                                                                DynamicConvexPolygon &poly2) const {
+    PolygonCollisionObject collResult;
+    floatType relativeTime = 0.0f;
+    SimpleConvexPolygon poly1AtT{std::vector<Vector>{}};
+    SimpleConvexPolygon poly2AtT{std::vector<Vector>{}};
+    // Substep to the first point of collision
+    do {
+        relativeTime += this->gameConstants.physicsConstants.rockSubstepSize;
+        poly1AtT = SimpleConvexPolygon(poly1.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
+        poly2AtT = SimpleConvexPolygon(poly2.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
+        collResult =
+            polygonsCollide(poly1AtT, poly2AtT, poly1.getLastWitnessTo(poly2.getPolyID()),
+                            poly2.getLastWitnessTo(poly1.getPolyID()), this->gameConstants.physicsConstants.epsilon);
+    } while (!collResult.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
+
+    if (collResult.isCollision) {
+        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering) {
+            collRenderer.debugRenderRockCollision(
+                createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime));
+        }
+        return createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime);
+    }
+
+    if (collResult.polyBReference == &poly1AtT) {
+        poly1.updateLastWitness(poly2.getPolyID(), collResult.lastWitnessEdgeIdx);
+    } else {
+        poly2.updateLastWitness(poly2.getPolyID(), collResult.lastWitnessEdgeIdx);
+    }
+    return {};
 }
 
 PolygonCollisionObject CollisionDetector::polygonsCollide(ConvexPolygon &poly1,
@@ -66,9 +97,9 @@ PolygonCollisionObject CollisionDetector::polygonsCollide(ConvexPolygon &poly1,
                                                           const size_t poly2LastWitnessToPoly1,
                                                           const floatType eps) {
     const PolygonCollisionObject coll1 = collisionWithSepAxisOn1(poly1, poly2, poly1LastWitnessToPoly2, eps);
-    const PolygonCollisionObject coll2 = collisionWithSepAxisOn1(poly2, poly1, poly2LastWitnessToPoly1, eps);
     if (!coll1.isCollision)
         return coll1;
+    const PolygonCollisionObject coll2 = collisionWithSepAxisOn1(poly2, poly1, poly2LastWitnessToPoly1, eps);
     if (!coll2.isCollision)
         return coll2;
     if (coll1.collisionDepth < coll2.collisionDepth) {
@@ -88,23 +119,22 @@ DynamicPolygonTerrainCollisionObject CollisionDetector::polygonTerrainCollision(
     if (!terrainPoly.has_value())
         return {};
     std::vector<SimpleConvexPolygon> triangles = getSurfaceTrianglesOfConcaveTerrainPoly(terrainPoly.value());
+    if (this->shouldSubstep(poly)) {
+        return dynamicPolygonTerrainCollisionSubstep(poly, triangles);
+    }
     DynamicPolygonTerrainCollisionObject result{};
-    floatType relativeTime = 0.0f; // TODO better choice of smallDT needed for bullets dependent on velocity
-    do {
-        relativeTime += this->gameConstants.physicsConstants.terrainSubstepSize;
-        SimpleConvexPolygon polyAtT(poly.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
-        for (auto &triPoly : triangles) {
-            PolygonCollisionObject tmpResult =
-                polygonsCollide(polyAtT, triPoly, 0, 0, this->gameConstants.physicsConstants.epsilon);
-            if (tmpResult.isCollision && tmpResult.collisionDepth < result.collisionDepth) {
-                result =
-                    createDynamicPolygonTerrainCollisionObjectFrom(tmpResult, poly, polyAtT, triPoly, relativeTime);
-            }
+    for (auto &triangle : triangles) {
+        PolygonCollisionObject tmpResult =
+            polygonsCollide(poly, triangle, 0, 0, gameConstants.physicsConstants.epsilon);
+        if (tmpResult.isCollision && tmpResult.collisionDepth < result.collisionDepth) {
+            result = createDynamicPolygonTerrainCollisionObjectFrom(tmpResult, poly, triangle);
         }
-    } while (!result.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
-    if (result.isCollision)
-        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
+    }
+    if (result.isCollision) {
+        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering) {
             collRenderer.debugTerrainCollisionRendering(result, triangles, aabb);
+        }
+    }
     return result;
 }
 
@@ -113,7 +143,7 @@ PolygonCollisionObject CollisionDetector::collisionWithSepAxisOn1(ConvexPolygon 
                                                                   const size_t poly1LastWitnessToPoly2,
                                                                   const floatType eps) {
     PolygonCollisionObject result{};
-    const std::vector<Vector> vertices1 = poly1.getWorldSpaceVertices();
+    const std::vector<Vector> &vertices1 = poly1.getWorldSpaceVertices();
     // Check Edges of Poly1 for separating axis
     for (size_t i = poly1LastWitnessToPoly2; i < vertices1.size() + poly1LastWitnessToPoly2; ++i) {
         const Vector edge = vertices1[(i + 1) % vertices1.size()] - vertices1[i % vertices1.size()];
@@ -157,7 +187,7 @@ void CollisionDetector::updateCollisionResultAfterOverlapFound(PolygonCollisionO
 
 PolygonProjectionOnAxis CollisionDetector::projectPolygonOnNormal(const ConvexPolygon &poly, const Vector &normal) {
     PolygonProjectionOnAxis proj{};
-    if (std::abs(1 - normal.length()) > NUMERIC_EPSILON) {
+    if (std::abs(1 - normal.lengthSq()) > NUMERIC_EPSILON) {
         throw std::invalid_argument("Normal is not normalized");
     }
     const auto &vertices = poly.getWorldSpaceVertices();
@@ -176,6 +206,16 @@ PolygonProjectionOnAxis CollisionDetector::projectPolygonOnNormal(const ConvexPo
     return proj;
 }
 
+DynamicPolygonCollisionObject CollisionDetector::createDynamicPolygonCollisionObjectFrom(
+    const PolygonCollisionObject &collResult, DynamicConvexPolygon &poly1, DynamicConvexPolygon &poly2) {
+    DynamicPolygonCollisionObject dynamicResult{
+        true,    collResult.collisionDepth,     collResult.collisionDirection, nullptr,
+        nullptr, collResult.collisionVertexIdx, collResult.collisionFaceIdx,   1.0f};
+    dynamicResult.polyAIncident = collResult.polyAIncident == &poly1 ? &poly1 : &poly2;
+    dynamicResult.polyBReference = collResult.polyBReference == &poly2 ? &poly2 : &poly1;
+    return dynamicResult;
+}
+
 DynamicPolygonCollisionObject
 CollisionDetector::createDynamicPolygonCollisionObjectFrom(const PolygonCollisionObject &collResult,
                                                            DynamicConvexPolygon &poly1,
@@ -189,6 +229,36 @@ CollisionDetector::createDynamicPolygonCollisionObjectFrom(const PolygonCollisio
     dynamicResult.polyAIncident = collResult.polyAIncident == &poly1AtT ? &poly1 : &poly2;
     dynamicResult.polyBReference = collResult.polyBReference == &poly2AtT ? &poly2 : &poly1;
     return dynamicResult;
+}
+
+bool CollisionDetector::shouldSubstep(const DynamicConvexPolygon &poly) const {
+    return (poly.getLinearMomentum().length() / poly.getMass()) * this->gameConstants.physicsConstants.physicsDeltaT >
+           this->gameConstants.rockConstants.minRockSize / 4;
+}
+
+DynamicPolygonTerrainCollisionObject
+CollisionDetector::dynamicPolygonTerrainCollisionSubstep(DynamicConvexPolygon &poly,
+                                                         std::vector<SimpleConvexPolygon> &triangles) const {
+    DynamicPolygonTerrainCollisionObject result{};
+    floatType relativeTime = 0.0f;
+    do {
+        relativeTime += this->gameConstants.physicsConstants.terrainSubstepSize;
+        SimpleConvexPolygon polyAtT(poly.interpolateWorldSpaceVerticesBetweenLastAndCurrent(relativeTime));
+        result.collisionDepth = std::numeric_limits<floatType>::max(); // Initialize with max depth
+        for (auto &triangle : triangles) {
+            PolygonCollisionObject tmpResult =
+                polygonsCollide(polyAtT, triangle, 0, 0, gameConstants.physicsConstants.epsilon);
+            if (tmpResult.isCollision && tmpResult.collisionDepth < result.collisionDepth) {
+                result =
+                    createDynamicPolygonTerrainCollisionObjectFrom(tmpResult, poly, polyAtT, triangle, relativeTime);
+            }
+        }
+    } while (!result.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
+    if (result.isCollision)
+        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
+            collRenderer.debugTerrainCollisionRendering(
+                result, triangles, poly.getSweptBoundingBox().extend(this->gameConstants.physicsConstants.epsilon));
+    return result;
 }
 
 StaticPolyline CollisionDetector::getContinuousTerrainSurfaceFromComponents(
@@ -325,17 +395,34 @@ SimpleConvexPolygon CollisionDetector::createConvexPolyFromP2TTriangle(p2t::Tria
     return SimpleConvexPolygon(triVertices);
 }
 
+DynamicPolygonTerrainCollisionObject CollisionDetector::createDynamicPolygonTerrainCollisionObjectFrom(
+    const PolygonCollisionObject &collision, DynamicConvexPolygon &poly, SimpleConvexPolygon &triangle) {
+    DynamicPolygonTerrainCollisionObject result{collision.isCollision,
+                                                collision.collisionDepth,
+                                                collision.collisionDirection,
+                                                &poly,
+                                                triangle,
+                                                false,
+                                                collision.collisionVertexIdx,
+                                                collision.collisionFaceIdx,
+                                                1.0f};
+    if (collision.polyAIncident == &poly) {
+        result.isPolyIncident = true;
+    }
+    return result;
+}
+
 DynamicPolygonTerrainCollisionObject
 CollisionDetector::createDynamicPolygonTerrainCollisionObjectFrom(const PolygonCollisionObject &collision,
                                                                   DynamicConvexPolygon &poly,
                                                                   const SimpleConvexPolygon &polyAtT,
-                                                                  const ConvexPolygon &triangle,
+                                                                  const SimpleConvexPolygon &triangle,
                                                                   const floatType relativeTime) {
     DynamicPolygonTerrainCollisionObject result{collision.isCollision,
                                                 collision.collisionDepth,
                                                 collision.collisionDirection,
                                                 &poly,
-                                                SimpleConvexPolygon{triangle.getWorldSpaceVertices()},
+                                                triangle,
                                                 false,
                                                 collision.collisionVertexIdx,
                                                 collision.collisionFaceIdx,
