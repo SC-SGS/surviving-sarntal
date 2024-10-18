@@ -10,7 +10,6 @@ void initRaylib() {
 
     InitAudioDevice(); // Initialize audio device
     SetTargetFPS(60);
-    SDL_Init(SDL_INIT_GAMECONTROLLER);
 }
 
 void handleFullScreen() {

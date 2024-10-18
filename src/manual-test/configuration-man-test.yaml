@@ -3,4 +3,8 @@ test-cases:
   - "../../src/manual-test/test-case-1.yaml"
   - "../../src/manual-test/test-case-2.yaml"
   - "../../src/manual-test/test-case-3.yaml"
+  - "../../src/manual-test/test-case-4.yaml"
+  - "../../src/manual-test/test-case-5.yaml"
+  - "../../src/manual-test/test-case-6.yaml"
   - "../../src/manual-test/test-case-7.yaml"
+  - "../../src/manual-test/test-case-8.yaml"

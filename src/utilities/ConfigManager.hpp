@@ -7,7 +7,9 @@
 
 #include "../entities/Item.hpp"
 #include "../game/GameProperties.hpp"
+#include "../game/Simulation.h"
 #include "Singleton.hpp"
+
 #include <yaml-cpp/yaml.h>
 
 class ConfigManager : public Singleton<ConfigManager> {
@@ -25,6 +27,7 @@ class ConfigManager : public Singleton<ConfigManager> {
     bool isInDevMode();
     bool musicShouldBePlayed();
     std::vector<Vector> getGroundPointsDevMode();
+    SimulationProperties getSimProperties();
 
   private:
     ConfigManager();

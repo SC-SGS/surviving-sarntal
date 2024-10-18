@@ -1,0 +1,8 @@
+name: "A very cool test case"
+rocks:
+  - {
+    number: 15,
+    position: [ 0.0, 5.0 ],
+    velocity: [ 4.0, 0.0 ],
+    radius: 1.0
+  }

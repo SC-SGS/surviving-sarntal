@@ -21,7 +21,7 @@ HikerMovement::HikerMovement(HikerMovement::MovementState state, HikerMovement::
 HikerMovement::MovementState HikerMovement::getState() const { return currentState; }
 
 std::string HikerMovement::getStateString(bool hasShield) const {
-    switch (currentState) { // TODO take from config see issue #30 (you sure?)
+    switch (currentState) {
     case MOVING:
         if (hasShield) {
             return "walk-shield";

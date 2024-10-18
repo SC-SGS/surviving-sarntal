@@ -80,6 +80,15 @@ class CollisionDetector {
     CollisionDetectionDebugRenderer &collRenderer;
 
     /**
+     * Returns whether the simulation should be substepped for a particular pair of polys.
+     *
+     * @param poly1
+     * @param poly2
+     * @return true if the polys are fast enough
+     */
+    bool shouldSubstep(const DynamicConvexPolygon &poly1, const DynamicConvexPolygon &poly2) const;
+
+    /**
      * Checks if there is a possible collision of two dynamic convex polygons in the last time step by checking whether
      * their swept bounding boxes collide.
      *
@@ -88,6 +97,17 @@ class CollisionDetector {
      * @return
      */
     static bool sweptAABBsCollide(const DynamicConvexPolygon &poly1, const DynamicConvexPolygon &poly2);
+
+    /**
+     * Performs multiple substeps to ensure continuous collision detection for very fast rocks.
+     * Comes at a cost.
+     *
+     * @param poly1
+     * @param poly2
+     * @return
+     */
+    DynamicPolygonCollisionObject dynamicPolygonCollisionSubstep(DynamicConvexPolygon &poly1,
+                                                                 DynamicConvexPolygon &poly2) const;
 
     /**
      * Checks whether the separating axis of the two polygons is one of the edges of poly 1.
@@ -121,7 +141,7 @@ class CollisionDetector {
 
     /**
      * Projects a Polygon on a Normal vector, returning a 1D PolygonProjection represented by its lower and upper bound
-     * on the axis..
+     * on the axis.
      *
      * @param poly a convex 2D polygon
      * @param normal of the other polygon, must be normalized
@@ -130,7 +150,20 @@ class CollisionDetector {
     static PolygonProjectionOnAxis projectPolygonOnNormal(const ConvexPolygon &poly, const Vector &normal);
 
     /**
+     * Creates a dynamic polygon collision object from a non-substepped polygon collision, i.e. the collision occurred
+     * at relative time 1.0.
+     *
+     * @param collResult
+     * @param poly1
+     * @param poly2
+     * @return
+     */
+    static DynamicPolygonCollisionObject createDynamicPolygonCollisionObjectFrom(
+        const PolygonCollisionObject &collResult, DynamicConvexPolygon &poly1, DynamicConvexPolygon &poly2);
+
+    /**
      * Creates a dynamic polygon collision object from a polygon collision object and additional temporal information.
+     * Used for substepped collisions.
      *
      * @param collResult
      * @param poly1
@@ -147,6 +180,26 @@ class CollisionDetector {
                                             const ConvexPolygon &poly1AtT,
                                             const ConvexPolygon &poly2AtT,
                                             floatType relativeTime);
+
+    /**
+     * Checks whether a polygon-terrain collision needs to be substepped.
+     *
+     * @param poly
+     * @return
+     */
+    bool shouldSubstep(const DynamicConvexPolygon &poly) const;
+
+    /**
+     * Performs multiple substeps to ensure continuous collision detection for very fast rocks.
+     * Comes at a cost.
+     *
+     * @param poly
+     * @param triangles triangulation of the terrain to collide with
+     * @return
+     */
+    DynamicPolygonTerrainCollisionObject
+    dynamicPolygonTerrainCollisionSubstep(DynamicConvexPolygon &poly,
+                                          std::vector<SimpleConvexPolygon> &triangles) const;
 
     /**
      * Uses according method from terrain and puts the components together to one polsline.
@@ -213,6 +266,17 @@ class CollisionDetector {
      *
      * @param collision
      * @param poly
+     * @param triangle
+     * @return
+     */
+    static DynamicPolygonTerrainCollisionObject createDynamicPolygonTerrainCollisionObjectFrom(
+        const PolygonCollisionObject &collision, DynamicConvexPolygon &poly, SimpleConvexPolygon &triangle);
+
+    /**
+     * Returns a DynamicPolygonTerrainCollisionObject from a PolygonCollisionObject and some additional info.
+     *
+     * @param collision
+     * @param poly
      * @param polyAtT
      * @param triangle
      * @param relativeTime
@@ -222,7 +286,7 @@ class CollisionDetector {
     createDynamicPolygonTerrainCollisionObjectFrom(const PolygonCollisionObject &collision,
                                                    DynamicConvexPolygon &poly,
                                                    const SimpleConvexPolygon &polyAtT,
-                                                   const ConvexPolygon &triangle,
+                                                   const SimpleConvexPolygon &triangle,
                                                    floatType relativeTime);
 
     /**

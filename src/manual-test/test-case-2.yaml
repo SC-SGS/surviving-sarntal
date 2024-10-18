@@ -1,12 +1,7 @@
 name: "A very cool test case"
 rocks:
   - {
-    position: [ 10.0, 5.0 ],
-    velocity: [ 4.0, 0.0 ],
-    radius: 1.0
-  }
-  - {
-    position: [ 8.0, 3.0 ],
+    position: [ 8.0, 5.0 ],
     velocity: [ 4.0, 0.0 ],
     radius: 1.0
   }

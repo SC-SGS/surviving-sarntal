@@ -21,11 +21,14 @@ DevMode::DevMode(World &world,
       audioService(audioService),
       inputHandler(inputHandler),
       gameConstants(gameConstants),
-      camera(camera) {}
+      camera(camera),
+      simulation(world, ConfigManager::getInstance().getSimProperties()),
+      recorder(physicsEngine) {}
 
 void DevMode::init() {
     loadTestConfig();
-    std::vector<Vector> groundPoints = ConfigManager::getInstance().getGroundPointsDevMode();
+    ConfigManager &configMng = ConfigManager::getInstance();
+    std::vector<Vector> groundPoints = configMng.getGroundPointsDevMode();
     if (groundPoints.back().x < this->gameConstants.terrainConstants.biomeWidth) {
         groundPoints.push_back({this->gameConstants.terrainConstants.biomeWidth, groundPoints.back().y});
     }
@@ -39,13 +42,37 @@ void DevMode::init() {
 
 void DevMode::run() {
     audioService.playSound("background-music");
+    int startTime = (int)floorf64(GetTime());
+    int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
     while (!WindowShouldClose()) {
-        std::queue<GameEvent> events = this->inputHandler.getEvents();
-        this->physicsEngine.update(events);
-        this->renderer.draw();
-        this->world.updateGameScore();
-        this->mainLoop();
-        this->renderText(this->currentTestCase);
+        int currentTime = (int)floorf64(GetTime());
+        bool needToInitGamePads = currentTime < startTime + offset && !this->inputHandler.gamepadsInitialized();
+        if (needToInitGamePads) {
+            initializeGamepads(startTime + offset - currentTime);
+        } else {
+            if (this->simRunning) {
+                this->simRunning = this->simulation.tick();
+            }
+            if (this->recorder.isRecording()) {
+                this->recorder.tick();
+            }
+            std::queue<GameEvent> events = this->inputHandler.getEvents();
+            this->physicsEngine.update(events);
+            this->renderer.draw();
+            this->world.updateGameScore();
+            this->mainLoop();
+            this->renderText(this->currentTestCase);
+        }
+    }
+    this->recorder.stop();
+    this->recorder.printResults();
+    this->recorder.saveResultsToCSV();
+}
+
+void DevMode::initializeGamepads(int remainingSeconds) {
+    this->inputHandler.initializeGamepads(remainingSeconds);
+    if (this->inputHandler.gamepadsInitialized()) {
+        spdlog::info("Gamepads initialized at time {}", GetTime());
     }
 }
 
@@ -69,6 +96,11 @@ void DevMode::mainLoop() {
     } else if (this->shouldStartTestCase()) {
         const int testCase = this->getTestCaseFromInput();
         this->startTestCase(testCase);
+    } else if (IsKeyDown(KEY_RIGHT_SHIFT) && IsKeyPressed(KEY_T)) {
+        spdlog::info("Simulation started");
+        this->startSim();
+    } else if (IsKeyDown(KEY_RIGHT_SHIFT) && IsKeyPressed(KEY_R)) {
+        this->recorder.toggle();
     }
 }
 
@@ -101,6 +133,14 @@ void DevMode::increaseRockSize(const float increment) {
     }
 }
 
+void DevMode::startSim() {
+    this->clearAllRocks();
+    this->clearAllItems();
+    this->simRunning = true;
+    this->simulation.init();
+    this->recorder.start();
+}
+
 void DevMode::spawnItemAtMouse(int itemId) {
     const auto itemType = ItemType(itemId);
     const auto itemDto = this->items[itemType];
@@ -116,7 +156,7 @@ bool DevMode::shouldStartTestCase() const {
 }
 
 int DevMode::getTestCaseFromInput() const {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
         if (IsKeyPressed(KEY_ZERO + i)) {
             return i;
         }
@@ -172,6 +212,7 @@ void DevMode::startTestCase(int testCase) {
     this->clearAllRocks();
     this->clearAllItems();
     this->spawnRocks(dto.rocks);
+    this->recorder.start();
 }
 
 std::vector<TestCaseDto> DevMode::loadTestCases() {
@@ -204,6 +245,11 @@ TestCaseDto DevMode::mapToTestCaseDto(const YAML::Node &testCase) const {
 
 void DevMode::loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto) const {
     for (const auto &rockNode : rocksNode) {
+        size_t number = 1;
+        if (rockNode["number"]) {
+            number = rockNode["number"].as<size_t>();
+        }
+
         auto position = rockNode["position"].as<std::vector<floatType>>();
         auto velocity = rockNode["velocity"].as<std::vector<floatType>>();
         const auto radius = rockNode["radius"].as<floatType>();
@@ -211,8 +257,10 @@ void DevMode::loadRocksFromNode(const YAML::Node &rocksNode, TestCaseDto &dto) c
         const auto posVec = Vector{position[0], position[1]};
         const auto velVec = Vector{velocity[0], velocity[1]};
 
-        Rock rock = this->generateRock(posVec, velVec, radius);
-        dto.rocks.push_back(rock);
+        for (size_t i = 0; i < number; ++i) {
+            Rock rock = this->generateRock(posVec, velVec, radius);
+            dto.rocks.push_back(rock);
+        }
     }
 }
 

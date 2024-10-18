@@ -13,7 +13,7 @@
  */
 class Keyboard : public InputDevice {
   public:
-    Keyboard();
+    explicit Keyboard(const InputConstants &inputConstants);
     ~Keyboard() override;
 
   protected:

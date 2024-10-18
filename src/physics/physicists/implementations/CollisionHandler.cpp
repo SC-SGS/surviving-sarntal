@@ -28,11 +28,16 @@ void CollisionHandler::resolveRockCollisions() const {
     size_t resolutionSteps = 0;
     do {
         anyCollisions = false;
-        for (const std::shared_ptr<Rock> &rock : this->world.getRocks()) {
+        const auto &rocks = this->world.getRocks();
+        for (auto iter1 = rocks.begin(); iter1 != rocks.end(); ++iter1) {
+            const std::shared_ptr<Rock> &rock = *iter1;
             anyCollisions = checkAndHandleTerrainCollision(*rock) || anyCollisions;
             this->checkAndHandlePlayerRockCollision(*rock);
-            for (const std::shared_ptr<Rock> &rock2 : this->world.getRocks()) {
-                anyCollisions = checkAndHandleRockCollision(*rock, *rock2) || anyCollisions;
+            auto iter2 = iter1;
+            ++iter2;
+            for (; iter2 != rocks.end(); ++iter2) {
+                const std::shared_ptr<Rock> &otherRock = *iter2;
+                anyCollisions = checkAndHandleRockCollision(*rock, *otherRock) || anyCollisions;
             }
         }
         resolutionSteps++;
@@ -117,11 +122,10 @@ bool CollisionHandler::applyImpulsesTerrainCollision(const DynamicPolygonTerrain
     DynamicConvexPolygon &poly = *terrainCollision.poly;
     const ConvexPolygon &tri = terrainCollision.triangle.value();
     Vector contactPoint{};
-    if (terrainCollision.isPolyIncident) {
+    if (terrainCollision.isPolyIncident)
         contactPoint = poly.getWorldSpaceVertices()[terrainCollision.collisionVertexIdx];
-    } else {
+    else
         contactPoint = tri.getWorldSpaceVertices()[terrainCollision.collisionVertexIdx];
-    }
     const floatType isPolyIncidentSignum = terrainCollision.isPolyIncident ? 1 : -1;
     const Vector polyVelocityAtContactPoint = poly.getVelocityAtPointInWorldSpace(contactPoint);
     const floatType relativeVelocityAtContactPoint =
@@ -148,13 +152,13 @@ bool CollisionHandler::applyImpulsesPolygonCollision(const DynamicPolygonCollisi
     DynamicConvexPolygon &inc = *polygonCollision.polyAIncident;
     DynamicConvexPolygon &ref = *polygonCollision.polyBReference;
     const Vector contactPoint = inc.getWorldSpaceVertices()[polygonCollision.collisionVertexIdx];
-    const Vector incVelocityAtContactPoint = inc.getVelocityAtPointInWorldSpace(contactPoint);
-    const Vector refVelocityAtContactPoint = ref.getVelocityAtPointInWorldSpace(contactPoint);
     const Vector normal = polygonCollision.collisionDirection;
-    const floatType relativeVelocityAtContactPoint = normal.dot(incVelocityAtContactPoint - refVelocityAtContactPoint);
-    if (relativeVelocityAtContactPoint > -eps)
+    const Vector relativeVelocityAtContactPoint =
+        inc.getVelocityAtPointInWorldSpace(contactPoint) - ref.getVelocityAtPointInWorldSpace(contactPoint);
+    const floatType normalMagnitudeOfRelativeVelocityAtContactPoint = normal.dot(relativeVelocityAtContactPoint);
+    if (normalMagnitudeOfRelativeVelocityAtContactPoint > -eps)
         return false;
-    const floatType numerator = -(1 + bounciness) * relativeVelocityAtContactPoint;
+    const floatType numerator = -(1 + bounciness) * normalMagnitudeOfRelativeVelocityAtContactPoint;
     const floatType term1 = calculateDenominatorTermFor(inc, normal, contactPoint);
     const floatType term2 = calculateDenominatorTermFor(ref, normal, contactPoint);
     const floatType denominator = term1 + term2;
@@ -180,6 +184,8 @@ void CollisionHandler::setDeltaT(const floatType deltaT) { this->deltaT = deltaT
 
 void CollisionHandler::playerCollisions() const {
     auto &hiker = this->world.getHiker();
+    if (!hiker.getIsAlive())
+        return;
     if (hiker.getHikerMovement().getState() != HikerMovement::IN_AIR && hiker.getVelocity().x == 0) {
         if (hiker.getShouldUncrouch() && this->hikerCanUncrouch()) {
             hiker.uncrouch();
@@ -250,9 +256,9 @@ int CollisionHandler::rockDamage(const Rock &rock) const {
         std::abs(49 * (rock.getBoundingBox().getWidth() / 2 - gameConstants.rockConstants.minRockSize));
     const auto rockSizeRange = (gameConstants.rockConstants.maxRockSize - gameConstants.rockConstants.minRockSize) + 1;
     const auto rockSizeFactor = static_cast<int>((relativeRockSize / rockSizeRange));
-    const auto velocityFactor =
+    const auto momentumFactor =
         static_cast<int>(1 + rock.getLinearMomentum().length() / (gameConstants.rockConstants.maxSpawnLinearMomentum));
-    return rockSizeFactor * velocityFactor;
+    return rockSizeFactor * momentumFactor;
 }
 
 Vector CollisionHandler::computeKnockback(const DynamicPolygonCollisionObject &coll) const {
@@ -275,16 +281,20 @@ Vector CollisionHandler::computeKnockback(const DynamicPolygonCollisionObject &c
 
 void CollisionHandler::checkAndHandlePlayerRockCollision(Rock &rock) const {
     auto &hiker = this->world.getHiker();
+    if (!hiker.getIsAlive())
+        return;
     auto const &collision = this->collisionDetector.playerRockCollision(rock);
     if (collision.isCollision) {
         this->audioService.playSound("rock-smash");
         this->audioService.playSound("boom");
         const int rockDmg = this->rockDamage(rock);
         spdlog::debug("Player has hit with rock damage: {}", rockDmg);
-        HapticsService::rockRumble(rockDmg);
         hiker.doDamagePoints(rockDmg);
         hiker.setKnockback(this->world.getHiker().getKnockback() + this->computeKnockback(collision));
         rock.setShouldBeDestroyed(true);
+        if (hiker.getIsAlive()) {
+            HapticsService::rockRumble(rockDmg);
+        }
     }
 }
 

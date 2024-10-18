@@ -11,14 +11,6 @@
 #include "../../utilities/Singleton.hpp"
 #include "CollisionDetector.hpp"
 
-/**
- * todo will be changed with mountain
- */
-struct Vertex {
-    std::size_t index;
-    floatType distance;
-};
-
 class CollisionHandler {
 
   public:
@@ -157,10 +149,8 @@ class CollisionHandler {
     void enforceWorldLimitOnHiker() const;
 
     /**
-     * Calculates the damage a collided rock does to the hiker, dependent on its velocity, size and
-     * TODO later also the difficulty/type of rock
-     *
-     * TODO check formula
+     * Calculates the damage a collided rock does to the hiker, dependent on its velocity and size.
+     * TODO dependent on mass / impulse
      *
      * @param rock
      * @return

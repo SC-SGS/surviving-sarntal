@@ -22,7 +22,13 @@ void Destructor::destructRocks() const {
             // TODO we can make the explosion fit the bounding box perfectly
             this->entityRenderer.addExplosion(*rock);
         }
-        return shouldBeDestroyed || this->world.isOutOfScope(*rock);
+        bool shouldBeDeleted = shouldBeDestroyed || this->world.isOutOfScope(*rock);
+        if (shouldBeDeleted) {
+            for (const auto &otherRock : this->world.getRocks()) {
+                otherRock->removeWitnessInformationFor(rock->getPolyID());
+            }
+        }
+        return shouldBeDeleted;
     });
 }
 

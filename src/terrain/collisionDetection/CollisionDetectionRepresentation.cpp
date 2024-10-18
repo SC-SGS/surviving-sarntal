@@ -33,6 +33,18 @@ void CollisionDetectionRepresentation::sortRightBorder() {
 
 std::vector<std::shared_ptr<StaticPolyline>>
 CollisionDetectionRepresentation::calculateRelevantSections(const AxisAlignedBoundingBox &boundingBox) {
+    std::vector<std::shared_ptr<StaticPolyline>> relevantSections = {};
+    for (auto const &section : this->polylineSectionsSortedT) {
+        if (section->getBoundingBox().overlaps(boundingBox)) {
+            relevantSections.push_back(section);
+        }
+    }
+    return relevantSections;
+}
+
+/*
+std::vector<std::shared_ptr<StaticPolyline>>
+CollisionDetectionRepresentation::calculateRelevantSections(const AxisAlignedBoundingBox &boundingBox) {
     std::vector<std::shared_ptr<StaticPolyline>> sectionsLeftBorder = this->calculateRelevantSectionsX(
         this->polylineSectionsSortedLeftBorder, &AxisAlignedBoundingBox::isSmallerLeftBorder, boundingBox);
     std::vector<std::shared_ptr<StaticPolyline>> sectionsRightBorder = this->calculateRelevantSectionsX(
@@ -55,6 +67,7 @@ CollisionDetectionRepresentation::calculateRelevantSections(const AxisAlignedBou
 
     return sections;
 }
+*/
 
 std::vector<std::shared_ptr<StaticPolyline>> CollisionDetectionRepresentation::calculateRelevantSectionsX(
     const std::vector<std::shared_ptr<StaticPolyline>> &sortedSections,

@@ -45,9 +45,12 @@ struct CollisionData {
 class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon {
 
   protected:
+    std::vector<Vector> worldSpaceVertices{};
+    AABB sweptAABB{{0, 0}, {0, 0}};
+    AABB currentAABB{{0, 0}, {0, 0}};
     DynamicProperties dynamicProperties;
-    static size_t idCount;
-    const size_t id;
+    static size_t polyIDCount;
+    const size_t polyID;
     CollisionData collisionData;
 
     // Static Attributes:
@@ -56,8 +59,19 @@ class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon
     const std::vector<Vector2> textureCoordinates;
     const floatType mass;
     const floatType density;
-    // TODO inertia tensor or moment of inertia in each step
     const floatType momentOfInertia;
+
+    /**
+     * Always call this method to make sure world space vertices, current and swept bounding box are consistent.
+     * world space coords should always be updated first, then the current bounding box and only then the swept bounding
+     * box. This order is necessary due to time efficient optimizations.
+     */
+    void updateAfterMovementOrRotation();
+
+  private:
+    void recalculateWorldSpaceVertices();
+    void recalculateSweptBoundingBox();
+    void recalculateCurrentBoundingBox();
 
   public:
     /**
@@ -94,7 +108,8 @@ class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon
     floatType getMass() const;
     floatType getDensity() const;
     floatType getMomentOfInertia() const;
-    size_t getID() const;
+    size_t getPolyID() const;
+    void setPosition(const Vector &position) override;
 
     Vector getVelocityAtPointInWorldSpace(const Vector &point) const;
     Vector getVelocityAtPointInBodySpace(const Vector &point) const;
@@ -127,7 +142,7 @@ class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon
      * This method returns the list of vertices that define the polygon in world space coordinates.
      * @return
      */
-    std::vector<Vector> getWorldSpaceVertices() const override;
+    const std::vector<Vector> &getWorldSpaceVertices() const override;
 
     /**
      * Returns the interpolated list of vertices at time last time + alpha * (current time - last time).
@@ -138,14 +153,12 @@ class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon
     std::vector<Vector> interpolateWorldSpaceVerticesBetweenLastAndCurrent(floatType alpha) const;
 
     /**
-     * This method creates a bounding box in world space coordinates for the polygon in the shape of a rectangle.
-     * The x coordinate is the minX and the y coordinate is the minY.
-     * @return bounding box
+     * @return the current bounding box
      */
-    AABB getBoundingBox() const;
+    const AABB &getBoundingBox() const;
 
     /**
-     * Returns bounding box at a time alpha between last and current time (alpha in [0, 1]).
+     * Calculates bounding box at a time alpha between last and current time (alpha in [0, 1]).
      *
      * @param alpha
      * @return
@@ -157,7 +170,7 @@ class DynamicConvexPolygon : public RenderedEntity, public virtual ConvexPolygon
      *
      * @return
      */
-    AABB getSweptBoundingBox() const;
+    const AABB &getSweptBoundingBox() const;
 
     /**
      * This method moves the polygon.

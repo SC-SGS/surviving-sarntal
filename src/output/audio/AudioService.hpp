@@ -24,7 +24,6 @@ class AudioService {
   private:
     ResourceManager &resourceManager;
     std::list<Music> musicList;
-    // TODO this is not very nice, but I do not know how to fix it in a prettier way
     bool movementSoundPlaying = false;
     floatType lastStartTimeMovementSound = 0.0f;
 };

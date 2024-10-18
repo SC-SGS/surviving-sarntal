@@ -1,0 +1,8 @@
+name: "120 rocks at the same position"
+rocks:
+  - {
+    number: 120,
+    position: [ 0.0, 7.0 ],
+    velocity: [ 4.0, 0.0 ],
+    radius: 1.0
+  }

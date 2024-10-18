@@ -7,6 +7,7 @@
 
 #include "../entities/Rock.h"
 #include "../game/GameProperties.hpp"
+#include "../game/Simulation.h"
 #include "raylib.h"
 #include <yaml-cpp/yaml.h>
 
@@ -101,6 +102,7 @@ template <> struct convert<PhysicsConstants> {
         physicsConstants.terrainSubstepSize = node["terrainSubstepSize"].as<floatType>();
         physicsConstants.rockSubstepSize = node["rockSubstepSize"].as<floatType>();
         physicsConstants.maxNumberOfResolutionSteps = node["maxNumberOfResolutionSteps"].as<size_t>();
+        physicsConstants.maxNumberOfResolutionSteps = node["maxNumberOfPhysicsStepsPerFrame"].as<size_t>();
         physicsConstants.debugCDRendering = node["debugCDRendering"].as<bool>();
 
         return true;
@@ -114,6 +116,9 @@ template <> struct convert<InputConstants> {
         }
 
         inputConstants.maxGamepads = node["maxGamepads"].as<int>();
+        inputConstants.gamepadItemSwitchCooldown = node["gamepadItemSwitchCooldown"].as<floatType>();
+        inputConstants.gamepadInitializingTime = node["gamepadInitializingTime"].as<int>();
+        inputConstants.itemSwitchThreshold = node["itemSwitchThreshold"].as<floatType>();
 
         return true;
     }
@@ -139,6 +144,7 @@ template <> struct convert<VisualConstants> {
         visualConstants.mountainResolution = node["mountainResolution"].as<int>();
         visualConstants.mountainGradientHeight = node["mountainGradientHeight"].as<int>();
         visualConstants.shakeEnabled = node["shakeEnabled"].as<bool>();
+        visualConstants.renderPhysicsStepSize = node["renderPhysicsStepSize"].as<bool>();
 
         return true;
     }
@@ -214,6 +220,21 @@ template <> struct convert<AudioConstants> {
         audioConstants.musicEnabled = node["musicEnabled"].as<bool>();
         audioConstants.musicVolume = node["musicVolume"].as<floatType>();
         audioConstants.effectsThreshold = node["effectsThreshold"].as<floatType>();
+
+        return true;
+    }
+};
+
+template <> struct convert<SimulationProperties> {
+    static bool decode(const Node &node, SimulationProperties &simProperties) {
+        if (!node.IsMap()) {
+            return false;
+        }
+
+        simProperties.duration = node["duration"].as<double>();
+        simProperties.speed = node["speed"].as<double>();
+        simProperties.dropPosition = node["dropPosition"].as<Vector>();
+        simProperties.maxNumberOfRocks = node["maxNumberOfRocks"].as<size_t>();
 
         return true;
     }
