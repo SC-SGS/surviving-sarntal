@@ -3,13 +3,13 @@
 //
 
 #include "DynamicConvexPolygon.h"
-
+#include "../physics/physicists/CollisionDetector.hpp"
 #include "../spawner/PolygonGenerator.h"
 
 #include <cassert>
 #include <cmath>
 
-size_t DynamicConvexPolygon::idCount = 0;
+size_t DynamicConvexPolygon::polyIDCount = 0;
 
 DynamicConvexPolygon::DynamicConvexPolygon(const Vector &position,
                                            const std::vector<Vector> &vertices,
@@ -20,12 +20,13 @@ DynamicConvexPolygon::DynamicConvexPolygon(const Vector &position,
                                            const DynamicProperties &dynamicProperties)
     : RenderedEntity(position),
       dynamicProperties(dynamicProperties),
-      id(idCount),
+      polyID(polyIDCount),
       bodySpaceVertices(vertices),
       textureCoordinates(textureCoordinates),
       mass(mass),
       density(density),
       momentOfInertia(momentOfInertia) {
+    this->updateAfterMovementOrRotation();
     if (vertices.size() + 1 != textureCoordinates.size()) {
         throw std::invalid_argument(
             "Dynamic Polygon cannot be generated. Vertex List and TexCoords list do not have sizes n and n+1.");
@@ -44,21 +45,26 @@ DynamicConvexPolygon::DynamicConvexPolygon(const Vector &position,
         throw std::invalid_argument(
             "Dynamic Polygon cannot be generated. Vertex List is not given in anticlockwise order.");
     }
-    idCount++;
+    polyIDCount++;
 }
 
 floatType DynamicConvexPolygon::getRotationAngle() const { return this->dynamicProperties.rotationAngleRad; }
 floatType DynamicConvexPolygon::getMass() const { return this->mass; }
 floatType DynamicConvexPolygon::getDensity() const { return this->density; }
 floatType DynamicConvexPolygon::getMomentOfInertia() const { return this->momentOfInertia; }
-size_t DynamicConvexPolygon::getID() const { return this->id; }
+size_t DynamicConvexPolygon::getPolyID() const { return this->polyID; }
+void DynamicConvexPolygon::setPosition(const Vector &position) {
+    this->position = position;
+    this->updateAfterMovementOrRotation();
+}
 
 Vector DynamicConvexPolygon::getVelocityAtPointInWorldSpace(const Vector &point) const {
     return getVelocityAtPointInBodySpace(point - this->position);
 }
 Vector DynamicConvexPolygon::getVelocityAtPointInBodySpace(const Vector &point) const {
     const Vector linearVelocity = this->dynamicProperties.linearMomentum / this->mass;
-    const Vector angularVelocity = point.preCrossZScalar(this->dynamicProperties.angularMomentum);
+    const Vector angularVelocity =
+        point.preCrossZScalar(this->dynamicProperties.angularMomentum / this->momentOfInertia);
     return linearVelocity + angularVelocity;
 }
 Vector DynamicConvexPolygon::getVelocityAtVertex(const size_t vertexIdx) const {
@@ -66,12 +72,17 @@ Vector DynamicConvexPolygon::getVelocityAtVertex(const size_t vertexIdx) const {
     return this->getVelocityAtPointInBodySpace(this->bodySpaceVertices[vertexIdx]);
 }
 
-bool DynamicConvexPolygon::operator==(const DynamicConvexPolygon &other) const { return this->id == other.getID(); }
-bool DynamicConvexPolygon::operator!=(const DynamicConvexPolygon &other) const { return this->id != other.getID(); }
+bool DynamicConvexPolygon::operator==(const DynamicConvexPolygon &other) const {
+    return this->polyID == other.getPolyID();
+}
+bool DynamicConvexPolygon::operator!=(const DynamicConvexPolygon &other) const {
+    return this->polyID != other.getPolyID();
+}
 
 const std::vector<Vector> &DynamicConvexPolygon::getBodySpaceVertices() const { return this->bodySpaceVertices; }
+const std::vector<Vector> &DynamicConvexPolygon::getWorldSpaceVertices() const { return this->worldSpaceVertices; }
 
-std::vector<Vector> DynamicConvexPolygon::getWorldSpaceVertices() const {
+void DynamicConvexPolygon::recalculateWorldSpaceVertices() {
     const floatType cosTheta = std::cos(this->dynamicProperties.rotationAngleRad);
     const floatType sinTheta = std::sin(this->dynamicProperties.rotationAngleRad);
 
@@ -88,12 +99,14 @@ std::vector<Vector> DynamicConvexPolygon::getWorldSpaceVertices() const {
         vertex.x = rotatedX + this->position.x;
         vertex.y = rotatedY + this->position.y;
     }
-    return worldCoordinates;
+    this->worldSpaceVertices = worldCoordinates;
 }
 
 std::vector<Vector>
 DynamicConvexPolygon::interpolateWorldSpaceVerticesBetweenLastAndCurrent(const floatType alpha) const {
     assert(alpha >= -NUMERIC_EPSILON && alpha <= 1 + NUMERIC_EPSILON);
+    if (fabsf(1 - alpha) < NUMERIC_EPSILON)
+        return this->worldSpaceVertices;
     const floatType rot = this->getInterpolatedRotationAngleRad(alpha);
     const floatType cosTheta = std::cos(rot);
     const floatType sinTheta = std::sin(rot);
@@ -115,9 +128,11 @@ DynamicConvexPolygon::interpolateWorldSpaceVerticesBetweenLastAndCurrent(const f
     return worldCoordinates;
 }
 
-AABB DynamicConvexPolygon::getBoundingBox() const { return this->getInterpolatedBoundingBox(1.0f); }
+const AABB &DynamicConvexPolygon::getBoundingBox() const { return this->currentAABB; }
 
 AABB DynamicConvexPolygon::getInterpolatedBoundingBox(const floatType alpha) const {
+    if (fabsf(1 - alpha) < NUMERIC_EPSILON)
+        return this->currentAABB;
     std::vector<Vector> worldSpaceCoordinates = this->interpolateWorldSpaceVerticesBetweenLastAndCurrent(alpha);
     floatType minX = worldSpaceCoordinates[0].x, maxX = worldSpaceCoordinates[0].x;
     floatType minY = worldSpaceCoordinates[0].y, maxY = worldSpaceCoordinates[0].y;
@@ -135,20 +150,44 @@ AABB DynamicConvexPolygon::getInterpolatedBoundingBox(const floatType alpha) con
 
     return {{minX, minY}, {maxX, maxY}};
 }
+const AABB &DynamicConvexPolygon::getSweptBoundingBox() const { return this->sweptAABB; }
 
-AABB DynamicConvexPolygon::getSweptBoundingBox() const {
-    const AABB newBoundingBox = this->getBoundingBox();
+void DynamicConvexPolygon::recalculateSweptBoundingBox() {
+    const AABB &newBoundingBox = this->currentAABB;
     const AABB oldBoundingBox = this->getInterpolatedBoundingBox(0.0f);
     const floatType minX = std::min(newBoundingBox.getBottomLeft().x, oldBoundingBox.getBottomLeft().x);
     const floatType minY = std::min(newBoundingBox.getBottomLeft().y, oldBoundingBox.getBottomLeft().y);
     const floatType maxX = std::max(newBoundingBox.getTopRight().x, oldBoundingBox.getTopRight().x);
     const floatType maxY = std::max(newBoundingBox.getTopRight().y, oldBoundingBox.getTopRight().y);
-    return {{minX, minY}, {maxX, maxY}};
+    this->sweptAABB = {{minX, minY}, {maxX, maxY}};
+}
+
+void DynamicConvexPolygon::recalculateCurrentBoundingBox() {
+    floatType minX = this->worldSpaceVertices[0].x, maxX = this->worldSpaceVertices[0].x;
+    floatType minY = this->worldSpaceVertices[0].y, maxY = this->worldSpaceVertices[0].y;
+
+    for (const auto &vertex : this->worldSpaceVertices) {
+        if (vertex.x < minX) {
+            minX = vertex.x;
+        }
+        if (vertex.x > maxX) {
+            maxX = vertex.x;
+        }
+        if (vertex.y < minY) {
+            minY = vertex.y;
+        }
+        if (vertex.y > maxY) {
+            maxY = vertex.y;
+        }
+    }
+
+    this->currentAABB = {{minX, minY}, {maxX, maxY}};
 }
 
 void DynamicConvexPolygon::move(const Vector &offset) {
     this->dynamicProperties.lastPosition = this->position;
     this->position += offset;
+    this->updateAfterMovementOrRotation();
 }
 
 void DynamicConvexPolygon::rotate(const floatType angularOffset) {
@@ -159,6 +198,7 @@ void DynamicConvexPolygon::rotate(const floatType angularOffset) {
         newRotationAngleRad -= std::floor(newRotationAngleRad/(2*M_PIf)) * 2 * M_PIf;
     this->dynamicProperties.rotationAngleRad = newRotationAngleRad;*/
     this->dynamicProperties.rotationAngleRad += angularOffset;
+    this->updateAfterMovementOrRotation();
 }
 
 const std::vector<Vector2> &DynamicConvexPolygon::getTextureCoordinates() const { return textureCoordinates; }
@@ -183,13 +223,18 @@ void DynamicConvexPolygon::setAngularMomentum(const floatType newAngularMomentum
 }
 void DynamicConvexPolygon::setRotationAngleRad(const floatType newRotationAngleRad) {
     this->dynamicProperties.rotationAngleRad = newRotationAngleRad;
+    this->updateAfterMovementOrRotation();
 }
 void DynamicConvexPolygon::setInterpolatedMovementState(const floatType alpha) {
     assert(alpha >= -NUMERIC_EPSILON && alpha <= 1 + NUMERIC_EPSILON);
+    if (fabsf(1 - alpha) < NUMERIC_EPSILON) {
+        return;
+    }
     const Vector newPosition = this->getInterpolatedPosition(alpha);
     const floatType newRotationAngleRad = this->getInterpolatedRotationAngleRad(alpha);
-    this->setPosition(newPosition);
-    this->setRotationAngleRad(newRotationAngleRad);
+    this->position = newPosition;
+    this->dynamicProperties.rotationAngleRad = newRotationAngleRad;
+    this->updateAfterMovementOrRotation();
 }
 
 floatType DynamicConvexPolygon::getInterpolatedRotationAngleRad(const floatType alpha) const {
@@ -229,4 +274,11 @@ void DynamicConvexPolygon::applyForce(const Vector &force, const Vector &point) 
     const floatType newAngularMomentum = this->dynamicProperties.angularMomentum + point.cross(force);
     this->setLinearMomentum(newLinearMomentum);
     this->setAngularMomentum(newAngularMomentum);
+}
+
+void DynamicConvexPolygon::updateAfterMovementOrRotation() {
+    this->recalculateWorldSpaceVertices();
+    this->recalculateCurrentBoundingBox();
+    this->recalculateSweptBoundingBox();
+    // TODO this->recalculateProjections(); (?)
 }

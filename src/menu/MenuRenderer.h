@@ -38,7 +38,7 @@ class MenuRenderer {
     void setPlayAgainClicked(bool playAgainClicked);
 
   private:
-    ResourceManager resourceManager;
+    ResourceManager &resourceManager;
     bool gameplayRunning = false;
     bool playAgainClicked = false;
     ScreenState screenState = START_SCREEN;

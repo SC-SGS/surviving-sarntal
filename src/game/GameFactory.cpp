@@ -83,8 +83,8 @@ Game GameFactory::buildGame() {
     return this->game;
 }
 DevMode GameFactory::buildDevMode() {
-    this->world.setMinX(-10);
-    this->world.setMaxX(30);
+    this->world.setMinX(-25);
+    this->world.setMaxX(25);
     this->devMode.init();
     this->monster.setXPosition(-20.f);
     return this->devMode;

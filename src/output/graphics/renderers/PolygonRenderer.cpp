@@ -25,7 +25,7 @@ void PolygonRenderer::renderPolygon(const DynamicConvexPolygon &polygon) const {
 }
 
 void PolygonRenderer::renderPolygonOutline(const DynamicConvexPolygon &polygon) const {
-    std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
+    const std::vector<Vector> &vertices = polygon.getWorldSpaceVertices();
     const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
 
     DrawCircle(static_cast<int>(centroid.x), static_cast<int>(centroid.y), 5.0, RED);
@@ -66,7 +66,7 @@ void PolygonRenderer::renderTexturedPolygon(const std::shared_ptr<DynamicConvexP
 }
 
 void PolygonRenderer::renderPolygonOutlineStatic(const ConvexPolygon &polygon, const Color color) {
-    const std::vector<Vector> vertices = polygon.getWorldSpaceVertices();
+    const std::vector<Vector> &vertices = polygon.getWorldSpaceVertices();
     // const Vector centroid = GraphicsUtil::transformPosition(Vector2(polygon.getPosition()));
 
     // DrawCircle(static_cast<int>(centroid.x), static_cast<int>(centroid.y), 5.0, color);

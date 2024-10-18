@@ -19,6 +19,15 @@ DynamicConvexPolygon PolygonGenerator::generatePolygon(const int numberPoints,
     if (!isAnticlockwise(vertices)) {
         const std::vector<Vector> anticlockwiseVertices = reverseOrderToAnticlockWise(vertices);
     }
+    return generatePolygonFromVertices(vertices, position, density);
+}
+
+DynamicConvexPolygon PolygonGenerator::generatePolygonFromVertices(const std::vector<Vector> &vertices,
+                                                                   const Vector &position,
+                                                                   const floatType density) {
+    if (!isAnticlockwise(vertices)) {
+        throw std::invalid_argument("Vertices must be given in anticlockwise order");
+    }
     const Vector centroid = calculateCentroid(vertices);
     const std::vector<Vector> bodySpaceVertices = transformIntoCentroidCoordinateSystem(centroid, vertices);
     const std::vector<Vector2> textureCoordinates = determineTextureCoordinates(bodySpaceVertices);

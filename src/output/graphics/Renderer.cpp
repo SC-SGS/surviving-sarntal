@@ -2,6 +2,7 @@
 #include "../../spawner/PolygonGenerator.h"
 #include "raylib.h"
 
+#include "../../physics/PhysicsEngine.hpp"
 #include "GraphicsUtil.h"
 #include "renderers/EntityRenderer.h"
 #include <cmath>
@@ -54,6 +55,20 @@ void Renderer::initCamera() {
     camera.zoom = zoom;
 }
 
+void Renderer::renderPhysicsTimeStepSize() const {
+    if (!this->gameConstants.visualConstants.renderPhysicsStepSize)
+        return;
+    // Convert the double to a string
+    const std::string valueText = std::to_string(PhysicsEngine::exponentialMovingAvg);
+
+    // Determine the position (bottom-left corner)
+    int textX = 20;                     // Small padding from the left edge
+    int textY = GetScreenHeight() - 40; // Padding from the bottom edge
+
+    // Draw the text using Raylib's DrawText function (convert std::string to C-string using c_str())
+    DrawText(valueText.c_str(), textX, textY, 30, BLACK); // Font size = 20, color = white
+}
+
 // Main rendering function
 void Renderer::draw() {
     handleFullScreenSwitch();
@@ -80,6 +95,8 @@ void Renderer::draw() {
     EndMode2D();
 
     hudRenderer.renderHud(debugMode);
+
+    renderPhysicsTimeStepSize();
 
     EndDrawing();
 }

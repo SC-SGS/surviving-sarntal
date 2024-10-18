@@ -7,6 +7,8 @@
 
 #include "../spawner/PolygonGenerator.h"
 #include "Game.hpp"
+#include "Recorder.h"
+#include "Simulation.h"
 
 struct TestCaseDto {
     std::string name;
@@ -43,6 +45,9 @@ class DevMode {
     float rockSize = 10.0;
     std::vector<TestCaseDto> testCases;
     std::string currentTestCase = "Dev Mode";
+    Simulation simulation;
+    bool simRunning = false;
+    Recorder recorder;
 
     PolygonGenerator polyGen;
 
@@ -54,6 +59,8 @@ class DevMode {
     void clearAllItems() const;
     void clearAllRocks() const;
     void increaseRockSize(float increment);
+
+    void startSim();
 
     void spawnRockAtMouse() const;
     void spawnItemAtMouse(int itemId);
@@ -69,6 +76,7 @@ class DevMode {
     void spawnRock(const Vector &position, const Vector &velocity) const;
     void spawnRock(const Vector &position, const Vector &velocity, floatType radius) const;
     Rock generateRock(const Vector &position, const Vector &velocity, floatType radius) const;
+    void initializeGamepads(int remainingSeconds);
 };
 
 #endif // SURVIVING_SARNTAL_DEVMODE_HPP

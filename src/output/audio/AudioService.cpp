@@ -50,6 +50,7 @@ void AudioService::playMovingSound(const floatType hikerSpeed, const floatType m
                 // Play the sound if it's not already playing
                 PlaySound(sound);
                 this->movementSoundPlaying = true;
+                this->lastStartTimeMovementSound = static_cast<floatType>(GetTime());
 
                 // Log the action
                 spdlog::info("Playing a sound with name: moving at speed: {}", speed);
@@ -70,6 +71,7 @@ void AudioService::playMovingSound(const floatType hikerSpeed, const floatType m
 void AudioService::interruptMovingSound() {
     this->interruptSound("moving");
     this->movementSoundPlaying = false;
+    this->lastStartTimeMovementSound = 0.0f;
 }
 
 void AudioService::playSoundWithSpeedIfNotAlreadyPlaying(const std::string &soundName, float speed) const {

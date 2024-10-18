@@ -29,12 +29,6 @@ class Game {
     ~Game() = default;
     void run();
 
-    // TODO renderer and different renderer for Round?
-    // TODO initialize physics engine and world per round
-    // TODO start and menu etc. must be handled differently ig, because there is no world but something is rendered and
-    // TODO there is no pe but input is handled
-    void playRound() const;
-
     bool debugMode = false;
     bool gameplayStarted = false;
     void pause();
@@ -51,7 +45,7 @@ class Game {
     GameConstants &gameConstants;
 
     void gameTick();
-    void initializeGamepads();
+    void initializeGamepads(int remainingSeconds);
     void runMenu();
     void runGameplay();
     void endGameplay();
@@ -62,7 +56,6 @@ class Game {
     bool gamePaused = false;
     void checkPause();
     bool shouldRunGame();
-    bool waitingForGamepads();
 };
 
 #endif // GAME_HPP

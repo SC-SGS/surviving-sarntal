@@ -32,24 +32,19 @@ void Game::run() {
     if (this->gameConstants.audioConstants.musicEnabled) {
         audioService.playSong("background-music", true, this->gameConstants.audioConstants.musicVolume);
     }
-    this->initializeGamepads();
+
+    int startTime = (int)floorf64(GetTime());
+    int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
     while (this->shouldRunGame()) {
-        this->gameTick();
+        audioService.updateMusicStream();
+        int currentTime = (int)floorf64(GetTime());
+        bool needToInitGamePads = currentTime < startTime + offset && !this->inputHandler.gamepadsInitialized();
+        if (needToInitGamePads) {
+            initializeGamepads(startTime + offset - currentTime);
+        } else {
+            this->gameTick();
+        }
     }
-}
-
-void Game::initializeGamepads() {
-    BeginDrawing();
-    while (this->waitingForGamepads()) {
-        this->inputHandler.initializeGamepads();
-    }
-    EndDrawing();
-    spdlog::info("Gamepads initialized at time {}", GetTime());
-}
-
-bool Game::waitingForGamepads() {
-    bool needToInitGamePads = GetTime() < 5.0f && !this->inputHandler.gamepadsInitialized();
-    return needToInitGamePads && !WindowShouldClose();
 }
 
 bool Game::shouldRunGame() { return !WindowShouldClose() && !this->menuEngine.isGameClosed(); }
@@ -58,6 +53,7 @@ void Game::gameTick() {
     audioService.updateMusicStream();
 
     if (!menuEngine.isGamePlayRunning()) {
+        this->physicsEngine.pause();
         this->checkPlayAgainClicked();
         runMenu();
         return;
@@ -74,6 +70,14 @@ void Game::gameTick() {
 void Game::checkPause() {
     if (!menuEngine.isGamePlayRunning()) {
         gamePaused = true;
+        this->physicsEngine.pause();
+    }
+}
+
+void Game::initializeGamepads(int remainingSeconds) {
+    this->inputHandler.initializeGamepads(remainingSeconds);
+    if (this->inputHandler.gamepadsInitialized()) {
+        spdlog::info("Gamepads initialized at time {}", GetTime());
     }
 }
 

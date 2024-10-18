@@ -27,7 +27,6 @@ class Accelerator {
     /**
      * Calculates the sum of forces acting on the center of mass of a rock at the current time.
      * Includes gravitational forces
-     * TODO friction
      *
      * @param rock
      * @return
@@ -37,7 +36,6 @@ class Accelerator {
     /**
      * Calculates the sum of torque acting on the center of mass of a rock at the current time.
      * Includes
-     * TODO friction
      *
      * @param rock
      * @return

@@ -58,7 +58,6 @@ bool ConstraintChecker::fulfillsHikerClearance(const std::shared_ptr<StaticPolyl
 }
 
 bool ConstraintChecker::fulfillsNoSelfPenetration(const std::shared_ptr<StaticPolyline> &additionalTerrain) const {
-    return true;
     return !this->groundPolyRepresentation->intersectsWithoutFirstPoint(*additionalTerrain);
 }
 

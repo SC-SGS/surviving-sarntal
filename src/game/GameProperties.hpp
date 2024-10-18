@@ -96,11 +96,15 @@ struct PhysicsConstants {
     floatType terrainSubstepSize;
     floatType rockSubstepSize;
     size_t maxNumberOfResolutionSteps;
+    size_t maxNumberOfPhysicsStepsPerFrame;
     bool debugCDRendering;
 };
 
 struct InputConstants {
     int maxGamepads;
+    floatType gamepadItemSwitchCooldown;
+    int gamepadInitializingTime;
+    floatType itemSwitchThreshold;
 };
 
 struct VisualConstants {
@@ -123,6 +127,8 @@ struct VisualConstants {
     int mountainResolution;
 
     bool shakeEnabled;
+
+    bool renderPhysicsStepSize;
 };
 
 struct AudioConstants {
@@ -162,7 +168,7 @@ struct TerrainConstants {
 struct RockSpawnerConstants {
 
     /**
-     * A list that contains the factor that determines TODO did you fall asleep mid-sentence?
+     * A list that contains the factor that determines the difficulty
      */
     std::vector<floatType> linearMomentumDifficultyFactor;
 

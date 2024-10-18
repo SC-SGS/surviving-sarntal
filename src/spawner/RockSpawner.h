@@ -17,7 +17,6 @@ enum RockSpawnDifficulty { EEEEEASY = 0, EASY = 1, MEDIUM = 2, HARD = 3, I_WANT_
 /**
  * This class is responsible for spawning rocks based on the current phase and state of the game.
  */
-// TODO extract all the constants
 class RockSpawner {
   public:
     explicit RockSpawner(World &world, GameConstants &gameConstants);

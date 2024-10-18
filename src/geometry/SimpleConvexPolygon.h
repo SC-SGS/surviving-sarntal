@@ -12,7 +12,7 @@ class SimpleConvexPolygon : public ConvexPolygon {
   public:
     explicit SimpleConvexPolygon(const std::vector<Vector> &worldSpaceCoordinates)
         : worldSpaceCoordinates(worldSpaceCoordinates) {}
-    std::vector<Vector> getWorldSpaceVertices() const override { return this->worldSpaceCoordinates; }
+    const std::vector<Vector> &getWorldSpaceVertices() const override { return this->worldSpaceCoordinates; }
 
   private:
     std::vector<Vector> worldSpaceCoordinates;

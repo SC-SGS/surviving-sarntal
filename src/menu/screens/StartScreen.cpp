@@ -2,7 +2,6 @@
 // Created by six on 5/4/24.
 //
 #include "StartScreen.h"
-#include "../../utilities/GameConstants.hpp"
 #include "raylib.h"
 
 StartScreen::StartScreen(ResourceManager &resourceManager) : Screen(resourceManager) { this->setUp(); }

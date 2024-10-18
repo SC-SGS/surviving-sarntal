@@ -3,7 +3,6 @@
 //
 
 #include "MenuRenderer.h"
-#include "../utilities/GameConstants.hpp"
 
 MenuRenderer::MenuRenderer(ResourceManager &resourceManager) : resourceManager(resourceManager) {}
 

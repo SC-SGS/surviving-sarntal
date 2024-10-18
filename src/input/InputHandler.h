@@ -44,7 +44,7 @@ class InputHandler : public Singleton<InputHandler> {
     /**
      * Update the input Handler to also recognize gamepads as input
      */
-    void initializeGamepads();
+    void initializeGamepads(int remainingSeconds);
 
     /**
      * Checks whether gamepads have been initialized.
