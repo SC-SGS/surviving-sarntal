@@ -20,9 +20,10 @@ void RockSpawner::spawnRocks() {
 
 void RockSpawner::spawnRock(const size_t idxRock) const {
     const Vector linearMomentum = this->getRandLinearMomentum();
+    const floatType angularMomentum = this->getRandAngularMomentum();
     Vector position = this->getRockSpawnPosition(idxRock);
     const DynamicConvexPolygon poly = this->getRandDynamicPolygon(position);
-    const DynamicProperties dynamicProperties{position, 0, 0, linearMomentum, 1};
+    const DynamicProperties dynamicProperties{position, 0, 0, linearMomentum, angularMomentum};
     this->createRock(position, poly, dynamicProperties);
     spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);
 }
@@ -85,14 +86,18 @@ std::vector<Vector> RockSpawner::getOffsetsAdditionalRocks() const {
 
 Vector RockSpawner::getRandSpawnPos() const {
     const auto spawnXPos = this->world.getMaxX() + gameConstants.rockConstants.spawnOffsetX;
-    const auto randYOffset = randomGenerator->getRandomRealNumber(6, 8); // TODO magic numbers
-
-    // static_cast<floatType>(std::rand() / (1.0 * RAND_MAX)) * (4 - 3) + 3; // TODO these should be constants
+    const auto &rockSpawnConst = gameConstants.rockSpawnerConstants;
+    const auto randYOffset =
+        randomGenerator->getRandomRealNumber(rockSpawnConst.minRandYSpawnOffset, rockSpawnConst.maxRandYSpawnOffset);
     const auto spawnYPos = this->world.getTerrain().getMaxHeight(spawnXPos) + randYOffset;
     return Vector{spawnXPos, spawnYPos};
 }
 
-int RockSpawner::getRandPointNumber() const { return randomGenerator->getRandomNumber(50, 200); } // TODO magic numbers
+int RockSpawner::getRandPointNumber() const {
+    const auto &rockSpawnConst = gameConstants.rockSpawnerConstants;
+    return randomGenerator->getRandomNumber(rockSpawnConst.minNumPointsForGeneration,
+                                            rockSpawnConst.maxNumPointsForGeneration);
+}
 
 floatType RockSpawner::getRandDensity() const {
     const auto &rockConst = gameConstants.rockConstants;
@@ -143,3 +148,8 @@ RockType RockSpawner::determineRockTypePhase() const {
     return static_cast<RockType>(0);
 }
 void RockSpawner::reset() {}
+
+floatType RockSpawner::getRandAngularMomentum() const {
+    return randomGenerator->getRandomRealNumber(gameConstants.rockSpawnerConstants.minAngularMomentum,
+                                                gameConstants.rockSpawnerConstants.maxAngularMomentum);
+}

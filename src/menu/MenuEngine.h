@@ -5,11 +5,11 @@
 #ifndef SURVIVING_SARNTAL_MENUENGINE_H
 #define SURVIVING_SARNTAL_MENUENGINE_H
 
+#include "screens/ControlsScreen.h"
 #include "screens/EndScreen.h"
 #include "screens/InstructionsScreen.h"
 #include "screens/PauseScreen.h"
 #include "screens/Screen.h"
-#include "screens/SettingsScreen.h"
 #include "screens/StartScreen.h"
 
 class MenuEngine {

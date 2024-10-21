@@ -7,7 +7,7 @@
 MenuEventProcessor::MenuEventProcessor(MenuEngine &menuEngine) : menuEngine(menuEngine) {
     this->gameEventFunctionMappings = {
         //{{START_GAMEPLAY, NO_AXIS, 0, false}, [this](GameEvent gameEvent) { return this->startGameplay(gameEvent); }},
-        //{{SETTINGS, NO_AXIS, 0, false}, [this](GameEvent gameEvent) { return this->goToSettings(gameEvent); }},
+        //{{CONTROLS, NO_AXIS, 0, false}, [this](GameEvent gameEvent) { return this->goToSettings(gameEvent); }},
         //{{INSTRUCTIONS, NO_AXIS, 0, false}, [this](GameEvent gameEvent) { return this->goToInstructions(gameEvent);
         //}},
         //{{MENU, NO_AXIS, 0, false}, [this](GameEvent gameEvent) { return this->goToStartScreen(gameEvent); }},

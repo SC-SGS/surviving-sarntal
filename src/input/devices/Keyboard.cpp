@@ -20,7 +20,7 @@ Keyboard::Keyboard(const InputConstants &inputConstants) : InputDevice(-1, DEVIC
                       {{KEY_P, TRIGGER_PRESSED}, {TOGGLE_DEBUG, NO_AXIS, 0, false}},
                       {{KEY_BACKSPACE, TRIGGER_PRESSED}, {PAUSE, NO_AXIS, 0, false}},
                       {{KEY_ENTER, TRIGGER_PRESSED}, {SELECT_BUTTON, NO_AXIS, 0, false}},
-                      //{{KEY_S, TRIGGER_PRESSED}, {SETTINGS, NO_AXIS, 0, false}},
+                      //{{KEY_S, TRIGGER_PRESSED}, {CONTROLS, NO_AXIS, 0, false}},
                       //{{KEY_I, TRIGGER_PRESSED}, {INSTRUCTIONS, NO_AXIS, 0, false}},
                       //{{KEY_M, TRIGGER_PRESSED}, {MENU, NO_AXIS, 0, false}},
 

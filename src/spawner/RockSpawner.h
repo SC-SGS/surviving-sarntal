@@ -103,6 +103,12 @@ class RockSpawner {
     floatType getRandDensity() const;
 
     /**
+     * This method generates a random angular momentum.
+     * @return random angular momentum
+     */
+    floatType getRandAngularMomentum() const;
+
+    /**
      *
      * @param position
      * @param poly
