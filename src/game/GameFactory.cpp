@@ -8,15 +8,15 @@
 GameFactory::GameFactory(Camera2D &camera)
     : // Service
       configManager(ConfigManager::getInstance()),
-      inputHandler(InputHandler::getInstance()),
       resourceManager(ResourceManager(configManager, true)),
+      inputHandler(InputHandler(resourceManager)),
       audioService(AudioService(resourceManager)),
 
       // Game
       gameConstants(configManager.getGameConstants()),
       terrain(gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager),
       // terrain(groundPoints, gameConstants.hikerConstants, gameConstants.terrainConstants, resourceManager),
-      hiker({0.0, 0.0}, audioService, gameConstants.hikerConstants),
+      hiker({0.0, 0.0}, audioService, inputHandler, gameConstants.hikerConstants),
       monster(gameConstants),
       inventory(audioService, gameConstants.itemsConstants),
       world(terrain, hiker, inventory, monster, audioService, gameConstants),
@@ -41,7 +41,7 @@ GameFactory::GameFactory(Camera2D &camera)
       // Physics
       accelerator(world, gameConstants),
       collisionDetector(world, gameConstants, collisionRenderer, configManager.isInDevMode()),
-      collisionHandler(world, collisionDetector, audioService, renderer, gameConstants),
+      collisionHandler(world, collisionDetector, audioService, inputHandler, renderer, gameConstants),
       destructor(world, entityRenderer, gameConstants),
       interpolator(world),
       positioner(world,

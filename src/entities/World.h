@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_WORLD_H
 #define SURVIVING_SARNTAL_WORLD_H
 
+#include "../output/haptics/HapticsService.hpp"
 #include "../terrain/Terrain.hpp"
 #include "../utilities/Singleton.hpp"
 #include "Hiker.h"

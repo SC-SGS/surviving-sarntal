@@ -33,11 +33,11 @@ void Game::run() {
         audioService.playSong("background-music", true, this->gameConstants.audioConstants.musicVolume);
     }
 
-    int startTime = (int)floorf64(GetTime());
+    int startTime = (int)floorf(static_cast<floatType>(GetTime()));
     int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
     while (this->shouldRunGame()) {
         audioService.updateMusicStream();
-        int currentTime = (int)floorf64(GetTime());
+        int currentTime = (int)floorf(static_cast<floatType>(GetTime()));
         bool needToInitGamePads = currentTime < startTime + offset && !this->inputHandler.gamepadsInitialized();
         if (needToInitGamePads) {
             initializeGamepads(startTime + offset - currentTime);

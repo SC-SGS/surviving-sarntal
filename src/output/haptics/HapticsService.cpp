@@ -12,8 +12,8 @@ HapticsService::HapticsService() = default;
 
 HapticsService::~HapticsService() { SDL_Quit(); }
 
-void HapticsService::rumble(int strength, int duration) {
-    for (auto device : InputHandler::getInstance().getDevices()) {
+void HapticsService::rumble(int strength, int duration, InputHandler &inputHandler) {
+    for (auto device : inputHandler.getDevices()) {
         if (device->getDevice() == DEVICE_GAMEPAD) {
             auto controller = SDL_GameControllerOpen(device->getId());
             spdlog::debug("Is Controller {} an SDL controller? {}", device->getId(), static_cast<bool>(controller));
@@ -28,9 +28,11 @@ void HapticsService::rumble(int strength, int duration) {
     }
 }
 
-void HapticsService::rockRumble(int rockDmg) { HapticsService::rumble(std::min(rockDmg * 4000, 65535), 300); }
+void HapticsService::rockRumble(int rockDmg, InputHandler &inputHandler) {
+    HapticsService::rumble(std::min(rockDmg * 4000, 65535), 300, inputHandler);
+}
 
-void HapticsService::deathRumble() { HapticsService::rumble(65535, 3000); }
+void HapticsService::deathRumble(InputHandler &inputHandler) { HapticsService::rumble(65535, 3000, inputHandler); }
 
 void HapticsService::rumbleThread(SDL_GameController *controller, const int strength, const int duration) {
     // Set rumble intensity for both motors (left and right)

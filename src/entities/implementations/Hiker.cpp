@@ -7,8 +7,11 @@
 #include "../../spawner/PolygonGenerator.h"
 #include "spdlog/spdlog.h"
 
-Hiker::Hiker(const Vector position, AudioService &audioService, HikerConstants hikerConstants)
-    : RenderedEntity(position), audioService(audioService), hikerConstants(hikerConstants) {
+Hiker::Hiker(const Vector position,
+             AudioService &audioService,
+             InputHandler &inputHandler,
+             HikerConstants hikerConstants)
+    : RenderedEntity(position), audioService(audioService), inputHandler(inputHandler), hikerConstants(hikerConstants) {
     velocity = {0, 0};
     height = hikerConstants.hikerHeight;
     width = hikerConstants.hikerWidth;
@@ -223,7 +226,7 @@ void Hiker::kill() {
     this->velocity = {0, 0};
     this->shieldTime = 0.0;
     this->setHitboxVelocity(this->getVelocity());
-    HapticsService::deathRumble();
+    HapticsService::deathRumble(this->inputHandler);
 }
 
 void Hiker::reset(const Vector &position) {
