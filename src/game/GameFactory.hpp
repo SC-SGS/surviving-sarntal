@@ -21,7 +21,7 @@ class GameFactory {
   private:
     // Services
     ConfigManager &configManager;
-    InputHandler &inputHandler;
+    InputHandler inputHandler;
     ResourceManager resourceManager;
     AudioService audioService;
 
