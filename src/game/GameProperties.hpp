@@ -189,6 +189,12 @@ struct RockSpawnerConstants {
      *
      */
     std::vector<floatType> rockTypePhase;
+    floatType minAngularMomentum;
+    floatType maxAngularMomentum;
+    int minNumPointsForGeneration;
+    int maxNumPointsForGeneration;
+    floatType minRandYSpawnOffset;
+    floatType maxRandYSpawnOffset;
 };
 
 struct GameConstants {

@@ -2,21 +2,21 @@
 // Created by Anietta Weckauff on 04.08.24.
 //
 
-#include "SettingsScreen.h"
+#include "ControlsScreen.h"
 
-SettingsScreen::SettingsScreen(ResourceManager &resourceManager) : Screen(resourceManager) { this->setUp(); }
+ControlsScreen::ControlsScreen(ResourceManager &resourceManager) : Screen(resourceManager) { this->setUp(); }
 
-void SettingsScreen::setUp() {
+void ControlsScreen::setUp() {
     this->setUpScreen();
     this->setUpButtons();
 }
 
-void SettingsScreen::setUpScreen() {
-    this->background = resourceManager.getTexture("settingsScreen");
+void ControlsScreen::setUpScreen() {
+    this->background = resourceManager.getTexture("controlsScreen");
     this->selectedButton = 0;
 }
 
-void SettingsScreen::setUpButtons() {
+void ControlsScreen::setUpButtons() {
     buttons = std::vector<std::shared_ptr<Button>>();
     Texture2D homeButtonTexture = resourceManager.getTexture("homeButton");
     Texture2D homeButtonToggledTexture = resourceManager.getTexture("homeButtonToggled");
