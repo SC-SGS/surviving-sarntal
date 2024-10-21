@@ -79,6 +79,7 @@ textures:
   scoreBgX: "../../assets/texture/scoreBgX.png"
   scoreBgY: "../../assets/texture/scoreBgY.png"
   terrainGenerationBackground: "../../assets/texture/terrainGenerationBackground.png"
+  recognizeGamepadBackground: "../../assets/texture/recognizeGamepadBackground.png"
 
 items:
   kaiserschmarrn:
@@ -184,6 +185,7 @@ gameConstants:
     maxGamepads: 8
     gamepadItemSwitchCooldown: 0.1
     gamepadInitializingTime: 5
+    gamepadInitializingCountdownFontSize: 120
     itemSwitchThreshold: 0.5
 
   visualConstants:

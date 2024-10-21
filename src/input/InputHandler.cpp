@@ -12,7 +12,8 @@
 #include <iostream>
 #include <mutex>
 
-InputHandler::InputHandler() : inputConstants(ConfigManager::getInstance().getGameConstants().inputConstants) {
+InputHandler::InputHandler(ResourceManager &resourceManager)
+    : inputConstants(ConfigManager::getInstance().getGameConstants().inputConstants), resourceManager(resourceManager) {
     this->devices.push_back(new Keyboard(this->inputConstants));
     spdlog::info("Keyboard added.");
 }
@@ -35,10 +36,16 @@ std::vector<InputDevice *> InputHandler::getDevices() const { return this->devic
 
 void InputHandler::initializeGamepads(int remainingSeconds) {
     BeginDrawing();
-    ClearBackground(BLACK);
-    std::string text = "To initialize gamepad, press any button on the gamepad";
-    DrawText(text.c_str(), GetScreenWidth() / 2, GetScreenHeight() / 2, 30, WHITE);
-    DrawText(std::to_string(remainingSeconds).c_str(), GetScreenWidth() / 2, GetScreenHeight() / 2 + 50, 30, GREEN);
+    Texture2D backgroundTexture = this->resourceManager.getTexture("recognizeGamepadBackground");
+    const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(backgroundTexture.width),
+                                 static_cast<float>(backgroundTexture.height)};
+    const Rectangle destRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};
+
+    DrawTexturePro(backgroundTexture, sourceRec, destRec, {0, 0}, 0, WHITE);
+    int fontSize = this->inputConstants.gamepadInitializingCountdownFontSize;
+    int textWidth = MeasureText(std::to_string(remainingSeconds).c_str(), fontSize);
+    DrawText(std::to_string(remainingSeconds).c_str(), (GetScreenWidth() - textWidth) / 2, GetScreenHeight() / 2 + 50,
+             fontSize, ORANGE);
     for (int i = 0; i < this->inputConstants.maxGamepads; i++) {
         if (IsGamepadAvailable(i)) {
             this->devices.push_back(new Gamepad(i, this->inputConstants));

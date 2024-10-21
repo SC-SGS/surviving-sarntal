@@ -9,6 +9,7 @@
 #include "../geometry/DynamicConvexPolygon.h"
 #include "../output/audio/AudioService.hpp"
 #include "../output/graphics/renderInformation/RenderInformation.h"
+#include "../output/haptics/HapticsService.hpp"
 #include "../terrain/points/StaticPolygon.hpp"
 #include "../terrain/spatialDatastructure/AxisAlignedBoundingBox.hpp"
 #include "../utilities/vector.h"
@@ -36,7 +37,10 @@ struct HitInformation {
 class Hiker : public RenderedEntity {
 
   public:
-    explicit Hiker(Vector position, AudioService &audioService, HikerConstants hikerConstants);
+    explicit Hiker(Vector position,
+                   AudioService &audioService,
+                   InputHandler &inputHandler,
+                   HikerConstants hikerConstants);
     floatType getHeight() const;
     void setHeight(floatType height);
 
@@ -130,6 +134,7 @@ class Hiker : public RenderedEntity {
     // Dependencies
     AudioService &audioService;
     HikerConstants hikerConstants;
+    InputHandler &inputHandler;
 
     // Attributes
     Vector velocity{};

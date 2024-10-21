@@ -15,6 +15,8 @@ class HikerTestFixture : public ::testing::Test {
 
     void TearDown() override {}
     ConfigManager &configManager = ConfigManager::getInstance();
+    ResourceManager resourceManager = ResourceManager(configManager);
+    InputHandler inputHandler = InputHandler(resourceManager);
     GameConstants gameConstants = configManager.getGameConstants();
 };
 
@@ -23,7 +25,7 @@ class HikerTestFixture : public ::testing::Test {
 TEST_F(HikerTestFixture, AddHealthPointsTest) {
     MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
-    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+    Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.setHealthPoints(30);
     hiker.addHealthPoints(20);
@@ -36,7 +38,7 @@ TEST_F(HikerTestFixture, CrouchTest) {
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("crouch")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("crouch")).Times(1);
-    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+    Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.crouch();
 
@@ -48,7 +50,7 @@ TEST_F(HikerTestFixture, CrouchTest) {
 TEST_F(HikerTestFixture, UncrouchTest) {
     MockResourceManager mockResourceManager(configManager);
     MockAudioService mockAudioService(mockResourceManager);
-    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+    Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.uncrouch();
 
@@ -62,7 +64,7 @@ TEST_F(HikerTestFixture, JumpOnceTest) {
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(1);
-    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+    Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.jump();
 
@@ -76,7 +78,7 @@ TEST_F(HikerTestFixture, JumpTwiceTest) {
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(2);
-    Hiker hiker(Vector{0, 0}, mockAudioService, gameConstants.hikerConstants);
+    Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.jump();
 
