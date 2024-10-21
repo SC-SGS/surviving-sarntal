@@ -207,7 +207,12 @@ template <> struct convert<RockSpawnerConstants> {
         rockSpawnerConstants.spawningPhase = node["spawningPhase"].as<std::vector<floatType>>();
         rockSpawnerConstants.rockSpawnTimeInterval = node["rockSpawnTimeInterval"].as<std::vector<floatType>>();
         rockSpawnerConstants.rockTypePhase = node["rockTypePhase"].as<std::vector<floatType>>();
-
+        rockSpawnerConstants.minAngularMomentum = node["minAngularMomentum"].as<floatType>();
+        rockSpawnerConstants.maxAngularMomentum = node["maxAngularMomentum"].as<floatType>();
+        rockSpawnerConstants.minNumPointsForGeneration = node["minNumPointsForGeneration"].as<int>();
+        rockSpawnerConstants.maxNumPointsForGeneration = node["maxNumPointsForGeneration"].as<int>();
+        rockSpawnerConstants.minRandYSpawnOffset = node["minRandYSpawnOffset"].as<floatType>();
+        rockSpawnerConstants.maxRandYSpawnOffset = node["maxRandYSpawnOffset"].as<floatType>();
         return true;
     }
 };

@@ -26,7 +26,7 @@ void StartScreen::setUpButtons() {
     Texture settingsButtonTexture = resourceManager.getTexture("settingsButton");
     Texture settingsButtonToggledTexture = resourceManager.getTexture("settingsButtonToggled");
     std::shared_ptr<Button> settingsButton =
-        std::make_shared<Button>(SETTINGS, SETTINGS_SCREEN, settingsButtonTexture, settingsButtonToggledTexture);
+        std::make_shared<Button>(CONTROLS, CONTROLS_SCREEN, settingsButtonTexture, settingsButtonToggledTexture);
 
     Texture2D instructionsButtonTexture = resourceManager.getTexture("instructionsButton");
     Texture2D instructionsButtonToggledTexture = resourceManager.getTexture("instructionsButtonToggled");

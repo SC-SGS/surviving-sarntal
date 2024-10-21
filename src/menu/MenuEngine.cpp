@@ -7,7 +7,7 @@
 MenuEngine::MenuEngine(ResourceManager &resourceManager) : resourceManager(resourceManager) {
     std::cout << "constructor menu engine" << std::endl;
     screens[START_SCREEN] = std::make_shared<StartScreen>(resourceManager);
-    screens[SETTINGS_SCREEN] = std::make_shared<SettingsScreen>(resourceManager);
+    screens[CONTROLS_SCREEN] = std::make_shared<ControlsScreen>(resourceManager);
     screens[INSTRUCTIONS_SCREEN] = std::make_shared<InstructionsScreen>(resourceManager);
     screens[END_SCREEN] = std::make_shared<EndScreen>(resourceManager);
     screens[PAUSE_SCREEN] = std::make_shared<PauseScreen>(resourceManager);

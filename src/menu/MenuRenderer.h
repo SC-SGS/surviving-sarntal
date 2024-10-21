@@ -17,7 +17,7 @@ class MenuRenderer {
 
     void drawStartScreen();
 
-    void drawSettingsScreen();
+    void drawControlsScreen();
 
     void drawInstructionsScreen();
 
