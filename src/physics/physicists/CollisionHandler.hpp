@@ -21,6 +21,7 @@ class CollisionHandler {
     CollisionHandler(World &world,
                      const CollisionDetector &collisionDetector,
                      AudioService &audioService,
+                     InputHandler &inputHandler,
                      Renderer &renderer,
                      const GameConstants &gameConstants);
     ~CollisionHandler() = default;
@@ -30,11 +31,11 @@ class CollisionHandler {
     World &world;
     const CollisionDetector &collisionDetector;
     AudioService &audioService;
+    InputHandler &inputHandler;
     Renderer &renderer;
     const GameConstants &gameConstants;
 
     floatType deltaT;
-    HapticsService &hapticsService;
 
     /**
      * Checks whether a rock has a terrain collision and handles it if necessary by displacing and applying impulses.

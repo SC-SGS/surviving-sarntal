@@ -8,6 +8,7 @@
 CollisionHandler::CollisionHandler(World &world,
                                    const CollisionDetector &collisionDetector,
                                    AudioService &audioService,
+                                   InputHandler &inputHandler,
                                    Renderer &renderer,
                                    const GameConstants &gameConstants)
     : world(world),
@@ -16,7 +17,7 @@ CollisionHandler::CollisionHandler(World &world,
       renderer(renderer),
       gameConstants(gameConstants),
       deltaT(1),
-      hapticsService(HapticsService::getInstance()) {}
+      inputHandler(inputHandler) {}
 
 void CollisionHandler::handleCollisions() const {
     this->resolveRockCollisions();
@@ -293,7 +294,7 @@ void CollisionHandler::checkAndHandlePlayerRockCollision(Rock &rock) const {
         hiker.setKnockback(this->world.getHiker().getKnockback() + this->computeKnockback(collision));
         rock.setShouldBeDestroyed(true);
         if (hiker.getIsAlive()) {
-            HapticsService::rockRumble(rockDmg);
+            HapticsService::rockRumble(rockDmg, this->inputHandler);
         }
     }
 }

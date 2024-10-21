@@ -118,6 +118,7 @@ template <> struct convert<InputConstants> {
         inputConstants.maxGamepads = node["maxGamepads"].as<int>();
         inputConstants.gamepadItemSwitchCooldown = node["gamepadItemSwitchCooldown"].as<floatType>();
         inputConstants.gamepadInitializingTime = node["gamepadInitializingTime"].as<int>();
+        inputConstants.gamepadInitializingCountdownFontSize = node["gamepadInitializingCountdownFontSize"].as<int>();
         inputConstants.itemSwitchThreshold = node["itemSwitchThreshold"].as<floatType>();
 
         return true;

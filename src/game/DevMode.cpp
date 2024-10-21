@@ -42,10 +42,10 @@ void DevMode::init() {
 
 void DevMode::run() {
     audioService.playSound("background-music");
-    int startTime = (int)floorf64(GetTime());
+    int startTime = (int)floorf(static_cast<floatType>(GetTime()));
     int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
     while (!WindowShouldClose()) {
-        int currentTime = (int)floorf64(GetTime());
+        int currentTime = (int)floorf(static_cast<floatType>(GetTime()));
         bool needToInitGamePads = currentTime < startTime + offset && !this->inputHandler.gamepadsInitialized();
         if (needToInitGamePads) {
             initializeGamepads(startTime + offset - currentTime);

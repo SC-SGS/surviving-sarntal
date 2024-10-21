@@ -104,6 +104,7 @@ struct InputConstants {
     int maxGamepads;
     floatType gamepadItemSwitchCooldown;
     int gamepadInitializingTime;
+    int gamepadInitializingCountdownFontSize;
     floatType itemSwitchThreshold;
 };
 
