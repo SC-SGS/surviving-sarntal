@@ -67,7 +67,7 @@ bool CollisionHandler::checkAndHandleTerrainCollision(Rock &rock) const {
                 (graphics::UNIT_TO_PIXEL_RATIO * rock.getLinearMomentum().length() * rock.getBoundingBox().getWidth() /
                  2 * this->gameConstants.visualConstants.rumbleIntensity) /
                 gameConstants.rockConstants.maxSpawnLinearMomentum;
-            this->renderer.setShake(shake);
+            this->renderer.addShake(shake);
         }
     }
     return collisionOccurred;
