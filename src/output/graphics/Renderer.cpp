@@ -71,7 +71,6 @@ void Renderer::renderPhysicsTimeStepSize() const {
 
 // Main rendering function
 void Renderer::draw() {
-    handleFullScreenSwitch();
     applyRumbleEffect();
 
     BeginDrawing();
@@ -150,40 +149,10 @@ void Renderer::drawBackgroundTextureRepeatedly(const Texture2D &texture,
 
 void Renderer::toggleDebugMode() { this->debugMode = !this->debugMode; }
 
-void Renderer::toggleFullscreen() {
-    if (!IsWindowFullscreen()) {
-        int monitor = GetCurrentMonitor();
-        SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
-        fsMode = TO_FS;
-    } else {
-        ToggleFullscreen();
-        fsMode = TO_WINDOWED;
-    }
-}
-
-void Renderer::handleFullScreenSwitch() {
-    if (fsMode != NONE) {
-        if (fsMode == TO_FS) {
-            ToggleFullscreen();
-            fsMode = UPDATE_VALUES;
-        } else if (fsMode == TO_WINDOWED) {
-            SetWindowSize(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL);
-            fsMode = UPDATE_VALUES;
-        } else if (fsMode == UPDATE_VALUES) {
-            reset();
-            fsMode = NONE;
-        }
-    }
-    if (IsKeyPressed(KEY_F11)) {
-        toggleFullscreen();
-    }
-}
-
-void Renderer::setShake(const float intensity) { shakeIntensity = intensity; }
+void Renderer::addShake(const float intensity) { shakeIntensity += intensity; }
 
 void Renderer::reset() {
-    initCamera();
     mountainRenderer.reset();
     menuEngine.resetScreens();
-    fsMode = NONE;
+    initCamera();
 }

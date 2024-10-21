@@ -32,7 +32,7 @@ class Renderer {
 
     void draw();
     void toggleDebugMode();
-    void setShake(float intensity);
+    void addShake(float intensity);
     void reset();
 
   private:
@@ -51,16 +51,12 @@ class Renderer {
     bool debugMode = false;
     Vector2 screenCenter = {};
     float shakeIntensity = 0.0f;
-    enum FullscreenMode { NONE, TO_FS, TO_WINDOWED, UPDATE_VALUES };
-    FullscreenMode fsMode = NONE;
 
     // Helper functions
     void initCamera();
     void applyRumbleEffect();
     void renderBackground();
     void drawBackgroundTextureRepeatedly(const Texture2D &texture, floatType drawnWidth, floatType offset) const;
-    void toggleFullscreen();
-    void handleFullScreenSwitch();
     void renderPhysicsTimeStepSize() const;
 };
 

@@ -196,19 +196,19 @@ gameConstants:
     healthBarHeight: 20
     positionToScoreRatio: 10
     altimeterSteps: 10
-    rumbleIntensity: 0.4
-    rumbleDampening: 0.9
+    rumbleIntensity: 0.3 # between 0 and 1, 1 meaning full intensity
+    rumbleDampening: 0.1 # between 0 and 1, 1 meaning no dampening
     backgroundDistanceScale: 0.1
     cameraToHikerOffset: 1
     mountainGradientHeight: 300
     mountainResolution: 10
-    shakeEnabled: false
+    shakeEnabled: true
     renderPhysicsStepSize: true
 
   audioConstants:
     musicEnabled: true
     musicVolume: 0.3
-    effectsThreshold: 35
+    effectsThreshold: 25
 
   barriersConstants:
     killBarBaseVelocity: 1.5
