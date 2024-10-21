@@ -40,7 +40,7 @@ void MenuRenderer::checkMouseClickStartScreen() {
 
     if (CheckCollisionPointRec(mousePoint, buttonBoundsSettings)) {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            this->setScreenState(SETTINGS_SCREEN);
+            this->setScreenState(CONTROLS_SCREEN);
         }
     }
 }
@@ -71,7 +71,7 @@ void MenuRenderer::checkMouseClickEndScreen() {
     }
 }
 
-void MenuRenderer::drawSettingsScreen() {
+void MenuRenderer::drawControlsScreen() {
     const Texture2D texture = resourceManager.getTexture("settingsScreen");
     const Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(GetScreenWidth()),
                                  static_cast<float>(GetScreenHeight())};
@@ -117,8 +117,8 @@ void MenuRenderer::draw() {
     case INSTRUCTIONS_SCREEN:
         drawInstructionsScreen();
         break;
-    case SETTINGS_SCREEN:
-        drawSettingsScreen();
+    case CONTROLS_SCREEN:
+        drawControlsScreen();
         break;
     case END_SCREEN:
         drawEndScreen();
@@ -132,7 +132,7 @@ void MenuRenderer::draw() {
 }
 void MenuRenderer::setScreenState(ScreenState newScreenState) { this->screenState = newScreenState; }
 
-ScreenState MenuRenderer::getScreenState() { return SETTINGS_SCREEN; }
+ScreenState MenuRenderer::getScreenState() { return CONTROLS_SCREEN; }
 
 bool MenuRenderer::isGameplayRunning() const { return this->gameplayRunning; }
 void MenuRenderer::setGameplayRunning(bool newGameplayRunning) { this->gameplayRunning = newGameplayRunning; }

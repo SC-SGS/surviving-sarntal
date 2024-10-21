@@ -7,7 +7,7 @@
 
 typedef enum ScreenState {
     START_SCREEN,
-    SETTINGS_SCREEN,
+    CONTROLS_SCREEN,
     INSTRUCTIONS_SCREEN,
     END_SCREEN,
     PAUSE_SCREEN,
@@ -17,7 +17,7 @@ typedef enum ScreenState {
 
 typedef enum ButtonType {
     START_GAME,
-    SETTINGS,
+    CONTROLS,
     INSTRUCTIONS,
     CONTINUE_GAME,
     HOME,
