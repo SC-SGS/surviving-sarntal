@@ -5,6 +5,7 @@
 #ifndef SURVIVING_SARNTAL_GROUNDGENERATOR_HPP
 #define SURVIVING_SARNTAL_GROUNDGENERATOR_HPP
 
+#include "../../game/DifficultyService.hpp"
 #include "../biomes/BiomeType.hpp"
 #include "../biomes/TerrainPhase.hpp"
 #include "../components/Ground.hpp"
@@ -35,9 +36,12 @@ class GroundGenerator {
     static constexpr floatType RETRACE_MULTIPLIER = 1.5f;
     static constexpr int RETRACE_ADDITION = 2;
     static constexpr int MAX_TRIES = 30;
+    static constexpr int LEVEL_JUMP = 30;
 
     const TerrainConstants &terrainConstants;
     const HikerConstants &hikerConstants;
+
+    int spawnedPhases = 0;
 
     const bool render;
     std::unique_ptr<GenerationRenderer> generationRenderer;
@@ -115,7 +119,10 @@ class GroundGenerator {
      *
      * @return the random phase
      */
-    TerrainPhase getRandomPhase() const;
+    TerrainPhase getRandomPhase();
+    int getCurrentDifficultyLevel() const;
+    void reset();
+    std::vector<TerrainPhase> getPossibleTerrainPhases();
 };
 
 #endif // SURVIVING_SARNTAL_GROUNDGENERATOR_HPP

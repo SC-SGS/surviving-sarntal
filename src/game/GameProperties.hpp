@@ -40,7 +40,7 @@ struct HikerConstants {
     floatType knockbackIntensity;
     floatType knockbackLossPerStep;
     floatType knockbackCutoff;
-    floatType maxSpeedNegSlope;
+    floatType maxSpeedFactorNegSlope;
 
     // Terrain interaction
     floatType maxClimbableSlope;
@@ -60,9 +60,8 @@ struct ItemsConstants {
     int minSpawnTime;
     int maxSpawnTime;
 
-    floatType itemBaseHeight;
-    floatType itemMaxHeight;
-    floatType itemsPerSecond;
+    floatType itemBaseSpawnHeight;
+    floatType itemMaxSpawnHeight;
     floatType inventorySlotSize;
 };
 
@@ -130,6 +129,7 @@ struct VisualConstants {
     bool shakeEnabled;
 
     bool renderPhysicsStepSize;
+    int worldSize;
 };
 
 struct AudioConstants {
@@ -142,7 +142,7 @@ struct AudioConstants {
 struct BarriersConstants {
     floatType killBarBaseVelocity;
     floatType killBarAccelerationFactor;
-    floatType maxKillBarFactor;
+    floatType killBarMaxVelocity;
     floatType monsterXRelativeToScreenWidth;
     floatType monsterWidth;
     floatType monsterHeight;
@@ -167,6 +167,8 @@ struct TerrainConstants {
 };
 
 struct RockSpawnerConstants {
+
+    int maxNumberOfRocksToSpawn;
 
     /**
      * A list that contains the factor that determines the difficulty
@@ -197,6 +199,12 @@ struct RockSpawnerConstants {
     floatType maxRandYSpawnOffset;
 };
 
+struct DifficultyConstants {
+    int highestDifficultyLevel;
+    int difficultyFactor;
+    int difficultyStartingPoint;
+};
+
 struct GameConstants {
     HikerConstants hikerConstants{};
     ItemsConstants itemsConstants{};
@@ -208,6 +216,7 @@ struct GameConstants {
     TerrainConstants terrainConstants{};
     RockSpawnerConstants rockSpawnerConstants{};
     AudioConstants audioConstants{};
+    DifficultyConstants difficultyConstants{};
 };
 
 #endif // SURVIVING_SARNTAL_GAMEPROPERTIES_HPP

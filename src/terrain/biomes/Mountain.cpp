@@ -5,25 +5,22 @@
 #include "Mountain.hpp"
 
 const std::vector<TerrainPhase> Mountain::mountainPhaseChoices = {
-    // smooth and even
-    {{4.0f, 0.0f}, 0.3f, 10},
+    // slightly uphill - OK
+    {{3.0f, 1.5f}, 0.2f, 10, 0, 25},
 
-    // slightly uphill
-    {{3.0f, 0.6f}, 0.6f, 10},
+    // slightly downhill - OK TODO Do we want this?
+    {{3.0f, -0.5f}, 0.4f, 8, 4},
 
-    // steep uphill
-    {{2.0f, 1.4f}, 0.5f, 8},
+    // steep uphill - OK
+    {{3.0f, 3.5f}, 0.3f, 8, 1, 10},
 
-    // steep downhill
-    {{2.0f, -1.4f}, 0.5f, 5},
-
-    // slightly downhill
-    {{3.0f, -0.6f}, 0.6f, 8},
+    // steep downhill - OK
+    {{3.0f, -2.5f}, 0.4f, 5, 2},
 
     // overhang
-    {{-2.5f, 0.0f}, 0.5f, 5}};
+    {{-2.5f, 0.0f}, 0.5f, 5, 0, 5}};
 
-const TerrainPhase Mountain::mountainFirstPhase = {{3.0f, 0.5f}, 0.0f, 3};
+const TerrainPhase Mountain::mountainFirstPhase = {{3.0f, 0.5f}, 0.0f, 3, 0, 0};
 
 Mountain::Mountain(Vector basePoint,
                    Vector baseDerivative,

@@ -54,7 +54,9 @@ void Accelerator::updateHikerVelocity() const {
 }
 
 void Accelerator::updateMonsterVelocity() const {
-    floatType factor = this->world.getMaxX() * gameConstants.barriersConstants.killBarAccelerationFactor;
-    factor = fminf(factor, gameConstants.barriersConstants.maxKillBarFactor);
-    this->world.getMonster().setVelocity(gameConstants.barriersConstants.killBarBaseVelocity * factor);
+    floatType accelerationFactor = gameConstants.barriersConstants.killBarAccelerationFactor;
+    floatType monsterVelocity = world.getMonster().getVelocity();
+    floatType newMonsterVelocity =
+        fmin(monsterVelocity * accelerationFactor, gameConstants.barriersConstants.killBarMaxVelocity);
+    this->world.getMonster().setVelocity(newMonsterVelocity);
 }
