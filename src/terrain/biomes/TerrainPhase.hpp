@@ -11,6 +11,8 @@ struct TerrainPhase {
     Vector avgDirection;
     floatType randomness;
     int pointCount;
+    int difficultyLevel;
+    int spawnWeight;
 };
 
 #endif // SURVIVING_SARNTAL_TERRAINPHASE_HPP

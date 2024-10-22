@@ -31,7 +31,7 @@ template <> struct convert<HikerConstants> {
         hikerConstants.jumpVelocity = node["jumpVelocity"].as<floatType>();
         hikerConstants.airMovementSpeedFactor = node["airMovementSpeedFactor"].as<floatType>();
         hikerConstants.knockbackIntensity = node["knockbackIntensity"].as<floatType>();
-        hikerConstants.maxSpeedNegSlope = node["maxSpeedNegSlope"].as<floatType>();
+        hikerConstants.maxSpeedFactorNegSlope = node["maxSpeedFactorNegSlope"].as<floatType>();
         hikerConstants.maxClimbableSlope = node["maxClimbableSlope"].as<floatType>();
         hikerConstants.knockbackLossPerStep = node["knockbackLossPerStep"].as<floatType>();
         hikerConstants.knockbackCutoff = node["knockbackCutoff"].as<floatType>();
@@ -57,9 +57,8 @@ template <> struct convert<ItemsConstants> {
         itemsConstants.startSpawnTime = node["startSpawnTime"].as<floatType>();
         itemsConstants.minSpawnTime = node["minSpawnTime"].as<int>();
         itemsConstants.maxSpawnTime = node["maxSpawnTime"].as<int>();
-        itemsConstants.itemBaseHeight = node["itemBaseHeight"].as<floatType>();
-        itemsConstants.itemMaxHeight = node["itemMaxHeight"].as<floatType>();
-        itemsConstants.itemsPerSecond = node["itemsPerSecond"].as<floatType>();
+        itemsConstants.itemBaseSpawnHeight = node["itemBaseSpawnHeight"].as<floatType>();
+        itemsConstants.itemMaxSpawnHeight = node["itemMaxSpawnHeight"].as<floatType>();
         itemsConstants.inventorySlotSize = node["inventorySlotSize"].as<floatType>();
 
         return true;
@@ -146,6 +145,7 @@ template <> struct convert<VisualConstants> {
         visualConstants.mountainGradientHeight = node["mountainGradientHeight"].as<int>();
         visualConstants.shakeEnabled = node["shakeEnabled"].as<bool>();
         visualConstants.renderPhysicsStepSize = node["renderPhysicsStepSize"].as<bool>();
+        visualConstants.worldSize = node["worldSize"].as<int>();
 
         return true;
     }
@@ -159,7 +159,7 @@ template <> struct convert<BarriersConstants> {
 
         barriersConstants.killBarBaseVelocity = node["killBarBaseVelocity"].as<floatType>();
         barriersConstants.killBarAccelerationFactor = node["killBarAccelerationFactor"].as<floatType>();
-        barriersConstants.maxKillBarFactor = node["maxKillBarFactor"].as<floatType>();
+        barriersConstants.killBarMaxVelocity = node["killBarMaxVelocity"].as<floatType>();
         barriersConstants.monsterXRelativeToScreenWidth = node["monsterXRelativeToScreenWidth"].as<floatType>();
         barriersConstants.monsterWidth = node["monsterWidth"].as<floatType>();
         barriersConstants.monsterHeight = node["monsterHeight"].as<floatType>();
@@ -202,6 +202,7 @@ template <> struct convert<RockSpawnerConstants> {
             return false;
         }
 
+        rockSpawnerConstants.maxNumberOfRocksToSpawn = node["maxNumberOfRocksToSpawn"].as<int>();
         rockSpawnerConstants.linearMomentumDifficultyFactor =
             node["linearMomentumDifficultyFactor"].as<std::vector<floatType>>();
         rockSpawnerConstants.spawningPhase = node["spawningPhase"].as<std::vector<floatType>>();
@@ -246,6 +247,19 @@ template <> struct convert<SimulationProperties> {
     }
 };
 
+template <> struct convert<DifficultyConstants> {
+    static bool decode(const Node &node, DifficultyConstants &constants) {
+        if (!node.IsMap()) {
+            return false;
+        }
+
+        constants.highestDifficultyLevel = node["highesDifficultyLevel"].as<int>();
+        constants.difficultyFactor = node["difficultyFactor"].as<int>();
+        constants.difficultyStartingPoint = node["difficultyStartingPoint"].as<int>();
+
+        return true;
+    }
+};
 template <> struct convert<GameConstants> {
     static bool decode(const Node &node, GameConstants &gameConstants) {
         if (!node.IsMap()) {
@@ -262,6 +276,7 @@ template <> struct convert<GameConstants> {
         gameConstants.terrainConstants = node["terrainConstants"].as<TerrainConstants>();
         gameConstants.rockSpawnerConstants = node["rockSpawnerConstants"].as<RockSpawnerConstants>();
         gameConstants.audioConstants = node["audioConstants"].as<AudioConstants>();
+        gameConstants.difficultyConstants = node["difficultyConstants"].as<DifficultyConstants>();
 
         return true;
     }

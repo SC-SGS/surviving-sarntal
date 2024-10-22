@@ -18,7 +18,7 @@ class ItemTestFixture : public ::testing::Test {
 
 TEST_F(ItemTestFixture, CreateKaiserschmarrnItemTest) {
     auto kaiserschmarrnItem =
-        std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight,
+        std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                configManager.getItems()[KAISERSCHMARRN]);
     EXPECT_EQ(kaiserschmarrnItem->getItemType(), KAISERSCHMARRN);
     EXPECT_TRUE(kaiserschmarrnItem->canAutoCollect());
@@ -27,7 +27,7 @@ TEST_F(ItemTestFixture, CreateKaiserschmarrnItemTest) {
 }
 
 TEST_F(ItemTestFixture, CreateCoinItemTest) {
-    auto coinItem = std::make_shared<Item>(COIN, position, gameConstants.itemsConstants.itemBaseHeight,
+    auto coinItem = std::make_shared<Item>(COIN, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                            configManager.getItems()[COIN]);
     EXPECT_EQ(coinItem->getItemType(), COIN);
     EXPECT_TRUE(coinItem->canAutoCollect());
@@ -36,8 +36,8 @@ TEST_F(ItemTestFixture, CreateCoinItemTest) {
 }
 
 TEST_F(ItemTestFixture, CreateDuckItemTest) {
-    auto kaiserschmarrnItem = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseHeight,
-                                                     configManager.getItems()[DUCK_ITEM]);
+    auto kaiserschmarrnItem = std::make_shared<Item>(
+        DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseSpawnHeight, configManager.getItems()[DUCK_ITEM]);
     EXPECT_EQ(kaiserschmarrnItem->getItemType(), DUCK_ITEM);
     EXPECT_TRUE(kaiserschmarrnItem->canAutoCollect());
     EXPECT_FALSE(kaiserschmarrnItem->canUseOnPickUp());

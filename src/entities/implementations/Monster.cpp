@@ -8,7 +8,7 @@
 Monster::Monster(GameConstants &gameConstants)
     : RenderedEntity({0, 0}),
       gameConstants(gameConstants),
-      velocity(),
+      velocity(gameConstants.barriersConstants.killBarBaseVelocity),
       monsterWidth(gameConstants.barriersConstants.monsterWidth),
       monsterHeight(gameConstants.barriersConstants.monsterHeight) {
     animation = {10, 0, 0.2, 0};
@@ -25,4 +25,10 @@ floatType Monster::getYPosition() const { return position.y; }
 void Monster::setXPosition(floatType positionX) { position.x = positionX; }
 
 floatType Monster::getVelocity() const { return this->velocity; }
-void Monster::setVelocity(const floatType current_speed) { this->velocity = current_speed; }
+void Monster::setVelocity(const floatType current_speed) {
+    if (current_speed > gameConstants.barriersConstants.killBarMaxVelocity) {
+        this->velocity = gameConstants.barriersConstants.killBarMaxVelocity;
+    } else {
+        this->velocity = current_speed;
+    }
+}

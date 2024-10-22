@@ -98,4 +98,8 @@ void ResourceManager::unloadAllSounds() const {
     for (auto &entry : soundEffects) {
         UnloadSound(entry.second);
     }
+    for (auto &entry : musics) {
+        StopMusicStream(entry.second);
+        UnloadMusicStream(entry.second);
+    }
 }

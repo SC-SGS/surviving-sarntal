@@ -25,6 +25,7 @@ class Game {
          PhysicsEngine &physicsEngine,
          AudioService &audioService,
          InputHandler &inputHandler,
+         DifficultyService &difficultyService,
          GameConstants &gameConstants);
     ~Game() = default;
     void run();
@@ -42,6 +43,7 @@ class Game {
     PhysicsEngine &physicsEngine;
     AudioService &audioService;
     InputHandler &inputHandler;
+    DifficultyService &difficultyService;
     GameConstants &gameConstants;
 
     void gameTick();
@@ -56,6 +58,7 @@ class Game {
     bool gamePaused = false;
     void checkPause();
     bool shouldRunGame();
+    void initGamePads();
 };
 
 #endif // GAME_HPP

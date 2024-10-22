@@ -111,6 +111,7 @@ class GameEventProcessor final : public EventProcessor {
     floatType getCoinSpeedFactor() const;
 
     floatType calculateHikerSpeed(floatType factor) const;
+    floatType getHikerMovementFactor() const;
 };
 
 #endif // EVENTPROCESSOR_H

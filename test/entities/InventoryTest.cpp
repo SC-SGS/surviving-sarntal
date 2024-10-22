@@ -22,7 +22,7 @@ class InventoryTestFixture : public ::testing::Test {
         inventory = std::make_unique<Inventory>(gameConstants.itemsConstants.slotsPerInventory, *mockAudioService,
                                                 gameConstants.itemsConstants);
         Vector position = {0, 0};
-        const auto item = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseHeight,
+        const auto item = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                                  configManager.getItems()[DUCK_ITEM]);
         inventory->addItem(item);
     }
@@ -46,17 +46,17 @@ TEST_F(InventoryTestFixture, AddItemTest) {
     inventory = std::make_unique<Inventory>(gameConstants.itemsConstants.slotsPerInventory, mockAudioService,
                                             gameConstants.itemsConstants);
     Vector position0 = {0, 0};
-    auto item0 = std::make_shared<Item>(DUCK_ITEM, position0, gameConstants.itemsConstants.itemBaseHeight,
+    auto item0 = std::make_shared<Item>(DUCK_ITEM, position0, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                         configManager.getItems()[DUCK_ITEM]);
     inventory->addItem(item0);
 
     Vector position = {0, 0};
-    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight,
+    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                        configManager.getItems()[KAISERSCHMARRN]);
     inventory->addItem(item);
     int slotNumber = inventory->getSlotOfItem(KAISERSCHMARRN);
     EXPECT_EQ(inventory->getItemType(slotNumber), KAISERSCHMARRN);
-    auto item2 = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseHeight,
+    auto item2 = std::make_shared<Item>(DUCK_ITEM, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                         configManager.getItems()[DUCK_ITEM]);
     inventory->addItem(item2);
     int slotNumber2 = inventory->getSlotOfItem(DUCK_ITEM);
@@ -73,12 +73,12 @@ TEST_F(InventoryTestFixture, SwitchItemSlotTest) {
     inventory = std::make_unique<Inventory>(gameConstants.itemsConstants.slotsPerInventory, mockAudioService,
                                             gameConstants.itemsConstants);
     Vector position0 = {0, 0};
-    auto item0 = std::make_shared<Item>(DUCK_ITEM, position0, gameConstants.itemsConstants.itemBaseHeight,
+    auto item0 = std::make_shared<Item>(DUCK_ITEM, position0, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                         configManager.getItems()[DUCK_ITEM]);
     inventory->addItem(item0);
 
     Vector position = {0, 0};
-    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight,
+    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                        configManager.getItems()[KAISERSCHMARRN]);
     inventory->addItem(item);
     inventory->switchItemSlot(1);
@@ -94,7 +94,7 @@ TEST_F(InventoryTestFixture, GetSlotOfItemTest) { EXPECT_EQ(inventory->getSlotOf
 
 TEST_F(InventoryTestFixture, CanCollectItemTest) {
     Vector position = {0, 0};
-    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight,
+    auto item = std::make_shared<Item>(KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight,
                                        configManager.getItems()[KAISERSCHMARRN]);
     EXPECT_TRUE(inventory->canCollectItem(item));
 }
