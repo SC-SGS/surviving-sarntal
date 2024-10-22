@@ -2,95 +2,133 @@
 
 ## Project description
 
-This is the game "Surviving Sarntal" students from Uni Stuttgart, FAU und TUM created in Ferienakademie 2023. The
-project is written in C++.
+Surviving Sarntal is an action-packed arcade endless runner.
+The player has to navigate a hiker through demanding terrain all whilst dodging dangerous rockfall.
+Although the idea and a rough initial implementation of the game were devised in the Ferienakademie 2023, we rewrote the entire game from scratch in C++ using only a small number of libraries.
+Goal of the project was the design of a finished game following good software engineering practice with particular focus on creating a performant physics engine for rigid body simulation.
 
 ## How to install and run
 
-In order to run the game do the following in the terminal. The game is developed for Linux and was also tested on
-Windows.
+The project is compatible with Ubuntu 24.04.1 and also supports macOS. 
+It includes several bash scripts to simplify installation, running, and testing. 
+A platform-agnostic script handles installing dependencies across both operating systems. 
+There are separate installation processes for playing the game and for development, with an additional script provided for developers. 
 
-`cmake . -B cmake-build-debug`
+### Installation
 
-`cd cmake-build-debug`
+In the event that only running the game is desired, the script `user\_setup.sh` can be used to facilitate the installation of the required packages and dependencies.
+In that case, it is only necessary to run the following command from the root project directory:
 
-`make`
+```bash
+$ source build-utils/user_setup.sh
+```
 
-`./suviving_sarntal`
+The following packages will be installed based on the operating system.
+The installation of the packages on MacOS requires the use of Homebrew.
+If you do not have it installed you can still run the `user\_setup.sh` script, which will install it.
 
-## Development
+**Ubuntu:**
+```bash
+build-essential cmake xorg-dev libsdl2-dev
+```
+**MacOS:**
+```bash
+cmake sdl
+```
 
-### How to add a new sound or texture?
-
-In order to add a new sound/texture you will need to do the following.
-
-1. Add the new sound as a .wav ot .mp3 file to the `assets/audio` directory.
-1. Add the sound to the configuration under `sound-effects` as `sound-name: "../assets/audio/yourNewSound.wav"`
-
-After these steps you can use the new sound by calling the playSound method with the `sound-name` as parameter.
-
-### How to add a new Item?
-
-1. Add the item information to the configuration (see how the others are done for examples).
-1. Add the new item type to the ItemType enum with the correct item id (located in Item.hpp).
-1. Make sure the item can be constructed if the new type is given to the Item constructor (see Item.cpp).
-1. Add the desired functionality and effects to the world in World.cpp
-
-### How to add a new game constant?
-
-If you want to add a new constant to use in the code base you will need to do the following steps.
-
-1. Add the constant to the configuration in the correct place.
-1. Add the new constant to the correct struct in `GameProperties.hpp`.
-1. Add the new constant to the correct struct converter in `YamlConversion.hpp`.
-
-## The Game Logic
-
-The goal of the game is to get the most amount of scores by surviving for a long time in sarntal.
-You can die by losing all your health points or if the hikers that follow from the left you catch up.
-
-From the right side rocks are falling down the mountain, which also bounce on the mountain.
-In a very physically correct way they bounce on the mountain.
-You loose health points if you are hit by rocks. If the rock is bigger you lose more health points.
-
-There are also items that can help you:
-
-- Kaiserschmarrn:  you gain health points after eating the delicious Kaiserschmarrn
-- Duck: It makes a fun noise
-- Knife: It helps you avoid the falling rocks
-- Coin: Add points to the score
-
-You can pick the items up, and they will be shown in the inventory. From there you can choose the item you want to use.
+### Running the Game
+Once all of the dependencies have been installed, the script `run.sh` can be executed in order to run the game.
+```bash
+$ source build-utils/run.sh
+```
 
 ## How to control the game
 
-There are three options to control the game. Either via Keyboard, Gamepad or Kinect.
+There are two options to control the game, either via keyboard or gamepad.
 
 ### Keyboard
 
-![keyboard](./images/keyboard_scheme_final.png)
+![keyboard](./images/keyboard.png)
 
 ### Gamepad
 
-![gamepad](./images/gamepad_scheme_final.png)
+![gamepad](./images/gamepad.png)
 
-### Kinect
+## The Game
 
-To build the Kinect version of this game the following commands have to be executed:
+The objective of the game is for the player to achieve the highest possible score (measured as the vertical and horizontal distance) by surviving for the longest possible duration while climbing the terrain.
 
-`cmake . -B cmake-build-debug-kinect -DKINECT=1`
+The **hiker** is controlled by the user of the game and their health is indicated by a health bar.
+If the hiker loses all their health points or falls behind the kill bar, the hiker dies and the game ends.
+The hiker has different movement options, including moving to the left and right in the x-direction, jumping and crouching.
 
-`cd cmake-build-debug-kinect`
+In the current version of the game, the **kill bar** is represented by a Yeti figure.
+It is situated at the left edge of the screen and moves continuously while trying to catch the hiker.
 
-`make`
+There are **items** spawning during the course of the game which can be collected by the hiker:
 
-`./suviving_sarntal`
+- **Kaiserschmarrn**: Eating the delicious Kaiserschmarrn will restore the hiker's health.
+- **Coin**: Collecting a coin increases the coin score and increases the speed of the hiker.
+- **Duck**: The duck provides a shield for a few seconds. As long as the hiker has the shield, they won't take damage from being hit by rocks.
+- **Rock bomb**: Using the rock bomb destroys all rocks that are currently in the air.
 
-After executing the kinect supporting version of the game, the user has to do some movements, such that the kinect
-interface identifies him as the player.
-Once there is a lock on the playing user, the ingame character movement to the right is initiated by stepping forward (
-to the right).
-Stepping to the initial position prompts the ingame character to stop, stepping back is bound to moving backwards (to
-the left).
-Jumping can be done by jumping in front of the kinect, ducking by crouching down. It is not possible to select between
-different items in the kinect mode, because the control would be too complicated.
+The items collected by the hiker are stored in an **inventory**.
+The hiker can switch between the items in the inventory and select them for use.
+
+New rocks are continuously generated and propelled through the air.
+When the hiker is hit by a rock, the hiker's health decreases.
+
+## Development
+
+### How to develop
+
+If you wish to take part in the development of the game, you will also need the following tools and libraries. Make sure you have installed the needed dependencies for running the game before continuing.
+
+- clang-tidy 
+- clang-format 
+- git 
+- pre-commit 
+- python3 
+- lcov
+
+
+You can install the packages automatically using our `dev_setup.sh` script
+```bash
+$ source build-utils/dev_setup.sh
+```
+
+### Testing the Game
+
+There are multiple options for testing the game at your disposal. To execute the unit tests without coverage, run
+
+```bash
+source build-utils/test.sh
+```
+
+Test coverage can be generated via
+```bash
+source build-utils/test_coverage.sh
+```
+
+To run with coverage, run
+
+```bash
+source build-utils/run_with_cov.sh
+```
+
+To get a combined coverage report, run
+
+```bash
+source build-utils/test_and_run_with_cov.sh
+```
+
+### Docs
+
+To generate interactive code documentation using doxygen, run the script
+
+```bash
+source build-utils/generate_docs.sh
+```
+
+This will create a docs directory. 
+Inside you will find a html and a latex version of the code documentation.
