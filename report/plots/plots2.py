@@ -53,8 +53,10 @@ def plotFPS(fileEnding, ax2, color, label):
     ax2.set_ylim([min(yFPS) * 0.9, max(yFPS) * 1.1])  # Adjust limits
 
 
+plt.rcParams.update({'font.size': 22})
+
 # Create a figure and two subplots side by side
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))  # 1 row, 2 columns
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16.5, 7))  # 1 row, 2 columns
 
 # First plot (Physics Step Time)
 ax1.set_xlabel('Runtime (s)')  # Common x-axis label
@@ -65,19 +67,27 @@ plotSim('15-2', ax1, 'green', r'$\delta t = 0.015, spf=2$')
 plotSim('15-4', ax1, 'purple', r'$\delta t = 0.015, spf=4$')
 
 # Plot for FPS (right y-axis)
-ax1.set_xlabel('Runtime (s)')
+ax2.set_xlabel('Runtime (s)')
 ax2.set_ylabel('FPS')  # Secondary y-axis label
-plotFPS('10-2', ax2, 'red', '')
-plotFPS('10-4', ax2, 'blue', '')
-plotFPS('15-2', ax2, 'green', '')
-plotFPS('15-4', ax2, 'purple', '')
-
-
+plotFPS('10-2', ax2, 'red', label = None)
+plotFPS('10-4', ax2, 'blue', label = None)
+plotFPS('15-2', ax2, 'green', label = None)
+plotFPS('15-4', ax2, 'purple', label = None)
 
 # Add legends
-fig.tight_layout()  # Adjust layout to make room for both plots
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
+#ax1.legend(loc='upper left')
+#ax2.legend(loc='lower left')
 
-plt.grid(True)
+# Add a single legend above both plots
+fig.legend(loc='upper center', ncol=4, bbox_to_anchor=(0.5, 1))
+
+# Adjust layout to reduce space between plots
+fig.subplots_adjust(wspace=0.2)  # Decreased horizontal space between subplots
+
+# Adjust layout to make room for both plots
+fig.tight_layout(rect=[0, 0, 1, 0.85])  # Leave space for the legend above
+
+ax1.grid()
+ax2.grid()
+
 plt.show()
