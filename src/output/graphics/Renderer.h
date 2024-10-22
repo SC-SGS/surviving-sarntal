@@ -58,6 +58,7 @@ class Renderer {
     void renderBackground();
     void drawBackgroundTextureRepeatedly(const Texture2D &texture, floatType drawnWidth, floatType offset) const;
     void renderPhysicsTimeStepSize() const;
+    void renderShieldTime() const;
 };
 
 #endif // SURVIVING_SARNTAL_RENDERER_H

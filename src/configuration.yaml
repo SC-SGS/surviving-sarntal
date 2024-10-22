@@ -256,8 +256,8 @@ gameConstants:
 
   difficultyConstants:
     highesDifficultyLevel: 5 # The highest level possible
-    difficultyFactor: 5 # The size of the time step between the different levels
-    difficultyStartingPoint: 5 # The starting point at which level 1 starts (levels start at 0)
+    difficultyFactor: 20 # The size of the time step between the different levels
+    difficultyStartingPoint: 15 # The starting point at which level 1 starts (levels start at 0)
 
 # flat, exponential steps
 # ground-points: [[-100, 0], [-20, 0], [-10,0], [-5, 0], [-1, 0], [-0.5, 0], [0, 0], [0.5, 0], [1, 0], [5, 0], [10, 0], [20, 0], [100, 0]] #flat
