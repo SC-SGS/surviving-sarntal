@@ -57,15 +57,15 @@ TEST_F(WorldTestFixture, IsOutOfScopeTest2) {
     const Vector position = {graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO,
                              graphics::SCREEN_HEIGHT_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO};
     const auto schmarrn = ItemDto{"kaiserschmarrn", KAISERSCHMARRN, true, false, true, 2};
-    const Item item = {KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseHeight, schmarrn};
+    const Item item = {KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight, schmarrn};
     const bool outOfScope = world->isOutOfScope(item);
     EXPECT_TRUE(outOfScope);
-    const Item item2 = {KAISERSCHMARRN, {0, 0}, gameConstants.itemsConstants.itemBaseHeight, schmarrn};
+    const Item item2 = {KAISERSCHMARRN, {0, 0}, gameConstants.itemsConstants.itemBaseSpawnHeight, schmarrn};
     const bool outOfScope2 = world->isOutOfScope(item2);
     EXPECT_TRUE(outOfScope2);
     Vector position2 = {graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO,
                         graphics::SCREEN_HEIGHT_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO};
-    Item item3 = {KAISERSCHMARRN, position2, gameConstants.itemsConstants.itemBaseHeight,
+    Item item3 = {KAISERSCHMARRN, position2, gameConstants.itemsConstants.itemBaseSpawnHeight,
                   configManager.getItems()[KAISERSCHMARRN]};
     EXPECT_TRUE(world->isOutOfScope(item3));
 }
@@ -84,8 +84,10 @@ TEST_F(WorldTestFixture, AddRockTest) {
 
 TEST_F(WorldTestFixture, AddItemTest) {
     EXPECT_TRUE(world->getItems().empty());
-    const Item item = {
-        KAISERSCHMARRN, {0, 0}, gameConstants.itemsConstants.itemBaseHeight, configManager.getItems()[KAISERSCHMARRN]};
+    const Item item = {KAISERSCHMARRN,
+                       {0, 0},
+                       gameConstants.itemsConstants.itemBaseSpawnHeight,
+                       configManager.getItems()[KAISERSCHMARRN]};
     world->addItem(item);
     EXPECT_TRUE(world->getItems().size() == 1);
 }

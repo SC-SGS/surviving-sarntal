@@ -89,7 +89,7 @@ void Positioner::moveHikerOnTerrain() const {
     if (movement.y < 0 && movement.x != 0 && movement.computeSlope() > this->hikerConstants.maxClimbableSlope) {
         spdlog::debug("falling off terrain");
         hiker.move(
-            hiker.getVelocity() * this->deltaT * this->hikerConstants.maxSpeedNegSlope +
+            hiker.getVelocity() * this->deltaT * this->hikerConstants.maxSpeedFactorNegSlope +
             Vector{physicsConstants.epsilon * static_cast<floatType>(hiker.getHikerMovement().getDirection()), 0});
         hiker.setInAir();
     } else {
@@ -115,8 +115,11 @@ Vector Positioner::calculateTheoreticalNextHikerPosition(const floatType speedFa
     const Hiker &hiker = this->world.getHiker();
     const auto vel = hiker.getVelocity();
     const auto oldPos = hiker.getPosition();
+
     spdlog::debug("Hiker direction: {}", hiker.getHikerMovement().getDirection());
+
     Vector newPos = oldPos + vel * speedFactor * this->deltaT;
     newPos.y = this->world.getTerrain().mapToClosestTopTerrain(newPos) + this->physicsConstants.epsilon;
+
     return newPos;
 }

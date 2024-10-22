@@ -128,14 +128,10 @@ void World::updateGameScore() {
 }
 
 void World::reset() {
-    this->minX = 0;
-    this->maxX = graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO;
-    this->coinScore = 0;
-    this->gameScore = {0, 0};
     this->terrain.reset();
+    this->resetAttributes();
     this->resetHiker();
     this->resetMonster();
-    this->resetAttributes();
 }
 
 void World::clearRocks() {
@@ -155,14 +151,15 @@ void World::resetHiker() const {
 }
 
 void World::resetMonster() const {
+    this->monster.setVelocity(gameConstants.barriersConstants.killBarBaseVelocity);
     this->getMonster().setXPosition(this->gameConstants.barriersConstants.monsterXRelativeToScreenWidth *
                                         (this->getMaxX() - this->getMinX()) +
                                     this->getMinX());
 }
 
 void World::resetAttributes() {
-    this->setMinX(0);
-    this->setMaxX(graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO);
+    this->minX = 0;
+    this->maxX = static_cast<floatType>(gameConstants.visualConstants.worldSize);
     this->coinScore = 0;
     this->gameScore.x = this->hiker.getPosition().x;
     this->gameScore.y = this->hiker.getPosition().y;

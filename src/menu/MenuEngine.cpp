@@ -59,5 +59,6 @@ Vector MenuEngine::getAchievedGameScore() { return this->achievedGameScore; }
 void MenuEngine::resetScreens() {
     for (auto &screen : screens) {
         screen.second->setUpButtons();
+        screen.second->setUpScreen();
     }
 }

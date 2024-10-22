@@ -127,27 +127,37 @@ void GameEventProcessor::pickItem(const std::shared_ptr<Item> &item) const {
 }
 
 floatType GameEventProcessor::calculateHikerSpeed(const floatType factor) const {
-    const Hiker &hiker = this->world.getHiker();
-    floatType speed = this->gameConstants.hikerConstants.normalSpeed;
+    floatType hikerBaseSpeed = this->gameConstants.hikerConstants.normalSpeed;
+    floatType coinSpeedFactor = this->getCoinSpeedFactor();
+    floatType movementFactor = this->getHikerMovementFactor();
 
-    speed += speed * this->getCoinSpeedFactor();
+    floatType monsterSpeed = this->world.getMonster().getVelocity();
 
-    if (hiker.getHikerMovement().getState() == HikerMovement::CROUCHED) {
-        speed *= this->gameConstants.hikerConstants.duckSpeedFactor;
-    } else if (hiker.getHikerMovement().getState() == HikerMovement::IN_AIR) {
-        speed *= this->gameConstants.hikerConstants.airMovementSpeedFactor;
-    }
-    speed = fmaxf(speed, this->world.getMonster().getVelocity());
-    speed *= factor;
-    if (fabs(speed) > this->gameConstants.hikerConstants.maxSpeed) {
+    floatType hikerSpeed = fmaxf(hikerBaseSpeed * coinSpeedFactor * movementFactor, monsterSpeed);
+
+    hikerSpeed *= factor;
+
+    if (fabs(hikerSpeed) > this->gameConstants.hikerConstants.maxSpeed) {
         return this->gameConstants.hikerConstants.maxSpeed * factor / fabsf(factor);
     } else {
-        return speed;
+        return hikerSpeed;
     }
 }
 
 floatType GameEventProcessor::getCoinSpeedFactor() const {
     floatType numberOfCoins = static_cast<floatType>(this->world.getCoinScore()) /
                               static_cast<floatType>(gameConstants.itemsConstants.coinScore);
-    return numberOfCoins * gameConstants.itemsConstants.coinAccelerationFactor;
+    floatType factor = 1.0f + numberOfCoins * gameConstants.itemsConstants.coinAccelerationFactor;
+    return factor;
+}
+
+floatType GameEventProcessor::getHikerMovementFactor() const {
+    const Hiker hiker = this->world.getHiker();
+    if (hiker.getHikerMovement().getState() == HikerMovement::CROUCHED) {
+        return this->gameConstants.hikerConstants.duckSpeedFactor;
+    } else if (hiker.getHikerMovement().getState() == HikerMovement::IN_AIR) {
+        return this->gameConstants.hikerConstants.airMovementSpeedFactor;
+    } else {
+        return 1.0f;
+    }
 }

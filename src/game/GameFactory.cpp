@@ -34,9 +34,10 @@ GameFactory::GameFactory(Camera2D &camera)
           world, resourceManager, camera, gameConstants, menuEngine, mountainRenderer, entityRenderer, hudRenderer),
       collisionRenderer(world, gameConstants, camera),
       // Spawner
+      difficultyService(DifficultyService::getInstance()),
       items(configManager.getItems()),
       itemSpawner(world, gameConstants, items),
-      rockSpawner(world, gameConstants),
+      rockSpawner(world, difficultyService, gameConstants),
       spawner(terrain, rockSpawner, itemSpawner, world, gameConstants),
       // Physics
       accelerator(world, gameConstants),
@@ -69,8 +70,11 @@ GameFactory::GameFactory(Camera2D &camera)
            physicsEngine,
            audioService,
            inputHandler,
+           difficultyService,
            gameConstants),
-      devMode(world, renderer, physicsEngine, spawner, audioService, inputHandler, gameConstants, camera) {}
+      devMode(world, renderer, physicsEngine, spawner, audioService, inputHandler, gameConstants, camera) {
+    difficultyService.setGameConstants(gameConstants);
+}
 
 GameFactory::~GameFactory() = default;
 Game GameFactory::buildGame() {

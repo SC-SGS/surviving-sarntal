@@ -123,9 +123,8 @@ void Hiker::setHikerMovement(const HikerMovement &movement) {
 const Vector &Hiker::getVelocity() const { return velocity; }
 
 void Hiker::setVelocity(const Vector &newVel) {
-    velocity = newVel;
-    this->setHitboxVelocity(newVel);
-    this->updateDirection();
+    this->setXVelocity(newVel.x);
+    this->setYVelocity(newVel.y);
 }
 
 bool Hiker::getIsAlive() const { return this->isAlive; }
@@ -256,14 +255,12 @@ floatType Hiker::computeSpeedFactor(const Vector &movement) const {
     const floatType slope = movement.computeSlope();
     floatType speedFactor;
     if (movement.y < 0) { // Downhill
-        speedFactor = std::fmin(this->hikerConstants.maxSpeedNegSlope,
-                                this->hikerConstants.normalSpeed +
-                                    (slope / this->hikerConstants.maxClimbableSlope) *
-                                        (this->hikerConstants.maxSpeedNegSlope - this->hikerConstants.normalSpeed));
+        speedFactor = std::fmin(this->hikerConstants.maxSpeedFactorNegSlope,
+                                1.0f + (slope / this->hikerConstants.maxClimbableSlope) *
+                                           (this->hikerConstants.maxSpeedFactorNegSlope - 1.0f));
     } else { // Uphill
         speedFactor = std::fmax(
-            0.0f, ((this->hikerConstants.maxClimbableSlope - slope) / this->hikerConstants.maxClimbableSlope) *
-                      this->hikerConstants.normalSpeed);
+            0.0f, ((this->hikerConstants.maxClimbableSlope - slope) / this->hikerConstants.maxClimbableSlope));
     }
     return speedFactor;
 }

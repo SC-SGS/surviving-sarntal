@@ -64,7 +64,7 @@ void MountainRenderer::updateVertices(const Terrain &terrain) {
     }
 }
 
-std::vector<p2t::Point *> MountainRenderer::createPolylinePoints(const std::shared_ptr<StaticPolyline> &ground) {
+std::vector<p2t::Point *> MountainRenderer::createPolylinePoints(const std::shared_ptr<StaticPolyline> &ground) const {
     std::vector<p2t::Point *> polylinePoints;
     floatType lowestPoint = std::numeric_limits<floatType>::min(); // Initialize to a high (low) value
 
@@ -79,8 +79,12 @@ std::vector<p2t::Point *> MountainRenderer::createPolylinePoints(const std::shar
         }
     }
 
-    // Calculate the lower border by adding half the screen size to the lowest point
-    floatType lowerBorder = lowestPoint + static_cast<float>(GetMonitorHeight(GetCurrentMonitor())) / 2;
+    floatType screenVisibleHeight =
+        static_cast<float>(GetScreenHeight()) *
+        (static_cast<float>(GetScreenWidth()) / static_cast<float>(gameConstants.visualConstants.worldSize));
+    floatType offset =
+        static_cast<float>(gameConstants.visualConstants.cameraToHikerOffset) * graphics::UNIT_TO_PIXEL_RATIO;
+    floatType lowerBorder = lowestPoint + screenVisibleHeight / 2 + offset;
 
     // Close the shape with the lower border
     polylinePoints.push_back(new p2t::Point(polylinePoints.back()->x, lowerBorder));

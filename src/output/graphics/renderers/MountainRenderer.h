@@ -45,7 +45,7 @@ class MountainRenderer {
 
     Texture2D mountainTexture{};
     bool verticesNeedUpdate = true; // Flag to indicate if triangulation is needed
-    std::vector<p2t::Point *> createPolylinePoints(const std::shared_ptr<StaticPolyline> &ground);
+    std::vector<p2t::Point *> createPolylinePoints(const std::shared_ptr<StaticPolyline> &ground) const;
 };
 
 #endif // SURVIVING_SARNTAL_MOUNTAINRENDERER_H
