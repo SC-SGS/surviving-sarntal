@@ -129,6 +129,7 @@ class Hiker : public RenderedEntity {
 
     std::shared_ptr<DynamicConvexPolygon> getHitboxWalking() const;
     std::shared_ptr<DynamicConvexPolygon> getHitboxCrouched() const;
+    int getShieldTimeLeft() const;
 
   private:
     // Dependencies
