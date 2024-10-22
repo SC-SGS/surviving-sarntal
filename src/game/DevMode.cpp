@@ -145,7 +145,7 @@ void DevMode::spawnItemAtMouse(int itemId) {
     const auto itemType = ItemType(itemId);
     const auto itemDto = this->items[itemType];
     const Item item =
-        Item(itemType, getTransformedMousePosition(), gameConstants.itemsConstants.itemBaseHeight, itemDto);
+        Item(itemType, getTransformedMousePosition(), gameConstants.itemsConstants.itemBaseSpawnHeight, itemDto);
     this->world.addItem(item);
 }
 

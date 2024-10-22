@@ -48,6 +48,7 @@ class GameFactory {
     MenuEventProcessor menuEventProcessor;
 
     // Spawner
+    DifficultyService &difficultyService;
     std::unordered_map<ItemType, ItemDto> items;
     ItemSpawner itemSpawner;
     RockSpawner rockSpawner;

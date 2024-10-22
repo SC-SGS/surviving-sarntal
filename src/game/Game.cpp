@@ -15,6 +15,7 @@ Game::Game(World &world,
            PhysicsEngine &physicsEngine,
            AudioService &audioService,
            InputHandler &inputHandler,
+           DifficultyService &difficultyService,
            GameConstants &gameConstants)
     : world(world),
       renderer(renderer),
@@ -24,6 +25,7 @@ Game::Game(World &world,
       physicsEngine(physicsEngine),
       audioService(audioService),
       inputHandler(inputHandler),
+      difficultyService(difficultyService),
       gameConstants(gameConstants) {
     spdlog::info("Game initialized.");
 }
@@ -32,18 +34,21 @@ void Game::run() {
     if (this->gameConstants.audioConstants.musicEnabled) {
         audioService.playSong("background-music", true, this->gameConstants.audioConstants.musicVolume);
     }
-
-    int startTime = (int)floorf(static_cast<floatType>(GetTime()));
-    int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
+    this->initGamePads();
+    DifficultyService::getInstance().startGamePlay();
     while (this->shouldRunGame()) {
         audioService.updateMusicStream();
-        int currentTime = (int)floorf(static_cast<floatType>(GetTime()));
-        bool needToInitGamePads = currentTime < startTime + offset && !this->inputHandler.gamepadsInitialized();
-        if (needToInitGamePads) {
-            initializeGamepads(startTime + offset - currentTime);
-        } else {
-            this->gameTick();
-        }
+        this->gameTick();
+    }
+}
+
+void Game::initGamePads() {
+    double startTime = GetTime();
+    int offset = this->gameConstants.inputConstants.gamepadInitializingTime;
+    double endTime = startTime + offset;
+    while (GetTime() < endTime && !this->inputHandler.gamepadsInitialized()) {
+        auto remainingSeconds = static_cast<int>(endTime - GetTime());
+        initializeGamepads(remainingSeconds);
     }
 }
 
@@ -115,6 +120,7 @@ void Game::resetGame() {
     this->world.reset();
     this->renderer.reset();
     this->physicsEngine.reset();
+    this->difficultyService.reset();
 }
 
 void Game::checkPlayAgainClicked() {

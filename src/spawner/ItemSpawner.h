@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_ITEMSPAWNER_H
 
 #include "../entities/World.h"
+#include "../game/DifficultyService.hpp"
 #include "../utilities/RandomGenerator.hpp"
 #include "../utilities/Singleton.hpp"
 
@@ -33,7 +34,7 @@ class ItemSpawner {
 
     // Attributes
     GameConstants &gameConstants;
-    floatType nextSpawnDistance;
+    double nextSpawnTime;
     int spawnWeightsSum;
     /**
      * Maps the itemType id to the spawn weight of the item
@@ -45,9 +46,11 @@ class ItemSpawner {
     std::unordered_map<ItemType, ItemDto> itemDtoMap;
 
     // Helper functions
-    void updateNextSpawnDistance();
+    void updateNextSpawnTime();
     ItemType getNextRandomItemType();
     Vector getNextRandomPosition();
+    bool shouldSpawn() const;
+    Item getNextSpawnItem();
 };
 
 #endif // SURVIVING_SARNTAL_ITEMSPAWNER_H

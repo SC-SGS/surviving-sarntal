@@ -6,6 +6,7 @@
 #define SURVIVING_SARNTAL_ROCKSPAWNER_H
 
 #include "../entities/World.h"
+#include "../game/DifficultyService.hpp"
 #include "../game/GameProperties.hpp"
 #include "../utilities/RandomGenerator.hpp"
 
@@ -19,7 +20,7 @@ enum RockSpawnDifficulty { EEEEEASY = 0, EASY = 1, MEDIUM = 2, HARD = 3, I_WANT_
  */
 class RockSpawner {
   public:
-    explicit RockSpawner(World &world, GameConstants &gameConstants);
+    RockSpawner(World &world, DifficultyService &difficultyService, GameConstants &gameConstants);
     ~RockSpawner() = default;
     /**
      * This method spawns rocks.
@@ -29,21 +30,22 @@ class RockSpawner {
     void reset();
 
   private:
+    World &world;
+    DifficultyService &difficultyService;
     GameConstants &gameConstants;
     floatType lastSpawnTime{0.};
+    floatType nextSpawnTime{0.};
     int numberOfRocksSinceLastBatch{0};
     bool b = false;
     RockSpawnDifficulty rockSpawnDifficulty = EEEEEASY;
     RandomGenerator *randomGenerator = &RandomGenerator::getInstance();
-
-    World &world;
 
     /**
      * Determines the number of rocks to spawn based on the current rock spawn
      * phase.
      * @return number of rocks to spawn
      */
-    int computeNumRocksToSpawn();
+    int computeNumRocksToSpawn() const;
 
     /**
      * Determines the time between rock spawns based on the current rock spawn difficulty.
@@ -52,20 +54,13 @@ class RockSpawner {
     floatType rockSpawnTimeFromPhase() const;
 
     /**
-     * Determines the current rock spawn difficulty based on how far the hiker has
-     * progressed in the game (measured in the horizontal distance).
-     * @return rock spawn difficulty
-     */
-    RockSpawnDifficulty determineRockSpawnDifficulty() const;
-
-    /**
      * Determines the current rock type based on how far the hiker has
      * progressed in the game (measured in the horizontal distance).
      * @return rock spawn difficulty
      */
     RockType determineRockTypePhase() const;
 
-    bool shouldSpawnRocks();
+    bool shouldSpawnRocks() const;
 
     void spawnRock(size_t idxRock) const;
 
@@ -122,6 +117,7 @@ class RockSpawner {
     DynamicConvexPolygon getRandDynamicPolygon(const Vector &position) const;
     floatType determineDifficultyFactor() const;
     floatType determineLowerBoundLinearMomentum() const;
+    void updateNextSpawnTime();
 };
 
 #endif // SURVIVING_SARNTAL_ROCKSPAWNER_H

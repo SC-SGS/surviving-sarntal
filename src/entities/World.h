@@ -107,7 +107,7 @@ class World {
 
     // Attributes
     floatType minX = 0;
-    floatType maxX = graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO;
+    floatType maxX = static_cast<floatType>(gameConstants.visualConstants.worldSize);
 
     int coinScore = 0;
     Vector gameScore = {0, 0};

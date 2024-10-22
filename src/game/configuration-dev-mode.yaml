@@ -1,7 +1,7 @@
 simulation:
   duration: 30
   speed: 0.3
-  dropPosition: [-4, 30]
+  dropPosition: [ -4, 30 ]
   maxNumberOfRocks: 52
 
 gameConstants:
@@ -18,7 +18,7 @@ gameConstants:
     maxSpeed: 8.0 # Make sure this times airMovementSpeedFactor is higher than maxKillBarFactor * killBarBaseVelocity
     jumpVelocity: 10.0
     airMovementSpeedFactor: 0.77
-    maxSpeedNegSlope: 5.0
+    maxSpeedFactorNegSlope: 5.0
     maxClimbableSlope: 4.0
     knockbackIntensity: 0.5 # between 0 and 1
     knockbackLossPerStep: 0.25 # between 0 and 1
@@ -36,9 +36,8 @@ gameConstants:
     startSpawnTime: 5.0
     minSpawnTime: 2
     maxSpawnTime: 10
-    itemBaseHeight: 1
-    itemMaxHeight: 2.6
-    itemsPerSecond: 0.05
+    itemBaseSpawnHeight: 1
+    itemMaxSpawnHeight: 2.6
     inventorySlotSize: 80.0
 
   rockConstants:
@@ -71,6 +70,7 @@ gameConstants:
   inputConstants:
     maxGamepads: 8
     gamepadItemSwitchCooldown: 0.1
+    gamepadInitializingCountdownFontSize: 120
     gamepadInitializingTime: 3
     itemSwitchThreshold: 0.5
 
@@ -90,6 +90,7 @@ gameConstants:
     mountainResolution: 10
     shakeEnabled: false
     renderPhysicsStepSize: true
+    worldSize: 25 # The amount of terrain that is rendered in the world in meters
 
   audioConstants:
     musicEnabled: true
@@ -99,7 +100,7 @@ gameConstants:
   barriersConstants:
     killBarBaseVelocity: 0.0
     killBarAccelerationFactor: 0.015 # describes how quickly the killbar accelerates with an increasing right border
-    maxKillBarFactor: 4.0 # => max killbar velocity is base velocity * max factor
+    killBarMaxVelocity: 4.0 # => max killbar velocity is base velocity * max factor
     playerRightBarrierOffset: 15.0
     monsterXRelativeToScreenWidth: 0.1
     monsterHeight: 3.6
@@ -123,6 +124,7 @@ gameConstants:
     maximalOverhangHeight: 5.0
 
   rockSpawnerConstants:
+    maxNumberOfRocksToSpawn: 3
     # All based on difficulty [EEEASY, EASY, MEDIUM, HARD, I_WANT_MOMY]
     linearMomentumDifficultyFactor: [ 0.0, 0.25, 0.5, 0.75, 1.0 ]
     spawningPhase: [ 60.0, 150.0, 250.0, 500.0, 1000.0 ]
@@ -130,6 +132,20 @@ gameConstants:
 
     # Based on rock type
     rockTypePhase: [ 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 ]
+
+    #other constants
+    minAngularMomentum: -0.5
+    maxAngularMomentum: 1.0
+    minNumPointsForGeneration: 50
+    maxNumPointsForGeneration: 200
+    minRandYSpawnOffset: 6
+    maxRandYSpawnOffset: 8
+
+  difficultyConstants:
+    highesDifficultyLevel: 5 # The highest level possible
+    difficultyFactor: 5 # The size of the time step between the different levels
+    difficultyStartingPoint: 5 # The starting point at which level 1 starts (levels start at 0)
+
 
 
 
@@ -159,4 +175,4 @@ gameConstants:
 #[ -0.3, 0 ], [ -3, -3 ], [ 0, -3 ], [ 3, -3 ], [ 0.3, 0 ]
 
 # wide quadratic bowl
-ground-points: [[-35, 50.0], [-34, 47.04], [-33, 44.16], [-32, 41.36], [-31, 38.64], [-30, 36.0], [-29, 33.44], [-28, 30.96], [-27, 28.56], [-26, 26.24], [-25, 24.0], [-24, 21.84], [-23, 19.76], [-22, 17.76], [-21, 15.84], [-20, 14.0], [-19, 12.24], [-18, 10.56], [-17, 8.96], [-16, 7.44], [-15, 6.0], [-14, 4.64], [-13, 3.36], [-12, 2.16], [-11, 1.04], [-10, 0.0], [-9, 0.04], [-8, 0.16], [-7, 0.36], [-6, 0], [-5, 0], [-4, 0], [-3, 0], [-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0.36], [8, 0.16], [9, 0.04], [10, 0.0], [11, 1.04], [12, 2.16], [13, 3.36], [14, 4.64], [15, 6.0], [16, 7.44], [17, 8.96], [18, 10.56], [19, 12.24], [20, 14.0], [21, 15.84], [22, 17.76], [23, 19.76], [24, 21.84], [25, 24.0], [26, 26.24], [27, 28.56], [28, 30.96], [29, 33.44], [30, 36.0], [31, 38.64], [32, 41.36], [33, 44.16], [34, 47.04], [35, 50.0]]
+ground-points: [ [ -35, 50.0 ], [ -34, 47.04 ], [ -33, 44.16 ], [ -32, 41.36 ], [ -31, 38.64 ], [ -30, 36.0 ], [ -29, 33.44 ], [ -28, 30.96 ], [ -27, 28.56 ], [ -26, 26.24 ], [ -25, 24.0 ], [ -24, 21.84 ], [ -23, 19.76 ], [ -22, 17.76 ], [ -21, 15.84 ], [ -20, 14.0 ], [ -19, 12.24 ], [ -18, 10.56 ], [ -17, 8.96 ], [ -16, 7.44 ], [ -15, 6.0 ], [ -14, 4.64 ], [ -13, 3.36 ], [ -12, 2.16 ], [ -11, 1.04 ], [ -10, 0.0 ], [ -9, 0.04 ], [ -8, 0.16 ], [ -7, 0.36 ], [ -6, 0 ], [ -5, 0 ], [ -4, 0 ], [ -3, 0 ], [ -2, 0 ], [ -1, 0 ], [ 0, 0 ], [ 1, 0 ], [ 2, 0 ], [ 3, 0 ], [ 4, 0 ], [ 5, 0 ], [ 6, 0 ], [ 7, 0.36 ], [ 8, 0.16 ], [ 9, 0.04 ], [ 10, 0.0 ], [ 11, 1.04 ], [ 12, 2.16 ], [ 13, 3.36 ], [ 14, 4.64 ], [ 15, 6.0 ], [ 16, 7.44 ], [ 17, 8.96 ], [ 18, 10.56 ], [ 19, 12.24 ], [ 20, 14.0 ], [ 21, 15.84 ], [ 22, 17.76 ], [ 23, 19.76 ], [ 24, 21.84 ], [ 25, 24.0 ], [ 26, 26.24 ], [ 27, 28.56 ], [ 28, 30.96 ], [ 29, 33.44 ], [ 30, 36.0 ], [ 31, 38.64 ], [ 32, 41.36 ], [ 33, 44.16 ], [ 34, 47.04 ], [ 35, 50.0 ] ]

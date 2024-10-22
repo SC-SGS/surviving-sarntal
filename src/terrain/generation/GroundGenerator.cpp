@@ -135,7 +135,41 @@ void GroundGenerator::updateRetracing() {
     }
 }
 
-TerrainPhase GroundGenerator::getRandomPhase() const {
-    return this->phaseChoices.at(
-        RandomGenerator::getInstance().getRandomNumber(0, static_cast<int>(this->phaseChoices.size() - 1)));
+TerrainPhase GroundGenerator::getRandomPhase() {
+    std::vector<TerrainPhase> possiblePhases = this->getPossibleTerrainPhases();
+    if (!possiblePhases.empty()) {
+        auto &ranGen = RandomGenerator::getInstance();
+        int totalWeight = 0;
+        for (auto phase : possiblePhases) {
+            totalWeight += phase.spawnWeight;
+        }
+        int randomPhase = ranGen.getRandomNumber(0, totalWeight);
+        int count = 0;
+        for (auto phase : possiblePhases) {
+            if (count + phase.spawnWeight > randomPhase) {
+                return phase;
+            }
+            count += phase.spawnWeight;
+        }
+        return possiblePhases.back();
+    } else {
+        return this->phaseChoices.front();
+    }
 }
+
+std::vector<TerrainPhase> GroundGenerator::getPossibleTerrainPhases() {
+    std::vector<TerrainPhase> possiblePhases;
+    auto currentDifficultyLevel = this->getCurrentDifficultyLevel();
+    for (auto &phase : this->phaseChoices) {
+        if (phase.difficultyLevel <= currentDifficultyLevel) {
+            possiblePhases.push_back(phase);
+        }
+    }
+    return possiblePhases;
+}
+
+int GroundGenerator::getCurrentDifficultyLevel() const {
+    return DifficultyService::getInstance().getCurrentDifficultyLevel();
+}
+
+void GroundGenerator::reset() {}
