@@ -69,6 +69,20 @@ void Renderer::renderPhysicsTimeStepSize() const {
     DrawText(valueText.c_str(), textX, textY, 30, BLACK); // Font size = 20, color = white
 }
 
+void Renderer::renderShieldTime() const {
+    if (!this->world.getHiker().hasShield()) {
+        return;
+    }
+    std::string text = "Shield Time: ";
+    const std::string valueText = text.append(std::to_string(this->world.getHiker().getShieldTimeLeft()));
+
+    int textX = GetScreenWidth() / 2;   // Small padding from the left edge
+    int textY = GetScreenHeight() - 40; // Padding from the bottom edge
+
+    // Draw the text using Raylib's DrawText function (convert std::string to C-string using c_str())
+    DrawText(valueText.c_str(), textX, textY, 30, GREEN); // Font size = 20, color = white
+}
+
 // Main rendering function
 void Renderer::draw() {
     applyRumbleEffect();
@@ -96,6 +110,7 @@ void Renderer::draw() {
     hudRenderer.renderHud(debugMode);
 
     renderPhysicsTimeStepSize();
+    renderShieldTime();
 
     EndDrawing();
 }
