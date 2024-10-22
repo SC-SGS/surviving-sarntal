@@ -100,6 +100,8 @@ void Hiker::setShield(const double time) { this->shieldTime = GetTime() + time; 
 
 bool Hiker::hasShield() const { return this->shieldTime > GetTime(); }
 
+int Hiker::getShieldTimeLeft() const { return static_cast<int>(this->shieldTime - GetTime()); }
+
 const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 
 void Hiker::setHikerMovement(const HikerMovement &movement) {
