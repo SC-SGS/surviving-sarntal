@@ -1,9 +1,359 @@
-% This is samplepaper.tex, a sample chapter demonstrating the
-% LLNCS macro package for Springer Computer Science proceedings;
-% Version 2.21 of 2022/01/12
+
+%% bare_jrnl_compsoc.tex
+%% V1.4b
+%% 2015/08/26
+%% by Michael Shell
+%% See:
+%% http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.8b or later) with an IEEE
+%% Computer Society journal paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/pkg/ieeetran
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall the IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%*************************************************************************
+
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+\documentclass[10pt,journal,compsoc]{IEEEtran}
 %
-\documentclass[a4paper,12pt]{llncs}
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[10pt,journal,compsoc]{../sty/IEEEtran}
+
+
+
+
+
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+
+
+% *** MISC UTILITY PACKAGES ***
 %
+%\usepackage{ifpdf}
+% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
+% compilation based on whether the output is pdf or dvi.
+% usage:
+% \ifpdf
+%   % pdf code
+% \else
+%   % dvi code
+% \fi
+% The latest version of ifpdf.sty can be obtained from:
+% http://www.ctan.org/pkg/ifpdf
+% Also, note that IEEEtran.cls V1.7 and later provides a builtin
+% \ifCLASSINFOpdf conditional that works the same way.
+% When switching from latex to pdflatex and vice-versa, the compiler may
+% have to be run twice to clear warning/error messages.
+
+
+
+
+
+
+% *** CITATION PACKAGES ***
+%
+\ifCLASSOPTIONcompsoc
+  % IEEE Computer Society needs nocompress option
+  % requires cite.sty v4.0 or later (November 2003)
+  \usepackage[nocompress]{cite}
+\else
+  % normal IEEE
+  \usepackage{cite}
+\fi
+% cite.sty was written by Donald Arseneau
+% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
+% \cite{} output to follow that of the IEEE. Loading the cite package will
+% result in citation numbers being automatically sorted and properly
+% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
+% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
+% \cite will automatically add leading space, if needed. Use cite.sty's
+% noadjust option (cite.sty V3.8 and later) if you want to turn this off
+% such as if a citation ever needs to be enclosed in parenthesis.
+% cite.sty is already installed on most LaTeX systems. Be sure and use
+% version 5.0 (2009-03-20) and later if using hyperref.sty.
+% The latest version can be obtained at:
+% http://www.ctan.org/pkg/cite
+% The documentation is contained in the cite.sty file itself.
+%
+% Note that some packages require special options to format as the Computer
+% Society requires. In particular, Computer Society  papers do not use
+% compressed citation ranges as is done in typical IEEE papers
+% (e.g., [1]-[4]). Instead, they list every citation separately in order
+% (e.g., [1], [2], [3], [4]). To get the latter we need to load the cite
+% package with the nocompress option which is supported by cite.sty v4.0
+% and later. Note also the use of a CLASSOPTION conditional provided by
+% IEEEtran.cls V1.7 and later.
+
+
+
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% graphicx was written by David Carlisle and Sebastian Rahtz. It is
+% required if you want graphics, photos, etc. graphicx.sty is already
+% installed on most LaTeX systems. The latest version and documentation
+% can be obtained at: 
+% http://www.ctan.org/pkg/graphicx
+% Another good source of documentation is "Using Imported Graphics in
+% LaTeX2e" by Keith Reckdahl which can be found at:
+% http://www.ctan.org/pkg/epslatex
+%
+% latex, and pdflatex in dvi mode, support graphics in encapsulated
+% postscript (.eps) format. pdflatex in pdf mode supports graphics
+% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
+% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
+% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
+% which can result in "jaggedy"/blurry rendering of lines and letters as
+% well as large increases in file sizes.
+%
+% You can find documentation about the pdfTeX application at:
+% http://www.tug.org/applications/pdftex
+
+
+
+
+
+
+% *** MATH PACKAGES ***
+%
+%\usepackage{amsmath}
+% A popular package from the American Mathematical Society that provides
+% many useful and powerful commands for dealing with mathematics.
+%
+% Note that the amsmath package sets \interdisplaylinepenalty to 10000
+% thus preventing page breaks from occurring within multiline equations. Use:
+%\interdisplaylinepenalty=2500
+% after loading amsmath to restore such page breaks as IEEEtran.cls normally
+% does. amsmath.sty is already installed on most LaTeX systems. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/amsmath
+
+
+
+
+
+% *** SPECIALIZED LIST PACKAGES ***
+%
+%\usepackage{algorithmic}
+% algorithmic.sty was written by Peter Williams and Rogerio Brito.
+% This package provides an algorithmic environment fo describing algorithms.
+% You can use the algorithmic environment in-text or within a figure
+% environment to provide for a floating algorithm. Do NOT use the algorithm
+% floating environment provided by algorithm.sty (by the same authors) or
+% algorithm2e.sty (by Christophe Fiorio) as the IEEE does not use dedicated
+% algorithm float types and packages that provide these will not provide
+% correct IEEE style captions. The latest version and documentation of
+% algorithmic.sty can be obtained at:
+% http://www.ctan.org/pkg/algorithms
+% Also of interest may be the (relatively newer and more customizable)
+% algorithmicx.sty package by Szasz Janos:
+% http://www.ctan.org/pkg/algorithmicx
+
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+%\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/array
+
+
+% IEEEtran contains the IEEEeqnarray family of commands that can be used to
+% generate multiline equations as well as matrices, tables, etc., of high
+% quality.
+
+
+
+
+% *** SUBFIGURE PACKAGES ***
+%\ifCLASSOPTIONcompsoc
+%  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+%\else
+%  \usepackage[caption=false,font=footnotesize]{subfig}
+%\fi
+% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
+% for subfigure.sty, the latter of which is no longer maintained and is
+% incompatible with some LaTeX packages including fixltx2e. However,
+% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
+% which will override IEEEtran.cls' handling of captions and this will result
+% in non-IEEE style figure/table captions. To prevent this problem, be sure
+% and invoke subfig.sty's "caption=false" package option (available since
+% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
+% handling of captions.
+% Note that the Computer Society format requires a sans serif font rather
+% than the serif font used in traditional IEEE formatting and thus the need
+% to invoke different subfig.sty package options depending on whether
+% compsoc mode has been enabled.
+%
+% The latest version and documentation of subfig.sty can be obtained at:
+% http://www.ctan.org/pkg/subfig
+
+
+
+
+% *** FLOAT PACKAGES ***
+%
+%\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure.
+% Be aware that LaTeX2e kernels dated 2015 and later have fixltx2e.sty's
+% corrections already built into the system in which case a warning will
+% be issued if an attempt is made to load fixltx2e.sty as it is no longer
+% needed.
+% The latest version and documentation can be found at:
+% http://www.ctan.org/pkg/fixltx2e
+
+
+%\usepackage{stfloats}
+% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
+% the ability to do double column floats at the bottom of the page as well
+% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
+% LaTeX2e). It also provides a command:
+%\fnbelowfloat
+% to enable the placement of footnotes below bottom floats (the standard
+% LaTeX2e kernel puts them above bottom floats). This is an invasive package
+% which rewrites many portions of the LaTeX2e float routines. It may not work
+% with other packages that modify the LaTeX2e float routines. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/stfloats
+% Do not use the stfloats baselinefloat ability as the IEEE does not allow
+% \baselineskip to stretch. Authors submitting work to the IEEE should note
+% that the IEEE rarely uses double column equations and that authors should try
+% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
+% packages (also by Sigitas Tolusis) as the IEEE does not format its papers in
+% such ways.
+% Do not attempt to use stfloats with fixltx2e as they are incompatible.
+% Instead, use Morten Hogholm'a dblfloatfix which combines the features
+% of both fixltx2e and stfloats:
+%
+% \usepackage{dblfloatfix}
+% The latest version can be found at:
+% http://www.ctan.org/pkg/dblfloatfix
+
+
+
+
+%\ifCLASSOPTIONcaptionsoff
+%  \usepackage[nomarkers]{endfloat}
+% \let\MYoriglatexcaption\caption
+% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
+%\fi
+% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
+% Axel Sommerfeldt. This package may be useful when used in conjunction with 
+% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
+% submissions have lists of figures/tables at the end of the paper and that
+% figures/tables without any captions are placed on a page by themselves at
+% the end of the document. If needed, the draftcls IEEEtran class option or
+% \CLASSINPUTbaselinestretch interface can be used to increase the line
+% spacing as well. Be sure and use the nomarkers option of endfloat to
+% prevent endfloat from "marking" where the figures would have been placed
+% in the text. The two hack lines of code above are a slight modification of
+% that suggested by in the endfloat docs (section 8.4.1) to ensure that
+% the full captions always appear in the list of figures/tables - even if
+% the user used the short optional argument of \caption[]{}.
+% IEEE papers do not typically make use of \caption[]'s optional argument,
+% so this should not be an issue. A similar trick can be used to disable
+% captions of packages such as subfig.sty that lack options to turn off
+% the subcaptions:
+% For subfig.sty:
+% \let\MYorigsubfloat\subfloat
+% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
+% However, the above trick will not work if both optional arguments of
+% the \subfloat command are used. Furthermore, there needs to be a
+% description of each subfigure *somewhere* and endfloat does not add
+% subfigure captions to its list of figures. Thus, the best approach is to
+% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
+% and instead reference/explain all the subfigures within the main caption.
+% The latest version of endfloat.sty and its documentation can obtained at:
+% http://www.ctan.org/pkg/endfloat
+%
+% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
+% later in the document, say, to conditionally put the References on a 
+% page by themselves.
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+%\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/url
+% Basically, \url{my_url_here}.
+
+
+% *** Additional packages ***
 \usepackage{makeidx}  % allows for indexgeneration
 \makeindex
 %
@@ -11,6 +361,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}      % chnage the used langauge here!!!
 \usepackage[T1]{fontenc}
+\usepackage{url}
 %
 % T1 fonts will be used to generate the final print and online PDFs,
 % so please use T1 fonts in your manuscript whenever possible.
@@ -31,27 +382,14 @@
 \usepackage{listings}               % source code
 \usepackage{tikz}                   % custom (vector) graphics
 \usetikzlibrary{shapes, arrows.meta, positioning, decorations.pathreplacing, trees, patterns, calligraphy}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 %
 % pseudo-code
 \usepackage{algorithm} 
 \usepackage{algpseudocode} 
 \newcommand{\algorithmautorefname}{Algorithmus}
-%
-%
-% page format ===============================================================
-\hoffset=-1.25truecm
-\setlength{\topmargin}{0.0cm}
-\setlength{\textheight}{23.0cm}
-\setlength{\footskip}{1.5cm}
-\setlength{\textwidth}{15.4cm}
-\setlength{\evensidemargin}{1.5cm}
-\setlength{\oddsidemargin}{1.5cm}
-\setlength{\parskip}{1ex}
-\setlength{\parindent}{0pt}
-\setlength{\marginparwidth}{1.4cm}
-\setlength{\marginparsep}{1mm}
-
-\pagestyle{plain}
 
 % LstListing-Format ==========================================================
 \lstdefinestyle{cpp}{
@@ -76,9 +414,10 @@
 \newcommand{\C}{{\mathbb{C}}}
 \newcommand{\Z}{{\mathbb{Z}}}
 \newcommand{\Q}{{\mathbb{Q}}}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{//TODO: } #1}}
+\newcommand{\code}[1]{\texttt{#1}}
 \renewcommand{\O}{{\mathcal{O}}}
 \newcommand\norm[1]{\lVert#1\rVert}
-\renewcommand\qed{$\hfill\square$}
 \newcommand\scprod[2]{\langle #1 , #2 \rangle}
 \usepackage{wrapfig}
 \usepackage{url}
@@ -90,6 +429,18 @@
 \numberwithin{equation}{section}
 %
 %
+
+\usepackage{amsthm}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}
+
 % images -----------------------------------------------------------------------
 % #1 filename;  #2 Label;  #3 caption;  #4 short-caption
 \newcommand{\image}[4]{%
@@ -114,312 +465,430 @@
   \end{figure}
 }
 
-% ============================================================================
+\renewcommand\IEEEkeywordsname{Keywords}
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{optical networks semi-conductor}
+
 \begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{Towards Real-Time Physics in a 2D Survival-Based Game}
+%
+%
+% author names and IEEE memberships
+% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
+% a structure at a ~ so this keeps an author's name from being broken across
+% two lines.
+% use \thanks{} to gain access to the first footnote area
+% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
+% was not built to handle multiple paragraphs
+%
+%
+%\IEEEcompsocitemizethanks is a special \thanks that produces the bulleted
+% lists the Computer Society journals use for "first footnote" author
+% affiliations. Use \IEEEcompsocthanksitem which works much like \item
+% for each affiliation group. When not in compsoc mode,
+% \IEEEcompsocitemizethanks becomes like \thanks and
+% \IEEEcompsocthanksitem becomes a line break with idention. This
+% facilitates dual compilation, although admittedly the differences in the
+% desired content of \author between the different types of papers makes a
+% one-size-fits-all approach a daunting prospect. For instance, compsoc 
+% journal papers have the author affiliations above the "Manuscript
+% received ..."  text while in non-compsoc journals this is reversed. Sigh.
 
-% =========== Das war der Vorspann, jetzt geht's los! ========================
+\author{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff% <-this % stops a space
+\IEEEcompsocitemizethanks{\IEEEcompsocthanksitem The authors are in the B.Sc.~Informatik at the University of Stuttgart\protect\\
+Examiner: Prof. Dr. Miriam Schulte, Univ. of Stgt., IPVS/SGS\protect\\
+Supervisor: Carme Homs-Pons, M.Sc., Univ. of Stgt., IPVS/SGS
+% note need leading \protect in front of \\ to get a newline within \thanks as
+% \\ is fragile and will error, could use \hfil\break instead.
+}}
 
-% ============================================================================
-% =============  AB HIER DARF UND SOLL GETIPPT WERDEN ========================
-% ============================================================================
+% note the % following the last \IEEEmembership and also \thanks - 
+% these prevent an unwanted space from occurring between the last author name
+% and the end of the author line. i.e., if you had this:
+% 
+% \author{....lastname \thanks{...} \thanks{...} }
+%                     ^------------^------------^----Do not want these spaces!
 %
-\author{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
-\index{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
-%
-% Das Institut wird fuer den Betreuer missbraucht ...
-\institute{{\bf Betreuer:} Carme Homs-Pons}
-\authorrunning{Bj\"orn Aheimer, Felix R\"ohr, Daniel Six, Aleksis Vezenkov, Anietta Weckauff}
-\title{Towards real-time physics in a 2D survival-based game}
-%
-%
-\maketitle              % typeset the header of the contribution
-\thispagestyle{empty}
-%
-%
+% a space would be appended to the last name and could cause every name on that
+% line to be shifted left slightly. This is one of those "LaTeX things". For
+% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
+% "AB" then you have to do: "\textbf{A}\textbf{B}"
+% \thanks is no different in this regard, so shield the last } of each \thanks
+% that ends a line with a % and do not let a space in before the next \thanks.
+% Spaces after \IEEEmembership other than the last one are OK (and needed) as
+% you are supposed to have spaces between the names. For what it is worth,
+% this is a minor point as most people would not even notice if the said evil
+% space somehow managed to creep in.
+
+
+
+% The paper headers
+\markboth{Bachelor Research Project Computer Science 2024}%
+{Submission}
+% The only time the second header will appear is for the odd numbered pages
+% after the title page when using the twoside option.
+% 
+% *** Note that you probably will NOT want to include the author's ***
+% *** name in the headers of peer review papers.                   ***
+% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
+% you desire.
+
+
+
+% The publisher's ID mark at the bottom of the page is less important with
+% Computer Society journal papers as those publications place the marks
+% outside of the main text columns and, therefore, unlike regular IEEE
+% journals, the available text space is not reduced by their presence.
+% If you want to put a publisher's ID mark on the page you can do it like
+% this:
+%\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
+% or like this to get the Computer Society new two part style.
+%\IEEEpubid{\makebox[\columnwidth]{\hfill 0000--0000/00/\$00.00~\copyright~2015 IEEE}%
+%\hspace{\columnsep}\makebox[\columnwidth]{Published by the IEEE Computer Society\hfill}}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second
+% column for its text to clear the IEEEpubid mark (Computer Society jorunal
+% papers don't need this extra clearance.)
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+
+% for Computer Society papers, we must declare the abstract and index terms
+% PRIOR to the title within the \IEEEtitleabstractindextext IEEEtran
+% command as these need to go into the title area created by \maketitle.
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\IEEEtitleabstractindextext{%
 \begin{abstract}
-  \textcolor{red}{\textbf{// TODO}}
-  This project builds up on the outcome of a project that took place in the Ferienakademie 2023
-  course \glqq{}Let's play! Simulated Physics for Games\grqq{} organised by Prof. Hans-Joachim Bungartz and
-  Prof. Miriam Schulte. The participants of the course1 created the \glqq Surviving Sarntal\grqq{} game, the
-  starting point of this project.
-  \glqq Surviving Sarntal\grqq{} is a single-player survival-based game where the player is a hiker who goes
-  up a mountain while avoiding rock-fall. The game has fun visuals, including a very unique kill-bar.
-  The player can choose between keyboard input and game-pad input to interact with the game.
-  The code is written in C++ and follows the entity component system (ECS) architectural pattern.
-  The raylib library is used for the visuals.
+  Surviving Sarntal is an action-packed arcade endless runner.
+  The player has to navigate a hiker through demanding terrain while dodging dangerous rockfall.
+  The game is implemented in C++ using only a small number of libraries.
+  Goal of the project is the design of a finished game following good software engineering practice with particular focus on creating a performant physics engine for rigid body simulation.
+  This report explains our development approach, the game logic, and it discusses our findings in all stages from research, development to deployment.
 \end{abstract}
-%
-% Introduction -----------------------------------------------------------------
-\section{Introduction}
 
-%
-%
-% Methodology ------------------------------------------------------------------
-\section{Methodology}
-\begin{itemize}
-  \item Arbeitsweise: Scrum und andere Techniken
-  \item Umgebung, Installation, \dots
-  \item DevOps
-  \item Quality Assurance
-  \item Tranformation des alten Spiels
-\end{itemize}
-
-% Results ----------------------------------------------------------------------
-\section{The Game}
-
-\subsection{Goal of The Game}
-
-\subsection{Entities}
-
-\subsection{The Terrain}
-
-\section{The Game Loop}
-
-main Loop
-
-\subsection{Input}
-
-- short explanation of libs and how and when processed (maybe howto)
+% Note that keywords are not normally used for peerreview papers.
+\begin{IEEEkeywords}
+Game Development,
+Hermite Splines, 
+Rigid Body Simulation,
+Physics Engine,
+SAT,
+Collision Handling, 
+C++
+\end{IEEEkeywords}}
 
 
-\subsection{Real-Time Rigid Body Physics}
-
-\subsubsection{The Physics Loop}
-
-\subsubsection{Spawning}
-
-\subsubsection{Destructing}
-
-\subsubsection{Entity Movement}
-
-\subsubsection{Collision Detection}
-
-\subsubsection{Collision Resolution}
-
-%\vspace{-\abovedisplayskip}
-\begin{definition}
-  \textbf{Ein Beispiel Konzept} Lorem Ipsum dolor irgendwas.
-  %Ein iteratives Verfahren heißt \textbf{konsistent}, falls die richtige Lösung nicht weiter transformiert wird.
-  %Wenn das Verfahren für beliebige initiale Approximationen gegen die korrekte Lösung strebt, heißt es \textbf{konvergent}.
-  %\vspace{-\belowdisplayskip}
-\end{definition}
-%\vspace{-\belowdisplayskip}
-%Iterative Methoden bieten sich insbesondere an, wenn das zu lösende LGS Ergebnis einer Diskretisierungsaufgabe ist und die exakte Lösung selbst nur eine Annäherung an die zugrundeliegende Aufgabenstellung darstellt \cite{numLGS}.
-Eine Citation sieht so aus Barrett et al. \cite{templates} zwei Arten von iterativen Methoden.
-
-%\vspace{-\abovedisplayskip}
-{\flushleft\begin{definition} \textbf{Ein Algorithmus (pls don't delete, I need that as ref)}\\
-%\noindent\begin{minipage}{0.35\textwidth}
-%  \begin{align}
-%    r_{(0)} &= b - Ax_{(0)}\\ 
-%    \alpha_{i} \notag&= \frac{\norm{r_{(i)}}_{2}^{2}}{\norm{r_{(i)}}_{A}^{2}} \\
-%    &= \frac{r_{(i)}^{T}r_{(i)}}{r_{(i)}^{T}Ar_{(i)}}\\
-%    x_{(i+1)} &= x_{(i)} + \alpha_{i}r_{(i)}\\
-%    r_{(i+1)} &= b - Ax_{(i+1)}\label{eq:r}\\
-%    &= r_{(i)} - \alpha_{i}Ar_{(i)}\label{eq:r_Alternativ}
-%  \end{align}
-%\end{minipage}
-%\qquad
-%\quad
-%\begin{minipage}{0.55\textwidth}
-%\vspace{-\abovedisplayskip}
-\centering
-\begin{minipage}{0.65\textwidth}
-  \vspace{-\abovedisplayskip}
-  \begin{algorithm}[H]
-  \caption{The Steepest Descent Method}\label{alg:steep}
-  \hspace*{\algorithmicindent} \textbf{Input:} $A\in\R^{n\times n}, \, b, x\in\R^{n}, \, i_{max}\in\N^{+}, \, \epsilon\in\R^{+}$\\
-  \hspace*{\algorithmicindent} \textbf{Output:} $x\in\R^n, \, Ax = b' \text{ mit } \Delta b:=b'-b\leq\epsilon\norm{b}_{2}$
-    \begin{algorithmic}[1]
-    \Procedure{SteepestDescent}{$A, \, b, \, x, \, i_{max}, \, \epsilon$}
-    \State $i \gets 0; \quad r \gets b - Ax; \quad \tau \gets r^{T}r; \quad stopCrit \gets \epsilon^{2}\norm{b}_{2}^{2}$ 
-  %  \State $r \gets b - Ax$ 
-  %  \State $\tau \gets r^{T}r$
-  %  \State $stopCrit \gets \epsilon^{2}\norm{b}_{2}^{2}$
-    \While{$(i < i_{max}$ \textbf{and} $\tau > stopCrit)$}
-    \State $q \gets Ar; \quad \alpha \gets \frac{\tau}{r^{T}q}; \quad x \gets x + \alpha r$
-  %  \State $\alpha \gets \frac{\tau}{r^{T}q}$
-  %  \State $x \gets x + \alpha r$
-    \If{$n>100$ \textbf{and} $i \text{\textbf{ mod }} \lfloor \sqrt{n} \rfloor = 0$}
-      \State $r \gets b-Ax$\label{alg:steep:r}
-    \Else 
-      \State $r = r - \alpha q$\label{alg:steep:r_Alternativ}
-    \EndIf
-    \State $\tau \gets r^{T}r$
-    \State $i \gets i+1$
-    \EndWhile
-    \State \Return $x$
-    \EndProcedure
-    \end{algorithmic}
-  \end{algorithm}
-\end{minipage}
-%\vspace{-2\belowdisplayskip}
-\end{definition}}
-\vspace{\belowdisplayskip}
-
-\begin{corollary}\label{cor:steep}
-  Oh partigano, portami via.
-\end{corollary}
-%\vspace{-\belowdisplayskip}
-%
-
-\subsection{Rendering}
-
-- short explanation of algorithms and libs 
-
-%
-% Conclusion -------------------------------------------------------------------
-\section{Conclusion / Discussion}
-%
-% Future Work ------------------------------------------------------------------
-\section{Future Work}
-- open issues, Todos and ideas
-%
-% Appendix ---------------------------------------------------------------------
-\appendix
-%
-\section{Angaben zur Reproduzierbarkeit usw.}
-\label{Anhang}
-Die verwendeten Software-Versionen (Python, NumPy, SciPy, ProbNum), weitere Plots sowie die Implementierungen finden sich in dem folgenden Git-Repository (Read-only access):
-\url{https://gitfront.io/r/B-Aheimer/voAnN37ECCoS/Iterative-Loeser-fuer-LGS-Seminararbeit/}.
-Für alle Randomisierungen wurde ein Random Number Generator mit festgelegtem Seed bereitgestellt.
+% make the title area
+\maketitle
 
 
-% LaTeX-Tips für uns -----------------------------------------------------------
+% To allow for easy dual compilation without having to reenter the
+% abstract/keywords data, the \IEEEtitleabstractindextext text will
+% not be used in maketitle, but will appear (i.e., to be "transported")
+% here as \IEEEdisplaynontitleabstractindextext when the compsoc 
+% or transmag modes are not selected <OR> if conference mode is selected 
+% - because all conference papers position the abstract like regular
+% papers do.
+\IEEEdisplaynontitleabstractindextext
+% \IEEEdisplaynontitleabstractindextext has no effect when using
+% compsoc or transmag under a non-conference mode.
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
 %
-%NICHT LÖSCHEN!
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+%\IEEEraisesectionheading{\section{Introduction}\label{sec:introduction}}
+% Computer Society journal (but not conference!) papers do something unusual
+% with the very first section heading (almost always called "Introduction").
+% They place it ABOVE the main text! IEEEtran.cls does not automatically do
+% this for you, but you can achieve this effect with the provided
+% \IEEEraisesectionheading{} command. Note the need to keep any \label that
+% is to refer to the section immediately after \section in the above as
+% \IEEEraisesectionheading puts \section within a raised box.
+
+
+
+
+% The very first letter is a 2 line initial drop letter followed
+% by the rest of the first word in caps (small caps for compsoc).
+% 
+% form to use if the first word consists of a single letter:
+% \IEEEPARstart{A}{demo} file is ....
+% 
+% form to use if you need the single drop letter followed by
+% normal text (unknown if ever used by the IEEE):
+% \IEEEPARstart{A}{}demo file is ....
+% 
+% Some journals put the first two words in caps:
+% \IEEEPARstart{T}{his demo} file is ....
+% 
+% Here we have the typical use of a "T" for an initial drop letter
+% and "HIS" in caps to complete the first word.
+% \IEEEPARstart{T}{his}
+
+% You must have at least 2 lines in the paragraph with the drop letter
+% (should never be an issue)
+
+
+
+
+
+
+
+% needed in second column of first page if using \IEEEpubid
+%\IEEEpubidadjcol
+
+
+
+% An example of a floating figure using the graphicx package.
+% Note that \label must occur AFTER (or within) \caption.
+% For figures, \caption should occur after the \includegraphics.
+% Note that IEEEtran v1.7 and later has special internal code that
+% is designed to preserve the operation of \label within \caption
+% even when the captionsoff option is in effect. However, because
+% of issues like this, it may be the safest practice to put all your
+% \label just after \caption rather than within \caption{}.
 %
+% Reminder: the "draftcls" or "draftclsnofoot", not "draft", class
+% option should be used if it is desired that the figures are to be
+% displayed while in draft mode.
 %
-%\subsection{Anmerkungen zur Einleitung}
-%Hier kommt noch mehr Text. 
-%Wir verweisen dazu auf \cite{thisdocument}.
-%
-%% Formulas -----------------------------------------------------------------
-%Eine schöne Formel ist
-%\[ u(\vec{x}) = \sum_{i=1}^N \alpha_i \varphi_i(\vec{x}) \,, \]
-%aber das geht auch inline als $u(\vec{x}) = \sum_{i=1}^N \alpha_i \varphi_i(\vec{x})$, also mitten im Text.
-%
-%Es können auch Formeln dargstellt werden, die über mehrere Zeilen gehen, aber trotzdem schön zueinander ausgerichtet sind:
-%\begin{align*}
-%    f(x) &= a \cdot (1 + b) \\
-%         &= a + ab
-%\end{align*}
-%
-%% Images/Graphics -----------------------------------------------------------------
-%Was noch fehlt ist ein Bild, z.B.\ das aus \autoref{fig:grid1} oder \autoref{fig:grid2}. 
-%Wir können dazu prima die tollen Makros, die oben im Vorspann definiert wurden, verwenden.
-%Beispielsweise mit folgenden Befehlen:
-%\begin{spverbatim}
-%\image{figures/grid_l2.png}{fig:grid1}{Dies ist ein sogenanntes dünnes Gitter zum Level 2.}{Die Kurzform lasse ich meistens leer}
-%\imagewithwidth{figures/grid_l2.png}{2cm}{fig:grid2}{Dies ist ein sogenanntes dünnes Gitter zum Level 2 in 2cm Breite.}{}
-%\end{spverbatim}
-%
-%Die Bilder werden automatisch nach vernünftigen Kriterien platziert, daher immer im Text mit \verb!\autoref{}! drauf verweisen (bei den Beispielen mit \verb!\autoref{fig:grid1}! und \verb!\autoref{fig:grid2}!).
-%\image{figures/grid_l2.png}{fig:grid1}{Dies ist ein sogenanntes dünnes Gitter zum Level 2.}{Die Kurzform lasse ich meist leer}
-%\imagewithwidth{figures/grid_l2.png}{2cm}{fig:grid2}{Dies ist ein sogenanntes dünnes Gitter zum Level 2 in 2cm Breite.}{}
-%
-%% Anmerkung: damit LaTeX nicht denkt, dass ein Punkt den Satz beendet
-%% (da spendiert LaTeX gerne mehr Zwischenraum), können wir das
-%% Leerzeichen mit Backslash als Leerzeichen markieren. Damit LaTeX
-%% ein Leerzeichen setzt, bei dem es keinen Zeilenumbruch geben darf,
-%% kann man die Tilde verwenden.
-%% Tables -----------------------------------------------------------------
-%Was wir hin und wieder noch brauchen ist eine Tabelle, wie z.B.\ \autoref{tab:irgendwas}.
-%\begin{table}[htbp]
-%  \centering
-%  \caption{Diese Tabelle zeigt nicht die Daten von etwas Sinnvollem, sondern einfach irgend etwas. Tabellenbeschriftungen sind oft drüber.}
-%  \label{tab:irgendwas}
-%  \begin{tabular}{lrcp{5cm}}
-%    \toprule
-%    \multicolumn{3}{c}{Spalten} & Absatz 5cm \\
-%    \cmidrule(lr){1-3}
-%    linksbündig & rechtsbündig & zentriert & \\
-%    \midrule
-%    1.0 & -1.1 & 1.2 & toller Text, der nach 5cm umbricht und dafür brauchen wir einfach mehr Text. \\
-%    4321.1 & 6543.2 & 7654.3 & mehr Text \\
-%    2.44 & 4.66 & 6.88 & 8.00 \\
-%    \bottomrule
-%  \end{tabular}
-%\end{table}
-%
-%
-%% Source-Code -----------------------------------------------------------------
-%\subsection{Quellcode}
-%Code-Beispiele können mittels \texttt{lstlisting}-Environment eingebunden werden.
-%Siehe \autoref{lst:mylisting} als Beispiel.
-%Alternativen wie \texttt{minted} sind selbstverständlich auch erlaubt, solange sie Features wie Syntax-Highlighting und Zeilennummern mitbringen.
-%Code-Beispiele sollten minimal sein, d.h.\ auf den Punkt gebracht und keinen überflüssigen Code beinhalten.
-%Es muss standardkonformer Code sein und mit hinzugefügtem Boilerplate-Code (main, Auslassungen von Überflüssigem, \dots) ohne Fehler compilierbar sein.
-%
-%Quellcode aus Dateien kann per \texttt{lstinputlisting} einbezogen werden.
-%Für Inline-Code \texttt{lstinline} verwenden.
-%Für abstrakte Algorithmen (kein C++-Code) besser eines der algorithm-Packages verwenden.
-%
-%\begin{lstlisting}[style=cpp, caption={Example using Lstlisting}, label={lst:mylisting}, numbers=left]
-%// I'm a comment!
-%template <typename T>
-%struct LessThan {
-%  bool operator(T a, T b) { return a < b; };
-%};
-%
-%/*
-% * I'm a multiline comment!
-% * Ich bin in Kommentar, der mehrere Zeilen verwendet!
-% */
-%std::vector<int> v = { 5, 4, 3, 2, 1 };
-%std::sort(v.begin(), v.end(), LessThan<int>());
-%
-%std::cout << "Hello, World" << std::endl;
-%\end{lstlisting}
-%
-%
-%% Pseudo-Code -----------------------------------------------------------------
-%\subsection{Pseudo-Code}
-%Für Pseudo-Code kann die \texttt{algorithm}-Umgebung verwendet werden.
-%Ein Beispiel ist in \autoref{alg:ppo} zu sehen.
-%\begin{algorithm}
-%	\caption{PPO}
-%	\begin{algorithmic}[htbp]
-%		\For {$iteration=1,2,\ldots$}
-%			\For {$actor=1,2,\ldots,N$}
-%				\State Run policy $\pi_{\theta_{old}}$ in environment for $T$ time steps
-%				\State Compute advantage estimates $\hat{A}_{1},\ldots,\hat{A}_{T}$
-%			\EndFor
-%			\State Optimize surrogate $L$ wrt. $\theta$, with $K$ epochs and minibatch size $M\leq NT$
-%			\State $\theta_{old}\leftarrow\theta$
-%		\EndFor
-%	\end{algorithmic} 
-%	\label{alg:ppo}
-%\end{algorithm}
-%
-%
-%% Custom graphics -----------------------------------------------------------------
-%\subsection{Graphiken}
-%Wenn man einfache Graphiken in seiner Ausarbeitung verwenden will, bietet es sich heirfür immer an, diese selbst zu machen. 
-%Eine Möglichkeit hierfür ist zum Beispiel TikZ.
-%Aber Achtung: zu viele TikZ Bilder können die Compile-Zeit von LaTex negativ beeinflussen.
-%
-%\begin{figure}[htbp]
-%    \centering
-%    \begin{tikzpicture}
-%        \fill[orange] (-0.5, -0.5) rectangle (2.5, 1.5);
-%        \node[circle, fill=white, draw=black] (A) at (1, 1) {$A$};
-%        \node[circle, fill=white, draw=black] (B) at (2, 0) {$B$};
-%        \node[circle, fill=white, draw=black] (C) at (0, 0) {$C$};
-%        \draw[-to] (A) -- (B);
-%        \draw[-to] (B) -- (C);
-%        \draw[-to] (C) -- (A);
-%    \end{tikzpicture}
-%    \caption{Ein einfaches Beispiel eines Graphen gezeichnet via TikZ.}
-%    \label{fig:tikz}
+%\begin{figure}[!t]
+%\centering
+%\includegraphics[width=2.5in]{myfigure}
+% where an .eps filename suffix will be assumed under latex, 
+% and a .pdf suffix will be assumed for pdflatex; or what has been declared
+% via \DeclareGraphicsExtensions.
+%\caption{Simulation results for the network.}
+%\label{fig_sim}
 %\end{figure}
 
-%\subsection{Zum Schluss}
-%\dots viel Spaß!
+% Note that the IEEE typically puts floats only at the top, even when this
+% results in a large percentage of a column being occupied by floats.
+% However, the Computer Society has been known to put floats at the bottom.
 
 
-% ---- Bibliography ----
-\bibliographystyle{splncs04}%alpha, arabic
-\bibliography{bib/literatur.bib}
+% An example of a double column floating figure using two subfigures.
+% (The subfig.sty package must be loaded for this to work.)
+% The subfigure \label commands are set within each subfloat command,
+% and the \label for the overall figure must come after \caption.
+% \hfil is used as a separator to get equal spacing.
+% Watch out that the combined width of all the subfigures on a 
+% line do not exceed the text width or a line break will occur.
+%
+%\begin{figure*}[!t]
+%\centering
+%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
+%\label{fig_first_case}}
+%\hfil
+%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
+%\label{fig_second_case}}
+%\caption{Simulation results for the network.}
+%\label{fig_sim}
+%\end{figure*}
+%
+% Note that often IEEE papers with subfigures do not employ subfigure
+% captions (using the optional argument to \subfloat[]), but instead will
+% reference/describe all of them (a), (b), etc., within the main caption.
+% Be aware that for subfig.sty to generate the (a), (b), etc., subfigure
+% labels, the optional argument to \subfloat must be present. If a
+% subcaption is not desired, just leave its contents blank,
+% e.g., \subfloat[].
+
+
+% An example of a floating table. Note that, for IEEE style tables, the
+% \caption command should come BEFORE the table and, given that table
+% captions serve much like titles, are usually capitalized except for words
+% such as a, an, and, as, at, but, by, for, in, nor, of, on, or, the, to
+% and up, which are usually not capitalized unless they are the first or
+% last word of the caption. Table text will default to \footnotesize as
+% the IEEE normally uses this smaller font for tables.
+% The \label must come after \caption as always.
+%
+%\begin{table}[!t]
+%% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+% if using array.sty, it might be a good idea to tweak the value of
+% \extrarowheight as needed to properly center the text within the cells
+%\caption{An Example of a Table}
+%\label{table_example}
+%\centering
+%% Some packages, such as MDW tools, offer better commands for making tables
+%% than the plain LaTeX2e tabular which is used here.
+%\begin{tabular}{|c||c|}
+%\hline
+%One & Two\\
+%\hline
+%Three & Four\\
+%\hline
+%\end{tabular}
+%\end{table}
+
+
+% Note that the IEEE does not put floats in the very first column
+% - or typically anywhere on the first page for that matter. Also,
+% in-text middle ("here") positioning is typically not used, but it
+% is allowed and encouraged for Computer Society conferences (but
+% not Computer Society journals). Most IEEE journals/conferences use
+% top floats exclusively. 
+% Note that, LaTeX2e, unlike IEEE journals/conferences, places
+% footnotes above bottom floats. This can be corrected via the
+% \fnbelowfloat command of the stfloats package.
+
+
+\input{Report-Sections/Introduction}
+\input{Report-Sections/GettingStarted.tex}
+\input{Report-Sections/Architecture}
+\input{Report-Sections/GameLoop}
+\input{Report-Sections/Terrain}
+\input{Report-Sections/Physics}
+\input{Report-Sections/Rendering}
+\input{Report-Sections/Conclusion}
+\input{Report-Sections/FutureWork}
+
+% if have a single appendix:
+%\appendix[Proof of the Zonklar Equations]
+% or
+%\appendix  % for no appendix heading
+% do not use \section anymore after \appendix, only \section*
+% is possibly needed
+
+% use appendices with more than one appendix
+% then use \section to start each appendix
+% you must declare a \section before using any
+% \subsection or using \label (\appendices by itself
+% starts a section numbered zero.)
+%
+
+
+%\appendices
+%\section{Proof of the First Zonklar Equation}
+%Appendix one text goes here.
+
+% you can choose not to have a title for an appendix
+% if you want by leaving the argument blank
+%\section{}
+%Appendix two text goes here.
+
+
+% use section* for acknowledgment
+%\ifCLASSOPTIONcompsoc
+  % The Computer Society usually uses the plural form
+%  \section*{Acknowledgments}
+%\else
+  % regular IEEE prefers the singular form
+%  \section*{Acknowledgment}
+%\fi
+
+
+%The authors would like to thank...
+
+
+% Can use something like this to put references on a page
+% by themselves when using endfloat and the captionsoff option.
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+\bibliography{bib/literatur.bib}{}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+% \begin{thebibliography}{1}
+% \end{thebibliography}
+
+% biography section
+% 
+% If you have an EPS/PDF photo (graphicx package needed) extra braces are
+% needed around the contents of the optional argument to biography to prevent
+% the LaTeX parser from getting confused when it sees the complicated
+% \includegraphics command within an optional argument. (You could create
+% your own custom macro containing the \includegraphics command to make things
+% simpler here.)
+%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
+% or if you just want to reserve a space for a photo:
+
+%\begin{IEEEbiography}{Michael Shell}
+%Biography text here.
+%\end{IEEEbiography}
+
+% if you will not have a photo at all:
+%\begin{IEEEbiographynophoto}{John Doe}
+%Biography text here.
+%\end{IEEEbiographynophoto}
+
+% insert where needed to balance the two columns on the last page with
+% biographies
+%\newpage
+
+%\begin{IEEEbiographynophoto}{Jane Doe}
+%Biography text here.
+%\end{IEEEbiographynophoto}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+
+
+% that's all folks
+% \end{document}
 
 \end{document}

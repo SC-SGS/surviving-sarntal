@@ -1,0 +1,78 @@
+% \subsection{Way of working: Scrum and other methodologies}
+% Prior to starting the project, we, as a team, devised a project charter that encompasses our vision and mission for the upcoming project.
+% Additionally, it includes an analysis of potential challenges and strategies to address them,
+% as well as concrete working agreements, including tools to use, style guides and organisational decisions.
+% The further development of the game and our collaboration within the team were based on the aforementioned project charter.
+
+% On a weekly basis, a meeting was held with our supervisor.
+% During these meetings, the current progress regarding the project timeline, ideas and challenges occurring in development were discussed.
+% Furthermore, two time slots were determined each week for a brief discussion of each team member's current work.
+% The GitLab \glqq Issues\grqq{} were used to determine feasible work packages, which then could be assigned to one team member.
+% Additionally, the Gitlab \glqq Issue Board\grqq{} was used to provide an overview of the progress of each issue.
+
+% Once an issue had been resolved by one team member, a comprehensive review of another team member was required
+% before the changes could be incorporated into the mainline.
+% This measure was implemented with the objective of guaranteeing code quality and correctness.
+
+% The project's continuous progress was ensured by structuring it in sprints.
+% We carried out a total of three sprints, whereby at the beginning of each sprint we defined the objectives at the end of the sprint
+% and the issues to be dealt with.
+
+\section{Getting Started}
+The project is compatible with Ubuntu 24.04.1 and also supports macOS. 
+It includes several bash scripts to simplify installation, running, and testing. 
+A platform-agnostic script handles installing dependencies across different operating systems. 
+There are separate installation processes for playing the game and for development, with an additional script provided for developers. 
+Information on contributing to development can be found in the project documentation \cite{ProjectWiki}.
+
+\subsection{Installing and Running the Game}
+To run the game, the script \code{user\_setup.sh} can be used to facilitate the installation of the required packages and dependencies.
+In that case, run the following command from the root project directory:
+
+\begin{verbatim}
+$ source build-utils/user_setup.sh
+\end{verbatim}
+
+%The following packages will be installed based on the operating system:
+%\begin{itemize}
+%    \item \textbf{Ubuntu:}
+%  \code{build-essential cmake xorg-dev libsdl2-dev}
+%    \item \textbf{MacOS:}
+%  \code{cmake sdl2}.
+%\end{itemize}
+%The installation of the packages on MacOS requires the use of Homebrew.
+%If you do not have it installed you can still run the \code{user\_setup.sh} script, which will install it.
+
+The installation script handles dependencies for both operating systems.
+Once all of the dependencies have been installed, the script \code{run.sh} can be executed in order to run the game:
+\begin{verbatim}
+$ source build-utils/run.sh
+\end{verbatim}
+
+\subsection{YAML Configuration}
+
+In this project, a YAML configuration file is used to manage settings and parameters that control various aspects of the game, such as behavior, resources and environmental constants.
+The human-readable YAML format allows easy modification of game elements, without the need for recompilation.
+This approach enhances development workflow by supporting rapid iterations and testing. The configuration includes:
+
+\begin{itemize}
+  \item \textbf{Run Mode and Game Settings:} 
+  The configuration begins with a global setting for development mode (\code{run-dev-mode}). 
+  When enabled, it provides additional functionality for developers, helping to debug specific components.
+
+  \item \textbf{Assets:} 
+  Specifies all audio and visual assets for the game.
+
+  \item \textbf{Items:} 
+  Configures game items with their attributes.
+
+  \item \textbf{Landmarks:}
+  Defines landmarks, such as the Statue of Liberty or Mount Everest, which act as height references during gameplay.
+
+  \item \textbf{Game Constants:} 
+  Includes parameters for in-game mechanics like player movement, health, and environmental interactions. Constants for terrain, item spawning, and physics can be adjusted here, allowing developers to fine-tune gameplay by modifying values such as jump velocity or rock spawn frequency.
+\end{itemize}
+
+\subsection{Development Mode}
+A dedicated \code{DevMode} is provided, allowing developers to test the game in a controlled environment. This mode bypasses the standard game flow to aid in debugging and fine-tuning specific mechanics.
+\pagebreak

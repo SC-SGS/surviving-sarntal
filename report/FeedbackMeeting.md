@@ -1,0 +1,27 @@
+- Summarize more
+- Not so many titles
+- ~~Have a clear reference to the repo code~~
+- ~~remove the from scratch. Refactored ..~~
+- Make sure there are no capital letters
+- Do not mention the debug mode multiple times
+- Clear difference between the Debug mode and the dev mode
+- Reference figures at least once in the text
+- Make sure the way we reference figures and diagrams is consistent across the report.
+- The game loop as part of 3 at the beginning.
+- Are sections references really links?
+- Use the same tense. It should be present tense unless it makes sense.
+- Oxford comma should be consistent
+- We could make the bibliography shorter
+- Shorten Physics part
+- Run it in a a tool for spelling and grammar mistakes
+- Agree on numbers for equations or not
+- Fig 12 is taking a lot of space, remove the letters
+- Use italics for spf in the physics part
+- Runtime under fig 14. Make the font fo fig 14 larger
+- Change the legend position in fig 14
+- Move the pictures of the game from the intro to the rendering part
+- Make sure the picture of dev mode and the normal game are of the same state.
+- Change diss on flecs to mention the time constraints
+- Remove diss on old game
+- More explanation on the multiplayer mode
+- Remove fig 16 if needed for space

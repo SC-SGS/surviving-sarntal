@@ -12,8 +12,8 @@
 #include "raylib.h"
 #include "renderers/EntityRenderer.h"
 #include "renderers/HudRenderer.h"
-#include "renderers/MountainRenderer.h"
 #include "renderers/PolygonRenderer.h"
+#include "renderers/TerrainRenderer.h"
 
 constexpr char WINDOW_NAME[] = "Surviving Sarntal";
 
@@ -25,7 +25,7 @@ class Renderer {
              Camera2D &camera,
              GameConstants &gameConstants,
              MenuEngine &menuEngine,
-             MountainRenderer &mountainRenderer,
+             TerrainRenderer &terrainRenderer,
              EntityRenderer &entityRenderer,
              HudRenderer &hudRenderer);
     ~Renderer() = default;
@@ -42,7 +42,7 @@ class Renderer {
     GameConstants &gameConstants;
     MenuEngine &menuEngine;
     // Renderers
-    MountainRenderer &mountainRenderer;
+    TerrainRenderer &mountainRenderer;
     EntityRenderer &entityRenderer;
     HudRenderer &hudRenderer;
 
