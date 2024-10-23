@@ -25,6 +25,8 @@ coverage*
 *.blg
 *.log
 *bak
+*.DB_Store
+
 
 #Ignore docs
 docs/

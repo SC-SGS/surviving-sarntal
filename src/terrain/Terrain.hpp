@@ -17,6 +17,11 @@ class Terrain {
   public:
     Terrain(HikerConstants &hikerConstants, TerrainConstants &terrainConstants, ResourceManager &resourceManager);
 
+    Terrain(std::vector<Vector> &groundPoints,
+            HikerConstants &hikerConstants,
+            TerrainConstants &terrainConstants,
+            ResourceManager &resourceManager);
+
     /**
      * Generates a biome of the given type on the right side of the currently existing terrain.
      * IMPORTANT: The given length is the length the new biome will have AT LEAST. The biome will generate points until

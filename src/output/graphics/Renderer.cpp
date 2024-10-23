@@ -12,7 +12,7 @@ Renderer::Renderer(World &world,
                    Camera2D &camera,
                    GameConstants &gameConstants,
                    MenuEngine &menuEngine,
-                   MountainRenderer &mountainRenderer,
+                   TerrainRenderer &terrainRenderer,
                    EntityRenderer &entityRenderer,
                    HudRenderer &hudRenderer)
     : world(world),
@@ -20,7 +20,7 @@ Renderer::Renderer(World &world,
       camera(camera),
       gameConstants(gameConstants),
       menuEngine(menuEngine),
-      mountainRenderer(mountainRenderer),
+      mountainRenderer(terrainRenderer),
       entityRenderer(entityRenderer),
       hudRenderer(hudRenderer) {
 
