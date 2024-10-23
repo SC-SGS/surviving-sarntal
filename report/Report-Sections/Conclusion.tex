@@ -1,0 +1,18 @@
+\section{Conclusion / Discussion}
+
+The original Surviving Sarntal was developed during the Ferienakademie 2023 as a proof of concept under heavy time constraints, hence it suffered from issues with code maintainability, extensibility, and readability.
+Therefore, we adapted the game from the flecs ECS framework \cite{flecs_library} to OOP, which required significant refactoring, including redesigning the game loop.
+Nonetheless, the new architecture, while less performant, is now far more modular and maintainable, easing future development.
+
+Designing our own physics engine was another pivotal aspect of the rework. 
+The initial implementation handled simple collisions with basic circular objects and a piecewise linear terrain.
+Our custom physics engine supports arbitrary convex polygons, which allowed us to introduce richer game mechanics and interactions. 
+Though this increased the complexity of collision detection algorithms, our performance benchmarks show the engine is capable of handling a sufficiently large number of entities without significant performance degradation. 
+However, future versions may require optimization for handling larger, more dynamic environments.
+
+In addition to technical improvements, we reworked the terrain system by incorporating two-dimensional splines, offering a more challenging and visually engaging landscape. 
+This change, coupled with the introduction of new mechanics like terrain fall-off and item interaction, has drastically enhanced the gameplay experience. 
+The new audio and graphics have further transformed the original idea for the game into a well-rounded game. 
+
+In conclusion, the rework of Surviving Sarntal resulted in a more modular, maintainable, and engaging game. 
+We applied core software engineering principles and best practices throughout the development process, ensuring high code quality while vastly improving user experience. 

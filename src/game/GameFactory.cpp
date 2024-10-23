@@ -27,11 +27,10 @@ GameFactory::GameFactory(Camera2D &camera)
       // Renderer
       camera(camera),
       polygonRenderer(resourceManager),
-      mountainRenderer(camera, gameConstants, resourceManager),
+      terrainRenderer(camera, gameConstants, resourceManager),
       entityRenderer(world, camera, gameConstants, resourceManager, polygonRenderer),
       hudRenderer(world, camera, gameConstants, resourceManager),
-      renderer(
-          world, resourceManager, camera, gameConstants, menuEngine, mountainRenderer, entityRenderer, hudRenderer),
+      renderer(world, resourceManager, camera, gameConstants, menuEngine, terrainRenderer, entityRenderer, hudRenderer),
       collisionRenderer(world, gameConstants, camera),
       // Spawner
       difficultyService(DifficultyService::getInstance()),
@@ -95,9 +94,9 @@ DevMode GameFactory::buildDevMode() {
 }
 
 Vector GameFactory::getInitialHikerPosition() {
-    floatType worldWidth = (this->world.getMaxX() - this->world.getMinX());
-    floatType hikerRelativeSpawn = this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth;
-    floatType hikerPositionX = worldWidth * hikerRelativeSpawn + this->world.getMinX();
-    floatType hikerPositionY = terrain.getMaxHeight(hikerPositionX);
+    const floatType worldWidth = (this->world.getMaxX() - this->world.getMinX());
+    const floatType hikerRelativeSpawn = this->gameConstants.hikerConstants.spawnXRelativeToScreenWidth;
+    const floatType hikerPositionX = worldWidth * hikerRelativeSpawn + this->world.getMinX();
+    const floatType hikerPositionY = terrain.getMaxHeight(hikerPositionX);
     return {hikerPositionX, hikerPositionY};
 }
