@@ -16,6 +16,15 @@ class Positioner {
                         PhysicsConstants &physicsConstants,
                         TerrainConstants &terrainConstants);
     ~Positioner() = default;
+
+    /**
+     * @brief Updates position of world entities.
+     *
+     * The rocks and the hiker are moved to the next position that is reached in the discrete time step with their
+     * current velocity. May violate rigid body constraints and lead to an invalid world state if collisions are not
+     * handled afterwards. The world border and monster are moved in x direction. The monster is placed on top of the
+     * terrain.
+     */
     void updatePositions() const;
 
     void setDeltaT(floatType deltaT);

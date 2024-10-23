@@ -51,12 +51,14 @@ class PhysicsEngine {
     static double exponentialMovingAvg;
 
     /**
+     * @brief Performs the physics update, simulating the time for the last frame.
+     *
      * Perform N = frameTime / deltaT update steps and calculateYPos at the end.
      * The first of the N updates takes into consideration the inputs from the last iteration of the game loop.
      * The state of the world at the end of this method should be the state at exactly the time, the next frame is
      * rendered.
      *
-     * This method accepts a compromise between having a fixed time step and caclculating the exact state of the game
+     * This method accepts a compromise between having a fixed time step and calculating the exact state of the game
      * at render time. We accept having a latency of up to min(frameTime, deltaT) and corresponding input aliasing
      * effects.
      *
@@ -67,17 +69,18 @@ class PhysicsEngine {
     void setDeltaT(floatType deltaT);
 
     /**
-     * Resets the physics engine
+     * @brief Resets the physics engine
      */
     void reset();
 
     /**
-     * Starts recording the time needed for update steps.
+     * @brief Starts recording the time needed for update steps.
      */
     void startRecording();
 
     /**
-     * Stops the current recording and returns it.
+     * @brief Stops the current recording and returns it.
+     *
      * Should only be called after a recording has been started if you want meaningful results.
      * @return
      */
@@ -97,6 +100,8 @@ class PhysicsEngine {
     ~PhysicsEngine() = default;
 
     /**
+     * @brief Pauses the physics engine until the next call of update()
+     *
      * Sets gameRunning to false, making sure, that the next physics step restarts the timer.
      */
     void pause();
