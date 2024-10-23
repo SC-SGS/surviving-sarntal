@@ -8,17 +8,17 @@ const std::vector<TerrainPhase> Mountain::mountainPhaseChoices = {
     // slightly uphill - OK
     {{3.0f, 1.5f}, 0.2f, 10, 0, 25},
 
-    // slightly downhill - OK TODO Do we want this?
-    {{3.0f, -0.5f}, 0.4f, 8, 4},
+    // slightly downhill - OK
+    {{3.0f, -0.5f}, 0.4f, 8, 0, 4},
 
     // steep uphill - OK
     {{3.0f, 3.5f}, 0.3f, 8, 1, 10},
 
     // steep downhill - OK
-    {{3.0f, -2.5f}, 0.4f, 5, 2},
+    {{3.0f, -2.5f}, 0.4f, 5, 1, 3},
 
     // overhang
-    {{-2.5f, 0.0f}, 0.5f, 5, 0, 5}};
+    {{-2.5f, 0.0f}, 0.5f, 5, 0, 20}};
 
 const TerrainPhase Mountain::mountainFirstPhase = {{3.0f, 0.5f}, 0.0f, 3, 0, 0};
 
