@@ -86,10 +86,10 @@ void AudioService::playSoundWithSpeedIfNotAlreadyPlaying(const std::string &soun
 
             // Log the action
             spdlog::info("Playing a sound with name: {} at speed: {}", soundName, speed);
-        }
 
-        // Set the playback speed (pitch)
-        SetSoundPitch(sound, speed);
+            // Set the playback speed (pitch)
+            SetSoundPitch(sound, speed);
+        }
 
         // Log the action
         spdlog::debug("Playing a sound with name: {} at speed: {}", soundName, speed);

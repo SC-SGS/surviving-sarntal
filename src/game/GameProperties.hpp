@@ -24,10 +24,10 @@ struct HikerConstants {
     floatType spawnXRelativeToScreenWidth;
 
     // Hiker size
-    floatType hikerHeight;
+    floatType hikerSize;
     floatType hikerWidth;
-    floatType crouchedHikerHeight;
-    floatType crouchedHikerWidth;
+    floatType hikerSizeRatio;
+    floatType hikerCrouchRatio;
 
     floatType mass;
 
@@ -52,7 +52,7 @@ struct ItemsConstants {
     floatType collectionRadius;
     int slotsPerInventory;
     int itemsPerSlot;
-    int kaiserschmarrnHealthRestoration;
+    floatType kaiserschmarrnHealthRestoration;
     int coinScore;
     floatType coinAccelerationFactor;
 
@@ -71,12 +71,6 @@ struct RockConstants {
     // Rock size
     floatType minRockSize;
     floatType maxRockSize;
-
-    // Rock speed
-    floatType minSpawnLinearMomentum;
-    floatType maxSpawnLinearMomentum;
-    floatType minSpawnAngularMomentum;
-    floatType maxSpawnAngularMomentum;
 
     // Rock spawn
     floatType minRockDensity;
@@ -193,6 +187,8 @@ struct RockSpawnerConstants {
     std::vector<floatType> rockTypePhase;
     floatType minAngularMomentum;
     floatType maxAngularMomentum;
+    floatType minLinearMomentum;
+    floatType maxLinearMomentum;
     int minNumPointsForGeneration;
     int maxNumPointsForGeneration;
     floatType minRandYSpawnOffset;
