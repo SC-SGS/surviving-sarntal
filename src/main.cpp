@@ -23,6 +23,8 @@ void handleFullScreen() {
         ToggleFullscreen();
     } else {
         SetWindowSize(graphics::SCREEN_WIDTH_IN_PIXEL, graphics::SCREEN_HEIGHT_IN_PIXEL);
+        BeginDrawing();
+        EndDrawing();
     }
 }
 

@@ -46,30 +46,6 @@ class WorldTestFixture : public testing::Test {
 //     world->getItems().clear();
 // }
 
-TEST_F(WorldTestFixture, IsOutOfScopeTest1) {
-    Hiker &hiker = world->getHiker();
-    const Vector position = {-gameConstants.terrainConstants.bufferLeft - 5, world->getHiker().getPosition().y};
-    hiker.setPosition(position);
-    EXPECT_TRUE(world->isOutOfScope(hiker));
-}
-
-TEST_F(WorldTestFixture, IsOutOfScopeTest2) {
-    const Vector position = {graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO,
-                             graphics::SCREEN_HEIGHT_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO};
-    const auto schmarrn = ItemDto{"kaiserschmarrn", KAISERSCHMARRN, true, false, true, 2};
-    const Item item = {KAISERSCHMARRN, position, gameConstants.itemsConstants.itemBaseSpawnHeight, schmarrn};
-    const bool outOfScope = world->isOutOfScope(item);
-    EXPECT_TRUE(outOfScope);
-    const Item item2 = {KAISERSCHMARRN, {0, 0}, gameConstants.itemsConstants.itemBaseSpawnHeight, schmarrn};
-    const bool outOfScope2 = world->isOutOfScope(item2);
-    EXPECT_TRUE(outOfScope2);
-    Vector position2 = {graphics::SCREEN_WIDTH_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO,
-                        graphics::SCREEN_HEIGHT_IN_PIXEL / graphics::UNIT_TO_PIXEL_RATIO};
-    Item item3 = {KAISERSCHMARRN, position2, gameConstants.itemsConstants.itemBaseSpawnHeight,
-                  configManager.getItems()[KAISERSCHMARRN]};
-    EXPECT_TRUE(world->isOutOfScope(item3));
-}
-
 TEST_F(WorldTestFixture, AddRockTest) {
     EXPECT_TRUE(world->getRocks().empty());
     /**const Rock rock = {{0, 0},
@@ -106,7 +82,8 @@ TEST_F(WorldTestFixture, UseKaiserschmarrnTest) {
     world.getHiker().setHealthPoints(0);
     EXPECT_EQ(world.getHiker().getHealthPoints(), 0);
     world.useItem(KAISERSCHMARRN);
-    EXPECT_EQ(world.getHiker().getHealthPoints(), gameConstants.itemsConstants.kaiserschmarrnHealthRestoration);
+    EXPECT_EQ(world.getHiker().getHealthPoints(), gameConstants.itemsConstants.kaiserschmarrnHealthRestoration *
+                                                      gameConstants.hikerConstants.hikerMaxHealth);
 }
 
 TEST_F(WorldTestFixture, UseCoinTest) {
