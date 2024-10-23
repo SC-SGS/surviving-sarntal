@@ -12,6 +12,12 @@
 class Destructor {
 
   public:
+    /**
+     * @brief Destructs entities that have left the scope of the game.
+     *
+     * Rocks, biomes, and items are despawned once they leave the scope of the game.
+     * It is checked whether the hiker should be killed by the monster.
+     */
     void destruct() const;
     explicit Destructor(World &world, EntityRenderer &entityRenderer, GameConstants &gameConstants);
     ~Destructor() = default;

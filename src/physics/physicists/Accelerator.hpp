@@ -10,6 +10,14 @@
 class Accelerator {
 
   public:
+    /**
+     * @brief Updates the velocities of all movable world entities.
+     *
+     * Currently, the hiker, the monster and rocks are accelerated.
+     * The monster is accelerated in x direction by acceleration values defined in the game constants.
+     * The rocs and the hiker (if he is in air) air accelerated in y-direction by a gravitational body force.
+     *
+     */
     void accelerate() const;
     void setDeltaT(floatType deltaT);
     explicit Accelerator(World &world, GameConstants &gameConstants);
@@ -25,7 +33,7 @@ class Accelerator {
     floatType deltaT;
 
     /**
-     * Calculates the sum of forces acting on the center of mass of a rock at the current time.
+     * Calculates the sum of forces applied to the center of mass of a rock at the current time.
      * Includes gravitational forces
      *
      * @param rock

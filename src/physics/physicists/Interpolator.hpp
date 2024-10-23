@@ -14,7 +14,12 @@ class Interpolator {
     explicit Interpolator(World &world);
     ~Interpolator() = default;
     /**
-     * Probably linear interpolation for positions and Slerp for orientations.
+     * @brief Interpolates the positions of all entities.
+     *
+     * The idea is to interpolate the positions between the last and current position based on the time left in the
+     * accumulator after a physics step. May increase visual accuracy but is currently not implemented and deemed
+     * unnecessary.
+     *
      * @param alpha blending factor of current and previous state (the two last states before the next frame)
      */
     void interpolate(floatType alpha) const;

@@ -14,8 +14,13 @@
 class CollisionHandler {
 
   public:
+    /**
+     * @brief Detects and resolves collisions.
+     *
+     * Checks for rock-rock, rock-hiker, rock-terrain, hiker-terrain collisions and resolves them by displacing objects
+     * until they are no longer colliding and applying appropriate reactive impulses.
+     */
     void handleCollisions() const;
-    void resolveRockCollisions() const;
 
     void setDeltaT(floatType deltaT);
     CollisionHandler(World &world,
@@ -36,6 +41,8 @@ class CollisionHandler {
     const GameConstants &gameConstants;
 
     floatType deltaT;
+
+    void resolveRockCollisions() const;
 
     /**
      * Checks whether a rock has a terrain collision and handles it if necessary by displacing and applying impulses.

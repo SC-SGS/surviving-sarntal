@@ -19,6 +19,13 @@ class Spawner {
             World &world,
             GameConstants &gameConstants);
     ~Spawner() = default;
+    /**
+     * @brief Spawns world entities
+     *
+     * Items and rocks are spawned.
+     * The biome generation thread is started and joined when the hiker approaches the right border of the current
+     * biome.
+     */
     void spawn();
 
     void reset();
@@ -32,16 +39,6 @@ class Spawner {
 
     bool generating = false;
     std::future<std::shared_ptr<Biome>> generatingThread;
-
-    /**
-     * Spawn rocks for this time step.
-     */
-    void spawnRocks() const;
-
-    /**
-     * Spawn new chunks of the mountain if necessary in this time step;
-     */
-    void spawnMountain() const;
 };
 
 #endif // SURVIVING_SARNTAL_SPAWNER_HPP
