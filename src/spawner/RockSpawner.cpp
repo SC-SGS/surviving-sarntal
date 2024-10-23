@@ -24,11 +24,12 @@ void RockSpawner::spawnRocks() {
 }
 
 void RockSpawner::spawnRock(const size_t idxRock) const {
-    const Vector linearMomentum = this->getRandLinearMomentum();
-    const floatType angularMomentum = this->getRandAngularMomentum();
     Vector position = this->getRockSpawnPosition(idxRock);
 
     const DynamicConvexPolygon poly = this->getRandDynamicPolygon(position);
+    const Vector linearMomentum =
+        this->getRandLinearMomentum() * (float)DifficultyService::getInstance().getCurrentDifficultyLevel();
+    const floatType angularMomentum = this->getRandAngularMomentum();
     const DynamicProperties dynamicProperties{position, 0, 0, linearMomentum, angularMomentum};
     this->createRock(position, poly, dynamicProperties);
     spdlog::debug("Rock spawned at position (x: {0}, y: {1})", position.x, position.y);
@@ -36,7 +37,7 @@ void RockSpawner::spawnRock(const size_t idxRock) const {
 
 Vector RockSpawner::getRandLinearMomentum() const {
     const floatType lowerBoundLinearMomentum = this->determineLowerBoundLinearMomentum();
-    const floatType upperBoundLinearMomentum = this->gameConstants.rockConstants.maxSpawnLinearMomentum;
+    const floatType upperBoundLinearMomentum = this->gameConstants.rockSpawnerConstants.maxLinearMomentum;
     const floatType xComponent =
         -1 * randomGenerator->getRandomRealNumber(lowerBoundLinearMomentum, upperBoundLinearMomentum);
     return {xComponent, 0};
@@ -120,10 +121,9 @@ floatType RockSpawner::getRandDensity() const {
 }
 
 floatType RockSpawner::determineLowerBoundLinearMomentum() const {
-    auto const &rockConst = this->gameConstants.rockConstants;
+    auto const &rockConst = this->gameConstants.rockSpawnerConstants;
     const floatType difficultyFactor = determineDifficultyFactor();
-    return difficultyFactor * (rockConst.maxSpawnLinearMomentum - rockConst.minSpawnLinearMomentum) +
-           rockConst.minSpawnLinearMomentum;
+    return difficultyFactor * (rockConst.maxLinearMomentum - rockConst.minLinearMomentum) + rockConst.minLinearMomentum;
 }
 
 floatType RockSpawner::determineDifficultyFactor() const {

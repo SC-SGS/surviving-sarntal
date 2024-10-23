@@ -1,5 +1,5 @@
-run-dev-mode: false # if true the manual tests will run instead of the normal game
-fullscreen: false
+run-dev-mode: true # if true the manual tests will run instead of the normal game
+fullscreen: true
 
 music:
   background-music: "../../assets/audio/happy-funny-kids.mp3"
@@ -108,23 +108,30 @@ items:
     spawnWeight: 1
 
 landmarks:
+  - name: "Mariana Trench"
+    height: -10994
   - name: "Statue of Liberty"
     height: 93
   - name: "Big Ben"
     height: 96
   - name: "Eiffel Tower"
     height: 300
+  - name: "Rittner Horn"
+    height: 2270
+  - name: "Großer Ifinger"
+    height: 2581
+  - name: "Hirzer"
+    height: 2781
   - name: "Mount Everest"
     height: 8849
 
 gameConstants:
   hikerConstants:
-    hikerMaxHealth: 100
+    hikerMaxHealth: 300
     spawnXRelativeToScreenWidth: 0.4
-    hikerHeight: 1.8
-    hikerWidth: 1.15
-    crouchedHikerHeight: 1.42
-    crouchedHikerWidth: 0.96
+    hikerSize: 1.8
+    hikerSizeRatio: 0.7
+    hikerCrouchRatio: 0.8
     mass: 800.0
     duckSpeedFactor: 0.35
     normalSpeed: 5.0
@@ -143,12 +150,12 @@ gameConstants:
     collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
-    kaiserschmarrnHealthRestoration: 30
+    kaiserschmarrnHealthRestoration: 0.2 # restores percentage of max health
     coinScore: 500
     coinAccelerationFactor: 0.05
     startSpawnTime: 5.0
-    minSpawnTime: 1
-    maxSpawnTime: 2
+    minSpawnTime: 3
+    maxSpawnTime: 10
     itemBaseSpawnHeight: 1
     itemMaxSpawnHeight: 2.6
     inventorySlotSize: 80.0
@@ -157,10 +164,6 @@ gameConstants:
     spawnRocks: true
     minRockSize: 0.32
     maxRockSize: 1.0
-    minSpawnLinearMomentum: 0.01
-    maxSpawnLinearMomentum: 10.0
-    minSpawnAngularMomentum: 0.1
-    maxSpawnAngularMomentum: 1.0
     spawnOffsetX: 0.5
     minRockDensity: 1.0
     maxRockDensity: 3.0
@@ -169,8 +172,8 @@ gameConstants:
     gravitationalConstant: -9.81
     gravitySpinEffectOnVertices: 0.05
     epsilon: 0.01 # should be "small"
-    rockRockBounciness: 0.4 # between 0 and 1 (wink wink*)
-    rockTerrainBounciness: 0.9 #between 0 and 1 (wink wink*)
+    rockRockBounciness: 0.2 # between 0 and 1 (wink wink*)
+    rockTerrainBounciness: 0.85 #between 0 and 1 (wink wink*)
     physicsDeltaT: 0.015 # ideally, 1/physicsDeltaT >> frameRate
     maxNumberOfResolutionSteps: 4
     maxNumberOfPhysicsStepsPerFrame: 10
@@ -183,7 +186,7 @@ gameConstants:
   inputConstants:
     maxGamepads: 8
     gamepadItemSwitchCooldown: 0.1
-    gamepadInitializingTime: 0
+    gamepadInitializingTime: 5
     gamepadInitializingCountdownFontSize: 120
     itemSwitchThreshold: 0.5
 
@@ -191,7 +194,7 @@ gameConstants:
     uiMargin: 20
     fontSizeScore: 30
     fontSizeAltimeter: 20
-    healthBarWidth: 200
+    healthBarWidth: 250
     healthBarHeight: 20
     positionToScoreRatio: 10
     altimeterSteps: 10
@@ -247,8 +250,10 @@ gameConstants:
     rockTypePhase: [ 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 ]
 
     #other constants
-    minAngularMomentum: -0.5
-    maxAngularMomentum: 1.0
+    minAngularMomentum: -2
+    maxAngularMomentum: 8
+    minLinearMomentum: 0.01
+    maxLinearMomentum: 10.0
     minNumPointsForGeneration: 50
     maxNumPointsForGeneration: 200
     minRandYSpawnOffset: 6
@@ -256,8 +261,8 @@ gameConstants:
 
   difficultyConstants:
     highesDifficultyLevel: 5 # The highest level possible
-    difficultyFactor: 20 # The size of the time step between the different levels
-    difficultyStartingPoint: 15 # The starting point at which level 1 starts (levels start at 0)
+    difficultyFactor: 60 # The size of the time step between the different levels
+    difficultyStartingPoint: 60 # The starting point at which level 1 starts (levels start at 0)
 
 # flat, exponential steps
 # ground-points: [[-100, 0], [-20, 0], [-10,0], [-5, 0], [-1, 0], [-0.5, 0], [0, 0], [0.5, 0], [1, 0], [5, 0], [10, 0], [20, 0], [100, 0]] #flat
@@ -278,5 +283,5 @@ ground-points: [ [ -100, 0 ], [ -10, 0 ], [ 0, 7 ], [ 3, 7 ], [ 4.7, 7 ], [ 7, 5
   # simple bowl
   #ground-points: [[-30, 100], [-29, 95], [-28, 90], [-27, 85], [-26, 80], [-25, 75], [-24, 70], [-23, 65], [-22, 60], [-21, 55], [-20, 50], [-19, 45], [-18, 40], [-17, 35], [-16, 30], [-15, 25], [-14, 20], [-13, 15], [-12, 10], [-11, 5], [-10, 0], [-9, 0], [-8, 0], [-7, 0], [-6, 0], [-5, 0], [-4, 0], [-3, 0], [-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 5], [12, 10], [13, 15], [14, 20], [15, 25], [16, 30], [17, 35], [18, 40], [19, 45], [20, 50], [21, 55], [22, 60], [23, 65], [24, 70], [25, 75], [26, 80], [27, 85], [28, 90], [29, 95], [30, 100]]
 
-  # quadratic bowl
+# quadratic bowl
 #ground-points: [[-25, 100], [-24, 92.16], [-23, 84.64], [-22, 77.44], [-21, 70.56], [-20, 64.00], [-19, 57.76], [-18, 51.84], [-17, 46.24], [-16, 40.96], [-15, 36.00], [-14, 31.36], [-13, 27.04], [-12, 23.04], [-11, 19.36], [-10, 16.00], [-9, 12.96], [-8, 10.24], [-7, 7.84], [-6, 5.76], [-5, 4.00], [-4, 2.56], [-3, 1.44], [-2, 0.64], [-1, 0.16], [0, 0], [1, 0.16], [2, 0.64], [3, 1.44], [4, 2.56], [5, 4.00], [6, 5.76], [7, 7.84], [8, 10.24], [9, 12.96], [10, 16.00], [11, 19.36], [12, 23.04], [13, 27.04], [14, 31.36], [15, 36.00], [16, 40.96], [17, 46.24], [18, 51.84], [19, 57.76], [20, 64.00], [21, 70.56], [22, 77.44], [23, 84.64], [24, 92.16], [25, 100]]

@@ -22,7 +22,7 @@ ConstraintChecker::ConstraintChecker(const std::shared_ptr<Ground> &ground,
         Vector delta = basePoint - lastPos;
         if (basePoint.x > lastPos.x && delta.computeSlope() < this->hikerConstants.maxClimbableSlope) {
             if (overhang) { // first point after an overhang is new minimal x pos
-                this->minXPos = basePoint.x + this->hikerConstants.hikerWidth;
+                this->minXPos = basePoint.x + this->hikerConstants.hikerSize * this->hikerConstants.hikerSizeRatio;
             }
             overhang = false;
         } else {
@@ -134,8 +134,7 @@ bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint, Vector newPoint
             newPoint.x <
                 oldPoint.x + this->hikerConstants.hikerWidth * this->terrainConstants.hikerClearanceTolerance &&
             newPoint.y > oldPoint.y &&
-            newPoint.y <
-                oldPoint.y + this->hikerConstants.hikerHeight * this->terrainConstants.hikerClearanceTolerance) {
+            newPoint.y < oldPoint.y + this->hikerConstants.hikerSize * this->terrainConstants.hikerClearanceTolerance) {
             return false;
         }
     } else {
@@ -143,8 +142,7 @@ bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint, Vector newPoint
             newPoint.x >
                 oldPoint.x - this->hikerConstants.hikerWidth * this->terrainConstants.hikerClearanceTolerance &&
             newPoint.y < oldPoint.y &&
-            newPoint.y >
-                oldPoint.y - this->hikerConstants.hikerHeight * this->terrainConstants.hikerClearanceTolerance) {
+            newPoint.y > oldPoint.y - this->hikerConstants.hikerSize * this->terrainConstants.hikerClearanceTolerance) {
             return false;
         }
     }
@@ -162,8 +160,8 @@ bool ConstraintChecker::isOutsideHikerClearance(Vector oldPoint,
 bool ConstraintChecker::isOutsideHikerClearanceAnyDirection(Vector oldPoint, Vector newPoint) const {
     if (newPoint.x > oldPoint.x - this->hikerConstants.hikerWidth * this->terrainConstants.hikerClearanceTolerance &&
         newPoint.x < oldPoint.x + this->hikerConstants.hikerWidth * this->terrainConstants.hikerClearanceTolerance &&
-        newPoint.y > oldPoint.y - this->hikerConstants.hikerHeight * this->terrainConstants.hikerClearanceTolerance &&
-        newPoint.y < oldPoint.y + this->hikerConstants.hikerHeight * this->terrainConstants.hikerClearanceTolerance) {
+        newPoint.y > oldPoint.y - this->hikerConstants.hikerSize * this->terrainConstants.hikerClearanceTolerance &&
+        newPoint.y < oldPoint.y + this->hikerConstants.hikerSize * this->terrainConstants.hikerClearanceTolerance) {
         return false;
     }
     return true;

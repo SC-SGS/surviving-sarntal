@@ -13,15 +13,15 @@ Hiker::Hiker(const Vector position,
              HikerConstants hikerConstants)
     : RenderedEntity(position), audioService(audioService), inputHandler(inputHandler), hikerConstants(hikerConstants) {
     velocity = {0, 0};
-    height = hikerConstants.hikerHeight;
+    height = hikerConstants.hikerSize;
     width = hikerConstants.hikerWidth;
     healthPoints = hikerConstants.hikerMaxHealth;
     hikerMovement = HikerMovement();
     isAlive = true;
     animation = {4, 0, 0.3, 0};
-    this->walkingHitboxDelta = {0, hikerConstants.hikerHeight / 2.0f};
+    this->walkingHitboxDelta = {0, height / 2};
     Vector centerWalking = position + this->walkingHitboxDelta;
-    floatType halfHeightWalking = this->hikerConstants.hikerHeight / 2;
+    floatType halfHeightWalking = height / 2;
     std::vector<Vector> verticesWalking = {
         {0, -halfHeightWalking}, {halfHeightWalking / 4, 0}, {0, halfHeightWalking}, {-halfHeightWalking / 4, 0}};
     floatType densityWalking = this->hikerConstants.mass / PolygonGenerator::calculateAreaBodySpace(verticesWalking);
@@ -29,9 +29,9 @@ Hiker::Hiker(const Vector position,
         centerWalking, verticesWalking, std::vector<Vector2>{verticesWalking.size() + 1}, this->hikerConstants.mass,
         densityWalking, PolygonGenerator::calculateInertiaRotCentroidBodySpace(verticesWalking, densityWalking),
         DynamicProperties{});
-    this->crouchedHitboxDelta = {0, hikerConstants.crouchedHikerHeight / 2.0f};
+    floatType halfHeightCrouched = (height * hikerConstants.hikerCrouchRatio) / 2;
+    this->crouchedHitboxDelta = {0, halfHeightCrouched};
     Vector centerCrouched = position + this->crouchedHitboxDelta;
-    floatType halfHeightCrouched = this->hikerConstants.crouchedHikerHeight / 2;
     std::vector<Vector> verticesCrouched = {
         {0, -halfHeightCrouched}, {halfHeightCrouched / 4, 0}, {0, halfHeightCrouched}, {-halfHeightCrouched / 4, 0}};
     floatType densityCrouched = this->hikerConstants.mass / PolygonGenerator::calculateAreaBodySpace(verticesCrouched);
@@ -79,8 +79,8 @@ void Hiker::setHealthPoints(const int healthPoints) {
     if (healthPoints <= 0) {
         this->healthPoints = 0;
         this->isAlive = false;
-    } else if (healthPoints >= 100) {
-        this->healthPoints = 100;
+    } else if (healthPoints >= hikerConstants.hikerMaxHealth) {
+        this->healthPoints = hikerConstants.hikerMaxHealth;
     } else {
         this->healthPoints = healthPoints;
     }
@@ -107,15 +107,15 @@ const HikerMovement &Hiker::getHikerMovement() const { return hikerMovement; }
 void Hiker::setHikerMovement(const HikerMovement &movement) {
     switch (movement.getState()) {
     case HikerMovement::MOVING:
-        height = hikerConstants.hikerHeight;
+        height = hikerConstants.hikerSize;
         width = hikerConstants.hikerWidth;
         break;
     case HikerMovement::CROUCHED:
-        height = hikerConstants.crouchedHikerHeight;
-        width = hikerConstants.crouchedHikerWidth;
+        height = hikerConstants.hikerSize * hikerConstants.hikerCrouchRatio;
+        width = hikerConstants.hikerWidth * hikerConstants.hikerCrouchRatio;
         break;
     case HikerMovement::IN_AIR:
-        height = hikerConstants.hikerHeight;
+        height = hikerConstants.hikerSize;
         width = hikerConstants.hikerWidth;
         break;
     }
@@ -140,14 +140,14 @@ void Hiker::crouch() {
     if (this->hikerMovement.getState() == HikerMovement::MOVING) {
         this->audioService.playSound("crouch");
         this->hikerMovement.setState(HikerMovement::CROUCHED);
-        this->setHeight(hikerConstants.crouchedHikerHeight);
-        this->setWidth(hikerConstants.crouchedHikerWidth);
+        this->setHeight(hikerConstants.hikerSize * hikerConstants.hikerCrouchRatio);
+        this->setWidth(hikerConstants.hikerWidth * hikerConstants.hikerCrouchRatio);
     }
 }
 void Hiker::uncrouch() {
     if (this->hikerMovement.getState() == HikerMovement::CROUCHED) {
         hikerMovement.setState(HikerMovement::MOVING);
-        this->setHeight(hikerConstants.hikerHeight);
+        this->setHeight(hikerConstants.hikerSize);
         this->setWidth(hikerConstants.hikerWidth);
         this->shouldUncrouch = false;
     }
@@ -179,7 +179,7 @@ void Hiker::setMoving() {
     }
     if (this->hikerMovement.getState() != HikerMovement::CROUCHED) {
         this->hikerMovement.setState(HikerMovement::MOVING);
-        this->setHeight(hikerConstants.hikerHeight);
+        this->setHeight(hikerConstants.hikerSize);
         this->setWidth(hikerConstants.hikerWidth);
     }
     this->setVelocity({0.f, 0.f});
@@ -193,7 +193,7 @@ void Hiker::setInAir() {
     }
     this->hikerMovement.setState(HikerMovement::IN_AIR);
     this->setLastJump(0.0);
-    this->setHeight(hikerConstants.hikerHeight);
+    this->setHeight(hikerConstants.hikerSize);
     this->setWidth(hikerConstants.hikerWidth);
     this->audioService.interruptMovingSound();
 }

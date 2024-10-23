@@ -66,7 +66,7 @@ bool CollisionHandler::checkAndHandleTerrainCollision(Rock &rock) const {
             const auto shake =
                 (graphics::UNIT_TO_PIXEL_RATIO * rock.getLinearMomentum().length() * rock.getBoundingBox().getWidth() /
                  2 * this->gameConstants.visualConstants.rumbleIntensity) /
-                gameConstants.rockConstants.maxSpawnLinearMomentum;
+                gameConstants.rockSpawnerConstants.maxLinearMomentum;
             this->renderer.addShake(shake);
         }
     }
@@ -257,8 +257,8 @@ int CollisionHandler::rockDamage(const Rock &rock) const {
         std::abs(49 * (rock.getBoundingBox().getWidth() / 2 - gameConstants.rockConstants.minRockSize));
     const auto rockSizeRange = (gameConstants.rockConstants.maxRockSize - gameConstants.rockConstants.minRockSize) + 1;
     const auto rockSizeFactor = static_cast<int>((relativeRockSize / rockSizeRange));
-    const auto momentumFactor =
-        static_cast<int>(1 + rock.getLinearMomentum().length() / (gameConstants.rockConstants.maxSpawnLinearMomentum));
+    const auto momentumFactor = static_cast<int>(1 + rock.getLinearMomentum().length() /
+                                                         (gameConstants.rockSpawnerConstants.maxLinearMomentum));
     return rockSizeFactor * momentumFactor;
 }
 

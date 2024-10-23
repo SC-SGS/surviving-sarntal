@@ -6,19 +6,18 @@ simulation:
 
 gameConstants:
   hikerConstants:
-    hikerMaxHealth: 100
+    hikerMaxHealth: 300
     spawnXRelativeToScreenWidth: 0.4
-    hikerHeight: 1.8
-    hikerWidth: 1.15
-    crouchedHikerHeight: 1.42
-    crouchedHikerWidth: 0.96
+    hikerSize: 1.8
+    hikerSizeRatio: 0.7
+    hikerCrouchRatio: 0.8
     mass: 800.0
     duckSpeedFactor: 0.35
-    normalSpeed: 2.6
-    maxSpeed: 8.0 # Make sure this times airMovementSpeedFactor is higher than maxKillBarFactor * killBarBaseVelocity
+    normalSpeed: 5.0
+    maxSpeed: 13.0 # Make sure this times airMovementSpeedFactor is higher than maxKillBarVelocity
     jumpVelocity: 10.0
     airMovementSpeedFactor: 0.77
-    maxSpeedFactorNegSlope: 5.0
+    maxSpeedFactorNegSlope: 1.5 # This is actually a factor ;)
     maxClimbableSlope: 4.0
     knockbackIntensity: 0.5 # between 0 and 1
     knockbackLossPerStep: 0.25 # between 0 and 1
@@ -30,11 +29,11 @@ gameConstants:
     collectionRadius: 1.0
     slotsPerInventory: 3
     itemsPerSlot: 64
-    kaiserschmarrnHealthRestoration: 30
+    kaiserschmarrnHealthRestoration: 0.2 # restores percentage of max health
     coinScore: 500
     coinAccelerationFactor: 0.05
     startSpawnTime: 5.0
-    minSpawnTime: 2
+    minSpawnTime: 3
     maxSpawnTime: 10
     itemBaseSpawnHeight: 1
     itemMaxSpawnHeight: 2.6
@@ -44,10 +43,6 @@ gameConstants:
     spawnRocks: false
     minRockSize: 0.32
     maxRockSize: 1.0
-    minSpawnLinearMomentum: 0.01
-    maxSpawnLinearMomentum: 10.0
-    minSpawnAngularMomentum: 0.1
-    maxSpawnAngularMomentum: 1.0
     spawnOffsetX: 0.5
     minRockDensity: 1.0
     maxRockDensity: 3.0
@@ -70,37 +65,37 @@ gameConstants:
   inputConstants:
     maxGamepads: 8
     gamepadItemSwitchCooldown: 0.1
-    gamepadInitializingCountdownFontSize: 120
     gamepadInitializingTime: 3
+    gamepadInitializingCountdownFontSize: 120
     itemSwitchThreshold: 0.5
 
   visualConstants:
     uiMargin: 20
     fontSizeScore: 30
     fontSizeAltimeter: 20
-    healthBarWidth: 200
+    healthBarWidth: 250
     healthBarHeight: 20
     positionToScoreRatio: 10
     altimeterSteps: 10
-    rumbleIntensity: 0.4
-    rumbleDampening: 0.9
+    rumbleIntensity: 0.3 # between 0 and 1, 1 meaning full intensity
+    rumbleDampening: 0.1 # between 0 and 1, 1 meaning no dampening
     backgroundDistanceScale: 0.1
     cameraToHikerOffset: 1
     mountainGradientHeight: 300
     mountainResolution: 10
     shakeEnabled: false
     renderPhysicsStepSize: true
-    worldSize: 25 # The amount of terrain that is rendered in the world in meters
+    worldSize: 35 # The amount of terrain that is rendered in the world in meters
 
   audioConstants:
     musicEnabled: true
     musicVolume: 0.3
-    effectsThreshold: 35
+    effectsThreshold: 25
 
   barriersConstants:
     killBarBaseVelocity: 0.0
-    killBarAccelerationFactor: 0.015 # describes how quickly the killbar accelerates with an increasing right border
-    killBarMaxVelocity: 4.0 # => max killbar velocity is base velocity * max factor
+    killBarAccelerationFactor: 1.0001 # describes how quickly the killbar accelerates
+    killBarMaxVelocity: 7.0 # make sure the hiker max speed is a bit higher than this.
     playerRightBarrierOffset: 15.0
     monsterXRelativeToScreenWidth: 0.1
     monsterHeight: 3.6
@@ -134,8 +129,10 @@ gameConstants:
     rockTypePhase: [ 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 ]
 
     #other constants
-    minAngularMomentum: -0.5
-    maxAngularMomentum: 1.0
+    minAngularMomentum: -2
+    maxAngularMomentum: 8
+    minLinearMomentum: 0.01
+    maxLinearMomentum: 10.0
     minNumPointsForGeneration: 50
     maxNumPointsForGeneration: 200
     minRandYSpawnOffset: 6
@@ -143,11 +140,8 @@ gameConstants:
 
   difficultyConstants:
     highesDifficultyLevel: 5 # The highest level possible
-    difficultyFactor: 5 # The size of the time step between the different levels
-    difficultyStartingPoint: 5 # The starting point at which level 1 starts (levels start at 0)
-
-
-
+    difficultyFactor: 60 # The size of the time step between the different levels
+    difficultyStartingPoint: 60 # The starting point at which level 1 starts (levels start at 0)
 
 # flat, exponential steps
 # ground-points: [[-100, 0], [-20, 0], [-10,0], [-5, 0], [-1, 0], [-0.5, 0], [0, 0], [0.5, 0], [1, 0], [5, 0], [10, 0], [20, 0], [100, 0]]

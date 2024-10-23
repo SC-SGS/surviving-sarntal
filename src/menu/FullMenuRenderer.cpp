@@ -67,9 +67,9 @@ void FullMenuRenderer::renderScoreOnEndscreen() {
     const char *xScoreText = xScoreString.c_str();
     const char *yScoreText = yScoreString.c_str();
 
-    const auto xScoreXPos = GetScreenWidth() / 2 - 100;
+    const auto xScoreXPos = static_cast<int>(static_cast<float>(GetScreenWidth()) / 2.3f);
     const auto xScoreYpos = 6 * GetScreenHeight() / 7 - 10;
-    const auto yScoreXPos = GetScreenWidth() / 2 + 70;
+    const auto yScoreXPos = static_cast<int>(static_cast<float>(GetScreenWidth()) / 1.8f);
     const auto yScoreYpos = 6 * GetScreenHeight() / 7 - 10;
     const auto fontSize = static_cast<int>(static_cast<float>(GetScreenWidth()) * 0.0125f);
     DrawText(xScoreText, xScoreXPos, xScoreYpos, fontSize, WHITE);
