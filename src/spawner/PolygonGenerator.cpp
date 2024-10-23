@@ -228,9 +228,10 @@ floatType PolygonGenerator::calculateInertiaOfTriangleRotatingAroundOriginP0(con
     const double width1 = (vertexH - vertexA).length();
     const double width2 = (vertexB - vertexH).length();
 
-    const double sign = vertexH.cross(vertexB) > 0 ? 1 : -1;
+    const double sign1 = vertexA.cross(vertexH) > 0 ? 1 : -1;
+    const double sign2 = vertexH.cross(vertexB) > 0 ? 1 : -1;
 
-    const double momentOfInertia = height * pow(width1, 3) / 4.0 + pow(height, 3) * width1 / 12.0 +
-                                   sign * (height * pow(width2, 3) / 4.0 + pow(height, 3) * width2 / 12.0);
+    const double momentOfInertia = sign1 * (height * pow(width1, 3) / 4.0 + pow(height, 3) * width1 / 12.0) +
+                                   sign2 * (height * pow(width2, 3) / 4.0 + pow(height, 3) * width2 / 12.0);
     return static_cast<floatType>(density * momentOfInertia);
 }

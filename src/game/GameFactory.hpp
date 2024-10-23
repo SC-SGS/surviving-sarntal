@@ -36,7 +36,7 @@ class GameFactory {
     // Renderer
     Camera2D &camera;
     PolygonRenderer polygonRenderer;
-    MountainRenderer mountainRenderer;
+    TerrainRenderer terrainRenderer;
     EntityRenderer entityRenderer;
     HudRenderer hudRenderer;
     Renderer renderer;
@@ -69,6 +69,10 @@ class GameFactory {
     DevMode devMode;
 
     Vector getInitialHikerPosition();
+
+    void buildTerrain();
+
+    static std::vector<Vector> groundPoints;
 };
 
 #endif // SURVIVING_SARNTAL_GAMEFACTORY_HPP

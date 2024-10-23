@@ -1,0 +1,35 @@
+\section{The Game}
+
+\todo{DO beter add some text here}
+\subsection{Goal of The Game}
+The objective of the game is for the player to achieve the highest possible score (measured as the vertical and horizontal distance)
+by surviving for the longest possible duration while climbing the terrain.
+
+\todo{Fix this}
+\todo{Make hiker gender neutral}
+\subsection{Entities}
+\textbf{Hiker}
+The hiker is controlled by the user of the game and his health is indicated by a health bar.
+If the hiker loses all his health points or falls behind the kill bar, the hiker dies and the game ends.
+The hiker has different movement options, including moving to the left and right in the x-direction, jumping and crouching.
+
+\textbf{Kill Bar/Monster}
+In the current version of the game, the kill bar is represented by a Yeti figure.
+It is situated at the left edge of the screen and moves continuously while trying to catch the hiker.
+
+\textbf{Items and Inventory}
+There are items spawning during the course of the game which can be collected by the hiker:
+
+\begin{itemize}
+\item Kaiserschmarrn: Eating the delicious Kaiserschmarrn will restore the hiker's health.
+\item Coin: Collecting a coin increases the coin score and increases the speed of the hiker.
+\item Duck: The duck provides a shield for a few seconds. As long as the hiker has the shield, he won't take damage from being hit by rocks.
+\item \todo{add bomb}
+\end{itemize}
+
+The items collected by the hiker are stored in an inventory.
+The hiker can switch between the items in the inventory and select them for use.
+
+\textbf{Rocks}
+New rocks are continuously generated and propelled through the air.
+When the hiker is hit by a rock, the hiker's health decreases.
