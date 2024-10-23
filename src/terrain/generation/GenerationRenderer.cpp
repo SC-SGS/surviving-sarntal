@@ -26,10 +26,9 @@ const void GenerationRenderer::render( // NOLINT [readability-function-size,-war
     Vector delta = {0.5f, 0.5f};
     Vector2 basePointRendering =
         GenerationRenderer::transformPosition(newGround->getBasePoints()->getStartPoint() + delta);
-    DrawRectangle(static_cast<int>(basePointRendering.x),
-                  static_cast<int>(basePointRendering.y - this->hikerConstants.hikerHeight),
-                  static_cast<int>(this->hikerConstants.hikerWidth), static_cast<int>(this->hikerConstants.hikerHeight),
-                  RED);
+    DrawRectangle(
+        static_cast<int>(basePointRendering.x), static_cast<int>(basePointRendering.y - this->hikerConstants.hikerSize),
+        static_cast<int>(this->hikerConstants.hikerWidth), static_cast<int>(this->hikerConstants.hikerSize), RED);
     rlBegin(RL_LINES);
     rlColor3f(1.0f, 0.0f, 0.0f);
     for (int i = 0; i < groundPolyRepresentation->getPoints().size() - 2; i++) {

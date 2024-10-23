@@ -43,8 +43,10 @@ TEST_F(HikerTestFixture, CrouchTest) {
     hiker.crouch();
 
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::CROUCHED);
-    EXPECT_EQ(hiker.getHeight(), gameConstants.hikerConstants.crouchedHikerHeight);
-    EXPECT_EQ(hiker.getWidth(), gameConstants.hikerConstants.crouchedHikerWidth);
+    EXPECT_EQ(hiker.getHeight(),
+              gameConstants.hikerConstants.hikerCrouchRatio * gameConstants.hikerConstants.hikerSize);
+    EXPECT_EQ(hiker.getWidth(),
+              gameConstants.hikerConstants.hikerCrouchRatio * gameConstants.hikerConstants.hikerWidth);
 }
 
 TEST_F(HikerTestFixture, UncrouchTest) {
@@ -55,7 +57,7 @@ TEST_F(HikerTestFixture, UncrouchTest) {
     hiker.uncrouch();
 
     EXPECT_EQ(hiker.getHikerMovement().getState(), HikerMovement::MOVING);
-    EXPECT_EQ(hiker.getHeight(), gameConstants.hikerConstants.hikerHeight);
+    EXPECT_EQ(hiker.getHeight(), gameConstants.hikerConstants.hikerSize);
     EXPECT_EQ(hiker.getWidth(), gameConstants.hikerConstants.hikerWidth);
 }
 

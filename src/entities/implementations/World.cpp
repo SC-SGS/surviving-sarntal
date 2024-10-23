@@ -27,7 +27,6 @@ floatType World::getMaxX() const { return maxX; }
 void World::setMaxX(const floatType maxX) { this->maxX = maxX; }
 
 Hiker &World::getHiker() const { return hiker; }
-
 Inventory &World::getInventory() const { return inventory; }
 
 Monster &World::getMonster() const { return monster; }
@@ -39,6 +38,9 @@ bool World::isOutOfScope(const RenderedEntity &entity) const {
                                                2 * this->gameConstants.rockConstants.maxRockSize;
     const floatType rightBorder = this->terrain.getRightBorder();
     result = entity.getPosition().x > rightBorder - 2 * this->gameConstants.rockConstants.maxRockSize || result;
+    result =
+        entity.getPosition().x < this->terrain.getLeftBorder() + 2 * this->gameConstants.rockConstants.maxRockSize ||
+        result;
     if (result) {
         spdlog::debug("An entity has left the scope of the game.");
     }
@@ -96,7 +98,9 @@ void World::useItem(const ItemType itemType) {
 }
 
 void World::useKaiserschmarrn() const {
-    this->hiker.addHealthPoints(gameConstants.itemsConstants.kaiserschmarrnHealthRestoration);
+    auto healthPoints = static_cast<int>(static_cast<floatType>(gameConstants.hikerConstants.hikerMaxHealth) *
+                                         gameConstants.itemsConstants.kaiserschmarrnHealthRestoration);
+    this->hiker.addHealthPoints(healthPoints);
     this->audioService.playSound("eat");
     spdlog::debug("Used Kaiserschmarrn.");
 }
@@ -161,8 +165,8 @@ void World::resetAttributes() {
     this->minX = 0;
     this->maxX = static_cast<floatType>(gameConstants.visualConstants.worldSize);
     this->coinScore = 0;
-    this->gameScore.x = this->hiker.getPosition().x;
-    this->gameScore.y = this->hiker.getPosition().y;
+    this->gameScore.x = 0;
+    this->gameScore.y = 0;
     this->items->clear();
     this->rocks->clear();
     this->inventory.reset();

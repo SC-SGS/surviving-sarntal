@@ -20,10 +20,10 @@ template <> struct convert<HikerConstants> {
 
         hikerConstants.hikerMaxHealth = node["hikerMaxHealth"].as<int>();
         hikerConstants.spawnXRelativeToScreenWidth = node["spawnXRelativeToScreenWidth"].as<floatType>();
-        hikerConstants.hikerHeight = node["hikerHeight"].as<floatType>();
-        hikerConstants.hikerWidth = node["hikerWidth"].as<floatType>();
-        hikerConstants.crouchedHikerHeight = node["crouchedHikerHeight"].as<floatType>();
-        hikerConstants.crouchedHikerWidth = node["crouchedHikerWidth"].as<floatType>();
+        hikerConstants.hikerSize = node["hikerSize"].as<floatType>();
+        hikerConstants.hikerSizeRatio = node["hikerSizeRatio"].as<floatType>();
+        hikerConstants.hikerWidth = hikerConstants.hikerSize * hikerConstants.hikerSizeRatio;
+        hikerConstants.hikerCrouchRatio = node["hikerCrouchRatio"].as<floatType>();
         hikerConstants.mass = node["mass"].as<floatType>();
         hikerConstants.duckSpeedFactor = node["duckSpeedFactor"].as<floatType>();
         hikerConstants.normalSpeed = node["normalSpeed"].as<floatType>();
@@ -51,7 +51,7 @@ template <> struct convert<ItemsConstants> {
         itemsConstants.collectionRadius = node["collectionRadius"].as<floatType>();
         itemsConstants.slotsPerInventory = node["slotsPerInventory"].as<int>();
         itemsConstants.itemsPerSlot = node["itemsPerSlot"].as<int>();
-        itemsConstants.kaiserschmarrnHealthRestoration = node["kaiserschmarrnHealthRestoration"].as<int>();
+        itemsConstants.kaiserschmarrnHealthRestoration = node["kaiserschmarrnHealthRestoration"].as<floatType>();
         itemsConstants.coinScore = node["coinScore"].as<int>();
         itemsConstants.coinAccelerationFactor = node["coinAccelerationFactor"].as<floatType>();
         itemsConstants.startSpawnTime = node["startSpawnTime"].as<floatType>();
@@ -74,12 +74,8 @@ template <> struct convert<RockConstants> {
         rockConstants.spawnRocks = node["spawnRocks"].as<bool>();
         rockConstants.minRockSize = node["minRockSize"].as<floatType>();
         rockConstants.maxRockSize = node["maxRockSize"].as<floatType>();
-        rockConstants.minSpawnLinearMomentum = node["minSpawnLinearMomentum"].as<floatType>();
-        rockConstants.maxSpawnLinearMomentum = node["maxSpawnLinearMomentum"].as<floatType>();
         rockConstants.minRockDensity = node["minRockDensity"].as<floatType>();
         rockConstants.maxRockDensity = node["maxRockDensity"].as<floatType>();
-        rockConstants.minSpawnAngularMomentum = node["minSpawnAngularMomentum"].as<floatType>();
-        rockConstants.maxSpawnAngularMomentum = node["maxSpawnAngularMomentum"].as<floatType>();
         rockConstants.spawnOffsetX = node["spawnOffsetX"].as<floatType>();
 
         return true;
@@ -210,6 +206,8 @@ template <> struct convert<RockSpawnerConstants> {
         rockSpawnerConstants.rockTypePhase = node["rockTypePhase"].as<std::vector<floatType>>();
         rockSpawnerConstants.minAngularMomentum = node["minAngularMomentum"].as<floatType>();
         rockSpawnerConstants.maxAngularMomentum = node["maxAngularMomentum"].as<floatType>();
+        rockSpawnerConstants.minLinearMomentum = node["minAngularMomentum"].as<floatType>();
+        rockSpawnerConstants.maxLinearMomentum = node["maxAngularMomentum"].as<floatType>();
         rockSpawnerConstants.minNumPointsForGeneration = node["minNumPointsForGeneration"].as<int>();
         rockSpawnerConstants.maxNumPointsForGeneration = node["maxNumPointsForGeneration"].as<int>();
         rockSpawnerConstants.minRandYSpawnOffset = node["minRandYSpawnOffset"].as<floatType>();
