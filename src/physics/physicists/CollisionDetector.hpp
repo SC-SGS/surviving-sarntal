@@ -43,7 +43,7 @@ class CollisionDetector {
                                                           DynamicConvexPolygon &poly2) const;
 
     /**
-     * Returns a list of collisions of a polygon with the terrain. The terrain is approximated by a continuous line.
+     * Returns a collision of a polygon with the terrain. The terrain is approximated by a continuous line.
      *
      * @param poly
      * @return
