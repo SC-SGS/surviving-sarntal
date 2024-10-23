@@ -152,7 +152,7 @@ floatType GameEventProcessor::getCoinSpeedFactor() const {
 }
 
 floatType GameEventProcessor::getHikerMovementFactor() const {
-    const Hiker hiker = this->world.getHiker();
+    const Hiker &hiker = this->world.getHiker();
     if (hiker.getHikerMovement().getState() == HikerMovement::CROUCHED) {
         return this->gameConstants.hikerConstants.duckSpeedFactor;
     } else if (hiker.getHikerMovement().getState() == HikerMovement::IN_AIR) {
