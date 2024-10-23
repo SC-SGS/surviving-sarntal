@@ -54,11 +54,11 @@ void AudioService::playMovingSound(const floatType hikerSpeed, const floatType m
 
                 // Log the action
                 spdlog::info("Playing a sound with name: moving at speed: {}", speed);
+
+                // Set the playback speed (pitch)
+                SetSoundPitch(sound, speed);
             }
         }
-
-        // Set the playback speed (pitch)
-        SetSoundPitch(sound, speed);
 
         // Log the action
         spdlog::debug("Playing a sound with name: moving at speed: {}", speed);
