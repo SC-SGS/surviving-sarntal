@@ -1,0 +1,78 @@
+\documentclass[11pt, t,aspectratio=169]{beamer}
+%\documentclass[11pt, t,aspectratio=169,handout]{beamer}
+
+% additional options: german, unilogo, guestlogo, department, depunilogo
+\usepackage{style/beamerthemeipvs}
+
+\include{usepackages}
+\include{commands}
+
+\usepackage[backend=biber]{biblatex}
+\bibliography{bib/literatur.bib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Towards Real-Time Physics in a 2D Survival-Based Game}
+%\subtitle{oder warum der direkte Weg manchmal zu lang ist}
+\author[B. Aheimer, F. R\"ohr, D. Six, A. Vezenkov, A. Weckauff]{\vspace{-.25cm}\footnotesize{B. Aheimer,\\F. R\"ohr,\\D. Six,\\A. Vezenkov,\\A. Weckauff}}
+\date{18. November 2024}
+\institute{IPVS/SGS}
+\pgfdeclareimage[width=2.5cm]{speaker}{../../assets/texture/duck.png} % speaker photo for final slide
+\pgfdeclareimage[width=2.5cm]{department}{logos/logo_simtech.pdf}
+\pgfdeclareimage[width=2.5cm]{thanksto1}{thanks/thanks1}
+\pgfdeclareimage[width=2.5cm]{thanksto2}{thanks/thanks2}
+\pgfdeclareimage[width=2.5cm]{thanksto3}{thanks/thanks3}
+\pgfdeclareimage[width=2.5cm]{thanksto4}{thanks/thanks4}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+% individual picture on front page
+\setTitlepic{\includegraphics{../figures/new_game.png}}
+ %\setTitlepic{\hspace*{-2cm}\includegraphics[height=3cm]{f8banner}}
+
+% Logo subtext on frontpage (uncomment for Germany-Subtext with english logo)
+\setLogoText{Bachelor Research Project Computer Science}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	
+	\begin{frame}[plain]
+		\titlepage
+	\end{frame}
+
+	\input{sections/Introduction.tex}
+
+
+	\input{sections/Game.tex}
+	\input{sections/Architecture.tex}
+	\input{sections/Terrain.tex}
+	\input{sections/Physics.tex}
+	\input{sections/Rendering.tex}
+	\input{sections/Conclusion.tex}
+
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\begin{frame}{Literatur}
+		%\bibliographystyle{plain}%alpha, arabic
+		%\bibliography{bib/literatur.bib}
+		\AtNextBibliography{\tiny}
+		\printbibliography
+	\end{frame}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% final slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\thankstotwo{Prof. Dr. M. Schulte}{C. Homs Pons, M.Sc.}{}
+	\thankyou{survivingsarntal@gmail.com}{-}{-}
+	
+	%\thankstoone{Dirk Pflüger}{Something}
+	%\thankstothree{Dirk Pflüger}{Dirk Pflüger}{Dirk Pflüger}{Something}
+	%\thankstofour{Dirk Pflüger}{Dirk Pflüger}{Dirk Pflüger}{Dirk Pflüger}{Something}
+	
+\end{document}
+
+
+%% Local Variables:
+%% TeX-engine: luatex
+%% End:

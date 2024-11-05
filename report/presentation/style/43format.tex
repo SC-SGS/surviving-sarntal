@@ -1,0 +1,412 @@
+\newcommand{\LogoTextX}{0.87}
+%modifications for german version
+\if@german
+\renewcommand{\LogoTextX}{0.94}
+\fi
+
+\defbeamertemplate*{title page}{ipvstitle22}[1][]
+{
+	\begin{tikzpicture}[remember picture,overlay]
+	% Draw a blue rectangle as the background for the first third
+	\node[rectangle, minimum width=35cm, minimum height = 4cm, fill=CD03] at (-1,0) {};
+	\node[anchor=west] at (-1.5,-5.7) {\resizebox{12.5cm}{7.5cm}{\insertTitlepic}};
+	\node[anchor=east,minimum size=8.5cm,circle, fill=CD01] at (14.7,-5.8) {};
+	%\node at (9.15,-5) {\parbox{4cm}{\flushleft \Large\color{CD00} {\bf\inserttitle}\\ \vspace{5pt}\large \color{CD00} \insertsubtitle\\ \vspace{5pt} \insertdate} };
+	
+	\ifthenelse{\equal{\insertsubtitle}{}}{
+		\node at (9.15,-5) {\parbox{4cm}{\flushleft \Large\color{CD00} {\bf\inserttitle} \large \ifthenelse{\equal{\insertdate}{}}{~}{\\ \vspace{5pt} \insertdate}} };
+	}{
+		\node at (9.15,-5) {\parbox{4cm}{\flushleft \Large\color{CD00} {\bf\inserttitle}\\ \vspace{5pt}\large \color{CD00} \insertsubtitle \ifthenelse{\equal{\insertdate}{}}{~}{\\ \vspace{5pt} \insertdate}} };
+	}
+	
+	\node[anchor=east, minimum size=2.5cm, circle, fill=CD03] at (9,-8.5) {\parbox{2cm}{\vspace*{-12pt}\center \color{CD00}\small\insertauthor}};
+	\if@subtext
+	\if@german
+	\node[anchor=north west, align=left] at (\LogoTextX-0.2,-0.9){\insertLogoText};
+	\else
+	\node[anchor=north west, align=left] at (\LogoTextX-0.2,-1.25){\insertLogoText};
+	\fi
+	\fi
+	\node[anchor=north west, align=left] at (-0.5,0) {\unilogo{5cm}};
+	\if@guestlogo
+	\node[anchor=north west, align=left] at (6,0) {\guestlogo{5cm}};
+	\fi
+	\if@department
+	\node[anchor=north west, align=left] at (-0.5,-8.3) {\pgfuseimage{department}};
+	\fi
+	\if@depunilogo
+	\node[anchor=north west, align=left] at (-0.5,-8.3) {\pgfuseimage{department}};
+	\fi
+	\end{tikzpicture}
+}
+
+%----------------------------------------------------------------------------------------
+%   Frame Style
+%----------------------------------------------------------------------------------------
+
+\def\image#1{\def\@image{#1}}
+
+\newcommand{\titlesize}[1]{\def \titlesizept {#1pt}}
+\newcommand{\subtitlesize}[1]{\def \subtitlesizept {#1pt}}
+\titlesize{15}
+\subtitlesize{12}
+% Frame title
+%\setbeamertemplate{frametitle}
+%{
+%	\vspace{0.6cm}
+%	\fontsize{\titlesizept}{0pt}\selectfont%
+%	\bfseries\textcolor{CD02}{\insertframetitle}
+%%%    \normalfont\fontsize{\subtitlesizept}{0pt}\selectfont%
+%%%    \textcolor{CD01}{\insertframesubtitle}
+%	\vspace*{-3cm}
+%}
+
+\if@guestlogo
+\newcommand{\logoone}{\unilogo{3cm}}
+\newcommand{\logotwo}{\guestlogo{3cm}}
+
+\setbeamertemplate{frametitle}{%
+	\begin{beamercolorbox}[leftskip=2ex, ht=2em,wd=\paperwidth]{frametitle}
+		\begin{tabular}{p{0.38\textwidth}ccc}
+			\bfseries\Large\raggedright\textcolor{CD02}{\insertframetitle}\strut & \hspace{1em} & \raisebox{-.5\height}{\logoone} & \raisebox{-.5\height}{\logotwo} \\
+		\end{tabular}
+	\end{beamercolorbox}
+}
+\else
+\if@depunilogo
+\newcommand{\logoone}{\unilogo{3cm}}
+\newcommand{\logotwo}{\pgfuseimage{department}}
+
+\setbeamertemplate{frametitle}{%
+	\begin{beamercolorbox}[leftskip=2ex, ht=2em,wd=\paperwidth]{frametitle}
+		\begin{tabular}{p{0.4\textwidth}ccc}
+			\bfseries\Large\raggedright\textcolor{CD02}{\insertframetitle}\strut & \hspace{1em} & \raisebox{-.5\height}{\logoone} & \raisebox{-.5\height}{\logotwo} \\
+		\end{tabular}
+	\end{beamercolorbox}
+}
+\else
+\setbeamertemplate{frametitle}%
+{
+	\nointerlineskip
+	\begin{beamercolorbox}[leftskip=2ex, ht=2em,wd=\paperwidth]{frametitle}
+		\bfseries\Large\textcolor{CD02}{\insertframetitle}\strut 
+	\end{beamercolorbox}
+	\if@unilogo
+	\vspace*{-2em} \hfill \unilogo{4cm} \vspace*{0.2em}
+	\fi	
+}
+\fi
+\fi
+
+
+
+
+%----------------------------------------------------------------------------------------
+%   Footline
+%----------------------------------------------------------------------------------------
+
+\setbeamertemplate{footline}{
+	\if@footer
+	\insertFooter
+	\else
+	\hbox{\begin{beamercolorbox}[wd=.9\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=2ex, rightskip=10ex]{title in head/foot}%
+			\usebeamerfont{title in head/foot}\insertshortauthor, \insertinstitute: \insertshorttitle
+		\end{beamercolorbox}%
+		\begin{beamercolorbox}[wd=.1\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=2ex,rightskip=2ex]{framenumber in head/foot}%
+			\usebeamerfont{title in head/foot}\hfill\insertframenumber
+		\end{beamercolorbox}
+	}%
+	\vskip0pt%
+	\fi
+}
+
+\newcommand{\thankyou}[3]{
+	\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45,
+		%opacity=.8
+		]
+		(current page.north west) rectangle (current page.south east);
+		\node[anchor=north west] at ([xshift=1cm, yshift=-0.5cm]current page.north west) {\unilogow{5cm}};
+		\if@guestlogo
+		\node[anchor=north west] at ([xshift=6.5cm, yshift=-0.5cm]current page.north west) {\guestlogo{5cm}};
+		\fi
+		\if@department
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\if@depunilogo
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\node[anchor=north west] at ([xshift=4.4cm, yshift=-2.5cm]current page.north west) {
+			\if@german
+			\Huge\textbf{\textcolor{white}{Vielen Dank!}}
+			\else	
+			\Huge\textbf{\textcolor{white}{Thank You!}}
+			\fi
+		};
+		\end{tikzpicture}
+		
+		\vspace{4cm}
+		
+		\begin{columns}[c]
+			\begin{column}{2.5cm}
+				
+				\begin{tikzpicture}
+				\node[circle,minimum size=2.5cm, path picture={
+					\node at (path picture bounding box.center){\pgfuseimage{speaker}};}] {};
+				\end{tikzpicture}
+			\end{column}
+			\begin{column}{.7\textwidth}
+				
+				\begin{beamercolorbox}%[leftskip=3ex, ht=2em,wd=\paperwidth]
+					{palette tertiary}
+					\begin{tabular}{ll}
+						\multicolumn{2}{l}{\textcolor{white}{\textbf{\insertshortauthor}}}\\
+						\multicolumn{2}{l}{\textcolor{white}{\insertinstitute}}\\
+						\rule{0pt}{3ex}\\
+						\if@german\textcolor{white}{E-Mail}\else\textcolor{white}{Mail}\fi & \textcolor{white}{\href{mailto:#1}{#1}}\\
+						\if@german\textcolor{white}{Telefon}\else\textcolor{white}{Phone}\fi  & \textcolor{white}{#2}\\
+						\if@german\textcolor{white}{Internet}\else\textcolor{white}{Internet}\fi & \textcolor{white}{\href{#3}{#3}}
+					\end{tabular}
+				\end{beamercolorbox}
+			\end{column}
+		\end{columns}	
+	\end{frame}
+}
+
+\newlength{\circlesize}
+
+\setbeamertemplate{section page}%
+{
+	\begin{tikzpicture}[overlay, remember picture]
+	\setlength{\circlesize}{.9\textheight}
+	\clip (current page.north west) rectangle (current page.south east);
+	\shade[%
+	top color=CD03,
+	bottom color=CD02,
+	shading angle=-45]
+	(current page.north west) rectangle (current page.south east);
+	\node[%
+	circle,
+	fill=white,
+	anchor=north west,
+	minimum size=\circlesize,
+	text width=.85\circlesize,
+	align=center,
+	font=\bfseries\Huge]
+	(sectiontitle) at ([xshift=.1\circlesize, yshift=-.2\circlesize]current page.north west) {\insertsection};
+	\setlength{\circlesize}{.2\textheight}
+	\node[%
+	circle,
+	fill=CD01,
+	text=white,
+	anchor=center,
+	minimum size=\circlesize,
+	align=left,
+	font=\bfseries\Huge]
+	at ([xshift=-.1\circlesize, yshift=-.3\circlesize]sectiontitle.south east) {\thesection};
+	\end{tikzpicture}
+}
+
+\newcommand{\makesection}[1]{
+	\begin{frame}[plain]
+		\section{#1}
+		\sectionpage
+	\end{frame}
+}
+
+\newcommand{\makesectionwithoutenumeration}[1]{
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\setlength{\circlesize}{.9\textheight}
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45]
+		(current page.north west) rectangle (current page.south east);
+		\node[%
+		circle,
+		fill=white,
+		anchor=north west,
+		minimum size=\circlesize,
+		text width=0.85\circlesize,
+		align=center,
+		font=\bfseries\Huge]
+		(sectiontitle) at ([xshift=.1\circlesize, yshift=-.2\circlesize]current page.north west) {#1};
+		\setlength{\circlesize}{.2\textheight}
+		;
+		\end{tikzpicture}
+	\end{frame}
+}
+
+\newcommand{\thankstoone}[2]{
+	\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45,
+		%opacity=.8
+		]
+		(current page.north west) rectangle (current page.south east);
+		\node[anchor=north west] at ([xshift=1cm, yshift=-0.5cm]current page.north west) {\unilogow{5cm}};
+		\if@guestlogo
+		\node[anchor=north west] at ([xshift=6.5cm, yshift=-0.5cm]current page.north west) {\guestlogo{5cm}};
+		\fi
+		\if@department
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\if@depunilogo
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-3cm]current page.north west) {
+			\if@german
+			\Huge\textbf{\textcolor{white}{Vielen Dank an}}
+			\else	
+			\Huge\textbf{\textcolor{white}{Thanks to}}
+			\fi
+		};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto1}};}] at ([xshift=6.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=6.4cm, yshift=-7.2cm]current page.north west) {#1};
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-8.5cm]current page.north west) {\Large #2};
+		\end{tikzpicture}
+	\end{frame}
+}
+
+\newcommand{\thankstotwo}[3]{
+	\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45,
+		%opacity=.8
+		]
+		(current page.north west) rectangle (current page.south east);
+		\node[anchor=north west] at ([xshift=1cm, yshift=-0.5cm]current page.north west) {\unilogow{5cm}};
+		\if@guestlogo
+		\node[anchor=north west] at ([xshift=6.5cm, yshift=-0.5cm]current page.north west) {\guestlogo{5cm}};
+		\fi
+		\if@department
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\if@depunilogo
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-3cm]current page.north west) {
+			\if@german
+			\Huge\textbf{\textcolor{white}{Vielen Dank an}}
+			\else	
+			\Huge\textbf{\textcolor{white}{Thanks to}}
+			\fi
+		};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto1}};}] at ([xshift=4.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=4.4cm, yshift=-7.2cm]current page.north west) {#1};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto2}};}] at ([xshift=8.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=8.4cm, yshift=-7.2cm]current page.north west) {#2};
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-8.5cm]current page.north west) {\Large #3};
+		\end{tikzpicture}
+	\end{frame}
+}
+
+\newcommand{\thankstothree}[4]{
+	\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45,
+		%opacity=.8
+		]
+		(current page.north west) rectangle (current page.south east);
+		\node[anchor=north west] at ([xshift=1cm, yshift=-0.5cm]current page.north west) {\unilogow{5cm}};
+		\if@guestlogo
+		\node[anchor=north west] at ([xshift=6.5cm, yshift=-0.5cm]current page.north west) {\guestlogo{5cm}};
+		\fi
+		\if@department
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\if@depunilogo
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-3cm]current page.north west) {
+			\if@german
+			\Huge\textbf{\textcolor{white}{Vielen Dank an}}
+			\else	
+			\Huge\textbf{\textcolor{white}{Thanks to}}
+			\fi
+		};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto1}};}] at ([xshift=2.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=2.4cm, yshift=-7.2cm]current page.north west) {#1};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto2}};}] at ([xshift=6.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=6.4cm, yshift=-7.2cm]current page.north west) {#2};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto3}};}] at ([xshift=10.4cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=10.4cm, yshift=-7.2cm]current page.north west) {#3};
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-8.5cm]current page.north west) {\Large #4};
+		\end{tikzpicture}
+	\end{frame}
+}
+
+\newcommand{\thankstofour}[5]{
+	\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+	\begin{frame}[plain]
+		\begin{tikzpicture}[overlay, remember picture]
+		\clip (current page.north west) rectangle (current page.south east);
+		\shade[%
+		top color=CD03,
+		bottom color=CD02,
+		shading angle=-45,
+		%opacity=.8
+		]
+		(current page.north west) rectangle (current page.south east);
+		\node[anchor=north west] at ([xshift=1cm, yshift=-0.5cm]current page.north west) {\unilogow{5cm}};
+		\if@guestlogo
+		\node[anchor=north west] at ([xshift=6.5cm, yshift=-0.5cm]current page.north west) {\guestlogo{5cm}};
+		\fi
+		\if@department
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\if@depunilogo
+		\node[anchor=north east] at ([xshift=11.8cm, yshift=-0.5cm]current page.north west) {\pgfuseimage{department}};
+		\fi
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-3cm]current page.north west) {
+			\if@german
+			\Huge\textbf{\textcolor{white}{Vielen Dank an}}
+			\else	
+			\Huge\textbf{\textcolor{white}{Thanks to}}
+			\fi
+		};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto1}};}] at ([xshift=1.9cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=1.9cm, yshift=-7.2cm]current page.north west) {#1};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto2}};}] at ([xshift=4.9cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=4.9cm, yshift=-7.2cm]current page.north west) {#2};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto3}};}] at ([xshift=7.9cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=7.9cm, yshift=-7.2cm]current page.north west) {#3};
+		\node[circle,minimum size=2.5cm, path picture={
+			\node at (path picture bounding box.center){\pgfuseimage{thanksto4}};}] at ([xshift=10.9cm, yshift=-5.5cm]current page.north west){};
+		\node at ([xshift=10.9cm, yshift=-7.2cm]current page.north west) {#4};
+		\node[anchor=center, align = center] at ([xshift=6.4cm, yshift=-8.5cm]current page.north west) {\Large #5};
+		\end{tikzpicture}
+	\end{frame}
+}
