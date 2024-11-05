@@ -27,6 +27,7 @@ coverage*
 *bak
 *.DB_Store
 *.DS_Store
+*.toc
 
 
 #Ignore docs
