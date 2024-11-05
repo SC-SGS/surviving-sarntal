@@ -1,0 +1,240 @@
+\mode<presentation>
+
+\NeedsTeXFormat {LaTeX2e}%
+\ProvidesPackage{beamerthemeipvs}
+%----------------------------------------------------------------------------------------
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%----------------------------------------------------------------------------------------
+% OPTIONS
+%----------------------------------------------------------------------------------------
+
+\newif\if@german
+\@germanfalse
+
+\newif\if@subtext
+\@subtextfalse
+
+\newif\if@footer
+\@footerfalse
+
+\newif\if@unilogo
+\@unilogofalse
+
+\newif\if@guestlogo
+\@guestlogofalse
+
+\newif\if@department
+\@departmentfalse
+
+\newif\if@depunilogo
+\@depunilogofalse
+
+\newif\if@formata % format 16:9
+\newif\if@formatb % format 4:3
+
+%figures out which format is set
+\ifdim\paperwidth=16cm
+	\ifdim\paperheight=9cm
+		\@formatatrue
+	\else
+		\@formatafalse
+	\fi
+\fi
+\ifdim\paperwidth=12.8cm
+	\ifdim\paperheight=9.6cm
+		\@formatbtrue
+	\else
+		\@formatbfalse
+	\fi
+\fi
+
+%% Beamer pass-through options
+\DeclareOptionBeamer{compress}{\beamer@compresstrue}
+\ProcessOptionsBeamer\relax
+
+%% Theme options
+\DeclareOption{german}{\@germantrue}
+\DeclareOption{unilogo}{\@unilogotrue} % unilogo is set on every slide
+\DeclareOption{guestlogo}{\@guestlogotrue} % unilogo and guestlogo are set on every slide
+\DeclareOption{department}{\@departmenttrue} % departmentlogo is set on titlepage and thank you page
+\DeclareOption{depunilogo}{\@depunilogotrue} % unilogo and departmentlogo are set on every slide
+\ProcessOptions\relax
+
+%----------------------------------------------------------------------------------------
+%   commands for formating
+%----------------------------------------------------------------------------------------
+
+\newcommand{\unilogo}[1]{\includegraphics[width=#1]{logos/logo_uni}}
+\newcommand{\unilogow}[1]{\includegraphics[width=#1]{logos/logo_uni_w}}
+\newcommand\insertFooter{}
+\newcommand\insertTitlepic{\includegraphics[height=6cm]{title}}
+\newcommand\insertLogoText{}
+
+\if@guestlogo
+	\newcommand{\guestlogo}[1]{\includegraphics[width=#1]{guest}}
+\fi
+
+\if@german
+	\usepackage[utf8]{inputenc} % this is needed for umlauts
+	\usepackage[ngerman]{babel} % this is needed for umlauts
+	\usepackage[T1]{fontenc}    % this is needed for correct output of umlauts in pdf
+  	\usepackage[ngerman]{datetime}
+  	\newdateformat{myformat}{\THEDAY{ten }\monthnamengerman[\THEMONTH], \THEYEAR}
+\else
+  \renewcommand{\unilogo}[1]{\includegraphics[width=#1]{logos/logo_uni_english}}
+  \renewcommand{\unilogow}[1]{\includegraphics[width=#1]{logos/logo_uni_w_english}}
+\fi
+
+%----------------------------------------------------------------------------------------
+%   User commands
+%----------------------------------------------------------------------------------------
+
+\newcommand{\highlight}[1]{\textcolor{CD02}{#1}}
+
+%----------------------------------------------------------------------------------------
+%   User input commands
+%----------------------------------------------------------------------------------------
+
+\newcommand\setFooter[1]{\renewcommand\insertFooter{#1}\@footertrue}
+\newcommand\setTitlepic[1]{\renewcommand\insertTitlepic{#1}}
+\newcommand\setLogoText[1]{\renewcommand\insertLogoText{\color{CD01}\fontsize{7.5}{8} \selectfont #1}\@subtexttrue}
+
+%----------------------------------------------------------------------------------------
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%----------------------------------------------------------------------------------------
+% IMPORT
+%----------------------------------------------------------------------------------------
+%   Graphic
+%----------------------------------------------------------------------------------------
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{epstopdf}
+
+%----------------------------------------------------------------------------------------
+%   Text
+%----------------------------------------------------------------------------------------
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+%----------------------------------------------------------------------------------------
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%----------------------------------------------------------------------------------------
+% SETTINGS
+%----------------------------------------------------------------------------------------
+%   Colors and Text
+%----------------------------------------------------------------------------------------
+
+\definecolor{CD00}{RGB}{255,255,255} %white
+\definecolor{CD01}{RGB}{62,68,76} %anthrazit
+\definecolor{CD02}{RGB}{0,65,145} %mid-blue
+\definecolor{CD03}{RGB}{0,190,255} %light-blue
+\definecolor{CD04}{RGB}{100,100,100} %light-grey
+
+%----------------------------------------------------------------------------------------
+%||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+%----------------------------------------------------------------------------------------
+% FORMAT
+%----------------------------------------------------------------------------------------
+
+\AtBeginDocument{\color{CD01}\normalsize}
+
+%----------------------------------------------------------------------------------------
+%   Beamer
+%----------------------------------------------------------------------------------------
+
+% diasble navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% table of content color
+\setbeamercolor{section in toc}{fg=CD02}
+\setbeamercolor{section in toc shaded}{fg=CD02}
+\setbeamercolor{subsection in toc}{fg=CD01}
+\setbeamercolor{subsection in toc shaded}{fg=CD01}
+
+% bibiliography style
+\setbeamertemplate{bibliography item}[text]{}
+\setbeamercolor{bibliography item}{fg=CD01}
+\setbeamercolor{bibliography entry author}{fg=CD02}
+\setbeamercolor{bibliography entry title}{fg=CD01}
+\setbeamercolor{bibliography entry location}{fg=CD04}
+\setbeamercolor{bibliography entry note}{fg=CD04}
+
+\bibliographystyle{plain}
+
+% caption color and style
+\setbeamerfont{caption name}{series=\normalsize\bfseries}
+\setbeamercolor{caption name}{fg=CD01}
+\setbeamerfont{caption}{series=\normalsize}
+\setbeamercolor{caption}{fg=CD01}
+\setbeamercolor{local structure}{fg=CD01}
+
+% default block style
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamercolor*{block title alerted}{fg=CD00,bg=CD01}
+\setbeamercolor*{block body alerted}{fg=CD01,bg=CD03!40}
+\setbeamercolor*{block title}{fg=CD00,bg=CD01}
+\setbeamercolor*{block body}{fg=CD01,bg=CD01!10}
+
+% customize itemize and enumerate
+\setbeamercolor{normal text}{fg=CD01}
+
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subsubitem}{--}
+\setbeamercolor{itemize item}{fg=CD03}
+\setbeamercolor{itemize subitem}{fg=CD01}
+\setbeamercolor{itemize subsubitem}{fg=CD01}
+
+\setbeamertemplate{enumerate item}[default]
+\setbeamertemplate{enumerate subitem}{\roman{enumii}}
+\setbeamertemplate{enumerate subsubitem}{\alph{enumiii}}
+\setbeamercolor{enumerate item}{fg=CD03}
+\setbeamercolor{enumerate subitems}{fg=CD01}
+
+\RequirePackage{ifthen}
+
+\if@formata
+	\input{style/169format}
+\fi
+\if@formatb
+	\input{style/43format}
+\fi
+
+\mode<all>
+
+
+% help lines as a background option for frames
+% specify with optimal parameter "
+% 
+% save current beamertemplate background state as mydefault
+\defbeamertemplate*{background canvas}{bgdefault}
+{%
+	\ifbeamercolorempty[bg]{background canvas}{}{\color{bg}\vrule width\paperwidth height\paperheight}
+}
+% define new beamer template helplines
+\defbeamertemplate*{background canvas}{helplines}
+{%
+	\begin{tikzpicture}
+	\useasboundingbox (0,0) rectangle (\the\paperwidth, \the\paperheight); 
+	\node at (current page.north west) [gray,fill=red!10,rounded corners,below right] {{\footnotesize north west}};
+	\node at (current page.south west) [gray,fill=red!10,rounded corners,above right] {{\footnotesize south west}};
+	\node at (current page.north east) [gray,fill=red!10,rounded corners,below left]  {{\footnotesize north east}};
+	\node at (current page.south east) [gray,fill=red!10,rounded corners,above left]  {{\footnotesize south east}};
+	\draw[line width=0.2pt,gray!20] (0,0) grid [xstep=0.1\paperwidth,ystep=0.1\paperheight] (\paperwidth,\paperheight);
+	\end{tikzpicture}
+}
+% set bgdefault first
+\BeforeBeginEnvironment{frame}{%
+	\setbeamertemplate{background canvas}[bgdefault]%
+}
+% define new option
+\makeatletter
+\define@key{beamerframe}{helplines}[true]{%
+	\setbeamercovered{invisible}%
+	\setbeamertemplate{background canvas}[helplines]%
+}
+\makeatother%
