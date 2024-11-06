@@ -1,17 +1,28 @@
 \makesection{Conclusion}
 
-\begin{frame}{Conclusion and Future Work}
+\begin{frame}{Conclusion}
     \begin{itemize}
         \item Achievements:
         \begin{itemize}
-            \item Modular architecture and optimized codebase
-            \item Enhanced user experience with new features
+            \item Modular and maintainable architecture and optimized codebase.
+            \item Framework that can be readily extended.
+            \item Enhanced user experience with new features (terrain, physics engine, items, \dots).
         \end{itemize}
-        \item Proposed future expansions:
+        \item Tradeoff: out OOP architecture is less performant than flecs.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Future Work}
+    \begin{itemize}
+        \item Multiplayer modes and leaderboard integration.
+        \item New game items and biomes.
+        \item Further enhancements to the physics engine:
         \begin{itemize}
-            \item Multiplayer modes and leaderboard integration
-            \item New game items and biomes
-            \item Enhanced physics with friction, air resistance, and more
+            \item Improved performance with parallel batch processing and spatial data structures.
+            \item Friction and air resistance.
+            \item Reduction of jitter.
         \end{itemize}
     \end{itemize}
+    \centering
+    \includegraphics[width = .5\textwidth]{../figures/physics/jitter.pdf}
 \end{frame}

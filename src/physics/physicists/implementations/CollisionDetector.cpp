@@ -31,7 +31,7 @@ DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollision(Dynamic
             poly1, poly2, poly1.getLastWitnessTo(poly2.getPolyID()), poly2.getLastWitnessTo(poly1.getPolyID()));
 
         if (collResult.isCollision) {
-            if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
+            if (this->gameConstants.physicsConstants.debugCDRendering)
                 collRenderer.debugRenderRockCollision(
                     createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2));
             return createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2);
@@ -76,7 +76,7 @@ DynamicPolygonCollisionObject CollisionDetector::dynamicPolygonCollisionSubstep(
     } while (!collResult.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
 
     if (collResult.isCollision) {
-        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering) {
+        if (this->gameConstants.physicsConstants.debugCDRendering) {
             collRenderer.debugRenderRockCollision(
                 createDynamicPolygonCollisionObjectFrom(collResult, poly1, poly2, poly1AtT, poly2AtT, relativeTime));
         }
@@ -131,7 +131,7 @@ DynamicPolygonTerrainCollisionObject CollisionDetector::polygonTerrainCollision(
         }
     }
     if (result.isCollision) {
-        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering) {
+        if (this->gameConstants.physicsConstants.debugCDRendering) {
             collRenderer.debugTerrainCollisionRendering(result, triangles, aabb);
         }
     }
@@ -255,7 +255,7 @@ CollisionDetector::dynamicPolygonTerrainCollisionSubstep(DynamicConvexPolygon &p
         }
     } while (!result.isCollision && relativeTime < 1 - NUMERIC_EPSILON);
     if (result.isCollision)
-        if (this->devMode && this->gameConstants.physicsConstants.debugCDRendering)
+        if (this->gameConstants.physicsConstants.debugCDRendering)
             collRenderer.debugTerrainCollisionRendering(
                 result, triangles, poly.getSweptBoundingBox().extend(this->gameConstants.physicsConstants.epsilon));
     return result;
