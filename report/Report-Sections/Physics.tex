@@ -137,8 +137,8 @@ Since our game is two-dimensional, we are able to reduce his movement equations 
 We devise a simple, yet effective symplectic Euler solver for this equation:
 
 \begin{align}
-  \vec{P}^{t+1} &= \vec{P}^{t} + \delta t \cdot F^{t}\\
-  \vec{x}^{t+1} &= \vec{x}^{t} + \delta t \cdot \frac{P^{t+1}}{m}\\
+  \vec{P}^{t+1} &= \vec{P}^{t} + \delta t \cdot \vec{F}^{t}\\
+  \vec{x}^{t+1} &= \vec{x}^{t} + \delta t \cdot \frac{\vec{P}^{t+1}}{m}\\
   L^{t+1} &= L^{t} + \delta t \cdot \tau^{t}\\
   \theta^{t+1} &= \theta^{t} + \delta t \cdot \frac{L^{t+1}}{I}
 \end{align}

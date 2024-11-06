@@ -14,14 +14,14 @@ CollisionDetectionDebugRenderer::CollisionDetectionDebugRenderer(const World &wo
 void CollisionDetectionDebugRenderer::debugRenderRockCollision(const DynamicPolygonCollisionObject &result) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         camera.target.y = GraphicsUtil::transformYCoordinate(
             world.getHiker().getRenderInformation().position.y +
             static_cast<floatType>(this->gameConstants.visualConstants.cameraToHikerOffset));
         camera.target.x = (this->world.getMaxX() + world.getMinX()) * graphics::UNIT_TO_PIXEL_RATIO / 2.0f;
         BeginMode2D(camera);
-        PolygonRenderer::renderPolygonOutlineStatic(*result.polyAIncident);
-        PolygonRenderer::renderPolygonOutlineStatic(*result.polyBReference);
+        PolygonRenderer::renderPolygonOutlineStatic(*result.polyAIncident, BLACK);
+        PolygonRenderer::renderPolygonOutlineStatic(*result.polyBReference, BLACK);
         debugRenderPolygonCollisionEdgeVertexNormal(result);
         EndDrawing();
     }
@@ -31,7 +31,6 @@ void CollisionDetectionDebugRenderer::debugRenderPolygonCollisionEdgeVertexNorma
     const DynamicPolygonCollisionObject &result) {
     const Vector vertexPos = GraphicsUtil::transformPosition(
         Vector2(result.polyAIncident->getWorldSpaceVertices()[result.collisionVertexIdx]));
-    DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
 
     const Vector edgeStart = GraphicsUtil::transformPosition(
         Vector2(result.polyBReference->getWorldSpaceVertices()[result.collisionFaceIdx]));
@@ -45,6 +44,8 @@ void CollisionDetectionDebugRenderer::debugRenderPolygonCollisionEdgeVertexNorma
         Vector2(result.polyAIncident->getWorldSpaceVertices()[result.collisionVertexIdx] +
                 (result.collisionDirection))); // * result.collisionDepth)));
     DrawLineEx(Vector2(normalStart), Vector2(normalEnd), 5.0, RED);
+
+    DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
 }
 
 void CollisionDetectionDebugRenderer::debugTerrainCollisionRendering(const DynamicPolygonTerrainCollisionObject &result,
@@ -52,15 +53,15 @@ void CollisionDetectionDebugRenderer::debugTerrainCollisionRendering(const Dynam
                                                                      const AABB &aabb) {
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(WHITE);
         camera.target.y = GraphicsUtil::transformYCoordinate(
             world.getHiker().getRenderInformation().position.y +
             static_cast<floatType>(gameConstants.visualConstants.cameraToHikerOffset));
         camera.target.x = (world.getMaxX() + world.getMinX()) * graphics::UNIT_TO_PIXEL_RATIO / 2.0f;
         BeginMode2D(camera);
         debugRenderTriangulatedTerrain(triangles);
-        debugRenderAABB(aabb);
-        PolygonRenderer::renderPolygonOutlineStatic(*result.poly);
+        // debugRenderAABB(aabb);
+        PolygonRenderer::renderPolygonOutlineStatic(*result.poly, BLACK);
         debugRenderCollidingTriangle(result.triangle.value());
         debugRenderTerrainCollisionEdgeVertexAndNormal(result);
         EndDrawing();
@@ -77,7 +78,9 @@ void CollisionDetectionDebugRenderer::debugRenderTriangulatedTerrain(
         const auto point3 = Vector2(GraphicsUtil::transformPosition(
             Vector2{triangle.getWorldSpaceVertices()[2].x, triangle.getWorldSpaceVertices()[2].y}));
 
-        DrawTriangleLines(point1, point2, point3, RAYWHITE);
+        DrawLineEx(point1, point2, 3, BLACK);
+        DrawLineEx(point2, point3, 3, BLACK);
+        DrawLineEx(point3, point1, 3, BLACK);
     }
 }
 
@@ -98,7 +101,9 @@ void CollisionDetectionDebugRenderer::debugRenderCollidingTriangle(const SimpleC
         Vector2{triangle.getWorldSpaceVertices()[1].x, triangle.getWorldSpaceVertices()[1].y}));
     const auto point3 = Vector2(GraphicsUtil::transformPosition(
         Vector2{triangle.getWorldSpaceVertices()[2].x, triangle.getWorldSpaceVertices()[2].y}));
-    DrawTriangleLines(point1, point2, point3, RED);
+    DrawLineEx(point1, point2, 3, RED);
+    DrawLineEx(point2, point3, 3, RED);
+    DrawLineEx(point3, point1, 3, RED);
 }
 
 void CollisionDetectionDebugRenderer::debugRenderTerrainCollisionEdgeVertexAndNormal(
@@ -113,9 +118,9 @@ void CollisionDetectionDebugRenderer::debugRenderTerrainCollisionEdgeVertexAndNo
         const Vector normalStart = vertexPos;
         const Vector normalEnd = GraphicsUtil::transformPosition(
             Vector2(result.poly->getWorldSpaceVertices()[result.collisionVertexIdx] + result.collisionDirection));
-        DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
         DrawLineEx(Vector2(edgeStart), Vector2(edgeEnd), 5.0, GREEN);
         DrawLineEx(Vector2(normalStart), Vector2(normalEnd), 5.0, RED);
+        DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
     } else {
         const Vector vertexPos = GraphicsUtil::transformPosition(
             Vector2(result.triangle->getWorldSpaceVertices()[result.collisionVertexIdx]));
@@ -127,8 +132,8 @@ void CollisionDetectionDebugRenderer::debugRenderTerrainCollisionEdgeVertexAndNo
         const Vector normalStart = vertexPos;
         const Vector normalEnd = GraphicsUtil::transformPosition(
             Vector2(result.triangle->getWorldSpaceVertices()[result.collisionVertexIdx] + result.collisionDirection));
-        DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
         DrawLineEx(Vector2(edgeStart), Vector2(edgeEnd), 5.0, GREEN);
         DrawLineEx(Vector2(normalStart), Vector2(normalEnd), 5.0, RED);
+        DrawCircle(static_cast<int>(vertexPos.x), static_cast<int>(vertexPos.y), 7.0f, BLUE);
     }
 }
