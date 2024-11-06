@@ -20,44 +20,62 @@
 \end{frame}
 
 \begin{frame}{Rendering Architecture - Normal Mode}
-    \includegraphics[width=\textwidth]{../figures/Ingame-Picture.png}
+    \centering
+    \includegraphics[width=0.85\textwidth]{../figures/Ingame-Picture.png}
 \end{frame}
 
-\begin{frame}{Rendering Architecture - Entity Renderer}
-    \begin{itemize}
-        \item Entities are rendered with their respective textures
-        \item Handles animations of the Entites, e.g. walking
-    \end{itemize}
-    \vspace{1cm}
-    \centering
-    \includegraphics[width=0.7\textwidth]{../../assets/texture/player_walk.png}
-\end{frame}
-
-\begin{frame}{Rendering Architecture - Terrain Renderer}
-    \begin{itemize}
-        \item Terrain is continuously rendered with a texture
-    \end{itemize}
-    \vspace{1cm}
-    \centering
-    \includegraphics[width=0.4\textwidth]{../../assets/layers/mountain3.png}
-\end{frame}
-
-\begin{frame}{Rendering Architecture - HUD Renderer}
-    \begin{itemize}
-        \item Heads-Up-Display (HUD) is rendered on top of the game
-        \item Displays the player's health, score, inventory etc.
-    \end{itemize}
-
-    \vspace{1cm}
-    \centering
+\begin{frame}{Rendering Architecture}
     \begin{tabular}{ccc}
-        \rotatebox{0}{\includegraphics[width=0.2\textwidth]{../../assets/texture/coin.png}} &
-        \includegraphics[width=0.2\textwidth]{../../assets/texture/kaiserschmarrn.png} &
-        \rotatebox{0}{\includegraphics[width=0.2\textwidth]{../../assets/texture/duck.png}}
+
+        \parbox{0.3\textwidth}{
+            \centering \textbf{Entity Renderer}
+            \vspace{0.2cm}
+            \begin{itemize}
+                \item Entities are rendered with their respective textures
+                \item Handles animations of the entities, e.g. walking
+            \end{itemize}
+            \vspace{0.5cm}
+            \centering
+            \includegraphics[width=0.25\textwidth]{../../assets/texture/player_walk.png}
+        } &
+
+        \pause
+        
+        \parbox{0.3\textwidth}{
+            \centering \textbf{Terrain Renderer}
+            \vspace{0.2cm}
+            \begin{itemize}
+                \item Terrain is continuously rendered with a texture
+            \end{itemize}
+            \vspace{0.5cm}
+            \centering
+            \includegraphics[width=0.2\textwidth]{../../assets/layers/mountain3.png}
+        } &
+
+        \pause
+        
+        \parbox{0.3\textwidth}{
+            \centering \textbf{HUD Renderer}
+            \vspace{0.2cm}
+            \begin{itemize}
+                \item Heads-Up-Display (HUD) is rendered on top of the game
+                \item Displays the player's health, score, inventory, etc.
+            \end{itemize}
+            \vspace{0.5cm}
+            \centering
+            \begin{tabular}{ccc}
+                \includegraphics[width=0.07\textwidth]{../../assets/texture/coin.png} &
+                \includegraphics[width=0.07\textwidth]{../../assets/texture/kaiserschmarrn.png} &
+                \includegraphics[width=0.07\textwidth]{../../assets/texture/duck.png}
+            \end{tabular}
+        }
     \end{tabular}
 \end{frame}
 
 
+
+
 \begin{frame}{Rendering Architecture - Debug Mode}
-    \includegraphics[width=\textwidth]{../figures/Debug-Mode.png}
+    \centering
+    \includegraphics[width=0.85\textwidth]{../figures/Debug-Mode.png}
 \end{frame}
