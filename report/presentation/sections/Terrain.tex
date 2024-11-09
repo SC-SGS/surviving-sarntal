@@ -1,11 +1,54 @@
-\makesection{Terrain Generation}
+\makesection{Terrain}
+
+\begin{frame}{Terrain Structure}
+    \begin{itemize}
+        \item 2D C1-continuous Hermite-Splines connect basepoints
+    \end{itemize}
+    \centering
+    \includegraphics[width=0.5\textwidth]{../figures/terrain/splines/SplinePiece.pdf} % Insert terrain generation diagram
+
+    % \includegraphics[width=0.6\textwidth]{../figures/Retrace.pdf} % Insert terrain generation diagram
+\end{frame}
+
+\begin{frame}{Terrain Structure}
+    %\begin{itemize}
+    %    \item TODO: Graphic for 1D hermite Spline with multiple pieces
+    %    \item TODO: Second Graphic for 1D hermite Spline with multiple Spline pieces
+    %    \item TODO: Combined Graph with 2D-Hermite-Spline
+    %\end{itemize}
+    %\centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \onslide<1->{\includegraphics[width=\textwidth]{../figures/terrain/splines/xSpline.pdf}}\\
+        \onslide<2->{\includegraphics[width=\textwidth]{../figures/terrain/splines/ySpline.pdf}}\\
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \onslide<3->{\includegraphics[height=0.82\textheight]{../figures/terrain/splines/Spline3D.pdf}}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \only<4>{\includegraphics[width=\textwidth]{../figures/terrain/splines/Spline2D_M.pdf}}
+        \only<5>{\includegraphics[width=\textwidth]{../figures/terrain/splines/Spline2D.pdf}}
+    \end{minipage}
+\end{frame}
 
 \begin{frame}{Terrain Generation}
     \begin{itemize}
-        \item Terrain is generated using Hermite splines for smooth 2D paths.
-        \item Procedurally generated biomes that adapt as the player progresses.
-        \item Constraints ensure terrain is navigable without intersecting or backward generation.
+        \item<1-> Terrain phase: $ph = (\delta v, r, m)$\\
+        \begin{center}
+            \includegraphics[width=0.3\textwidth]{../figures/terrain/generation/terrainPhase.pdf}\\
+        \end{center}
+        \item<2-> Basepoints generated iteratively:
+        \begin{enumerate}
+            \item Determine angular range in which generation is possible using bisection.
+            \item Check constraints.
+            \item Retrace the already generated terrain if necessary.
+        \end{enumerate}
     \end{itemize}
-    \centering
-    \includegraphics[width=0.6\textwidth]{../figures/Retrace.pdf} % Insert terrain generation diagram
+\end{frame}
+
+\begin{frame}{Terrain Generation}
+    \vspace{-.4cm}
+    \only<1>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen1.pdf}}
 \end{frame}
