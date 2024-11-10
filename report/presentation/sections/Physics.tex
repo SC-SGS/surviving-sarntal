@@ -10,9 +10,9 @@
     \includegraphics<6>[width=\textwidth]{figures/ploop/6.pdf}
     \includegraphics<7>[width=\textwidth]{figures/ploop/7.pdf}
     \includegraphics<8>[width=\textwidth]{figures/ploop/8.pdf}
-    \includegraphics<9>[width=\textwidth]{figures/ploop/9.pdf}
+    %\includegraphics<9>[width=\textwidth]{figures/ploop/9.pdf}
 
-    \onslide<9>{
+    \onslide<8>{
         \vspace{-1.1cm}
         \begin{flushright}
             \footnotesize(Fiedler \cite{gafferTimestep})
@@ -134,14 +134,14 @@
     \end{minipage}
 \end{frame}
 
-\begin{frame}{Performance Considerations}
-    \begin{itemize}
-        \item Performance optimizations for handling large numbers of entities.
-        \item Usage of swept AABBs prunes collision checks with SAT.
-        \item Warm starting to further reduce cost of the SAT algorithm.
-        \item Pre-computation of world-space coordinates and AABBs upon moving an entity instead of during every collision check.
-        \item Effective garbage collection for entities and terrain that leave the scope of the game.
-    \end{itemize}
-    \centering
-    \includegraphics[width=.6\textwidth]{figures/sim.png}
-\end{frame}
+%\begin{frame}{Performance Considerations}
+%    \begin{itemize}
+%        \item Performance optimizations for handling large numbers of entities.
+%        \item Usage of swept AABBs prunes collision checks with SAT.
+%        \item Warm starting to further reduce cost of the SAT algorithm.
+%        \item Pre-computation of world-space coordinates and AABBs upon moving an entity instead of during every collision check.
+%        \item Effective garbage collection for entities and terrain that leave the scope of the game.
+%    \end{itemize}
+%    \centering
+%    \includegraphics[width=.6\textwidth]{figures/sim.png}
+%\end{frame}
