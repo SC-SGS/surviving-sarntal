@@ -1,5 +1,10 @@
 \makesection{Terrain}
 
+% Say on title slide:
+% - Terrain before was partwise linear function
+% - Terrain now is 2d spline based
+% - Maybe put on separate slide (with functions)
+
 \begin{frame}{Terrain Structure}
     \begin{itemize}
         \item 2D C1-continuous Hermite-Splines connect basepoints
@@ -21,6 +26,7 @@
         \centering
         \onslide<1->{\includegraphics[width=\textwidth]{../figures/terrain/splines/xSpline.pdf}}\\
         \onslide<2->{\includegraphics[width=\textwidth]{../figures/terrain/splines/ySpline.pdf}}\\
+        % left: visualize in appropriate colors in the plots for x and y (corresponding to 3D plot)
     \end{minipage}
     \begin{minipage}{0.32\textwidth}
         \centering
@@ -39,16 +45,36 @@
         \begin{center}
             \includegraphics[width=0.3\textwidth]{../figures/terrain/generation/terrainPhase.pdf}\\
         \end{center}
-        \item<2-> Basepoints generated iteratively:
-        \begin{enumerate}
-            \item Determine angular range in which generation is possible using bisection.
-            \item Check constraints.
-            \item Retrace the already generated terrain if necessary.
-        \end{enumerate}
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Terrain Generation}
     \vspace{-.4cm}
     \only<1>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen1.pdf}}
+    \only<2>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen2.pdf}}
+    \only<3>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen3.pdf}}
+    \only<4>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen4.pdf}}
+    \only<5>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen5.pdf}}
+    \only<6>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen6.pdf}}
+    \only<7>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen7.pdf}}
+    \only<8>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen8.pdf}}
+    \only<9>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen9.pdf}}
+    \only<10>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen10.pdf}}
+    \only<11>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen11.pdf}}
+    \only<12>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen12.pdf}}
+    \only<13>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen13.pdf}}
+    \only<14>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen14.pdf}}
+    \only<15>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen15.pdf}}
+    \only<16>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen16.pdf}}
+    \only<17>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen17.pdf}}
+    \only<18>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen18.pdf}}
+    \only<19>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen19.pdf}}
+    \only<20>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen20.pdf}}
+    \only<21>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen21.pdf}}
+    \only<22>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen22.pdf}}
+    \only<23>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen23.pdf}}
+    \only<24>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen24.pdf}}
+    \only<25>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen25.pdf}}
+    \only<26>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen26.pdf}}
+    \only<27>{\includegraphics[width=\textwidth]{../figures/terrain/generation/gen27.pdf}}
 \end{frame}

@@ -2,6 +2,7 @@ import graph;
 import math;
 import three;
 import roundedpath;
+//include "params.asy";
 //import geometry;
 // import settings;
 // leftbutton=new string[] {"rotate","zoom","shift","pan"};
@@ -13,6 +14,32 @@ import roundedpath;
 settings.outformat = "pdf";
 
 size(300);
+
+void drawPlayer(pair pos, real scale) {
+    // Define relative coordinates for the stick figure parts, scaled by `scale`
+    pair headCenter = (0, 0.9 * scale);      // Head center point
+    real headRadius = 0.1 * scale;           // Head radius
+    pair bodyStart = (0, 0.8 * scale);       // Start of the body
+    pair bodyEnd = (0, 0.4 * scale);         // End of the body
+    pair leftArm = (-0.2 * scale, 0.6 * scale);  // Left hand
+    pair rightArm = (0.2 * scale, 0.6 * scale);  // Right hand
+    pair leftLeg = (-0.2 * scale, 0);        // Left foot
+    pair rightLeg = (0.2 * scale, 0);        // Right foot
+
+    // Draw the head as a circle (shifted by pos and scaled)
+    draw(circle(pos + headCenter, headRadius));
+
+    // Draw the body as a line (shifted by pos and scaled)
+    draw((pos + bodyStart) -- (pos + bodyEnd));
+
+    // Draw the arms as lines (shifted by pos and scaled)
+    draw((pos + bodyStart) -- (pos + leftArm));
+    draw((pos + bodyStart) -- (pos + rightArm));
+
+    // Draw the legs as lines (shifted by pos and scaled)
+    draw((pos + bodyEnd) -- (pos + leftLeg));
+    draw((pos + bodyEnd) -- (pos + rightLeg));
+}
 
 pair normalize(pair vector){
     real length = length(vector);
@@ -143,8 +170,8 @@ void drawTerrainWithMarkings() {
 
     // Basepoints
     for(int i = 0; i < tValues.length; ++i) {
-        draw((pointsX[i], 0) -- (pointsX[i], pointsY[i]), dashed+red);
-        draw((0, pointsY[i]) -- (pointsX[i], pointsY[i]), dashed+red);
+        draw((pointsX[i], 0) -- (pointsX[i], pointsY[i]), dashed+magenta);
+        draw((0, pointsY[i]) -- (pointsX[i], pointsY[i]), dashed+magenta);
         dot((pointsX[i], pointsY[i]), red);
     }
 
@@ -208,13 +235,29 @@ void hermiteSpline(real[] functionValues, real[] functionDerivatives, string yLa
         real second = evaluateSpline(t + resolution, hermiteCoefficients, tBounds);
         pair firstPoint = (t, first);
         pair secondPoint = (t + resolution, second);
-        draw(firstPoint -- secondPoint, green);
+        if(yLabel == "$x$") {
+            draw(firstPoint -- secondPoint, blue);
+        } else if(yLabel == "$y$") {
+            draw(firstPoint -- secondPoint, orange);
+        } else {
+            draw(firstPoint -- secondPoint, green);
+        }
+        
     }
 
     // Draw Basepoints
     for(int i = 0; i < tValues.length; ++i) {
-        draw((tValues[i], 0) -- (tValues[i], functionValues[i]), dashed+red);
-        dot((tValues[i], functionValues[i]), red);
+        if(yLabel == "$x$") {
+            draw((tValues[i], 0) -- (tValues[i], functionValues[i]), dashed+blue);
+            dot((tValues[i], functionValues[i]), blue);
+        } else if(yLabel == "$y$") {
+            draw((tValues[i], 0) -- (tValues[i], functionValues[i]), dashed+orange);
+            dot((tValues[i], functionValues[i]), orange);
+        } else {
+            draw((tValues[i], 0) -- (tValues[i], functionValues[i]), dashed+red);
+            dot((tValues[i], functionValues[i]), red);
+        }
+        
     }
 
     xaxis("", NoTicks);
@@ -243,21 +286,29 @@ void hermiteSplineInPlanes() {
         triple secondPointX = (secondX, 0, t + resolution);
         triple firstPointY = (0, firstY, t);
         triple secondPointY = (0, secondY, t + resolution);
+        triple firstPointT = (firstX, firstY, 0);
+        triple secondPointT = (secondX, secondY, 0);
         draw(firstPointX -- secondPointX, blue);
         draw(firstPointY -- secondPointY, orange);
+        draw(firstPointT -- secondPointT, green);
     }
 
     // Draw Basepoints
     for(int i = 0; i < tValues.length; ++i) {
         //X
         draw((0, 0, tValues[i]) -- (pointsX[i], 0, tValues[i]), dashed+blue);
-        draw((pointsX[i], 0, tValues[i]) -- (pointsX[i], pointsY[i], tValues[i]), dashed+red);
+        draw((pointsX[i], 0, tValues[i]) -- (pointsX[i], pointsY[i], tValues[i]), dashed+magenta);
         dot((pointsX[i], 0, tValues[i]), blue);
 
         //Y
         draw((0, 0, tValues[i]) -- (0, pointsY[i], tValues[i]), dashed+orange);
-        draw((0, pointsY[i], tValues[i]) -- (pointsX[i], pointsY[i], tValues[i]), dashed+red);
+        draw((0, pointsY[i], tValues[i]) -- (pointsX[i], pointsY[i], tValues[i]), dashed+magenta);
         dot((0, pointsY[i], tValues[i]), orange);
+
+        //T
+        draw((pointsX[i], pointsY[i], tValues[i]) -- (pointsX[i], pointsY[i], 0), dashed+red);
+        dot((pointsX[i], pointsY[i], 0), red);
+
     }
 }
 
@@ -266,14 +317,14 @@ void hermiteSpline3D() {
     //currentprojection=perspective(0,0,10);
     for(int i = 0; i < pointsX.length; ++i) {
         triple point = (pointsX[i], pointsY[i], tValues[i]);
-        dot(point, red);
+        dot(point, magenta);
     }
 
     real currentT = 0;
     while(currentT + resolution <= tValues[tValues.length - 1]) {
         pair first = evaluate2DSpline(currentT);
         pair second = evaluate2DSpline(currentT + resolution);
-        draw((first.x, first.y, currentT) -- (second.x, second.y, currentT + resolution), green);
+        draw((first.x, first.y, currentT) -- (second.x, second.y, currentT + resolution), magenta);
         currentT += resolution;
     }
 
@@ -330,8 +381,8 @@ void terrainPhase(pair pos, TerrainPhase ph) {
     defaultpen(fontsize(8pt));
     real cornerRadius = determineCornerRadius(ph);
 
-    pair minVector = rotateByAngle(ph.deltaV, -ph.r * (pi/2));
-    pair maxVector = rotateByAngle(ph.deltaV, ph.r * (pi/2));
+    pair minVector = rotateByAngle(ph.deltaV, -ph.r * pi);
+    pair maxVector = rotateByAngle(ph.deltaV, ph.r * pi);
 
     draw(roundedpath((pos + (-boxSize/2, -boxSize/2))--(pos + (-boxSize/2, boxSize/2))--(pos + (boxSize/2, boxSize/2))--(pos + (boxSize/2, -boxSize/2))--cycle, cornerRadius), black);
     draw(roundedpath((pos + (-boxSize/2 - padding, -boxSize/2 - padding))--(pos + (-boxSize/2 - padding, boxSize/2 + padding))--(pos + (boxSize/2 + padding, boxSize/2 + padding))--(pos + (boxSize/2 + padding, -boxSize/2 - padding))--cycle, cornerRadius), white);
@@ -355,15 +406,15 @@ void addLabelsTerrainPhase(pair pos, TerrainPhase ph) {
 
     real cornerRadius = determineCornerRadius(ph);
 
-    pair minVector = rotateByAngle(ph.deltaV, -ph.r * (pi/2));
-    pair maxVector = rotateByAngle(ph.deltaV, ph.r * (pi/2));
+    pair minVector = rotateByAngle(ph.deltaV, -ph.r * pi);
+    pair maxVector = rotateByAngle(ph.deltaV, ph.r * pi);
     pair circleCenter = pos + (boxSize/2 - cornerRadius, boxSize/2 - cornerRadius);
 
     label("$\delta v$", pos + ph.deltaV - (0.1, 0.25), magenta);
     label("$m$", circleCenter - (0, cornerRadius + 0.2));
     draw(arc(pos, pos + 0.5*minVector, pos + 0.5*maxVector), red);
-    label("$-r\frac{\pi}{2}$", pos + 0.15 * (ph.deltaV + minVector), red);
-    label("$r\frac{\pi}{2}$", pos + 0.15 * (ph.deltaV + maxVector), red);
+    label("$-r\pi$", pos + 0.15 * (ph.deltaV + minVector), red);
+    label("$r\pi$", pos + 0.15 * (ph.deltaV + maxVector), red);
 
     //defaultpen(linewidth(1pt));
     //defaultpen(fontsize(12pt));
@@ -373,8 +424,8 @@ void terrainPhaseJustVectors(pair pos, TerrainPhase ph) {
     //defaultpen(linewidth(2pt));
     //defaultpen(fontsize(20pt));
 
-    pair minVector = rotateByAngle(ph.deltaV, -ph.r * (pi/2));
-    pair maxVector = rotateByAngle(ph.deltaV, ph.r * (pi/2));
+    pair minVector = rotateByAngle(ph.deltaV, -ph.r * pi);
+    pair maxVector = rotateByAngle(ph.deltaV, ph.r * pi);
 
     draw(pos -- (pos + minVector), red, arrow=EndArrow);
     draw(pos -- (pos + maxVector), red, arrow=EndArrow);
@@ -382,51 +433,127 @@ void terrainPhaseJustVectors(pair pos, TerrainPhase ph) {
     dot(pos);
 }
 
-void drawSplinePart(int pointCount, TerrainPhase ph, real[] x, real[] y, pair legendPos) {
-    real[] subsetX = {};
-    real[] subsetY = {};
-    pair pos = (x[pointCount - 1], y[pointCount - 1]);
-    
-    for(int i = 0; i < pointCount; ++i) {
-        subsetX.push(x[i]);
-        subsetY.push(y[i]);
+void drawSplinePart(TerrainPhase[] phases, real[] choosenAngles, pair legendPos, pair firstPos, int pointsToDraw) {
+    drawPlayer(firstPos + (1.5,0.3), 1.5);
+    real[] subsetX = {firstPos.x};
+    real[] subsetY = {firstPos.y};
+    pair currentPos = firstPos;
+    int terrainPhaseIndex = 0;
+    TerrainPhase currentPhase = phases[terrainPhaseIndex];
+
+    for(int i = 1; i < pointsToDraw; ++i) {
+        currentPos = currentPos + rotateByAngle(currentPhase.deltaV, choosenAngles[i-1]);
+        currentPhase.m -= 1;
+        subsetX.push(currentPos.x);
+        subsetY.push(currentPos.y);
+        if(currentPhase.m == 0 && terrainPhaseIndex < phases.length - 1) {
+            terrainPhaseIndex += 1;
+            currentPhase = phases[terrainPhaseIndex];
+        }
     }
 
     initializeSplineValues(subsetX, subsetY);
     drawTerrain();
 
-    if(pointCount < x.length) {
-        pair nextPos = (x[pointCount], y[pointCount]);
-        draw(pos -- nextPos, green, arrow=EndArrow);
-        terrainPhaseJustVectors(pos, ph);
+    if(pointsToDraw <= choosenAngles.length) {
+        pair nextPos = currentPos + rotateByAngle(currentPhase.deltaV, choosenAngles[pointsToDraw - 1]);
+        terrainPhaseJustVectors(currentPos, currentPhase);
+        draw(currentPos -- nextPos, green, arrow=EndArrow);
     }
 
-    terrainPhase(legendPos, ph);
+    dot(currentPos);
+    terrainPhase(legendPos, currentPhase);
+
 }
+
+// void drawSplinePart(int pointCount, TerrainPhase ph, real[] x, real[] y, pair legendPos) {
+//     real[] subsetX = {};
+//     real[] subsetY = {};
+//     pair pos = (x[pointCount - 1], y[pointCount - 1]);
+//     
+//     for(int i = 0; i < pointCount; ++i) {
+//         subsetX.push(x[i]);
+//         subsetY.push(y[i]);
+//     }
+// 
+//     initializeSplineValues(subsetX, subsetY);
+//     drawTerrain();
+// 
+//     if(pointCount < x.length) {
+//         pair nextPos = (x[pointCount], y[pointCount]);
+//         pair nextPos = (x[pointCount], y[pointCount]);
+//         draw(pos -- nextPos, green, arrow=EndArrow);
+//         terrainPhaseJustVectors(pos, ph);
+//     }
+// 
+//     terrainPhase(legendPos, ph);
+// }
 
 //OUTPUT:
 
+//oldTerrain();
+//newTerrain();
 //hermiteSplinepiece();
 
 //Terrain Representation
 real[] x1 = {0, 3, 4.7, 7, 9, 10,  5.5, 7.5, 8, 9, 10, 20};
 real[] y1 = {7, 7, 7,   5, 5, 4.2, 4,   3,   2, 1, 0,  0};
 
-//initializeSplineValues(x1, y1);
+initializeSplineValues(x1, y1);
 //drawTerrain();
-//drawTerrainWithMarkings();
+drawTerrainWithMarkings();
 //hermiteSpline(pointsX, derX, "$x$");
 //hermiteSpline(pointsY, derY, "$y$");
 //hermiteSpline3D();
 
 //Terrain Generation
-real[] x2 = {0, 3, 4.7, 7, 9, 10,  5.5, 7.5, 8, 9, 10, 20};
-real[] y2 = {7, 7, 7,   5, 5, 4.2, 4,   3,   2, 1, 0,  0};
-//initializeSplineValues(x2, y2);
 
-TerrainPhase ph = createTerrainPhase((3, 0), 0.5, 3);
-//terrainPhase((0,0), ph);
-//addLabelsTerrainPhase((0,0), ph);
+TerrainPhase phExample = createTerrainPhase((3, 0), 1/4, 4);
+//terrainPhase((0,0), phExample);
+//addLabelsTerrainPhase((0,0), phExample);
 
-drawSplinePart(2, ph, x2, y2, (32, 15));
+pair legendPos = (33, 15);
+pair firstPos = (0, 7);
 
+TerrainPhase ph1 = createTerrainPhase((3, 0), 1/4, 4);
+TerrainPhase ph2NoRetracing = createTerrainPhase((-2, 0), 1/3, 2);
+TerrainPhase ph2Retracing = createTerrainPhase((-2, 0), 1/3, 3);
+TerrainPhase ph3NoRetracing = createTerrainPhase(rotateByAngle((3, 0), pi/3), 7/12, 5);
+TerrainPhase ph3Retracing = createTerrainPhase(rotateByAngle((3, 0), pi/3), 7/12, 7);
+TerrainPhase ph4 = createTerrainPhase(rotateByAngle((2, 0), -pi/6), 1/12, 5);
+TerrainPhase ph5 = createTerrainPhase((2, 0), 1/2, 8);
+
+TerrainPhase[] phasesNoRetracing = {};
+phasesNoRetracing.push(ph1);
+phasesNoRetracing.push(ph2NoRetracing);
+phasesNoRetracing.push(ph3NoRetracing);
+phasesNoRetracing.push(ph4);
+phasesNoRetracing.push(ph5);
+
+TerrainPhase[] phasesRetracing = {};
+phasesRetracing.push(ph1);
+phasesRetracing.push(ph2Retracing);
+phasesRetracing.push(ph3Retracing);
+
+real[] anglesPh1 = {0, pi/6, -pi/9, -(7*pi)/36};
+real[] anglesPh2NoRetracing = {pi/12, (11*pi)/36};
+real[] anglesPh2Retracing = {pi/12, (11*pi)/36, 0};
+real[] anglesPh3NoRetracing = {-(4*pi)/9, -pi/4, pi/12, pi/4, -pi/12};
+real[] anglesPh3Retracing = {0, 0};
+real[] anglesPh4 = {pi/12, 0, -pi/12, pi/12, pi/12};
+real[] anglesPh5 = {pi/12, -pi/3, (13*pi)/36, -pi/4, (2*pi)/9, -pi/4, (5*pi)/18, pi/12};
+
+real[] anglesNoRetracing = {};
+anglesNoRetracing.append(anglesPh1);
+anglesNoRetracing.append(anglesPh2NoRetracing);
+anglesNoRetracing.append(anglesPh3NoRetracing);
+anglesNoRetracing.append(anglesPh4);
+anglesNoRetracing.append(anglesPh5);
+
+real[] anglesRetracing = {};
+anglesRetracing.append(anglesPh1);
+anglesRetracing.append(anglesPh2Retracing);
+anglesRetracing.append(anglesPh3Retracing);
+
+//drawSplinePart(phasesRetracing, anglesRetracing, legendPos, firstPos, points);
+//drawSplinePart(phasesNoRetracing, anglesNoRetracing, legendPos, firstPos, points);
