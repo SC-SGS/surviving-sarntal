@@ -2,21 +2,98 @@
 
 \begin{frame}{Game Architecture}
     \begin{itemize}
-        \item Modular design with distinct components for input, physics, rendering, and more.
-        \item Game loop structured around core phases:
-        \begin{itemize}
-            \item Input handling
-            \item Physics updates
-            \item Rendering updates
-        \end{itemize}
+        \item Modular architecture, Factory pattern, Singleton pattern.
+        \item Core parts: Services, World, Spawner, Physics Engine, Menu and Render.
     \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.40]{../figures/Game.png}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{Game Loop}
+\begin{frame}{Services, World and Spawner}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.25]{../figures/Services-World-Spawner.png}
+    \end{figure} 
+\end{frame}
+
+\begin{frame}{Physics, UI and Render}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.30]{../figures/Physics-Menu-Renderer.png}
+    \end{figure} 
+\end{frame}
+
+% \begin{frame}{Services, World and Spawner}
+%     \begin{columns}[t]
+%         \column{0.33\textwidth}
+%         \textbf{Services}
+%         \begin{itemize}
+%             \item Config Service
+%             \item Input Service
+%             \item Resource Service
+%             \item Audio Service
+%             \item Difficulty Service
+%         \end{itemize}
+
+%         \column{0.33\textwidth}
+%         \textbf{World}
+%         \begin{itemize}
+%             \item Terrain
+%             \item Monster
+%             \item Hiker
+%             \item Inventory
+%         \end{itemize}
+
+%         \column{0.33\textwidth}
+%         \textbf{Spawner}
+%         \begin{itemize}
+%             \item Item Spawner
+%             \item Rock Spawner
+%         \end{itemize}
+%     \end{columns}
+% \end{frame}
+
+% \begin{frame}{Physics, UI and Rendering}
+%     \begin{columns}[t]
+%         \column{0.33\textwidth}
+%         \textbf{Physics Engine}
+%         \begin{itemize}
+%             \item Accelerator
+%             \item Collision Detector
+%             \item Collision Handler
+%             \item Destructor
+%             \item Positioner
+%         \end{itemize}
+
+%         \column{0.33\textwidth}
+%         \textbf{Menu Engine}
+%         \begin{itemize}
+%             \item Menu Renderer
+%             \item Menu Event Processor
+%         \end{itemize}
+
+%         \column{0.33\textwidth}
+%         \textbf{Render}
+%         \begin{itemize}
+%             \item Polygon Renderer
+%             \item Terrain Renderer 
+%             \item Entity Renderer
+%             \item HUD Renderer
+%         \end{itemize}
+%     \end{columns}
+% \end{frame}
+
+\begin{frame}{The Game Loop}
     \begin{itemize}
-        \item Central control unit.
-        \item Based on industry standard like Unity \cite{nystromGameLoop,unityGameLoop}.
+        \item Central control managing gameplay logic and data flow.
+        \item Sequential steps: \textit{Input}, \textit{Physics}, \textit{Rendering}.
+        \item Parallelized step: \textit{Terrain Generation} 
     \end{itemize}
-    \centering
-    \includegraphics[width=\textwidth]{../figures/physics/gameLoop.pdf}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\linewidth]{../figures/physics/gameLoop.pdf}
+        \caption{Game Loop Phases}
+    \end{figure}
 \end{frame}
