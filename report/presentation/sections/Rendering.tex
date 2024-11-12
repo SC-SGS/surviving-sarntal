@@ -3,20 +3,24 @@
 \begin{frame}{Rendering Architecture}
     \centering
     % Define the style for the boxes
-    \begin{tikzpicture}
-        % Main Renderer
-        \node[draw, thick, minimum width=10cm, minimum height=2cm] (main) {Main Renderer};
+    % \begin{tikzpicture}
+    %     % Main Renderer
+    %     \node[draw, thick, minimum width=10cm, minimum height=2cm] (main) {Main Renderer};
 
-        % Subrenderers: TerrainRenderer, HUDRenderer, EntityRenderer
-        \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main, xshift=-3.5cm] (entity) {Entity Renderer};
-        \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main] (hud) {HUD Renderer};
-        \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main, xshift=3.5cm] (terrain) {Terrain Renderer};
+    %     % Subrenderers: TerrainRenderer, HUDRenderer, EntityRenderer
+    %     \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main, xshift=-3.5cm] (entity) {Entity Renderer};
+    %     \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main] (hud) {HUD Renderer};
+    %     \node[draw, thick, minimum width=3cm, minimum height=1cm, below=1cm of main, xshift=3.5cm] (terrain) {Terrain Renderer};
 
-        % Arrows from main renderer to subrenderers
-        \draw[->, thick] (main.south) -- (entity.north);
-        \draw[->, thick] (main.south) -- (terrain.north);
-        \draw[->, thick] (main.south) -- (hud.north);
-    \end{tikzpicture}
+    %     % Arrows from main renderer to subrenderers
+    %     \draw[->, thick] (main.south) -- (entity.north);
+    %     \draw[->, thick] (main.south) -- (terrain.north);
+    %     \draw[->, thick] (main.south) -- (hud.north);
+    % \end{tikzpicture}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.50]{../figures/Renderer.pdf}
+    \end{figure} 
 \end{frame}
 
 \begin{frame}{Rendering Architecture}
