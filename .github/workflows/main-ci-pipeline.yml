@@ -21,6 +21,28 @@ jobs:
       - name: Set up CMake
         uses: lukka/get-cmake@v3.31.0
 
+      # Restore the APT cache (if available)
+      - name: Restore APT cache
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-apt-cache
+          restore-keys: |
+            ${{ runner.os }}-apt-cache
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          chmod +x build-utils/pipe_setup.sh
+          ./build-utils/pipe_setup.sh
+
+      # Save the updated APT cache for future workflows
+      - name: Save APT cache
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-apt-cache
+
       - name: Build project
         run: |
           cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DENABLE_COVERAGE=ON -DCOVERAGE_DIR_NAME="coverage"
