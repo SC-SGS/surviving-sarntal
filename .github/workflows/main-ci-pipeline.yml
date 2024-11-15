@@ -53,7 +53,7 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            cmake-build-debug/src/surviving-sarntal
+            cmake-build-debug
           retention-days: 1
 
   test-job:
