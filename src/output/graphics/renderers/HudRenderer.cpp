@@ -33,22 +33,23 @@ void HudRenderer::renderAltimeter() const {
                    static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO); // Step size of the altimeter
 
     const int currentAltitude =
-        static_cast<int>(world.getHiker().getPosition().y *
-                         static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO)); // Current altitude of the hiker
-    const int topAltitude = currentAltitude - GetScreenHeight() / 2;       // Top altitude of the screen
-    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2;    // Bottom altitude of the screen
+            static_cast<int>(world.getHiker().getPosition().y *
+                             static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO)); // Current altitude of the hiker
+    const int topAltitude = currentAltitude - GetScreenHeight() / 2; // Top altitude of the screen
+    const int bottomAltitude = currentAltitude + GetScreenHeight() / 2; // Bottom altitude of the screen
 
     for (int i = GraphicsUtil::floorToNearest(bottomAltitude, stepSize) + stepSize; i > topAltitude;
          i -= static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO)) {
         const int drawY = GetScreenHeight() / 2 - (i - currentAltitude);
         const int drawAltitude =
-            (i + gameConstants.visualConstants.cameraToHikerOffset) / static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO);
+                (i + gameConstants.visualConstants.cameraToHikerOffset) / static_cast<int>(
+                    graphics::UNIT_TO_PIXEL_RATIO);
 
         renderAltimeterStep(drawY, drawAltitude, gameConstants.visualConstants.fontSizeAltimeter);
     }
 
     if (!this->debugMode) {
-        for (const auto &landmark : landmarks) {
+        for (const auto &landmark: landmarks) {
             const int altitude = (landmark.second - 1) * static_cast<int>(graphics::UNIT_TO_PIXEL_RATIO) -
                                  gameConstants.visualConstants.cameraToHikerOffset;
             const int drawY = (GetScreenHeight() / 2 - (altitude - currentAltitude));
@@ -116,8 +117,10 @@ void HudRenderer::renderItemSlot(const Inventory &inventory,
         const auto texture = resourceManager.getTexture(textureName);
         const floatType inventorySlotSize = gameConstants.itemsConstants.inventorySlotSize;
         DrawTexturePro(texture, {0, 0, static_cast<floatType>(texture.width), static_cast<floatType>(texture.height)},
-                       {static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * inventorySlotSize,
-                        static_cast<floatType>(startY), inventorySlotSize, inventorySlotSize},
+                       {
+                           static_cast<floatType>(startX) + static_cast<floatType>(slotNumber) * inventorySlotSize,
+                           static_cast<floatType>(startY), inventorySlotSize, inventorySlotSize
+                       },
                        {0, 0}, 0, WHITE);
         const size_t numberOfItems = inventory.getNumberOfItems(slotNumber);
         if (numberOfItems > 0) {
@@ -134,10 +137,10 @@ void HudRenderer::renderHealthBar() const {
                         static_cast<floatType>(gameConstants.hikerConstants.hikerMaxHealth);
     const int screenWidth = GetScreenWidth();
     const int startX =
-        screenWidth - gameConstants.visualConstants.healthBarWidth - gameConstants.visualConstants.uiMargin;
+            screenWidth - gameConstants.visualConstants.healthBarWidth - gameConstants.visualConstants.uiMargin;
     const int startY = gameConstants.visualConstants.uiMargin;
     const auto healthBarFill =
-        static_cast<int>(static_cast<floatType>(gameConstants.visualConstants.healthBarWidth) * health);
+            static_cast<int>(static_cast<floatType>(gameConstants.visualConstants.healthBarWidth) * health);
 
     // Draw the health bar
     DrawRectangle(startX, startY, gameConstants.visualConstants.healthBarWidth,
@@ -171,11 +174,13 @@ void HudRenderer::drawScoreTexture(const Texture2D &texture,
                                    floatType widthOffset,
                                    floatType uiMarginMultiplier) const {
     DrawTexturePro(texture, {0, 0, static_cast<floatType>(texture.width), static_cast<floatType>(texture.height)},
-                   {static_cast<floatType>(GetScreenWidth() - gameConstants.visualConstants.uiMargin) -
-                        static_cast<floatType>(gameConstants.visualConstants.fontSizeScore) * widthOffset,
-                    static_cast<floatType>(gameConstants.visualConstants.uiMargin) * uiMarginMultiplier,
-                    static_cast<floatType>(gameConstants.visualConstants.fontSizeScore * 4),
-                    static_cast<floatType>(gameConstants.visualConstants.fontSizeScore * 3)},
+                   {
+                       static_cast<floatType>(GetScreenWidth() - gameConstants.visualConstants.uiMargin) -
+                       static_cast<floatType>(gameConstants.visualConstants.fontSizeScore) * widthOffset,
+                       static_cast<floatType>(gameConstants.visualConstants.uiMargin) * uiMarginMultiplier,
+                       static_cast<floatType>(gameConstants.visualConstants.fontSizeScore * 4),
+                       static_cast<floatType>(gameConstants.visualConstants.fontSizeScore * 3)
+                   },
                    {0, 0}, 0, WHITE);
 }
 
@@ -196,11 +201,15 @@ void HudRenderer::renderCoinScore() const {
     const auto coinTexture = resourceManager.getTexture("coin");
     DrawTexturePro(resourceManager.getTexture("coin"),
                    {0, 0, static_cast<floatType>(coinTexture.width), static_cast<floatType>(coinTexture.height)},
-                   {static_cast<float>(GetScreenWidth() - gameConstants.visualConstants.uiMargin * 2),
-                    static_cast<float>(gameConstants.visualConstants.uiMargin * 8),
-                    static_cast<float>(gameConstants.visualConstants.fontSizeScore),
-                    static_cast<float>(gameConstants.visualConstants.fontSizeScore)},
+                   {
+                       static_cast<float>(GetScreenWidth() - gameConstants.visualConstants.uiMargin * 2),
+                       static_cast<float>(gameConstants.visualConstants.uiMargin * 8),
+                       static_cast<float>(gameConstants.visualConstants.fontSizeScore),
+                       static_cast<float>(gameConstants.visualConstants.fontSizeScore)
+                   },
                    {0, 0}, 0, WHITE);
 }
 
-void HudRenderer::reset() { /* Nothing to reset */ }
+void HudRenderer::reset() {
+    /* Nothing to reset */
+}
