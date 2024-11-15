@@ -100,6 +100,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check clang-format version
+        run: |
+          clang-format --version
+
+      - name: Find .clang-format file
+        run: |
+          echo "Looking for .clang-format file..."
+          find . -name ".clang-format" -print || echo ".clang-format file not found"
+
       - name: Run clang-format
         run: |
           clang-format -style=file $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --Werror --dry-run
