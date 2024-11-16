@@ -11,45 +11,23 @@ on:
       - synchronize
 
 jobs: 
-  setup-job:
-    name: System Setup
+          
+  build-job:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
       - name: Set up CMake
         uses: lukka/get-cmake@v3.31.0
-
-      # Restore the APT cache (if available)
-      - name: Restore APT cache
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt
-          key: ${{ runner.os }}-apt-cache
-          restore-keys: |
-            ${{ runner.os }}-apt-cache
 
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
           chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
-
-      # Save the updated APT cache for future workflows
-      - name: Save APT cache
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt
-          key: ${{ runner.os }}-apt-cache
-          
-  build-job:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [setup-job]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        
       - name: Build project
         run: |
           cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DENABLE_COVERAGE=ON -DCOVERAGE_DIR_NAME="coverage"
@@ -70,6 +48,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          chmod +x build-utils/pipe_setup.sh
+          ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
         uses: actions/download-artifact@v3
@@ -103,19 +90,36 @@ jobs:
   clang-format:
     name: Clang Format
     runs-on: ubuntu-latest
-    needs: [setup-job]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          chmod +x build-utils/pipe_setup.sh
+          ./build-utils/pipe_setup.sh
+
       - name: Check clang-format version
         run: |
-          clang-format --version
-
-      - name: Find .clang-format file
-        run: |
-          echo "Looking for .clang-format file..."
-          find . -name ".clang-format" -print || echo ".clang-format file not found"
+          # Check and install clang-format version 18 if needed
+          if command -v clang-format &> /dev/null; then
+            INSTALLED_VERSION=$(clang-format --version | awk '{print $3}' | cut -d'.' -f1)
+            if [ "$INSTALLED_VERSION" -lt 18 ]; then
+              echo "Clang-format version $INSTALLED_VERSION is less than 18. Installing clang-format version 18..."
+              sudo apt-get install -y clang-format-18
+              sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
+            else
+              echo "Clang-format version $INSTALLED_VERSION is sufficient."
+            fi
+          else
+            echo "Clang-format is not installed. Installing clang-format version 18..."
+            sudo apt-get install -y clang-format-18
+            sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
+          fi
 
       - name: Run clang-format
         run: |
@@ -128,6 +132,33 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          chmod +x build-utils/pipe_setup.sh
+          ./build-utils/pipe_setup.sh
+
+      - name: Check clang-tidy version
+        run: |
+          # Check and install clang-tidy version 18 if needed
+          if command -v clang-tidy &> /dev/null; then
+            INSTALLED_VERSION=$(clang-tidy --version | awk '{print $4}' | cut -d'.' -f1)
+            if [ "$INSTALLED_VERSION" -lt 18 ]; then
+              echo "Clang-tidy version $INSTALLED_VERSION is less than 18. Installing clang-tidy version 18..."
+              sudo apt-get install -y clang-tidy-18
+              sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+            else
+              echo "Clang-tidy version $INSTALLED_VERSION is sufficient."
+            fi
+          else
+            echo "Clang-tidy is not installed. Installing clang-tidy version 18..."
+            sudo apt-get install -y clang-tidy-18
+            sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+          fi
 
       - name: Download build artifacts
         uses: actions/download-artifact@v3
@@ -145,6 +176,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          chmod +x build-utils/pipe_setup.sh
+          ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
         uses: actions/download-artifact@v3
