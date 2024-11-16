@@ -103,23 +103,13 @@ jobs:
           chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
 
-      - name: Check clang-format version
+      - name: Debug LLVM Binaries
         run: |
-          # Check and install clang-format version 18 if needed
-          if command -v clang-format &> /dev/null; then
-            INSTALLED_VERSION=$(clang-format --version | grep -oP '(?<=version )\d+' | head -n 1) # Extracts major version after "version"
-            if [ "$INSTALLED_VERSION" -lt 18 ]; then
-              echo "Clang-format version $INSTALLED_VERSION is less than 18. Installing clang-format version 18..."
-              sudo apt-get install -y clang-format-18
-              sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
-            else
-              echo "Clang-format version $INSTALLED_VERSION is sufficient."
-            fi
-          else
-            echo "Clang-format is not installed. Installing clang-format version 18..."
-            sudo apt-get install -y clang-format-18
-            sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
-          fi
+          sudo find /usr /lib /opt -name clang-format-18 -o -name clang-tidy-18
+          dpkg-query -L clang-format-18 || echo "clang-format-18 not found in package files"
+          llvm-config --bindir || echo "llvm-config not installed or misconfigured"
+          echo $PATH
+
 
       - name: Run clang-format
         run: |
