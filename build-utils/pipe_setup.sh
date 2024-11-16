@@ -23,31 +23,23 @@ wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
 sudo ./llvm.sh 18  # Install LLVM version 18
 
-# Update alternatives to ensure the correct versions of clang-format and clang-tidy
-if command -v clang-format &> /dev/null; then
-    INSTALLED_VERSION=$(clang-format --version | grep -oP '(?<=version )\d+' | head -n 1)
-    if [ "$INSTALLED_VERSION" -lt 18 ]; then
-        echo "Clang-format version $INSTALLED_VERSION is less than 18. Updating alternatives for clang-format version 18..."
-        sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
-    else
-        echo "Clang-format version $INSTALLED_VERSION is sufficient."
-    fi
+# Verify installation paths
+CLANG_FORMAT_PATH="/usr/lib/llvm-18/bin/clang-format"
+CLANG_TIDY_PATH="/usr/lib/llvm-18/bin/clang-tidy"
+
+# Update alternatives to point to LLVM tools
+if [ -f "$CLANG_FORMAT_PATH" ]; then
+    echo "Setting up clang-format version 18..."
+    sudo update-alternatives --install /usr/bin/clang-format clang-format "$CLANG_FORMAT_PATH" 100
 else
-    echo "Clang-format is not installed. Setting up clang-format version 18..."
-    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
+    echo "Error: clang-format-18 binary not found at $CLANG_FORMAT_PATH"
 fi
 
-if command -v clang-tidy &> /dev/null; then
-    INSTALLED_VERSION=$(clang-tidy --version | grep -oP '(?<=version )\d+' | head -n 1)
-    if [ "$INSTALLED_VERSION" -lt 18 ]; then
-        echo "Clang-tidy version $INSTALLED_VERSION is less than 18. Updating alternatives for clang-tidy version 18..."
-        sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
-    else
-        echo "Clang-tidy version $INSTALLED_VERSION is sufficient."
-    fi
+if [ -f "$CLANG_TIDY_PATH" ]; then
+    echo "Setting up clang-tidy version 18..."
+    sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy "$CLANG_TIDY_PATH" 100
 else
-    echo "Clang-tidy is not installed. Setting up clang-tidy version 18..."
-    sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+    echo "Error: clang-tidy-18 binary not found at $CLANG_TIDY_PATH"
 fi
 
 # Echo installed software versions
