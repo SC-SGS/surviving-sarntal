@@ -3,10 +3,8 @@ fullscreen: true
 
 music:
   background-music: "../../assets/audio/happy-funny-kids.mp3"
-  background-music2: "../../assets/audio/background_music2.wav"
 
 soundEffects:
-  use-kaiserschmarrn: "../../assets/audio/cool_sound.mp3"
   use-duck: "../../assets/audio/duck.wav"
   use-coin: "../../assets/audio/proper_coin.wav"
   pickup-item: "../../assets/audio/pickup.wav"
@@ -14,18 +12,7 @@ soundEffects:
   jump: "../../assets/audio/proper_jump.wav"
   rock-smash: "../../assets/audio/proper_rock_smash.wav"
   boom: "../../assets/audio/boom.wav"
-  dudum: "../../assets/audio/dudum.wav"
-  error: "../../assets/audio/error.wav"
-  fart: "../../assets/audio/fart.wav"
-  mepmep: "../../assets/audio/mepmep.wav"
-  ohje: "../../assets/audio/ohje.wav"
-  cool-sound: "../../assets/audio/cool_sound.mp3"
-  oof: "../../assets/audio/oof.wav"
-  pipe: "../../assets/audio/pipe.wav"
-  meme-jump: "../../assets/audio/jump.wav"
   game-over: "../../assets/audio/game_over.wav"
-  meme-game-over: "../../assets/audio/gameover.wav"
-  meme-game-over2: "../../assets/audio/shutdown.wav"
   nuke: "../../assets/audio/nuke.mp3"
   eat: "../../assets/audio/eat.mp3"
   rock-terrain_smash: "../../assets/audio/rock-terrain_smash.mp3"
