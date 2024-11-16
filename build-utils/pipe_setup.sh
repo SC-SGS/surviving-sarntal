@@ -24,8 +24,8 @@ chmod +x llvm.sh
 sudo ./llvm.sh 18  # Install LLVM version 18
 
 # Verify installation paths
-CLANG_FORMAT_PATH="/usr/lib/llvm-18/bin/clang-format"
-CLANG_TIDY_PATH="/usr/lib/llvm-18/bin/clang-tidy"
+CLANG_FORMAT_PATH=$(find /usr /lib /opt -name clang-format-18 | head -n 1)
+CLANG_TIDY_PATH=$(find /usr /lib /opt -name clang-tidy-18 | head -n 1)
 
 # Update alternatives to point to LLVM tools
 if [ -f "$CLANG_FORMAT_PATH" ]; then
