@@ -25,7 +25,6 @@ jobs:
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
-          chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
         
       - name: Build project
@@ -55,7 +54,6 @@ jobs:
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
-          chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
@@ -100,7 +98,6 @@ jobs:
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
-          chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
 
       - name: Debug LLVM Binaries
@@ -129,7 +126,6 @@ jobs:
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
-          chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
 
       - name: Check clang-tidy version
@@ -173,7 +169,6 @@ jobs:
       # Run the setup script to install dependencies
       - name: Run setup script
         run: |
-          chmod +x build-utils/pipe_setup.sh
           ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
