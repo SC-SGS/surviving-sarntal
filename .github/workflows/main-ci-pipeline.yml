@@ -38,7 +38,7 @@ jobs:
           name: build-artifacts
           path: |
             cmake-build-debug
-          retention-days: 1
+          retention-days: 7
 
   test-job:
     name: Test
