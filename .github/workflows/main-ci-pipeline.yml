@@ -57,7 +57,7 @@ jobs:
           ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
@@ -79,11 +79,11 @@ jobs:
           fi
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/report
-          retention-days: 1
+          retention-days: 7
 
   clang-format:
     name: Clang Format
@@ -147,7 +147,7 @@ jobs:
           fi
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
@@ -172,7 +172,7 @@ jobs:
           ./build-utils/pipe_setup.sh
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
