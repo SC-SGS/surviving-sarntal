@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Cross-platform test script
+# Cross-platform bisect test script
+# In contrast to test.sh, this exits with a code for bisect to work
 
 # Ensure the project is built
 source build-utils/build.sh
