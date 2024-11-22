@@ -12,6 +12,7 @@ class MockAudioService : public AudioService {
   public:
     explicit MockAudioService(ResourceManager &resourceManager) : AudioService(resourceManager) {}
     MOCK_METHOD(void, playSound, (const std::string &soundName), (const, override));
+    MOCK_METHOD(void, interruptSound, (const std::string &soundName), (const, override));
 };
 
 #endif // SURVIVING_SARNTAL_MOCKAUDIOSERVICE_H
