@@ -66,6 +66,8 @@ TEST_F(HikerTestFixture, JumpOnceTest) {
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(1);
+    ON_CALL(mockAudioService, interruptSound("moving")).WillByDefault(::testing::Return());
+    EXPECT_CALL(mockAudioService, interruptSound("moving")).Times(1);
     Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.jump();
@@ -80,6 +82,8 @@ TEST_F(HikerTestFixture, JumpTwiceTest) {
     MockAudioService mockAudioService(mockResourceManager);
     ON_CALL(mockAudioService, playSound("jump")).WillByDefault(::testing::Return());
     EXPECT_CALL(mockAudioService, playSound("jump")).Times(2);
+    ON_CALL(mockAudioService, interruptSound("moving")).WillByDefault(::testing::Return());
+    EXPECT_CALL(mockAudioService, interruptSound("moving")).Times(2);
     Hiker hiker(Vector{0, 0}, mockAudioService, inputHandler, gameConstants.hikerConstants);
 
     hiker.jump();
