@@ -1,0 +1,180 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs: 
+          
+  build-job:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          ./build-utils/pipe_setup.sh
+        
+      - name: Build project
+        run: |
+          cmake -S . -B cmake-build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DENABLE_COVERAGE=ON -DCOVERAGE_DIR_NAME="coverage"
+          cmake --build cmake-build-debug
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            cmake-build-debug
+          retention-days: 7
+
+  test-job:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          ./build-utils/pipe_setup.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Run tests
+        run: |
+          ctest --test-dir cmake-build-debug/test --rerun-failed --output-on-failure
+          cmake --build cmake-build-debug --target coverage
+          COVERAGE=$(lcov --summary cmake-build-debug/../coverage/coverage.info | awk '/lines/ {print $2}')
+          echo "Line coverage $COVERAGE"
+
+          # Remove percentage symbol and compare numeric value
+          COVERAGE_VALUE=$(echo "$COVERAGE" | sed 's/%//')
+          if [ "$COVERAGE_VALUE" -lt 80 ]; then
+              echo "Coverage is below 80%! Failing pipeline."
+              # TODO once the test coverage is high enough, we should fail the pipeline here 
+              # exit 1
+          else
+              echo "Coverage is sufficient: $COVERAGE_VALUE%"
+          fi
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/report
+          retention-days: 7
+
+  clang-format:
+    name: Clang Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          ./build-utils/pipe_setup.sh
+
+      - name: Debug LLVM Binaries
+        run: |
+          sudo find /usr /lib /opt -name clang-format-18 -o -name clang-tidy-18
+          dpkg-query -L clang-format-18 || echo "clang-format-18 not found in package files"
+          llvm-config --bindir || echo "llvm-config not installed or misconfigured"
+          echo $PATH
+
+
+      - name: Run clang-format
+        run: |
+          clang-format -style=file $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --Werror --dry-run
+
+  clang-tidy:
+    name: Clang Tidy
+    runs-on: ubuntu-latest
+    needs: [build-job, test-job]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          ./build-utils/pipe_setup.sh
+
+      - name: Check clang-tidy version
+        run: |
+          # Check and install clang-tidy version 18 if needed
+          if command -v clang-tidy &> /dev/null; then
+            INSTALLED_VERSION=$(clang-tidy --version | grep -oP '(?<=version )\d+' | head -n 1) # Extracts major version after "version"
+            if [ "$INSTALLED_VERSION" -lt 18 ]; then
+              echo "Clang-tidy version $INSTALLED_VERSION is less than 18. Installing clang-tidy version 18..."
+              sudo apt-get install -y clang-tidy-18
+              sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+            else
+              echo "Clang-tidy version $INSTALLED_VERSION is sufficient."
+            fi
+          else
+            echo "Clang-tidy is not installed. Installing clang-tidy version 18..."
+            sudo apt-get install -y clang-tidy-18
+            sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
+          fi
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy -p=cmake-build-debug/ $(find src/ test/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)) --warnings-as-errors=* --header-filter="^((src|test)/.*)$" --use-color
+
+  run-exe:
+    name: Run Executable
+    runs-on: ubuntu-latest
+    needs: build-job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@v3.31.0
+
+      # Run the setup script to install dependencies
+      - name: Run setup script
+        run: |
+          ./build-utils/pipe_setup.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Run Executable
+        run: ./build-utils/run_check.sh

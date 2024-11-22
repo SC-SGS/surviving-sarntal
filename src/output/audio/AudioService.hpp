@@ -19,7 +19,7 @@ class AudioService {
     void playMovingSound(floatType hikerSpeed, floatType maxHikerSpeed);
     void interruptMovingSound();
     void playSoundWithSpeedIfNotAlreadyPlaying(const std::string &soundName, float speed) const;
-    void interruptSound(const std::string &soundName) const;
+    virtual void interruptSound(const std::string &soundName) const;
 
   private:
     ResourceManager &resourceManager;

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Cross-platform test script
+# Cross-platform bisect test script
+# In contrast to test.sh, this exits with a code for bisect to work
 
 # Ensure the project is built
 source build-utils/build.sh
@@ -15,8 +16,15 @@ cd ./cmake-build-debug/test || exit
 
 if [[ "$OSTYPE" == "cygwin"* || "$OSTYPE" == "msys"* || "$OSTYPE" == "win32"* ]]; then
     ./test-surviving-sarntal.exe
+    res=$?
 else
     ./test-surviving-sarntal
+    res=$?
 fi
 
 cd ../..
+
+if [ $res -ne 0 ]; then
+      exit 1
+fi
+exit 0
