@@ -24,6 +24,6 @@ fi
 cd ../..
 
 if [ $res -ne 0 ]; then
-      exit 1
+      return 1
 fi
-exit 0
+return 0
