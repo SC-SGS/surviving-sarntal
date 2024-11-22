@@ -20,7 +20,7 @@ run_command(f'git bisect start {last} {first}')
 
 # Run the test script
 try:
-    run_command('git bisect run ./build-utils/test.sh')
+    run_command('git bisect run ./build-utils/bisect_test.sh')
 finally:
     # Always reset bisect, even if the script fails
     print("Resetting bisection...")
